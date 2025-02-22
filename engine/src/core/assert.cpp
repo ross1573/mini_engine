@@ -19,7 +19,7 @@ wchar_t wfuncInfo[bufSize] = {0, };
 
 wchar_t* ConvertAssertMsg(char const* expr, char const* msg)
 {
-    char const* str[3] = { expr,  msg == nullptr ? nullptr : "\nMessage: ", msg };
+    char const* str[3] = {expr, msg == nullptr ? nullptr : "\nMessage: ", msg};
     SizeT len = memory::ConcatStrings(assertMsg, sizeof(assertMsg), str, 3);
     memory::Convert(assertMsg, len, wassertMsg, memory::ConvertLength(assertMsg, len));
     return wassertMsg;
@@ -50,5 +50,21 @@ char* ConvertAssertLoc(std::source_location const& loc)
 #endif // MSVC
 
 #endif // DEBUG_ASSERT
+
+bool EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
+{
+    BUILTIN_ASSERT(ConvertAssertMsg(expr, msg), ConvertAssertLoc(loc), loc.line());
+
+    char locBuffer[256] = {0, };
+    memory::SourceLocationToString(locBuffer, sizeof(locBuffer), loc);
+
+    Print(Format("\nEnsure failed!\n"
+                 "  Expression: {0}\n"
+                 "  Message: {1}\n"
+                 "  Function: {2}\n\n",
+                 expr, (msg == nullptr ? "" : msg), locBuffer));
+
+    return true;
+}
 
 } // namespace mini::detail

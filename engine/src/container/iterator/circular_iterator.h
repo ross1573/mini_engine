@@ -216,7 +216,7 @@ template <typename T, typename CircularT>
 template <typename T, typename CircularT>
 [[force_inline]] constexpr bool CircularIterator<T, CircularT>::Decrement() noexcept
 {
-    if (CheckIterator(*this - 1)) [[unlikely]]
+    if (!CheckIterator(*this - 1)) [[unlikely]]
     {
         return false;
     }

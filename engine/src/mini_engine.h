@@ -42,6 +42,7 @@
 #include "core/assert.h"
 #include "core/utility.h"
 #include "core/option.h"
+#include "core/log.h"
 
 #include "container/array.h"
 #include "container/static_array.h"
@@ -62,7 +63,6 @@
 #include "platform/platform.h"
 #include "platform/handle.h"
 #include "platform/window.h"
-#include "platform/log.h"
 
 #include "graphics/graphics.h"
 #include "graphics/device.h"

@@ -29,27 +29,38 @@ bool Window::Initialize()
         style |= WS_THICKFRAME;
     }
 
-    m_WindowHandle = CreateWindowExW(styleEx, className.Data(), titleName.Data(), style,
-                                     m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height,
-                                     nullptr, nullptr, instance, nullptr);
+    m_WindowHandle = CreateWindowExW(styleEx,
+                                     className.Data(),
+                                     titleName.Data(),
+                                     style,
+                                     m_Rect.x, m_Rect.y,
+                                     m_Rect.width, m_Rect.height,
+                                     nullptr,
+                                     nullptr,
+                                     instance,
+                                     nullptr);
 
-    ASSERT(m_WindowHandle, "failed to create window");
+    VERIFY(m_WindowHandle, "failed to create window");
+
     SetMenu(m_WindowHandle, 0);
-    Show();
 
     return true;
 }
 
 void Window::DialogCritical(String const& msg)
 {
-    MessageBoxW(m_WindowHandle, StringConverter<char, wchar_t>(msg).Data(), nullptr, 0);
+    wchar_t buf[256]; // make sure there's no more allocation
+    SizeT len = mini::memory::ConvertLength(msg.data(), (SizeT)msg.size());
+    mini::memory::Convert(msg.data(),(SizeT)msg.size(), buf, len);
+    buf[255] = '\0';
+
+    MessageBoxW(m_WindowHandle, buf, nullptr, 0);
 }
 
 void Window::Resize(RectInt const& rect)
 {
     m_Rect = rect;
-    SetWindowPos(m_WindowHandle, nullptr,
-                 m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height, 0);
+    SetWindowPos(m_WindowHandle, nullptr, m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height, 0);
 }
 
 void Window::Minimize()

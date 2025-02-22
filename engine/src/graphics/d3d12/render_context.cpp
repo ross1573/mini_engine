@@ -34,8 +34,6 @@ bool RenderContext::Initialize()
     VERIFY(device->CreateCommandList(0, type, m_CommandAllocator,
                                      nullptr, IID_PPV_ARGS(&m_CommandList)));
 
-    ASSERT(m_CommandAllocator);
-    ASSERT(m_CommandList);
     m_CommandList->Close();
     return true;
 }
@@ -45,8 +43,8 @@ void RenderContext::BeginRender()
     m_CommandQueue->WaitForFence(m_CommandQueue->GetCurrentFence());
     m_CurrentBuffer = Graphics::GetSwapChain<d3d12::SwapChain>()->GetCurrentBuffer();
 
-    m_CommandAllocator->Reset();
-    m_CommandList->Reset(m_CommandAllocator, nullptr);
+    VERIFY(m_CommandAllocator->Reset(), "failed to reset command allocator");
+    VERIFY(m_CommandList->Reset(m_CommandAllocator, nullptr), "failed to reset command list");
 
     D3D12_RESOURCE_TRANSITION_BARRIER transition{};
     transition.pResource = m_CurrentBuffer->resource.Get();

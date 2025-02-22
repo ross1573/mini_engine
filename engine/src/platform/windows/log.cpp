@@ -1,21 +1,23 @@
 #include "mini_engine.h"
 #include "platform/windows/utility.h"
 
-namespace mini
+namespace mini::detail
 {
 
-void Print(StringView const msg)
+void LogMessage(char const* msg, bool endLine)
 {
     OutputDebugStringW(windows::StringConverter<char, wchar_t>(msg).Data());
-}
 
-void PrintLine(StringView const msg)
-{
-    if (msg.size() != 0)
+    if (endLine)
     {
-        OutputDebugStringW(windows::StringConverter<char, wchar_t>(msg).Data());
+        OutputDebugStringW(L"\n");
     }
-    OutputDebugStringW(L"\n");
 }
 
-} // namespace mini
+bool EnsureHelper(char const* expr, ID3DBlob* error, std::source_location const& loc)
+{
+    wchar_t* buffer = reinterpret_cast<wchar_t*>(error->GetBufferPointer());
+    return EnsureHelper(expr, windows::StringConverter<wchar_t, char>(buffer).Data(), loc);
+}
+
+} // namespace mini::detail

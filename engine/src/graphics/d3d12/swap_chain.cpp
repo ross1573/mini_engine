@@ -67,18 +67,21 @@ bool SwapChain::Initialize()
     m_SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     m_SwapChainDesc.Flags = m_VSync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
-    HRESULT hResult = E_FAIL;
-    hResult = factory->CreateSwapChainForHwnd(commandQueue->GetD3D12CommandQueue(),
-                                              window->GetHWND(),
-                                              &m_SwapChainDesc,
-                                              &m_FullscreenDesc,
-                                              nullptr,
-                                              &swapChain);
-
-    ASSERT(hResult, "failed to create DXGI swapchain");
+    ENSURE(factory->CreateSwapChainForHwnd(commandQueue->GetD3D12CommandQueue(),
+                                           window->GetHWND(),
+                                           &m_SwapChainDesc,
+                                           &m_FullscreenDesc,
+                                           nullptr,
+                                           &swapChain), "failed to create DXGI swapchain")
+    {
+        return false;
+    }
 
     m_SwapChain = DynamicCast<IDXGISwapChain3>(swapChain);
-    ASSERT(m_SwapChain, "IDXGISwapChain3 not supported.");
+    ENSURE(m_SwapChain, "IDXGISwapChain3 not supported")
+    {
+        return false;
+    }
 
     CreateBuffers(bufferCount);
     return true;
@@ -92,7 +95,7 @@ void SwapChain::Present()
 
 void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 {
-    ENSURE (width * height > 0)
+    if (width * height <= 0)
     {
         Log::Error("Cannot resize to {} x {}", width, height);
         return;
@@ -111,9 +114,8 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 
 void SwapChain::SetBackBufferCount(uint8 count)
 {
-    ENSURE(count > 0 || count < MaxBackBuffer)
+    ENSURE(count > 0 || count < MaxBackBuffer, "Invalid swap chain count")
     {
-        Log::Error("Invalid swap chain count {}", count);
         return;
     }
 
@@ -130,7 +132,7 @@ void SwapChain::SetFullScreen(bool fullscreen)
 {
     Graphics::GetRenderContext()->WaitForIdle();
 
-    ENSURE(m_SwapChain->SetFullscreenState(fullscreen, nullptr))
+    if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr)))
     {
         Log::Error("Failed to set fullscreen state");
     }
@@ -150,9 +152,8 @@ void SwapChain::ReleaseBuffers()
 
 void SwapChain::CreateBuffers(uint8 count)
 {
-    [[maybe_unused]] HRESULT hResult;
-
-    if (m_Width * m_Height <= 0)
+    ASSERT(m_Buffers.Size() == 0, "swap chain buffer not released");
+    ENSURE(m_Width * m_Height > 0, "invalid width and height")
     {
         return;
     }
@@ -160,12 +161,13 @@ void SwapChain::CreateBuffers(uint8 count)
     Device* device = Graphics::GetDevice<d3d12::Device>();
     uint32 swapChainFlags = (m_VSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
-    VERIFY(m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr));
+    m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr);
     VERIFY(m_SwapChain->ResizeBuffers((uint)count,
                                       m_Width,
                                       m_Height,
                                       DXGI_FORMAT_R8G8B8A8_UNORM,
-                                      swapChainFlags), "failed to create swap chain buffers");
+                                      swapChainFlags),
+           "failed to create swap chain buffers");
 
     for (uint32 i = 0; i < count; ++i)
     {

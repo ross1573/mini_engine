@@ -25,18 +25,18 @@ namespace mini
 
 bool Graphics::Initialize(graphics::Device* device)
 {
-    ASSERT(m_Device == nullptr && device != nullptr);
+    VERIFY(m_Device == nullptr && device != nullptr);
 
     m_Device = device;
     m_CurrentAPI = m_Device->GetAPI();
-    ASSERT(m_CurrentAPI != graphics::API::Null);
-    ASSERT(m_Device->Initialize(), "failed to initialize graphics device");
+    VERIFY(m_CurrentAPI != graphics::API::Null);
+    VERIFY(m_Device->Initialize(), "failed to initialize graphics device");
 
     m_RenderContext = m_Device->CreateRenderContext();
-    ASSERT(m_RenderContext->Initialize(), "Failed to create render context");
+    VERIFY(m_RenderContext->Initialize(), "Failed to create render context");
 
     m_SwapChain = m_Device->CreateSwapChain();
-    ASSERT(m_SwapChain->Initialize(), "Failed to create swap chain");
+    VERIFY(m_SwapChain->Initialize(), "Failed to create swap chain");
 
     return true;
 }
@@ -74,7 +74,7 @@ void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
     SwapChain* swapChain = GetSwapChain();
     if (swapChain == nullptr) [[unlikely]]
     {
-        Log::Error("failed to change resolution. SwapChain not initialized");
+        Log::Error("failed to change resolution. SwapChain is not initialized");
         return;
     }
 

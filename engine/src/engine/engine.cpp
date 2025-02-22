@@ -16,7 +16,7 @@ Engine::Engine()
 }
 
 Engine::~Engine()
-{    
+{
     m_Running = false;
 }
 
@@ -32,6 +32,14 @@ bool Engine::Initialize()
 
     m_Running = true;
     return true;
+}
+
+void Engine::Shutdown()
+{
+    Graphics::Shutdown();
+    Platform::Shutdown();
+
+    DELETE(m_Engine);
 }
 
 bool Engine::IsRunning()
@@ -54,11 +62,11 @@ void Engine::Launch()
         return;
     }
 
+    Platform::GetWindow()->Show();
+
     while (m_Engine->m_Running)
     {
         Platform::GetHandle()->PollEvents();
-
-        if (!m_Engine->m_Running) break;
 
         Graphics::BeginFrame();
         {
@@ -71,10 +79,7 @@ void Engine::Launch()
         Graphics::EndFrame();
     }
 
-    Graphics::Shutdown();
-    Platform::Shutdown();
-
-    DELETE(m_Engine);
+    m_Engine->Shutdown();
 }
 
 void Engine::Quit()
@@ -85,10 +90,13 @@ void Engine::Quit()
     }
 }
 
-void Engine::Abort(String const &msg)
+void Engine::Abort(String const& msg)
 {
     Quit();
     Platform::GetWindow()->DialogCritical(msg);
+
+    m_Engine->Shutdown();
+    std::exit(-1);
 }
 
 } // namespace mini

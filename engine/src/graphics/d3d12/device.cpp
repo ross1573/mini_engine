@@ -34,7 +34,10 @@ bool Device::Initialize()
     }
 
     CreateDevice();
-    ASSERT(m_Device, "D3D12 device not created");
+    ENSURE(m_Device, "D3D12 device not created")
+    {
+        return false;
+    }
 
     if (debugFlag)
     {
@@ -71,7 +74,6 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     ASSERT(m_Device == nullptr);
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
-    HRESULT hResult = E_FAIL;
     D3D_FEATURE_LEVEL selectedLevel{};
     D3D_FEATURE_LEVEL featureLevels[] =
     {
@@ -95,22 +97,15 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
             return;
         }
 
+        DXGI_ADAPTER_DESC adapterDesc{};
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
-        for (uint idx = 0;
-             SUCCEEDED(m_Factory->EnumAdapters(idx, &adapter));
+        for (uint idx = 0; SUCCEEDED(m_Factory->EnumAdapters(idx, &adapter));
              ++idx, adapter.Reset(), device.Reset())
         {
-            hResult = D3D12CreateDevice(adapter, selectedLevel, IID_PPV_ARGS(&device));
-
-            if (FAILED(hResult))
-            {
-                continue;
-            }
-
-            DXGI_ADAPTER_DESC adapterDesc{};
-            if (FAILED(adapter->GetDesc(&adapterDesc)))
+            if (FAILED(D3D12CreateDevice(adapter, selectedLevel, IID_PPV_ARGS(&device))) ||
+                FAILED(adapter->GetDesc(&adapterDesc)))
             {
                 continue;
             }
@@ -127,7 +122,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         }
     }
 
-    if (FAILED(hResult) || m_Device == nullptr)
+    if (m_Device == nullptr)
     {
         Log::Error("failed creating D3D12 device");
         return;
@@ -161,9 +156,8 @@ void Device::EnableDebugLayer()
 {
     SharedPtr<ID3D12Debug> debugController = nullptr;
 
-    if (FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)), "failed to enable debug layer.")
     {
-        Log::Error("failed to enable debug layer.");
         return;
     }
 
@@ -173,9 +167,9 @@ void Device::EnableDebugLayer()
     {
         SharedPtr<ID3D12Debug5> debugController5 = nullptr;
 
-        if (FAILED(debugController->QueryInterface(IID_PPV_ARGS(&debugController5))))
+        ENSURE(debugController->QueryInterface(IID_PPV_ARGS(&debugController5)),
+               "failed to enable GPU validation")
         {
-            Log::Error("failed to enable GPU validation");
             return;
         }
 
@@ -210,9 +204,8 @@ void Device::SetDebugLayerInfo()
         D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
     };
 
-    if (FAILED(m_Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue))))
+    ENSURE(m_Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue)), "failed to set debug layer info.")
     {
-        Log::Error("failed to set debug layer info.");
         return;
     }
 

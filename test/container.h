@@ -2,11 +2,11 @@
 
 #include "core/define.h"
 #include "core/type.h"
+#include "core/log.h"
 #include "memory/allocator.h"
 #include "memory/deleter.h"
 #include "container/iterator/common.h"
 #include "container/string.h"
-#include "platform/log.h"
 
 #include <chrono>
 

@@ -17,6 +17,7 @@ private:
     ~Engine();
 
     bool Initialize();
+    void Shutdown();
 
 public:
     static bool IsRunning();

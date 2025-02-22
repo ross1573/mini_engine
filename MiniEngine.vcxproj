@@ -579,7 +579,7 @@
     <ClInclude Include="engine\src\ministl\static_queue.h" />
     <ClInclude Include="engine\src\ministl\static_array.h" />
     <ClInclude Include="engine\src\core\define.h" />
-    <ClInclude Include="engine\src\platform\log.h" />
+    <ClInclude Include="engine\src\core\log.h" />
     <ClInclude Include="engine\src\graphics\d3d12\descriptor.h" />
     <ClInclude Include="engine\src\graphics\d3d12\render_context.h" />
     <ClInclude Include="engine\src\graphics\d3d12\swap_chain.h" />
