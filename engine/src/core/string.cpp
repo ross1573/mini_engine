@@ -103,6 +103,7 @@ SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location con
         }
 
         dest[0] = ')';
+        ++dest;
     }
 
     *dest = '\0';

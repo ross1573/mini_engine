@@ -157,18 +157,24 @@ struct ConstExprFoo
     String str;
 
     constexpr ConstExprFoo() = default;
-    constexpr ~ConstExprFoo() = default;
-    constexpr ConstExprFoo(ConstExprFoo const&) = default;
-    constexpr ConstExprFoo(ConstExprFoo&&) = default;
     constexpr ConstExprFoo(String const& s) : str(s) {}
     constexpr ConstExprFoo(String&& s) : str(MoveArg(s)) {}
 
-    constexpr ConstExprFoo& operator=(ConstExprFoo const&) = default;
-    constexpr ConstExprFoo& operator=(ConstExprFoo&&) = default;
     constexpr bool operator==(Foo const& o) const noexcept
     {
         return str == o.str;
     }
+
+// TODO: only MSVC complains about the implicitly defined special functions
+//  waiting for answer from stackoverflow..
+//  https://stackoverflow.com/questions/79461922/expression-did-not-evaluate-to-a-constant-on-implicitly-defined-destructor
+#ifdef MSVC
+    constexpr ~ConstExprFoo() = default;
+    constexpr ConstExprFoo(ConstExprFoo const&) = default;
+    constexpr ConstExprFoo(ConstExprFoo&&) = default;
+    constexpr ConstExprFoo& operator=(ConstExprFoo const&) = default;
+    constexpr ConstExprFoo& operator=(ConstExprFoo&&) = default;
+#endif
 };
 
 struct FooAlloc

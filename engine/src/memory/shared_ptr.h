@@ -109,7 +109,7 @@ public:
     {
     }
 
-    virtual ~SharedCounter() = default;
+    constexpr virtual ~SharedCounter() = default;
 
     [[force_inline]] constexpr SizeT Count() const noexcept
     {
