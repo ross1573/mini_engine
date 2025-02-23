@@ -8,10 +8,89 @@
 namespace mini::detail
 {
 
+using MemoryOrder = std::memory_order;
+
+#ifdef MSVC
+#pragma warning(push)
+#pragma warning(disable: 4582) // silence warning for union
+#endif
+
+template <typename T>
+struct AtomicUnion
+{
+    union 
+    {
+        std::atomic<T> atomic;
+        T value;
+    };
+
+    [[force_inline]] constexpr AtomicUnion(T val) noexcept
+    {
+        if (std::is_constant_evaluated()) value = val;
+        else mini::memory::ConstructAt(&atomic, val);
+    }
+
+    [[force_inline]] constexpr ~AtomicUnion() noexcept
+    {
+        if (!std::is_constant_evaluated())
+        {
+            mini::memory::DestructAt(&atomic);
+        }
+    }
+
+    [[force_inline]] constexpr void Store(T val, MemoryOrder order) noexcept
+    {
+        if (std::is_constant_evaluated()) value = val;
+        else atomic.store(val, order);
+    }
+
+    [[force_inline]] constexpr T Load(MemoryOrder order) const noexcept
+    {
+        if (std::is_constant_evaluated()) return value;
+        else return atomic.load(order);
+    }
+
+    [[force_inline]] constexpr T FetchAdd(T val, MemoryOrder order) noexcept
+    {
+        if (std::is_constant_evaluated())
+        {
+            T tmp = value;
+            value += val;
+            return tmp;
+        }
+        else return atomic.fetch_add(val, order);
+    }
+
+    [[force_inline]] constexpr T FetchSub(T val, MemoryOrder order) noexcept
+    {
+        if (std::is_constant_evaluated())
+        {
+            T tmp = value;
+            value -= val;
+            return tmp;
+        }
+        else return atomic.fetch_sub(val, order);
+    }
+
+    [[force_inline]] constexpr void ThreadFence(MemoryOrder order) const noexcept
+    {
+        if (!std::is_constant_evaluated())
+        {
+            std::atomic_thread_fence(order);
+        }
+    }
+
+    AtomicUnion(AtomicUnion const&) = delete;
+    AtomicUnion& operator=(AtomicUnion const&) = delete;
+};
+
+#ifdef MSVC
+#pragma warning(pop)
+#endif
+
 class SharedCounter
 {
-    typedef std::atomic<int32> Counter;
-    typedef std::memory_order MemoryOrder;
+    typedef AtomicUnion<int32> Counter;
 
 private:
     Counter m_Count;
@@ -32,33 +111,33 @@ public:
 
     virtual ~SharedCounter() = default;
 
-    [[force_inline]] SizeT Count() const noexcept
+    [[force_inline]] constexpr SizeT Count() const noexcept
     {
-        return (SizeT)m_Count.load(MemoryOrder::relaxed);
+        return (SizeT)m_Count.Load(MemoryOrder::relaxed);
     }
 
-    [[force_inline]] SizeT WeakCount() const noexcept
+    [[force_inline]] constexpr SizeT WeakCount() const noexcept
     {
-        return (SizeT)m_Weak.load(MemoryOrder::relaxed);
+        return (SizeT)m_Weak.Load(MemoryOrder::relaxed);
     }
 
-    [[force_inline]] void Retain(SizeT count = 1) noexcept
+    [[force_inline]] constexpr void Retain(SizeT count = 1) noexcept
     {
-        m_Count.fetch_add((int32)count, MemoryOrder::relaxed);
-        m_Weak.fetch_add((int32)count, MemoryOrder::relaxed);
+        m_Count.FetchAdd((int32)count, MemoryOrder::relaxed);
+        m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed);
     }
 
-    [[force_inline]] void RetainWeak(SizeT count = 1) noexcept
+    [[force_inline]] constexpr void RetainWeak(SizeT count = 1) noexcept
     {
-        m_Weak.fetch_add((int32)count, MemoryOrder::relaxed);
+        m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed);
     }
 
-    void Release(SizeT count = 1) noexcept
+    constexpr void Release(SizeT count = 1) noexcept
     {
-        int32 last = m_Count.fetch_sub((int32)count, MemoryOrder::release);
+        int32 last = m_Count.FetchSub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
         {
-            std::atomic_thread_fence(MemoryOrder::acquire);
+            m_Count.ThreadFence(MemoryOrder::acquire);
             DeletePtr();
         }
         else
@@ -69,12 +148,12 @@ public:
         ReleaseWeak(count);
     }
 
-    void ReleaseWeak(SizeT count = 1) noexcept
+    constexpr void ReleaseWeak(SizeT count = 1) noexcept
     {
-        int32 last = m_Weak.fetch_sub((int32)count, MemoryOrder::release);
+        int32 last = m_Weak.FetchSub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
         {
-            std::atomic_thread_fence(MemoryOrder::acquire);
+            m_Weak.ThreadFence(MemoryOrder::acquire);
             DeleteSharedBlock();
         }
         else
@@ -127,13 +206,13 @@ public:
         return m_Ptr;
     }
 
-    void DeletePtr() noexcept override
+    constexpr void DeletePtr() noexcept override
     {
         m_Deleter(m_Ptr);
         m_Ptr = nullptr;
     }
 
-    void DeleteSharedBlock() noexcept override
+    constexpr void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<SharedBlock>(MoveArg(m_Alloc));
         memory::DestructAt(this);
@@ -175,12 +254,12 @@ public:
         return m_Value.Data();
     }
 
-    void DeletePtr() noexcept override
+    constexpr void DeletePtr() noexcept override
     {
         memory::DestructAt(m_Value.Data());
     }
 
-    void DeleteSharedBlock() noexcept override
+    constexpr void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<InplaceSharedBlock>(MoveArg(m_Alloc));
         memory::DestructAt(this);
@@ -215,19 +294,19 @@ private:
 
 public:
     constexpr SharedPtr() noexcept;
-    ~SharedPtr();
-    SharedPtr(SharedPtr const&) noexcept;
+    constexpr ~SharedPtr();
+    constexpr SharedPtr(SharedPtr const&) noexcept;
     constexpr SharedPtr(SharedPtr&&) noexcept;
-    template <PtrConvertibleToT<T> U> SharedPtr(SharedPtr<U> const&) noexcept;
+    template <PtrConvertibleToT<T> U> constexpr SharedPtr(SharedPtr<U> const&) noexcept;
     template <PtrConvertibleToT<T> U> constexpr SharedPtr(SharedPtr<U>&&) noexcept;
-    template <NonRefT U> SharedPtr(SharedPtr<U> const&, Ptr) noexcept;
+    template <NonRefT U> constexpr SharedPtr(SharedPtr<U> const&, Ptr) noexcept;
     template <NonRefT U> constexpr SharedPtr(SharedPtr<U>&&, Ptr) noexcept;
 
     template <typename DelT = DummyDeleter, typename AllocT = DummyAllocator>
     constexpr SharedPtr(NullptrT, DelT = {}, AllocT = {}) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT = DefaultDel>
     explicit constexpr SharedPtr(U*, DelT const& = DefaultDel());
-    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
+    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
     constexpr SharedPtr(U*, DelT const&, AllocT const&)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
@@ -235,11 +314,11 @@ public:
     constexpr bool IsValid() const noexcept;
 
     constexpr void Swap(SharedPtr&) noexcept;
-    void Reset() noexcept;
+    constexpr void Reset() noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-    void Reset(U*, DelT const& = DefaultDel());
-    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
-    void Reset(U*, DelT const&, AllocT const&)
+    constexpr void Reset(U*, DelT const& = DefaultDel());
+    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+    constexpr void Reset(U*, DelT const&, AllocT const&)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
     template <NonRefT U>
@@ -252,9 +331,9 @@ public:
     constexpr Ref operator*() const noexcept;
     explicit constexpr operator bool() const noexcept;
 
-    SharedPtr& operator=(SharedPtr const&);
+    constexpr SharedPtr& operator=(SharedPtr const&);
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
-    template <PtrConvertibleToT<T> U> SharedPtr& operator=(SharedPtr<U> const&);
+    template <PtrConvertibleToT<T> U> constexpr SharedPtr& operator=(SharedPtr<U> const&);
     template <PtrConvertibleToT<T> U> constexpr SharedPtr& operator=(SharedPtr<U>&&) noexcept;
 
 private:
@@ -263,7 +342,7 @@ private:
     template <typename AllocT, typename... Args>
     constexpr void AllocateInplaceBlock(AllocT const&, Args&&...);
 
-    template <NonRefT U, UnbindedAllocatorTT AllocT, typename... Args>
+    template <NonRefT U, UnbindedAllocatorT AllocT, typename... Args>
     friend constexpr SharedPtr<U> AllocateShared(AllocT const&, Args&&...) requires
         RebindableWithT<AllocT, InplaceSharedBlock<U, AllocT>>&& ConstructibleFromT<U, Args...>;
 };
@@ -276,7 +355,7 @@ template <NonRefT T>
 }
 
 template <NonRefT T>
-SharedPtr<T>::~SharedPtr()
+constexpr SharedPtr<T>::~SharedPtr()
 {
     if (m_Counter)
     {
@@ -287,7 +366,7 @@ SharedPtr<T>::~SharedPtr()
 }
 
 template <NonRefT T>
-[[force_inline]] SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
+[[force_inline]] constexpr SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
     : m_Ptr(other.m_Ptr)
     , m_Counter(other.m_Counter)
 {
@@ -308,7 +387,7 @@ template <NonRefT T>
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-[[force_inline]] SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
+[[force_inline]] constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
     : m_Ptr(static_cast<T*>(other.m_Ptr))
     , m_Counter(other.m_Counter)
 {
@@ -330,7 +409,7 @@ template <PtrConvertibleToT<T> U>
 
 template <NonRefT T>
 template <NonRefT U>
-[[force_inline]] SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Ptr ptr) noexcept
+[[force_inline]] constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Ptr ptr) noexcept
     : m_Ptr(ptr)
     , m_Counter(other.m_Counter)
 {
@@ -364,7 +443,7 @@ constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT const& del)
 }
 
 template <NonRefT T>
-template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
+template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
 constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT const& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
@@ -391,7 +470,7 @@ template <NonRefT T>
 }
 
 template <NonRefT T>
-void SharedPtr<T>::Reset() noexcept
+constexpr void SharedPtr<T>::Reset() noexcept
 {
     if (m_Counter)
     {
@@ -403,7 +482,7 @@ void SharedPtr<T>::Reset() noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-void SharedPtr<T>::Reset(U* ptr, DelT const& del)
+constexpr void SharedPtr<T>::Reset(U* ptr, DelT const& del)
 {
     if (m_Counter)
     {
@@ -414,8 +493,8 @@ void SharedPtr<T>::Reset(U* ptr, DelT const& del)
 }
 
 template <NonRefT T>
-template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
-void SharedPtr<T>::Reset(U* ptr, DelT const& del, AllocT const& alloc)
+template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+constexpr void SharedPtr<T>::Reset(U* ptr, DelT const& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
     if (m_Counter)
@@ -460,7 +539,7 @@ template <NonRefT T>
 }
 
 template <NonRefT T>
-SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& o)
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& o)
 {
     if (m_Counter)
     {
@@ -496,7 +575,7 @@ constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& o) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& o)
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& o)
 {
     if (m_Counter)
     {
@@ -559,7 +638,7 @@ constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Args&&...
     m_Counter = result.pointer;
 }
 
-template <NonRefT T, UnbindedAllocatorTT AllocT, typename... Args>
+template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
 constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args) requires
 RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>>&& ConstructibleFromT<T, Args...>
 {

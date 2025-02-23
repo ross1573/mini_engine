@@ -269,7 +269,7 @@ template <PtrConvertibleToT<T> U>
     return *this;
 }
 
-template <NonRefT T, UnbindedAllocatorTT AllocT, typename... Args>
+template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
 constexpr SharedPtr<T> AllocateShared(AllocT const&, Args&&...)
     requires DerivedFromT<T, IUnknown>
 {

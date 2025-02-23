@@ -19,14 +19,11 @@ template <typename T>
 struct IsDefaultAlloc<mini::Allocator<T>> : TrueT {};
 
 template <typename T>
-inline constexpr bool DefaultAlloc = IsDefaultAlloc<T>::value;
-
-template <typename T>
 concept UnbindedAllocatorT = CopyableT<T> &&
     requires(T alloc, SizeT s, typename T::Ptr loc)
 {
-    !RefT<typename T::Value>;
-    PtrT<typename T::Ptr>;
+    requires !RefT<typename T::Value>;
+    requires PtrT<typename T::Ptr>;
 
     { alloc.Allocate(s) } -> SameAsT<AllocResult<typename T::Value>>;
     { alloc.Increment(s, s) } -> SameAsT<AllocResult<typename T::Value>>;
@@ -34,10 +31,10 @@ concept UnbindedAllocatorT = CopyableT<T> &&
 };
 
 template <typename AllocT, typename T>
-concept AllocatorT = UnbindedAllocatorT<AllocT> && SameAsT<typename AllocT::Value, T>;
+concept AllocatorT = detail::UnbindedAllocatorT<AllocT> && SameAsT<typename AllocT::Value, T>;
 
 template <typename AllocT, typename T>
-concept NoThrowAllocatorT = (AllocatorT<AllocT, T> &&
+concept NoThrowAllocatorT = (detail::AllocatorT<AllocT, T> &&
                              NoThrowCopyableT<AllocT> &&
                              NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
                              NoThrowCallableT<decltype(&AllocT::Increment), SizeT, SizeT> &&
@@ -45,23 +42,17 @@ concept NoThrowAllocatorT = (AllocatorT<AllocT, T> &&
                              typename AllocT::Ptr, SizeT>);
 
 template <typename AllocT, typename T>
-concept AllocatorRefT = AllocatorT<RemoveRefT<AllocT>, T>;
+concept AllocatorDecayT = detail::AllocatorT<DecayT<AllocT>, T>;
 
 template <typename AllocT, typename U>
 concept AllocRebindDeclaredT = requires(AllocT alloc)
 {
-    { alloc.template Rebind<U>() } -> AllocatorRefT<U>;
+#ifndef CLANG
+    { alloc.template Rebind<U>() } -> detail::UnbindedAllocatorT;
+#else
+    alloc.template Rebind<U>(); // TODO: clang complains about recursion, while others dont
+#endif
 };
-
-template <typename AllocT, typename U>
-concept AllocRebindOverloadedT = requires(AllocT alloc)
-{
-    { RebindAllocator<U>(alloc) } -> AllocatorRefT<U>;
-};
-
-template <typename AllocT, typename U>
-concept RebindableWithT = (UnbindedAllocatorT<AllocT> &&
-                           (AllocRebindDeclaredT<AllocT, U> || AllocRebindOverloadedT<AllocT, U>));
 
 } // namespace mini::detail
 
@@ -74,18 +65,6 @@ struct AllocResult
     T* pointer;
     SizeT capacity;
 };
-
-template <typename AllocT, typename T>
-concept AllocatorT = detail::AllocatorT<AllocT, T>;
-
-template <typename AllocT, typename T>
-concept NoThrowAllocatorT = detail::NoThrowAllocatorT<AllocT, T>;
-
-template <typename AllocT>
-concept UnbindedAllocatorTT = detail::UnbindedAllocatorT<AllocT>;
-
-template <typename AllocT, typename U>
-concept RebindableWithT = detail::RebindableWithT<AllocT, U>;
 
 template <typename T>
 struct Allocator
@@ -104,7 +83,7 @@ struct Allocator
         else
         {
             ptr = static_cast<T*>(::operator new(size * sizeof(T), std::nothrow_t{}));
-            VERIFY(ptr, "allocation failed. possible out of memory");
+            VERIFY(ptr, "allocation failed. possible out-of-memory");
         }
 
         return {.pointer = ptr, .capacity = size};
@@ -130,24 +109,22 @@ struct Allocator
     }
 };
 
-template <typename U>
-[[force_inline]] constexpr decltype(auto) RebindAllocator(auto const& alloc)
-    requires detail::AllocRebindDeclaredT<decltype(alloc), U>
+template <typename U, typename T>
+[[force_inline]] constexpr decltype(auto) RebindAllocator(T const& alloc)
+    requires detail::AllocRebindDeclaredT<T, U>
 {
     return alloc.template Rebind<U>();
 }
 
-template <typename U>
-[[force_inline]] constexpr auto&& RebindAllocator(auto&& alloc)
-    requires detail::AllocatorT<RemoveRefT<decltype(alloc)>, U>
+template <typename U, typename T>
+[[force_inline]] constexpr T&& RebindAllocator(T&& alloc) requires detail::AllocatorT<T, U>
 {
-    return ForwardArg<RemoveRefT<decltype(alloc)>>(alloc);
+    return ForwardArg<T>(alloc);
 }
 
-template <typename U>
-[[force_inline]] constexpr auto RebindAllocator(auto const& alloc)
-    requires (!detail::AllocatorT<RemoveRefT<
-        decltype(alloc)>, U>&& detail::DefaultAlloc<RemoveRefT<decltype(alloc)>>)
+template <typename U, typename T>
+[[force_inline]] constexpr mini::Allocator<U> RebindAllocator(T const&)
+    requires detail::IsDefaultAlloc<T>::value
 {
     return mini::Allocator<U>{};
 }
@@ -185,7 +162,7 @@ struct DummyAllocator
 };
 
 template <typename U>
-[[force_inline]] constexpr auto RebindAllocator(mini::DummyAllocator)
+[[force_inline]] constexpr mini::Allocator<U> RebindAllocator(mini::DummyAllocator)
 {
     return mini::Allocator<U>{};
 }
@@ -194,5 +171,38 @@ template <typename U>
 {
     return true;
 }
+
+} // namespace mini
+
+namespace mini::detail
+{
+
+template <typename AllocT, typename U>
+concept AllocRebindOverloadedT = requires(AllocT alloc)
+{
+    { RebindAllocator<U>(alloc) } -> detail::AllocatorDecayT<U>;
+};
+
+template <typename AllocT, typename U>
+concept RebindableWithT = (detail::UnbindedAllocatorT<AllocT> &&
+                           (detail::AllocRebindDeclaredT<AllocT, U> ||
+                            detail::AllocRebindOverloadedT<AllocT, U>));
+
+} // namespace mini::detail
+
+namespace mini
+{
+
+template <typename AllocT, typename T>
+concept AllocatorT = detail::AllocatorT<AllocT, T>;
+
+template <typename AllocT, typename T>
+concept NoThrowAllocatorT = detail::NoThrowAllocatorT<AllocT, T>;
+
+template <typename AllocT>
+concept UnbindedAllocatorT = detail::UnbindedAllocatorT<AllocT>;
+
+template <typename AllocT, typename U>
+concept RebindableWithT = detail::RebindableWithT<AllocT, U>;
 
 } // namespace mini

@@ -8,9 +8,9 @@
 #   ifndef CLANG
 #   define CLANG
 #   endif
-#elif defined(__GNU__)
-#   ifndef GNU
-#   define GNU
+#elif defined(__GNUC__)
+#   ifndef GNUC
+#   define GNUC
 #   endif
 #endif // compiler
 
@@ -85,18 +85,18 @@
 #elif defined(CLANG)
 #   define force_inline clang::always_inline
 #   define noinline clang::noinline
-#elif defined(GNU)
+#elif defined(GNUC)
 #   define force_inline gnu::always_inline
 #   define noinline gnu::noinline
 #endif // attributess
 
 #ifndef MSVC 
-#   ifndef PLATFORM_CHAR
-#   define PLATFORM_CHAR char
+#   ifndef CHAR_T
+#   define CHAR_T char
 #   endif
 #else 
-#   ifndef PLATFORM_CHAR
-#   define PLATFORM_CHAR wchar_t
+#   ifndef CHAR_T
+#   define CHAR_T wchar_t
 #   endif
 #endif
 

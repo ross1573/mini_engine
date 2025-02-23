@@ -13,7 +13,7 @@
 
 #if defined(MSVC)
 #   define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
-#elif defined(CLANG) || defined(GNU)
+#elif defined(CLANG) || defined(GNUC)
 #   define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line)
 #endif
 
@@ -65,8 +65,8 @@ struct FalseArgs : FalseT {};
 
 #ifdef DEBUG_ASSERT
 
-PLATFORM_CHAR* ConvertAssertMsg(char const*, char const* = nullptr);
-PLATFORM_CHAR* ConvertAssertLoc(std::source_location const& = std::source_location::current());
+CHAR_T* ConvertAssertMsg(char const*, char const* = nullptr);
+CHAR_T* ConvertAssertLoc(std::source_location const& = std::source_location::current());
 
 #endif // DEBUG_ASSERT
 

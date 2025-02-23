@@ -1,11 +1,12 @@
 #pragma once
 
 #include "container/string.h"
+#include <iostream>
 
 namespace mini::detail
 {
 
-void LogMessage(char const*, bool = true);
+void LogMessage(char const* msg, bool endl = true);
 
 } // namespace mini::detail
 

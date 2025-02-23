@@ -36,14 +36,15 @@ wchar_t* ConvertAssertLoc(std::source_location const& loc)
 
 char* ConvertAssertMsg(char const* expr, char const* msg)
 {
-    char const* str[3] = {expr, msg == nullptr ? nullptr : "\nMessage: ", msg};
+    char const* str[3] = {expr, msg == nullptr ? nullptr : "', message: '", msg};
     memory::ConcatStrings(assertMsg, sizeof(assertMsg), str, 3);
     return assertMsg;
 }
 
 char* ConvertAssertLoc(std::source_location const& loc)
 {
-    memory::SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
+    SizeT len = memory::SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
+    memcpy(funcInfo + len, "\n\0", 3);
     return funcInfo;
 }
 

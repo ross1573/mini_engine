@@ -9,9 +9,9 @@ template <typename T>
 concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> &&
     requires(T i, T const j, SizeT const n)
 {
-    !RefT<typename T::Value>;
-    PtrT<typename T::Ptr>;
-    RefT<typename T::Ref>;
+    requires !RefT<typename T::Value>;
+    requires PtrT<typename T::Ptr>;
+    requires RefT<typename T::Ref>;
 
     { i.IsValid() } -> ConvertibleToT<bool>;
     { i.IsValidWith(j) } -> ConvertibleToT<bool>;

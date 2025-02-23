@@ -157,9 +157,14 @@ struct ConstExprFoo
     String str;
 
     constexpr ConstExprFoo() = default;
+    constexpr ~ConstExprFoo() = default;
+    constexpr ConstExprFoo(ConstExprFoo const&) = default;
+    constexpr ConstExprFoo(ConstExprFoo&&) = default;
     constexpr ConstExprFoo(String const& s) : str(s) {}
     constexpr ConstExprFoo(String&& s) : str(MoveArg(s)) {}
 
+    constexpr ConstExprFoo& operator=(ConstExprFoo const&) = default;
+    constexpr ConstExprFoo& operator=(ConstExprFoo&&) = default;
     constexpr bool operator==(Foo const& o) const noexcept
     {
         return str == o.str;

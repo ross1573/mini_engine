@@ -2,8 +2,20 @@
 #include "container.h"
 #include "memory/shared_ptr.h"
 
+static constexpr bool ConstexprSharedPtrTest()
+{
+    SharedPtr<ConstExprFoo> p(new ConstExprFoo("string"));
+    SharedPtr<ConstExprFoo> p2(p);
+    {
+        SharedPtr<ConstExprFoo> p3(p);
+    }
+    return p.Equals(p2) && p.OwnerEquals(p2);
+}
+
 void SharedPtrTest()
 {
+    static_assert(ConstexprSharedPtrTest());
+
     SharedPtr<Foo> p;
     SharedPtr<Foo> p2(nullptr);
     SharedPtr<Foo> p3(nullptr, mini::DefaultDeleter<Foo>{});
