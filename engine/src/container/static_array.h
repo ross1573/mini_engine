@@ -93,9 +93,9 @@ public:
     constexpr StaticArray& operator=(StaticArray&&) noexcept;
 
 private:
-    constexpr void AssertValidCapacity(SizeT) const;
-    constexpr void AssertValidIndex(SizeT) const;
-    constexpr void AssertValidIterator(ConstIterator) const;
+    constexpr void AssertValidCapacity(SizeT) const noexcept;
+    constexpr void AssertValidIndex(SizeT) const noexcept;
+    constexpr void AssertValidIterator(ConstIterator) const noexcept;
 };
 
 template <MovableT T, SizeT N>
@@ -577,19 +577,19 @@ constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& other) n
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const
+constexpr void StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
     CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const
+constexpr void StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const
+constexpr void StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
 }

@@ -22,7 +22,7 @@ template <typename T>
 inline constexpr bool DefaultAlloc = IsDefaultAlloc<T>::value;
 
 template <typename T>
-concept UnbindedAllocator = CopyableT<T> &&
+concept UnbindedAllocatorT = CopyableT<T> &&
     requires(T alloc, SizeT s, typename T::Ptr loc)
 {
     !RefT<typename T::Value>;
@@ -34,7 +34,15 @@ concept UnbindedAllocator = CopyableT<T> &&
 };
 
 template <typename AllocT, typename T>
-concept AllocatorT = UnbindedAllocator<AllocT> && SameAsT<typename AllocT::Value, T>;
+concept AllocatorT = UnbindedAllocatorT<AllocT> && SameAsT<typename AllocT::Value, T>;
+
+template <typename AllocT, typename T>
+concept NoThrowAllocatorT = (AllocatorT<AllocT, T> &&
+                             NoThrowCopyableT<AllocT> &&
+                             NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
+                             NoThrowCallableT<decltype(&AllocT::Increment), SizeT, SizeT> &&
+                             NoThrowCallableT<decltype(&AllocT::Deallocate),
+                             typename AllocT::Ptr, SizeT>);
 
 template <typename AllocT, typename T>
 concept AllocatorRefT = AllocatorT<RemoveRefT<AllocT>, T>;
@@ -52,7 +60,7 @@ concept AllocRebindOverloadedT = requires(AllocT alloc)
 };
 
 template <typename AllocT, typename U>
-concept RebindableWithT = (UnbindedAllocator<AllocT> &&
+concept RebindableWithT = (UnbindedAllocatorT<AllocT> &&
                            (AllocRebindDeclaredT<AllocT, U> || AllocRebindOverloadedT<AllocT, U>));
 
 } // namespace mini::detail
@@ -70,8 +78,11 @@ struct AllocResult
 template <typename AllocT, typename T>
 concept AllocatorT = detail::AllocatorT<AllocT, T>;
 
+template <typename AllocT, typename T>
+concept NoThrowAllocatorT = detail::NoThrowAllocatorT<AllocT, T>;
+
 template <typename AllocT>
-concept UnbindedAllocatorT = detail::UnbindedAllocator<AllocT>;
+concept UnbindedAllocatorTT = detail::UnbindedAllocatorT<AllocT>;
 
 template <typename AllocT, typename U>
 concept RebindableWithT = detail::RebindableWithT<AllocT, U>;
@@ -82,7 +93,7 @@ struct Allocator
     typedef T Value;
     typedef T* Ptr;
 
-    [[nodiscard]] constexpr AllocResult<T> Allocate(SizeT size) const
+    [[nodiscard]] constexpr AllocResult<T> Allocate(SizeT size) const noexcept
     {
         Ptr ptr = nullptr;
         if (std::is_constant_evaluated())
@@ -92,20 +103,21 @@ struct Allocator
         }
         else
         {
-            ptr = static_cast<T*>(::operator new(size * sizeof(T)));
+            ptr = static_cast<T*>(::operator new(size * sizeof(T), std::nothrow_t{}));
+            VERIFY(ptr, "allocation failed. possible out of memory");
         }
 
         return {.pointer = ptr, .capacity = size};
     }
 
-    [[nodiscard]] constexpr AllocResult<T> Increment(SizeT oldCap, SizeT size) const
+    [[nodiscard]] constexpr AllocResult<T> Increment(SizeT oldCap, SizeT size) const noexcept
     {
         SizeT newCap = oldCap < size ? oldCap + size : oldCap << 1;
-        ASSERT(newCap != 0, "invalid capacity on buffer increment");
+        CONSTEXPR_ASSERT(newCap != 0, "invalid capacity on buffer increment");
         return Allocate(newCap);
     }
 
-    constexpr void Deallocate(Ptr loc, SizeT size) const
+    constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
         if (std::is_constant_evaluated())
         {
@@ -114,7 +126,7 @@ struct Allocator
             return;
         }
 
-        ::operator delete(detail::MakeVoidPtr(loc));
+        ::operator delete(detail::MakeVoidPtr(loc), std::nothrow_t{});
     }
 };
 
@@ -152,21 +164,21 @@ struct DummyAllocator
     typedef void* Ptr;
 
     template <typename T>
-    constexpr AllocResult<void> Allocate(T&&) const
+    constexpr AllocResult<void> Allocate(T&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
         return {nullptr, 0};
     }
 
     template <typename T>
-    constexpr AllocResult<void> Increment(T&&, T&&) const
+    constexpr AllocResult<void> Increment(T&&, T&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
         return {nullptr, 0};
     }
 
     template <typename T, typename U>
-    constexpr void Deallocate(T&&, U&&)
+    constexpr void Deallocate(T&&, U&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
     }

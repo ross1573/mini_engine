@@ -62,6 +62,7 @@ public:
     }
 
     constexpr DynamicBuffer(SizeT capacity)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc{}
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -71,6 +72,7 @@ public:
     }
 
     constexpr DynamicBuffer(SizeT capacity, AllocT const& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(alloc)
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -80,6 +82,7 @@ public:
     }
 
     constexpr DynamicBuffer(SizeT capacity, AllocT&& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(MoveArg(alloc))
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -95,7 +98,7 @@ public:
     [[force_inline]] constexpr T const* Data() const noexcept { return m_Buffer; }
     [[force_inline]] constexpr SizeT Capacity() const noexcept { return m_Capacity; }
 
-    constexpr void Allocate(SizeT size)
+    constexpr void Allocate(SizeT size) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
         AllocResult<T> buffer = m_Alloc.Allocate(size);
@@ -103,7 +106,7 @@ public:
         m_Capacity = buffer.capacity;
     }
 
-    constexpr void Deallocate()
+    constexpr void Deallocate() noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         if (m_Buffer == nullptr)
         {
@@ -116,12 +119,14 @@ public:
     }
 
     [[nodiscard]] constexpr DynamicBuffer Increment(SizeT size) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Increment(m_Capacity, size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
     }
 
     [[nodiscard]] constexpr DynamicBuffer Resize(SizeT size) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Allocate(size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
@@ -134,7 +139,7 @@ public:
         mini::Swap(m_Alloc, other.m_Alloc);
     }
 
-    [[nodiscard, force_inline]] AllocT const& GetAllocator() const
+    [[nodiscard, force_inline]] AllocT const& GetAllocator() const noexcept
     {
         return m_Alloc;
     }

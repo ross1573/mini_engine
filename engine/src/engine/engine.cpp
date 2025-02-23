@@ -56,7 +56,7 @@ void Engine::Launch()
 
     ASSERT(m_Engine == nullptr, "another instance of engine is running");
     m_Engine = new Engine();
-
+    
     if (!m_Engine->Initialize())
     {
         return;
@@ -92,10 +92,15 @@ void Engine::Quit()
 
 void Engine::Abort(String const& msg)
 {
-    Quit();
     Platform::GetWindow()->DialogCritical(msg);
 
-    m_Engine->Shutdown();
+    if (m_Engine != nullptr)
+    {
+        m_Engine->m_Running = false;
+        m_Engine->Shutdown();
+    }
+
+    memory::DestructAt(&msg);
     std::exit(-1);
 }
 

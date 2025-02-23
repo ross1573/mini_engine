@@ -49,6 +49,20 @@ concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&
     { j[n] } -> SameAsT<typename T::Ref>;
 };
 
+template <typename T, typename U>
+concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
+    requires(T i, U v)
+{
+    *i = ForwardArg<typename U::Value>(*v);
+};
+
+template <typename T, typename U>
+concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
+    requires(T i, U v)
+{
+    *i = MoveArg(*v);
+};
+
 template <typename Iter, typename T>
 concept ForwardIteratableByT = (ForwardIteratorT<Iter> &&
                                 ConvertibleToT<typename Iter::Value, T>);

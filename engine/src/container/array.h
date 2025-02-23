@@ -41,7 +41,7 @@ public:
     constexpr Array(AllocT&&) noexcept;
     explicit constexpr Array(SizeT, AllocT const& = AllocT());
     template <ForwardIteratableByT<T> Iter>
-    explicit constexpr Array(Iter, Iter, AllocT const& = AllocT());
+    explicit constexpr Array(Iter, Iter, AllocT const& = AllocT()) requires CopyableT<T>;
 
     template <typename... Args> requires ConstructibleFromT<T, Args...>
     constexpr void Push(Args&&...);
@@ -101,8 +101,8 @@ public:
 
 private:
     constexpr void SwapNewBuffer(Buffer&);
-    constexpr void AssertValidIndex(SizeT) const;
-    constexpr void AssertValidIterator(ConstIterator) const;
+    constexpr void AssertValidIndex(SizeT) const noexcept;
+    constexpr void AssertValidIterator(ConstIterator) const noexcept;
 };
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -186,7 +186,7 @@ constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
-constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc)
+constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc) requires CopyableT<T>
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(alloc)
@@ -779,13 +779,13 @@ constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const
+constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const
+constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
     CONSTEXPR_ASSERT(iter.m_Version == m_Version, "invalid version");

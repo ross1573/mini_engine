@@ -30,7 +30,7 @@ public:
     {
     }
 
-    virtual ~SharedCounter() {}
+    virtual ~SharedCounter() = default;
 
     [[force_inline]] SizeT Count() const noexcept
     {
@@ -53,7 +53,7 @@ public:
         m_Weak.fetch_add((int32)count, MemoryOrder::relaxed);
     }
 
-    void Release(SizeT count = 1)
+    void Release(SizeT count = 1) noexcept
     {
         int32 last = m_Count.fetch_sub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
@@ -69,7 +69,7 @@ public:
         ReleaseWeak(count);
     }
 
-    void ReleaseWeak(SizeT count = 1)
+    void ReleaseWeak(SizeT count = 1) noexcept
     {
         int32 last = m_Weak.fetch_sub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
@@ -163,7 +163,7 @@ class InplaceSharedBlock : public detail::SharedCounter
 public:
     template <typename... Args> requires ConstructibleFromT<T, Args...>
     constexpr InplaceSharedBlock(AllocT const& alloc, Args&&... args)
-        noexcept(std::is_nothrow_constructible_v<T, Args...>)
+        noexcept(NoThrowConstructibleFromT<T, Args...>)
         : Base()
         , m_Alloc(alloc)
     {
@@ -227,7 +227,7 @@ public:
     constexpr SharedPtr(NullptrT, DelT = {}, AllocT = {}) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT = DefaultDel>
     explicit constexpr SharedPtr(U*, DelT const& = DefaultDel());
-    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
     constexpr SharedPtr(U*, DelT const&, AllocT const&)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
@@ -235,10 +235,10 @@ public:
     constexpr bool IsValid() const noexcept;
 
     constexpr void Swap(SharedPtr&) noexcept;
-    void Reset();
+    void Reset() noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
     void Reset(U*, DelT const& = DefaultDel());
-    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+    template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
     void Reset(U*, DelT const&, AllocT const&)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
@@ -263,7 +263,7 @@ private:
     template <typename AllocT, typename... Args>
     constexpr void AllocateInplaceBlock(AllocT const&, Args&&...);
 
-    template <NonRefT U, UnbindedAllocatorT AllocT, typename... Args>
+    template <NonRefT U, UnbindedAllocatorTT AllocT, typename... Args>
     friend constexpr SharedPtr<U> AllocateShared(AllocT const&, Args&&...) requires
         RebindableWithT<AllocT, InplaceSharedBlock<U, AllocT>>&& ConstructibleFromT<U, Args...>;
 };
@@ -364,7 +364,7 @@ constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT const& del)
 }
 
 template <NonRefT T>
-template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
 constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT const& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
@@ -391,7 +391,7 @@ template <NonRefT T>
 }
 
 template <NonRefT T>
-void SharedPtr<T>::Reset()
+void SharedPtr<T>::Reset() noexcept
 {
     if (m_Counter)
     {
@@ -414,7 +414,7 @@ void SharedPtr<T>::Reset(U* ptr, DelT const& del)
 }
 
 template <NonRefT T>
-template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
+template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorTT AllocT>
 void SharedPtr<T>::Reset(U* ptr, DelT const& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
@@ -559,7 +559,7 @@ constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Args&&...
     m_Counter = result.pointer;
 }
 
-template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
+template <NonRefT T, UnbindedAllocatorTT AllocT, typename... Args>
 constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args) requires
 RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>>&& ConstructibleFromT<T, Args...>
 {

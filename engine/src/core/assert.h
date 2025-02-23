@@ -12,9 +12,9 @@
 #ifdef DEBUG_ASSERT
 
 #if defined(MSVC)
-#   define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line);
+#   define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
 #elif defined(CLANG) || defined(GNU)
-#   define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line);
+#   define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line)
 #endif
 
 #define ASSERT(expr, ...) \

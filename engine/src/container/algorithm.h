@@ -34,8 +34,7 @@ constexpr bool CheckRange(T begin, T end)
 namespace mini
 {
 
-template <ForwardIteratorT T, ForwardIteratorT U>
-    requires CopyableWithT<T, U>
+template <typename T, typename U> requires IteratorCopyableFromT<T, U>
 constexpr void CopyRange(T dest, U begin, U end)
 {
     ASSERT(detail::CheckDest(dest));
@@ -43,8 +42,7 @@ constexpr void CopyRange(T dest, U begin, U end)
     memory::CopyRange(dest, begin, end);
 }
 
-template <ForwardIteratorT T, ForwardIteratorT U>
-    requires CopyableWithT<T, U>
+template <typename T, typename U> requires IteratorCopyableFromT<T, U>
 constexpr void CopyBackward(T dest, U begin, U end)
 {
     ASSERT(detail::CheckDest(dest));
@@ -52,8 +50,7 @@ constexpr void CopyBackward(T dest, U begin, U end)
     memory::CopyBackward(dest, begin, end);
 }
 
-template <ForwardIteratorT T, ForwardIteratorT U>
-    requires MovableWithT<T, U>
+template <typename T, typename U> requires IteratorMovableFromT<T, U>
 constexpr void MoveRange(T dest, U begin, U end)
 {
     ASSERT(detail::CheckDest(dest));
@@ -61,8 +58,7 @@ constexpr void MoveRange(T dest, U begin, U end)
     memory::MoveRange(dest, begin, end);
 }
 
-template <ForwardIteratorT T, ForwardIteratorT U>
-    requires MovableWithT<T, U>
+template <typename T, typename U> requires IteratorMovableFromT<T, U>
 constexpr void MoveBackward(T dest, U begin, U end)
 {
     ASSERT(detail::CheckDest(dest));

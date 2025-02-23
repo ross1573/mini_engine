@@ -5,16 +5,12 @@
 #include "graphics/d3d12/descriptor.h"
 #include "platform/windows/utility.h"
 
-namespace mini::graphics
-{
-class SwapChain;
-class RenderContext;
-}
+namespace mini::graphics { class SwapChain; }
+namespace mini::graphics { class RenderContext; }
+namespace mini::d3d12 { struct SwapChainBuffer; }
 
 namespace mini::d3d12
 {
-
-struct SwapChainBuffer;
 
 class Device : public graphics::Device
 {

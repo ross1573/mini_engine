@@ -40,6 +40,12 @@ concept ValueT = (NonPtrT<T> &&
                   NonRefT<T> &&
                   !std::is_array_v<T>);
 
+template <typename T>
+concept TrivialT = (std::is_default_constructible_v<T> &&
+                    std::is_trivially_copyable_v<T> &&
+                    std::is_trivially_copy_assignable_v<T> &&
+                    std::is_trivially_destructible_v<T>);
+
 template <typename Base, typename Derived>
 concept BaseOfT = std::is_base_of_v<Base, Derived>;
 
@@ -57,26 +63,49 @@ concept PtrConvertibleToT = (NonRefT<From> &&
                              NonRefT<To> &&
                              ConvertibleToT<From*, To*>);
 
+template <typename T, typename... Args>
+concept ConstructibleFromT = std::constructible_from<T, Args...>;
+
+template <typename T, typename... Args>
+concept NoThrowConstructibleFromT = std::is_nothrow_constructible_v<T, Args...>;
+
 template <typename T>
-concept CopyableT = std::copyable<T>;
+concept MoveConstructibleT = std::move_constructible<T>;
+
+template <typename T>
+concept CopyConstructibleT = std::copy_constructible<T>;
 
 template <typename T, typename U>
-concept CopyableWithT = std::indirectly_copyable<U, T>;
+concept AssignableFromT = std::assignable_from<T, U>;
+
+template <typename T, typename U>
+concept NoThrowAssignableFromT = (AssignableFromT<T, U> &&
+                                  std::is_nothrow_assignable_v<T, U>);
+
+template <typename T>
+concept DestructibleT = std::destructible<T>;
+
+template <typename T>
+concept CopyableT = std::copyable<T>;
 
 template <typename T>
 concept MovableT = std::movable<T>;
 
-template <typename T, typename U>
-concept MovableWithT = std::indirectly_movable<U, T>;
-
-template <typename T, typename... Args>
-concept ConstructibleFromT = std::constructible_from<T, Args...>;
+template <typename T>
+concept NoThrowCopyableT = (CopyableT<T> &&
+                            std::is_nothrow_copy_constructible_v<T> &&
+                            std::is_nothrow_copy_assignable_v<T>);
 
 template <typename T>
-concept TrivialT = (std::is_default_constructible_v<T> &&
-                    std::is_trivially_copyable_v<T> &&
-                    std::is_trivially_copy_assignable_v<T> &&
-                    std::is_trivially_destructible_v<T>);
+concept NoThrowMovableT = (MovableT<T> &&
+                           std::is_nothrow_move_constructible_v<T> &&
+                           std::is_nothrow_move_assignable_v<T>);
+
+template <typename T, typename... Args>
+concept CallableT = std::is_invocable_v<T, Args...>;
+
+template <typename T, typename... Args>
+concept NoThrowCallableT = std::is_nothrow_invocable_v<T, Args...>;
 
 template <typename T>
 concept EqualityComparableT = std::equality_comparable<T>;
