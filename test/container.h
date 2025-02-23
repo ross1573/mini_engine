@@ -164,17 +164,6 @@ struct ConstExprFoo
     {
         return str == o.str;
     }
-
-// TODO: only MSVC complains about the implicitly defined special functions
-//  waiting for answer from stackoverflow..
-//  https://stackoverflow.com/questions/79461922/expression-did-not-evaluate-to-a-constant-on-implicitly-defined-destructor
-#ifdef MSVC
-    constexpr ~ConstExprFoo() = default;
-    constexpr ConstExprFoo(ConstExprFoo const&) = default;
-    constexpr ConstExprFoo(ConstExprFoo&&) = default;
-    constexpr ConstExprFoo& operator=(ConstExprFoo const&) = default;
-    constexpr ConstExprFoo& operator=(ConstExprFoo&&) = default;
-#endif
 };
 
 struct FooAlloc

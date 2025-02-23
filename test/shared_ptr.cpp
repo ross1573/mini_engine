@@ -4,6 +4,10 @@
 
 static constexpr bool ConstexprSharedPtrTest()
 {
+    // TODO: MSVC bug
+    //  destructor need to be "generated" before constant evaluation
+    ConstExprFoo("string");
+
     SharedPtr<ConstExprFoo> p(new ConstExprFoo("string"));
     SharedPtr<ConstExprFoo> p2(p);
     {
