@@ -4,13 +4,13 @@
 namespace mini::d3d12
 {
 
-DescriptorHeap::DescriptorHeap(ID3D12DescriptorHeap* heap, uint32 incrementSize)
-    : m_Heap(heap)
+DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 incrementSize)
+    : m_Heap(MoveArg(heap))
     , m_CpuHeapStart{.ptr = 0}
     , m_IncrementSize(incrementSize)
     , m_CurrentIndex(0)
 {
-    ASSERT(heap, "invalid heap with nullptr");
+    ASSERT(m_Heap, "invalid heap with nullptr");
     ASSERT(m_IncrementSize > 0, "invalid heap incremetal size");
 
     m_CpuHeapStart = m_Heap->GetCPUDescriptorHandleForHeapStart();

@@ -27,9 +27,9 @@ bool RenderContext::Initialize()
     ID3D12Device* device = Graphics::GetDevice<d3d12::Device>()->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_CommandQueue = new CommandQueue(device, graphics::CommandType::Direct);
+    m_CommandQueue = new CommandQueue(graphics::CommandType::Direct);
 
-    VERIFY(m_CommandQueue->Initialize());
+    VERIFY(m_CommandQueue->Initialize(device));
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));
     VERIFY(device->CreateCommandList(0, type, m_CommandAllocator,
                                      nullptr, IID_PPV_ARGS(&m_CommandList)));
@@ -47,7 +47,7 @@ void RenderContext::BeginRender()
     VERIFY(m_CommandList->Reset(m_CommandAllocator, nullptr), "failed to reset command list");
 
     D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-    transition.pResource = m_CurrentBuffer->resource.Get();
+    transition.pResource = m_CurrentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -65,7 +65,7 @@ void RenderContext::BeginRender()
 void RenderContext::EndRender()
 {
     D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-    transition.pResource = m_CurrentBuffer->resource.Get();
+    transition.pResource = m_CurrentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

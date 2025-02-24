@@ -48,13 +48,6 @@ void Graphics::Shutdown()
     DELETE(m_Device);
 
     m_CurrentAPI = API::Null;
-
-#ifdef DEBUG
-    if (DebugFunc != nullptr)
-    {
-        DebugFunc();
-    }
-#endif
 }
 
 void Graphics::BeginFrame()

@@ -203,7 +203,8 @@ constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc) re
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
+template <typename... Args>
+    requires ConstructibleFromT<T, Args...>
 constexpr void Array<T, AllocT>::Push(Args&&... args)
 {
     SizeT capacity = m_Buffer.Capacity();
@@ -227,14 +228,16 @@ constexpr void Array<T, AllocT>::Push(Args&&... args)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
+template <typename... Args>
+    requires ConstructibleFromT<T, Args...>
 constexpr void Array<T, AllocT>::Insert(SizeT index, Args&&... args)
 {
     Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
+template <typename... Args>
+    requires ConstructibleFromT<T, Args...>
 constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
 {
     OffsetT locDiff = iter - Begin();
@@ -504,7 +507,8 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
+template <typename... Args> 
+    requires ConstructibleFromT<T, Args...>
 constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
 {
     if (m_Size == size) [[unlikely]]

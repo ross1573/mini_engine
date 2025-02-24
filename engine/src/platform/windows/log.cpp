@@ -14,10 +14,10 @@ void LogMessage(char const* msg, bool endLine)
     }
 }
 
-bool EnsureHelper(char const* expr, ID3DBlob* error, std::source_location const& loc)
+void EnsureHelper(char const* expr, ID3DBlob* error, std::source_location const& loc)
 {
     wchar_t* buffer = reinterpret_cast<wchar_t*>(error->GetBufferPointer());
-    return EnsureHelper(expr, windows::StringConverter<wchar_t, char>(buffer).Data(), loc);
+    EnsureHelper(expr, windows::StringConverter<wchar_t, char>(buffer).Data(), loc);
 }
 
 } // namespace mini::detail

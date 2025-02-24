@@ -22,11 +22,9 @@ bool Device::Initialize()
 {
     ASSERT(m_Factory == nullptr, "DXGIFactory not released");
 
-    HRESULT hResult;
     uint32 debugFlag = options::debugLayer ? DXGI_CREATE_FACTORY_DEBUG : 0;
 
-    hResult = CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_Factory));
-    ASSERT(hResult, "failed to create DXGI factory");
+    VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_Factory)));
 
     if (debugFlag)
     {
@@ -64,7 +62,7 @@ graphics::RenderContext* Device::CreateRenderContext()
 void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
 {
     buffer.descriptor = m_RTVAllocator.Allocate();
-    m_Device->CreateRenderTargetView(buffer.resource.Get(),
+    m_Device->CreateRenderTargetView(buffer.resource,
                                      buffer.rtvDesc,
                                      buffer.descriptor.offset);
 }
@@ -154,45 +152,40 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 
 void Device::EnableDebugLayer()
 {
-    SharedPtr<ID3D12Debug> debugController = nullptr;
+#ifdef DEBUG
+    std::atexit([]() noexcept
+    {
+        SharedPtr<IDXGIDebug1> debug;
+        ENSURE(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))
+        {
+            debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+        }
+    });
+#endif
 
-    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)), "failed to enable debug layer.")
+    SharedPtr<ID3D12Debug> debugCtrl = nullptr;
+    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugCtrl)), "failed to enable debug layer.")
     {
         return;
     }
 
-    debugController->EnableDebugLayer();
+    debugCtrl->EnableDebugLayer();
 
     if (mini::options::gpuValidation)
     {
-        SharedPtr<ID3D12Debug5> debugController5 = nullptr;
-
-        ENSURE(debugController->QueryInterface(IID_PPV_ARGS(&debugController5)),
-               "failed to enable GPU validation")
+        SharedPtr<ID3D12Debug5> debugCtrl5 = DynamicCast<ID3D12Debug5>(debugCtrl);
+        ENSURE(debugCtrl5, "failed to enable GPU validation")
         {
             return;
         }
 
-        debugController5->SetEnableGPUBasedValidation(TRUE);
-        debugController5->SetEnableAutoName(TRUE);
+        debugCtrl5->SetEnableGPUBasedValidation(TRUE);
+        debugCtrl5->SetEnableAutoName(TRUE);
     }
-
-#ifdef DEBUG
-    Graphics::DebugFunc = []()
-    {
-        SharedPtr<IDXGIDebug1> debug;
-        if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))))
-        {
-            debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-        }
-    };
-#endif
 }
 
 void Device::SetDebugLayerInfo()
 {
-    SharedPtr<ID3D12InfoQueue> pInfoQueue = nullptr;
-
     D3D12_INFO_QUEUE_FILTER filter = {};
     D3D12_MESSAGE_ID hide[] =
     {
@@ -204,17 +197,18 @@ void Device::SetDebugLayerInfo()
         D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
     };
 
-    ENSURE(m_Device->QueryInterface(IID_PPV_ARGS(&pInfoQueue)), "failed to set debug layer info.")
+    SharedPtr<ID3D12InfoQueue> infoQueue = DynamicCast<ID3D12InfoQueue>(m_Device);
+    ENSURE(infoQueue, "failed to set debug layer info.")
     {
         return;
     }
 
-    pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-    pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+    infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+    infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 
     filter.DenyList.NumIDs = sizeof(hide) / sizeof(D3D12_MESSAGE_ID);
     filter.DenyList.pIDList = hide;
-    pInfoQueue->AddStorageFilterEntries(&filter);
+    infoQueue->AddStorageFilterEntries(&filter);
 }
 
 } // namespace mini::d3d12

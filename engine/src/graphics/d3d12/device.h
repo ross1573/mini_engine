@@ -34,9 +34,9 @@ public:
     void CreateSwapChainBuffer(SwapChainBuffer&);
 
     graphics::API GetAPI() const final { return graphics::API::D3D12; }
-    IDXGIFactory4* GetDXGIFactory() const { return m_Factory.Get(); }
-    IDXGIAdapter* GetDXGIAdapter() const { return m_Adapter.Get(); }
-    ID3D12Device* GetD3D12Device() const { return m_Device.Get(); }
+    IDXGIFactory4* GetDXGIFactory() const { return m_Factory; }
+    IDXGIAdapter* GetDXGIAdapter() const { return m_Adapter; }
+    ID3D12Device* GetD3D12Device() const { return m_Device; }
 
 private:
     void CreateDevice(D3D_FEATURE_LEVEL = D3D_FEATURE_LEVEL_11_0);

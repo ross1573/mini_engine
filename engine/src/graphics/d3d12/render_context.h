@@ -36,7 +36,7 @@ public:
     void Execute() final;
 
     CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
-    ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList.Get(); }
+    ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
 };
 
 } // namespace mini::d3d12

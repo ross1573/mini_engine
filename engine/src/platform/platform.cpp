@@ -23,7 +23,7 @@ bool Platform::Initialize()
     if (!m_Window->Initialize())
     {
         Log::Error("Failed to initialize platform window");
-        return false;;
+        return false;
     }
 
     return true;

@@ -52,10 +52,8 @@ char* ConvertAssertLoc(std::source_location const& loc)
 
 #endif // DEBUG_ASSERT
 
-bool EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
+void EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
 {
-    BUILTIN_ASSERT(ConvertAssertMsg(expr, msg), ConvertAssertLoc(loc), loc.line());
-
     char locBuffer[256] = {0, };
     memory::SourceLocationToString(locBuffer, sizeof(locBuffer), loc);
 
@@ -65,7 +63,7 @@ bool EnsureHelper(char const* expr, char const* msg, std::source_location const&
                  "  Function: {2}\n\n",
                  expr, (msg == nullptr ? "" : msg), locBuffer));
 
-    return true;
+    BUILTIN_ASSERT(ConvertAssertMsg(expr, msg), ConvertAssertLoc(loc), loc.line());
 }
 
 } // namespace mini::detail

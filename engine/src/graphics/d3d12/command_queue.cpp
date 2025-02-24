@@ -5,9 +5,8 @@
 namespace mini::d3d12
 {
 
-CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType type)
-    : m_Device(device)
-    , m_CommandQueue(nullptr)
+CommandQueue::CommandQueue(graphics::CommandType type)
+    : m_CommandQueue(nullptr)
     , m_QueueType(type)
     , m_QueueDesc{}
     , m_Fence(nullptr)
@@ -15,7 +14,6 @@ CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType type)
     , m_FenceValue(0)
     , m_LastCompeletedFence(0)
 {
-    ASSERT(m_Device, "D3D12 device not initialized");
     ASSERT(m_QueueType != graphics::CommandType::None, "invalid command queue type");
 }
 
@@ -30,8 +28,10 @@ CommandQueue::~CommandQueue()
     }
 }
 
-bool CommandQueue::Initialize()
+bool CommandQueue::Initialize(ID3D12Device* device)
 {
+    ASSERT(device, "cannot initialize command queue with null device");
+
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
     switch (m_QueueType)
     {
@@ -44,8 +44,8 @@ bool CommandQueue::Initialize()
     m_QueueDesc.Type = type;
     m_QueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-    VERIFY(m_Device->CreateCommandQueue(&m_QueueDesc, IID_PPV_ARGS(&m_CommandQueue)));
-    VERIFY(m_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence)));
+    VERIFY(device->CreateCommandQueue(&m_QueueDesc, IID_PPV_ARGS(&m_CommandQueue)));
+    VERIFY(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence)));
 
     m_FenceValue = 0;
     m_LastCompeletedFence = 0;

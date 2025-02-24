@@ -10,7 +10,6 @@ namespace mini::d3d12
 class CommandQueue
 {
 private:
-    SharedPtr<ID3D12Device> m_Device;
     SharedPtr<ID3D12CommandQueue> m_CommandQueue;
 
     graphics::CommandType m_QueueType;
@@ -22,10 +21,10 @@ private:
     uint64 m_LastCompeletedFence;
 
 public:
-    CommandQueue(ID3D12Device*, graphics::CommandType);
+    CommandQueue(graphics::CommandType);
     ~CommandQueue();
 
-    bool Initialize();
+    bool Initialize(ID3D12Device* device);
 
     void Wait(CommandQueue*);
     void WaitForFence(uint64);
@@ -34,7 +33,7 @@ public:
     uint64 IncrementFence();
     uint64 ExecuteCommandList(ID3D12CommandList*);
 
-    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue.Get(); }
+    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue; }
     HANDLE GetFenceHandle() const { return m_FenceHandle; }
     uint64 GetCurrentFence() const { return m_FenceValue; }
 };

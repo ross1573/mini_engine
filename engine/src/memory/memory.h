@@ -34,7 +34,8 @@ template <typename T>
     }
 }
 
-template <typename T, typename... Args> requires (!std::is_array_v<T>)
+template <typename T, typename... Args>
+    requires (!std::is_array_v<T>)
 constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     if (std::is_constant_evaluated())
@@ -47,7 +48,8 @@ constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructible
     ::new (detail::MakeVoidPtr(ptr)) T(ForwardArg<Args>(args)...);
 }
 
-template <typename T> requires (!std::is_array_v<T>)
+template <typename T>
+    requires (!std::is_array_v<T>)
 constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     if (std::is_constant_evaluated())

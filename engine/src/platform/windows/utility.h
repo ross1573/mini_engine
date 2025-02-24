@@ -7,7 +7,7 @@
 namespace mini::detail
 {
 
-bool EnsureHelper(char const* expr, ID3DBlob* error, std::source_location const& loc);
+void EnsureHelper(char const*, ID3DBlob*, std::source_location const&);
 
 constexpr bool TestExpr(HINSTANCE instance) noexcept
 {

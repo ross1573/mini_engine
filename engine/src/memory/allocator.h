@@ -141,21 +141,19 @@ struct DummyAllocator
     typedef void* Ptr;
 
     template <typename T>
-    constexpr AllocResult<void> Allocate(T&&) const noexcept
+    AllocResult<void> Allocate(T&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
-        return {nullptr, 0};
     }
 
     template <typename T>
-    constexpr AllocResult<void> Increment(T&&, T&&) const noexcept
+    AllocResult<void> Increment(T&&, T&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
-        return {nullptr, 0};
     }
 
     template <typename T, typename U>
-    constexpr void Deallocate(T&&, U&&) const noexcept
+    void Deallocate(T&&, U&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
     }

@@ -27,7 +27,7 @@ private:
     SizeT m_CurrentIndex;
 
 public:
-    DescriptorHeap(ID3D12DescriptorHeap*, uint32);
+    DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&&, uint32);
 
     bool Allocate(CPUOffsetT&);
     void Deallocate(CPUOffsetT);

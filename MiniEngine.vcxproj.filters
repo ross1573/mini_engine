@@ -236,6 +236,9 @@
     <ClInclude Include="engine\src\core\string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\src\memory\unique_ptr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

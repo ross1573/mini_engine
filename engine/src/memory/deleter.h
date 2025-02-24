@@ -6,7 +6,7 @@ namespace mini
 {
 
 template <typename T, typename Value>
-concept DeleterT = CopyableT<T> &&
+concept DeleterT = NoThrowCopyableT<T> &&
     requires(T del, Value * ptr)
 {
     del(ptr);

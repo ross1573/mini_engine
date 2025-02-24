@@ -38,9 +38,12 @@
         std::unreachable(); \
     }
 
-#define ENSURE(expr, ...) \
-    if (!mini::detail::TestExpr(expr) && \
-        mini::detail::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__)) [[unlikely]]
+#define ENSURE_INNER(expr, var, ...) \
+    auto var = mini::detail::TestExpr(expr); \
+    if (!var) [[unlikely]] mini::detail::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__); \
+    if (!var) [[unlikely]]
+
+#define ENSURE(expr, ...) ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__), __VA_ARGS__)
 
 #else // DEBUG_ASSERT
 
@@ -51,11 +54,18 @@
 #define VERIFY(expr, ...) \
     if (!mini::detail::TestExpr(expr)) [[unlikely]] mini::Engine::Abort(__VA_ARGS__)
 
-#define ENSURE(expr, ...) \
-    if (!mini::detail::TestExpr(expr) && \
-        mini::detail::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__)) [[unlikely]]
+#define ENSURE_INNER(expr, var, ...) \
+    auto var = mini::detail::TestExpr(expr); \
+    if (!var) [[unlikely]] mini::detail::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__); \
+    if (!var) [[unlikely]]
+
+#define ENSURE(expr, ...) ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__), __VA_ARGS__)
 
 #endif // DEBUG_ASSERT
+
+#define NEVER_CALLED(msg, ...) \
+    static_assert(detail::FalseArgs<__VA_ARGS__>::value, msg); \
+    std::unreachable()
 
 namespace mini::detail
 {
@@ -65,13 +75,15 @@ struct FalseArgs : FalseT {};
 
 #ifdef DEBUG_ASSERT
 
-CHAR_T* ConvertAssertMsg(char const*, char const* = nullptr);
-CHAR_T* ConvertAssertLoc(std::source_location const& = std::source_location::current());
+[[noinline]] CHAR_T* ConvertAssertMsg(char const*, char const* = nullptr);
+[[noinline]] CHAR_T* ConvertAssertLoc(std::source_location const& =
+                                      std::source_location::current());
 
 #endif // DEBUG_ASSERT
 
-bool EnsureHelper(char const*, char const* = nullptr,
-                  std::source_location const& = std::source_location::current());
+[[noinline]] void EnsureHelper(char const*, char const* = nullptr,
+                               std::source_location const& =
+                               std::source_location::current());
 
 [[force_inline]] constexpr bool TestExpr(bool arg) noexcept
 {

@@ -69,11 +69,6 @@ public:
     template <typename T = Device> static T* GetDevice() noexcept;
     template <typename T = SwapChain> static T* GetSwapChain() noexcept;
     template <typename T = RenderContext> static T* GetRenderContext() noexcept;
-
-#ifdef DEBUG
-    typedef void (*DebugFuncT)();
-    static inline DebugFuncT DebugFunc = nullptr;
-#endif
 };
 
 [[force_inline]] bool Graphics::IsDeviceCurrent() noexcept
