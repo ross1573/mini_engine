@@ -1,9 +1,12 @@
 #pragma once
 
 #include "core/utility.h"
-#include "math/vector2_int.h"
 
-namespace mini { class Graphics; }
+namespace mini 
+{ 
+struct Vector2Int;
+class Graphics; 
+}
 
 namespace mini::graphics
 {
@@ -28,7 +31,7 @@ public:
     virtual void SetVSync(uint8) = 0;
     virtual void SetFullScreen(bool) = 0;
 
-    virtual Vector2Int GetBackBufferSize() const = 0;
+    //virtual Vector2Int GetBackBufferSize() const = 0;
     virtual uint8 GetBackBufferCount() const = 0;
     virtual uint8 GetVSync() const = 0;
     virtual bool GetFullscreen() const = 0;

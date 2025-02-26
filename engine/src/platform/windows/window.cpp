@@ -4,12 +4,14 @@
 #include "platform/windows/window.h"
 #include "platform/windows/utility.h"
 
+import mini.math;
+
 namespace mini::windows
 {
 
 Window::Window()
     : m_WindowHandle(nullptr)
-    , m_Rect{}
+    //, m_Rect{}
     , m_IsShowing(false)
 {
 }
@@ -18,7 +20,7 @@ bool Window::Initialize()
 {
     auto className = StringConverter<char, wchar_t>(mini::options::name);
     auto titleName = StringConverter<char, wchar_t>(mini::options::title);
-    m_Rect = mini::options::windowRect;
+    //m_Rect = mini::options::windowSize;
 
     HINSTANCE instance = Platform::GetHandle<Handle>()->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
@@ -33,8 +35,10 @@ bool Window::Initialize()
                                      className.Data(),
                                      titleName.Data(),
                                      style,
-                                     m_Rect.x, m_Rect.y,
-                                     m_Rect.width, m_Rect.height,
+                                     300, 300,
+                                     1280, 720,
+                                    /*m_Rect.x, m_Rect.y,
+                                    m_Rect.width, m_Rect.height,*/
                                      nullptr,
                                      nullptr,
                                      instance,
@@ -51,7 +55,7 @@ void Window::DialogCritical(String const& msg)
 {
     wchar_t buf[256]; // make sure there's no more allocation
     SizeT len = mini::memory::ConvertLength(msg.data(), (SizeT)msg.size());
-    mini::memory::Convert(msg.data(),(SizeT)msg.size(), buf, len);
+    mini::memory::Convert(msg.data(), (SizeT)msg.size(), buf, len);
     buf[255] = '\0';
 
     MessageBoxW(m_WindowHandle, buf, nullptr, 0);
@@ -59,8 +63,10 @@ void Window::DialogCritical(String const& msg)
 
 void Window::Resize(RectInt const& rect)
 {
-    m_Rect = rect;
-    SetWindowPos(m_WindowHandle, nullptr, m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height, 0);
+    //m_Rect = rect;
+    //SetWindowPos(m_WindowHandle, nullptr, m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height, 0);
+
+    SetWindowPos(m_WindowHandle, nullptr, rect.x, rect.y, rect.width, rect.height, 0);
 }
 
 void Window::Minimize()

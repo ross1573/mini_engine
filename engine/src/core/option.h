@@ -1,6 +1,5 @@
 #pragma once
 
-#include "math/rect_int.h"
 #include "container/string.h"
 #include "graphics/graphics.h"
 
@@ -10,7 +9,12 @@ namespace mini::options // should be saved into a file
 inline constexpr char const* name = "Engine";
 inline constexpr char const* title = "Engine Window";
 
-inline constexpr RectInt windowRect = RectInt(300, 300, 1280, 720);
+//inline constexpr RectInt windowRect = RectInt(300, 300, 1280, 720);
+inline constexpr uint32 x = 300;
+inline constexpr uint32 y = 300;
+inline constexpr uint32 width = 1280;
+inline constexpr uint32 height = 720; 
+
 inline constexpr bool fullscreen = false;
 inline constexpr bool resizableWindow = true;
 inline constexpr uint8 vsync = 0;

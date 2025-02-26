@@ -43,9 +43,9 @@ bool SwapChain::Initialize()
     auto renderContext = Graphics::GetRenderContext<d3d12::RenderContext>();
     auto commandQueue = renderContext->GetCommandQueue();
 
-    RectInt size = window->GetSize();
-    m_Width = static_cast<uint32>(size.width);
-    m_Height = static_cast<uint32>(size.height);
+    //RectInt size = window->GetSize();
+    m_Width = static_cast<uint32>(1280);
+    m_Height = static_cast<uint32>(720);
     ASSERT((m_Width * m_Height) > 0, "invalid width and height");
 
     m_RTVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

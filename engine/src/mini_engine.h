@@ -50,17 +50,6 @@
 #include "container/static_queue.h"
 #include "container/string.h"
 
-#include "math/common.h"
-#include "math/vector2.h"
-#include "math/vector3.h"
-#include "math/vector4.h"
-#include "math/vector2_int.h"
-#include "math/vector3_int.h"
-#include "math/rect.h"
-#include "math/rect_int.h"
-#include "math/vertex.h"
-#include "math/color.h"
-
 #include "platform/platform.h"
 #include "platform/handle.h"
 #include "platform/window.h"

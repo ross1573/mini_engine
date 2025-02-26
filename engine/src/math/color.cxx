@@ -1,8 +1,14 @@
-#pragma once
+module;
 
-#include "math/common.h"
+#include "mini_engine.h"
+#include "core/define.h"
+#include "core/type.h"
 
-namespace mini
+export module mini.math:color;
+
+export import :common;
+
+export namespace mini
 {
 
 struct Color

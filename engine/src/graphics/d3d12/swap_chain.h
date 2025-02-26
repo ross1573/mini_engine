@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/utility.h"
-#include "math/vector2_int.h"
 #include "container/static_array.h"
 #include "graphics/swap_chain.h"
 #include "graphics/d3d12/descriptor.h"
@@ -49,7 +48,7 @@ public:
     void SetFullScreen(bool) final;
 
     SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_Buffers[m_Index]; }
-    Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
+    //Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
     uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
     uint8 GetVSync() const final { return m_VSync; }
     bool GetFullscreen() const final { return !m_FullscreenDesc.Windowed; }

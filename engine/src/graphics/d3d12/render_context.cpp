@@ -4,6 +4,8 @@
 #include "graphics/d3d12/swap_chain.h"
 #include "graphics/d3d12/command_queue.h"
 
+import mini.math;
+
 namespace mini::d3d12
 {
 

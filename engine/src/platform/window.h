@@ -1,7 +1,8 @@
 #pragma once
 
-#include "math/rect_int.h"
 #include "container/string.h"
+
+namespace mini { struct RectInt; }
 
 namespace mini::platform
 {
@@ -26,7 +27,7 @@ public:
     virtual void Show() = 0;
     virtual void Hide() = 0;
 
-    virtual RectInt GetSize() const = 0;
+    //virtual RectInt GetSize() const = 0;
 };
 
 } // namespace mini::platform

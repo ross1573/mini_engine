@@ -1,11 +1,17 @@
-#pragma once
+module;
 
-#include "math/common.h"
-#include "math/vector2.h"
-#include "math/vector3.h"
-#include "math/rect_int.h"
+#include "mini_engine.h"
+#include "core/define.h"
+#include "core/type.h"
 
-namespace mini
+export module mini.math:rect;
+
+import :common;
+import :rect_int;
+import :vector2;
+import :vector3;
+
+export namespace mini
 {
 
 struct Rect

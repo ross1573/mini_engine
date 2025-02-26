@@ -1,8 +1,12 @@
 #pragma once
 
-#include "math/rect.h"
-#include "math/rect_int.h"
 #include "graphics/graphics.h"
+
+namespace mini
+{
+struct Rect;
+struct RectInt;
+}
 
 namespace mini::graphics
 {

@@ -5,6 +5,8 @@
 #include <vector>
 #include <numeric>
 
+import mini;
+
 [[maybe_unused]] static constexpr void ArrayConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(Array<int>::Iterator);

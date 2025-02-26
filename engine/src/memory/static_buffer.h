@@ -1,7 +1,5 @@
 #pragma once
 
-#include "math/common.h"
-
 namespace mini::detail
 {
 

@@ -4,6 +4,8 @@
 #include <queue>
 #include <numeric>
 
+import mini;
+
 [[maybe_unused]] static void QueueConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<int, 1>::Iterator);

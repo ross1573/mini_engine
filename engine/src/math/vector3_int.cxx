@@ -1,11 +1,17 @@
-#pragma once
+module;
 
-#include "common.h"
-#include "vector2.h"
-#include "vector3.h"
-#include "vector2_int.h"
+#include "mini_engine.h"
+#include "core/define.h"
+#include "core/type.h"
 
-namespace mini
+export module mini.math:vector3_int;
+
+import :common;
+import :vector2;
+import :vector2_int;
+import :vector3;
+
+export namespace mini
 {
 
 struct Vector3Int
