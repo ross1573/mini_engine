@@ -56,17 +56,17 @@ inline Color const Color::red = Color(1.f, 0.f, 0.f, 1.f);
 inline Color const Color::green = Color(0.f, 1.f, 0.f, 1.f);
 inline Color const Color::blue = Color(0.f, 0.f, 1.f, 1.f);
 
-constexpr Color::Color() noexcept
+inline constexpr Color::Color() noexcept
     : r(0.f), g(0.f), b(0.f), a(0.f)
 {
 }
 
-constexpr Color::Color(float32 inR, float32 inG, float32 inB, float32 inA) noexcept
+inline constexpr Color::Color(float32 inR, float32 inG, float32 inB, float32 inA) noexcept
     : r(inR), g(inG), b(inB), a(inA)
 {
 }
 
-constexpr Color::Color(Float32ConvertibleT auto const val) noexcept
+inline constexpr Color::Color(Float32ConvertibleT auto const val) noexcept
     : r(static_cast<float32>(val))
     , g(static_cast<float32>(val))
     , b(static_cast<float32>(val))
@@ -74,7 +74,7 @@ constexpr Color::Color(Float32ConvertibleT auto const val) noexcept
 {
 }
 
-constexpr Color& Color::operator+=(Color const& c) noexcept
+inline constexpr Color& Color::operator+=(Color const& c) noexcept
 {
     r += c.r;
     g += c.g;
@@ -83,7 +83,7 @@ constexpr Color& Color::operator+=(Color const& c) noexcept
     return *this;
 }
 
-constexpr Color& Color::operator-=(Color const& c) noexcept
+inline constexpr Color& Color::operator-=(Color const& c) noexcept
 {
     r -= c.r;
     g -= c.g;
@@ -92,7 +92,7 @@ constexpr Color& Color::operator-=(Color const& c) noexcept
     return *this;
 }
 
-constexpr Color& Color::operator*=(Float32ConvertibleT auto val) noexcept
+inline constexpr Color& Color::operator*=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     r *= fVal;
@@ -102,7 +102,7 @@ constexpr Color& Color::operator*=(Float32ConvertibleT auto val) noexcept
     return *this;
 }
 
-constexpr Color& Color::operator/=(Float32ConvertibleT auto val) noexcept
+inline constexpr Color& Color::operator/=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     r /= fVal;
@@ -112,22 +112,22 @@ constexpr Color& Color::operator/=(Float32ConvertibleT auto val) noexcept
     return *this;
 }
 
-constexpr Color Color::operator+() const noexcept
+inline constexpr Color Color::operator+() const noexcept
 {
     return Color(r, g, b, a);
 }
 
-constexpr Color Color::operator-() const noexcept
+inline constexpr Color Color::operator-() const noexcept
 {
     return Color(-r, -g, -b, -a);
 }
 
-constexpr bool Color::operator==(Color const& c) const noexcept
+inline constexpr bool Color::operator==(Color const& c) const noexcept
 {
     return r == c.r && g == c.g && b == c.b && a == c.a;
 }
 
-constexpr Color operator+(Color const& c1, Color const& c2) noexcept
+inline constexpr Color operator+(Color const& c1, Color const& c2) noexcept
 {
     Color result;
     result.r = c1.r + c2.r;
@@ -137,7 +137,7 @@ constexpr Color operator+(Color const& c1, Color const& c2) noexcept
     return result;
 }
 
-constexpr Color operator-(Color const& c1, Color const& c2) noexcept
+inline constexpr Color operator-(Color const& c1, Color const& c2) noexcept
 {
     Color result;
     result.r = c1.r - c2.r;
@@ -147,7 +147,7 @@ constexpr Color operator-(Color const& c1, Color const& c2) noexcept
     return result;
 }
 
-constexpr Color operator*(Color const& c, Float32ConvertibleT auto val) noexcept
+inline constexpr Color operator*(Color const& c, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Color result;
@@ -158,7 +158,7 @@ constexpr Color operator*(Color const& c, Float32ConvertibleT auto val) noexcept
     return result;
 }
 
-constexpr Color operator/(Color const& c, Float32ConvertibleT auto val) noexcept
+inline constexpr Color operator/(Color const& c, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Color result;
@@ -169,7 +169,7 @@ constexpr Color operator/(Color const& c, Float32ConvertibleT auto val) noexcept
     return result;
 }
 
-constexpr Color operator*(Float32ConvertibleT auto val, Color const& c) noexcept
+inline constexpr Color operator*(Float32ConvertibleT auto val, Color const& c) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Color result;

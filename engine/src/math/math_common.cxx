@@ -40,29 +40,37 @@ template <typename T>
 concept Float64ConvertibleT = ConvertibleToT<T, float64>;
 
 template <FloatT T>
-constexpr float Pow(T base, ConvertibleToT<T> auto exp)
+inline constexpr float Pow(T base, ConvertibleToT<T> auto exp)
 {
     return std::pow(base, static_cast<float32>(exp));
 }
 
 template <IntT T>
-constexpr OffsetT Pow(T base, T exp)
+inline constexpr OffsetT Pow(T base, T exp)
 {
-    OffsetT expInt = static_cast<SizeT>(exp);
-    OffsetT result = 1;
-
-    while (expInt)
+    if (std::is_constant_evaluated())
     {
-        if (expInt & 1)
+        OffsetT expInt = static_cast<SizeT>(exp);
+        OffsetT result = 1;
+
+        while (expInt)
         {
-            result *= base;
+            if (expInt & 1)
+            {
+                result *= base;
+            }
+
+            expInt >>= 1;
+            base *= base;
         }
 
-        expInt >>= 1;
-        base *= base;
+        return result;
     }
-
-    return result;
+    else
+    {
+        return static_cast<OffsetT>(Pow(static_cast<float32>(base),
+                                        static_cast<float32>(exp)));
+    }
 }
 
 template <FloatT T>
@@ -72,13 +80,13 @@ template <FloatT T>
 }
 
 template <typename T>
-constexpr T const& Min(T const& val1, T const& val2)
+inline constexpr T const& Min(T const& val1, T const& val2)
 {
     return val1 < val2 ? val1 : val2;
 }
 
 template <typename T>
-constexpr T const& Max(T const& val1, T const& val2)
+inline constexpr T const& Max(T const& val1, T const& val2)
 {
     return val1 > val2 ? val1 : val2;
 }

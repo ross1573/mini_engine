@@ -119,13 +119,13 @@ inline constexpr Array<T, AllocT>::Array() noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::~Array()
+inline constexpr Array<T, AllocT>::~Array()
 {
     Clear();
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::Array(Array const& other)
+inline constexpr Array<T, AllocT>::Array(Array const& other)
     requires CopyableT<T>
 : m_Version(0)
 , m_Size(0)
@@ -137,7 +137,7 @@ constexpr Array<T, AllocT>::Array(Array const& other)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc)
+inline constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc)
     requires CopyableT<T>
 : m_Version(0)
 , m_Size(0)
@@ -181,7 +181,7 @@ inline constexpr Array<T, AllocT>::Array(AllocT&& alloc) noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
+inline constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(alloc)
@@ -191,7 +191,7 @@ constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
-constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc) requires CopyableT<T>
+inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc) requires CopyableT<T>
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(alloc)
@@ -235,7 +235,7 @@ constexpr void Array<T, AllocT>::Push(Args&&... args)
 template <MovableT T, AllocatorT<T> AllocT>
 template <typename... Args>
     requires ConstructibleFromT<T, Args...>
-constexpr void Array<T, AllocT>::Insert(SizeT index, Args&&... args)
+inline constexpr void Array<T, AllocT>::Insert(SizeT index, Args&&... args)
 {
     Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
@@ -356,7 +356,7 @@ constexpr void Array<T, AllocT>::AddRange(Iter first, Iter last)
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
-constexpr void Array<T, AllocT>::InsertRange(SizeT index, Iter first, Iter last)
+inline constexpr void Array<T, AllocT>::InsertRange(SizeT index, Iter first, Iter last)
 {
     InsertRange(Begin() + (OffsetT)index, first, last);
 }
@@ -421,7 +421,7 @@ constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, Iter first, Ite
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::RemoveLast()
+inline constexpr void Array<T, AllocT>::RemoveLast()
 {
     if (IsEmpty()) [[unlikely]]
     {
@@ -433,7 +433,7 @@ constexpr void Array<T, AllocT>::RemoveLast()
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::RemoveLast(SizeT count)
+inline constexpr void Array<T, AllocT>::RemoveLast(SizeT count)
 {
     if (IsEmpty() || count == 0) [[unlikely]]
     {
@@ -447,7 +447,7 @@ constexpr void Array<T, AllocT>::RemoveLast(SizeT count)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::RemoveAt(SizeT index)
+inline constexpr void Array<T, AllocT>::RemoveAt(SizeT index)
 {
     RemoveAt(Begin() + (OffsetT)index);
 }
@@ -474,7 +474,7 @@ constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::RemoveRange(SizeT first, SizeT last)
+inline constexpr void Array<T, AllocT>::RemoveRange(SizeT first, SizeT last)
 {
     Iterator begin = Begin();
     RemoveRange(begin + (OffsetT)first, begin + (OffsetT)last);
@@ -550,7 +550,7 @@ constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::Reserve(SizeT size)
+inline constexpr void Array<T, AllocT>::Reserve(SizeT size)
 {
     if (m_Buffer.Capacity() > size) [[unlikely]]
     {
@@ -566,7 +566,7 @@ constexpr void Array<T, AllocT>::Reserve(SizeT size)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::Shrink()
+inline constexpr void Array<T, AllocT>::Shrink()
 {
     if (m_Buffer.Capacity() == m_Size) [[unlikely]]
     {
@@ -730,7 +730,7 @@ inline constexpr T const& Array<T, AllocT>::operator[](SizeT index) const
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <EqualityComparableWithT<T> U, AllocatorT<U> OtherAlloc>
-constexpr bool Array<T, AllocT>::operator==(Array<U, OtherAlloc> const& other) const
+inline constexpr bool Array<T, AllocT>::operator==(Array<U, OtherAlloc> const& other) const
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -753,7 +753,7 @@ constexpr bool Array<T, AllocT>::operator==(Array<U, OtherAlloc> const& other) c
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other)
+inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other)
     requires CopyableT<T>
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
@@ -766,7 +766,7 @@ constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array&& other) noexcept
+inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array&& other) noexcept
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -779,7 +779,7 @@ constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array&& other) noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
+inline constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
 {
     Ptr begin(m_Buffer.Data());
     m_Buffer.Swap(buf);
@@ -788,13 +788,13 @@ constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
+inline constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
     CONSTEXPR_ASSERT(iter.m_Version == m_Version, "invalid version");

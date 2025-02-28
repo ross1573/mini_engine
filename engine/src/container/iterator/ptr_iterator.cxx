@@ -208,23 +208,20 @@ inline constexpr PtrIterator<T> operator+(OffsetT n, PtrIterator<T> const& iter)
 }
 
 template <PtrT T, PtrT U>
-inline constexpr OffsetT operator-(PtrIterator<T> const& l,
-                                             PtrIterator<U> const& r) noexcept
+inline constexpr OffsetT operator-(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
 {
     return static_cast<OffsetT>(l.operator->() - r.operator->());
 }
 
 template <PtrT T, PtrT U>
-inline constexpr bool operator==(PtrIterator<T> const& l,
-                                           PtrIterator<U> const& r) noexcept
+inline constexpr bool operator==(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
     requires EqualityComparableWithT<T, U>
 {
     return l.operator->() == r.operator->();
 }
 
 template <PtrT T, PtrT U>
-inline constexpr auto operator<=>(PtrIterator<T> const& l,
-                                            PtrIterator<U> const& r) noexcept
+inline constexpr auto operator<=>(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
     requires ThreeWayComparableWithT<T, U>
 {
     return l.operator->() <=> r.operator->();

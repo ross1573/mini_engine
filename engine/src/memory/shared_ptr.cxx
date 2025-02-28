@@ -14,17 +14,18 @@ import :static_buffer;
 
 using MemoryOrder = std::memory_order;
 
-#ifdef MSVC
-#pragma warning(push)
-#pragma warning(disable: 4582) // silence warning for union
-#endif
-
 namespace mini
 {
+
+#ifdef MSVC
+#pragma warning(push)
+#pragma warning(disable: 4582) // silence warning for ctor not called
+#endif
 
 template <typename T>
 struct AtomicUnion
 {
+
     union
     {
         std::atomic<T> atomic;
@@ -139,7 +140,7 @@ public:
         m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed);
     }
 
-    constexpr void Release(SizeT count = 1) noexcept
+    inline constexpr void Release(SizeT count = 1) noexcept
     {
         int32 last = m_Count.FetchSub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
@@ -155,7 +156,7 @@ public:
         ReleaseWeak(count);
     }
 
-    constexpr void ReleaseWeak(SizeT count = 1) noexcept
+    inline constexpr void ReleaseWeak(SizeT count = 1) noexcept
     {
         int32 last = m_Weak.FetchSub((int32)count, MemoryOrder::release);
         if (last == (int32)count) [[likely]]
@@ -201,7 +202,7 @@ class SharedBlock : public SharedCounter
 
 public:
     template <typename AllocU, typename DelU>
-    constexpr SharedBlock(T* ptr, AllocU&& alloc, DelU&& del) noexcept
+    inline constexpr SharedBlock(T* ptr, AllocU&& alloc, DelU&& del) noexcept
         : Base()
         , m_Ptr(ptr)
         , m_Alloc(ForwardArg<AllocU>(alloc))
@@ -209,18 +210,18 @@ public:
     {
     }
 
-    constexpr T* Get() noexcept
+    inline constexpr T* Get() noexcept
     {
         return m_Ptr;
     }
 
-    constexpr void DeletePtr() noexcept override
+    inline constexpr void DeletePtr() noexcept override
     {
         m_Deleter(m_Ptr);
         m_Ptr = nullptr;
     }
 
-    constexpr void DeleteSharedBlock() noexcept override
+    inline constexpr void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<SharedBlock>(MoveArg(m_Alloc));
         memory::DestructAt(this);
@@ -250,7 +251,7 @@ class InplaceSharedBlock : public SharedCounter
 public:
     template <typename AllocU, typename... Args>
         requires ConstructibleFromT<T, Args...>
-    constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args)
+    inline constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args)
         noexcept(NoThrowConstructibleFromT<T, Args...>)
         : Base()
         , m_Alloc(ForwardArg<AllocU>(alloc))
@@ -258,17 +259,17 @@ public:
         memory::ConstructAt(m_Value.Data(), ForwardArg<Args>(args)...);
     }
 
-    constexpr T* Get() noexcept
+    inline constexpr T* Get() noexcept
     {
         return m_Value.Data();
     }
 
-    constexpr void DeletePtr() noexcept override
+    inline constexpr void DeletePtr() noexcept override
     {
         memory::DestructAt(m_Value.Data());
     }
 
-    constexpr void DeleteSharedBlock() noexcept override
+    inline constexpr void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<InplaceSharedBlock>(MoveArg(m_Alloc));
         memory::DestructAt(this);
@@ -459,14 +460,14 @@ inline constexpr SharedPtr<T>::SharedPtr(NullptrT, DelT, AllocT) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del) noexcept
 {
     AllocateBlock(static_cast<T*>(ptr), DummyAllocator{}, ForwardArg<DelT>(del));
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
-constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del, AllocT const& alloc)
+inline constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
     AllocateBlock(static_cast<T*>(ptr), alloc, ForwardArg<DelT>(del));
@@ -504,7 +505,7 @@ inline constexpr void SharedPtr<T>::Reset() noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
+inline constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
 {
     if (m_Counter)
     {
@@ -516,7 +517,7 @@ constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
+inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
 {
     if (m_Counter)
     {
@@ -528,7 +529,7 @@ constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
-constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del, AllocT const& alloc)
+inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
     if (m_Counter)
@@ -666,7 +667,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& o) noexcep
 
 template <NonRefT T>
 template <typename AllocT, typename DelT>
-constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT&& alloc, DelT&& del)
+inline constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT&& alloc, DelT&& del)
 {
     typedef SharedBlock<T, AllocT, DelT> Block;
 
@@ -680,7 +681,7 @@ constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT&& alloc, DelT&& del)
 
 template <NonRefT T>
 template <typename AllocT, typename... Args>
-constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT&& alloc, Args&&... args)
+inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT&& alloc, Args&&... args)
 {
     typedef InplaceSharedBlock<T, AllocT> Block;
 

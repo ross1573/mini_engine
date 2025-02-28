@@ -72,7 +72,7 @@ struct Allocator
     typedef T Value;
     typedef T* Ptr;
 
-    [[nodiscard]] constexpr AllocResult<T> Allocate(SizeT size) const noexcept
+    [[nodiscard]] inline constexpr AllocResult<T> Allocate(SizeT size) const noexcept
     {
         Ptr ptr = nullptr;
         if (std::is_constant_evaluated())
@@ -90,14 +90,14 @@ struct Allocator
         return {.pointer = ptr, .capacity = size};
     }
 
-    [[nodiscard]] constexpr AllocResult<T> Increment(SizeT oldCap, SizeT size) const noexcept
+    [[nodiscard]] inline constexpr AllocResult<T> Increment(SizeT oldCap, SizeT size) const noexcept
     {
         SizeT newCap = oldCap < size ? oldCap + size : oldCap << 1;
         CONSTEXPR_ASSERT(newCap != 0, "invalid capacity on buffer increment");
         return Allocate(newCap);
     }
 
-    constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
+    inline constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
         if (std::is_constant_evaluated())
         {

@@ -17,16 +17,16 @@ private:
 private:
     Engine();
     ~Engine();
-
+ 
     bool Initialize();
     void Shutdown();
 
 public:
-    static bool IsRunning();
-
     static void Launch();
     static void Quit();
     static void Abort(String const& = "");
+
+    inline static bool IsRunning() { return m_Engine && m_Engine->IsRunning(); }
 };
 
 } // namespace mini

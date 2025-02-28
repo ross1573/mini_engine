@@ -115,20 +115,19 @@ ArrayIterator<T, ArrayT>::operator=(ArrayIterator<U, ArrayU> const& o) noexcept
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::CheckSource(ArrayIterator const& iter) const noexcept
+inline constexpr bool ArrayIterator<T, ArrayT>::CheckSource(ArrayIterator const& iter) const noexcept
 {
     return m_Array && m_Array == iter.m_Array && m_Version == iter.m_Version;
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcept
+inline constexpr bool ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcept
 {
     return iter.m_Array && iter.m_Array->IsValidIterator(iter);
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::Ptr
-ArrayIterator<T, ArrayT>::Address() const noexcept
+inline constexpr ArrayIterator<T, ArrayT>::Ptr ArrayIterator<T, ArrayT>::Address() const noexcept
 {
     return m_Ptr;
 }
@@ -322,10 +321,3 @@ inline constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& l,
 }
 
 } // namespace mini
-
-export namespace mini::memory
-{
-
-
-
-}

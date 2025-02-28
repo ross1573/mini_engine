@@ -1,6 +1,8 @@
 module;
 
 #include "core/define.h"
+#pragma warning(push)
+#pragma warning(disable: 5202) // msvc complains about doing weird things
 
 #pragma comment(lib, "DXGI.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -16,6 +18,8 @@ module;
 #elif defined(_M_IX86)
     DECL_DLL_SPEC(extern const char* D3D12SDKPath = "./engine/external/D3D12/win32/")
 #endif
+
+#pragma warning(pop)
 
 export module mini.d3d12;
 

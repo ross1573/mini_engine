@@ -72,98 +72,98 @@ inline Vector2 const Vector2::one = Vector2(1.f, 1.f);
 inline Vector2 const Vector2::unitX = Vector2(1.f, 0.f);
 inline Vector2 const Vector2::unitY = Vector2(0.f, 1.f);
 
-constexpr Vector2::Vector2() noexcept
+inline constexpr Vector2::Vector2() noexcept
     : x(0), y(0)
 {
 }
 
-constexpr Vector2::Vector2(float32 inX, float32 inY) noexcept
+inline constexpr Vector2::Vector2(float32 inX, float32 inY) noexcept
     : x(inX), y(inY)
 {
 }
 
-constexpr Vector2::Vector2(Float32ConvertibleT auto val) noexcept
+inline constexpr Vector2::Vector2(Float32ConvertibleT auto val) noexcept
     : x(static_cast<float32>(val))
     , y(static_cast<float32>(val))
 {
 }
 
-/*constexpr*/ inline float32 Vector2::Length() const noexcept
+inline /*constexpr*/ float32 Vector2::Length() const noexcept
 {
     return Sqrt(LengthSquared());
 }
 
-/*constexpr*/ inline float32 Vector2::LengthSquared() const noexcept
+inline /*constexpr*/ float32 Vector2::LengthSquared() const noexcept
 {
     return Pow(x, 2.f) + Pow(y, 2.f);
 }
 
-constexpr float32 Vector2::Dot(Vector2 const& v) const noexcept
+inline constexpr float32 Vector2::Dot(Vector2 const& v) const noexcept
 {
     return Vector2::Dot(*this, v);
 }
 
-constexpr float32 Vector2::Cross(Vector2 const& v) const noexcept
+inline constexpr float32 Vector2::Cross(Vector2 const& v) const noexcept
 {
     return Vector2::Cross(*this, v);
 }
 
-constexpr void Vector2::Clamp(Vector2 const& v1, Vector2 const& v2) noexcept
+inline constexpr void Vector2::Clamp(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     x = (x < v1.x) ? v1.x : ((x > v2.x) ? v2.x : x);
     y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
 }
 
-/*constexpr*/ inline void Vector2::Normalize() noexcept
+inline /*constexpr*/ void Vector2::Normalize() noexcept
 {
     (*this) /= Length();
 }
 
-constexpr float32 Vector2::Dot(Vector2 const& v1, Vector2 const& v2) noexcept
+inline constexpr float32 Vector2::Dot(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     return (v1.x * v2.x) + (v1.y * v2.y);
 }
 
-constexpr float32 Vector2::Cross(Vector2 const& v1, Vector2 const& v2) noexcept
+inline constexpr float32 Vector2::Cross(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     return (v1.x * v2.y) - (v1.y * v2.x);
 }
 
-/*constexpr*/ inline Vector2 Vector2::Normalize(Vector2 const& v) noexcept
+inline /*constexpr*/ Vector2 Vector2::Normalize(Vector2 const& v) noexcept
 {
     return v / v.Length();
 }
 
-/*constexpr*/ inline float32 Vector2::Distance(Vector2 const& v1, Vector2 const& v2) noexcept
+inline /*constexpr*/ float32 Vector2::Distance(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-/*constexpr*/ inline float32 Vector2::DistanceSquared(Vector2 const& v1, Vector2 const& v2) noexcept
+inline /*constexpr*/ float32 Vector2::DistanceSquared(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     return (v1 - v2).LengthSquared();
 }
 
-constexpr Vector2 Vector2::Lerp(Vector2 const& v1, Vector2 const& v2, float32 t) noexcept
+inline constexpr Vector2 Vector2::Lerp(Vector2 const& v1, Vector2 const& v2, float32 t) noexcept
 {
     return (v2 - v1) * t + v1;
 }
 
-constexpr Vector2& Vector2::operator+=(Vector2 const& v) noexcept
+inline constexpr Vector2& Vector2::operator+=(Vector2 const& v) noexcept
 {
     x += v.x;
     y += v.y;
     return *this;
 }
 
-constexpr Vector2& Vector2::operator-=(Vector2 const& v) noexcept
+inline constexpr Vector2& Vector2::operator-=(Vector2 const& v) noexcept
 {
     x -= v.x;
     y -= v.y;
     return *this;
 }
 
-constexpr Vector2& Vector2::operator*=(Float32ConvertibleT auto val) noexcept
+inline constexpr Vector2& Vector2::operator*=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x *= fVal;
@@ -171,7 +171,7 @@ constexpr Vector2& Vector2::operator*=(Float32ConvertibleT auto val) noexcept
     return *this;
 }
 
-constexpr Vector2& Vector2::operator/=(Float32ConvertibleT auto val) noexcept
+inline constexpr Vector2& Vector2::operator/=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x /= fVal;
@@ -179,22 +179,22 @@ constexpr Vector2& Vector2::operator/=(Float32ConvertibleT auto val) noexcept
     return *this;
 }
 
-constexpr Vector2 Vector2::operator+() const noexcept
+inline constexpr Vector2 Vector2::operator+() const noexcept
 {
     return Vector2(x, y);
 }
 
-constexpr Vector2 Vector2::operator-() const noexcept
+inline constexpr Vector2 Vector2::operator-() const noexcept
 {
     return Vector2(-x, -y);
 }
 
-constexpr bool Vector2::operator==(Vector2 const& v) const noexcept
+inline constexpr bool Vector2::operator==(Vector2 const& v) const noexcept
 {
     return x == v.x && y == v.y;
 }
 
-constexpr Vector2 operator+(Vector2 const& v1, Vector2 const& v2) noexcept
+inline constexpr Vector2 operator+(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     Vector2 result;
     result.x = v1.x + v2.x;
@@ -202,7 +202,7 @@ constexpr Vector2 operator+(Vector2 const& v1, Vector2 const& v2) noexcept
     return result;
 }
 
-constexpr Vector2 operator-(Vector2 const& v1, Vector2 const& v2) noexcept
+inline constexpr Vector2 operator-(Vector2 const& v1, Vector2 const& v2) noexcept
 {
     Vector2 result;
     result.x = v1.x - v2.x;
@@ -210,7 +210,7 @@ constexpr Vector2 operator-(Vector2 const& v1, Vector2 const& v2) noexcept
     return result;
 }
 
-constexpr Vector2 operator*(Vector2 const& v, Float32ConvertibleT auto val) noexcept
+inline constexpr Vector2 operator*(Vector2 const& v, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector2 result;
@@ -219,7 +219,7 @@ constexpr Vector2 operator*(Vector2 const& v, Float32ConvertibleT auto val) noex
     return result;
 }
 
-constexpr Vector2 operator/(Vector2 const& v, Float32ConvertibleT auto val) noexcept
+inline constexpr Vector2 operator/(Vector2 const& v, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector2 result;
@@ -228,7 +228,7 @@ constexpr Vector2 operator/(Vector2 const& v, Float32ConvertibleT auto val) noex
     return result;
 }
 
-constexpr Vector2 operator*(Float32ConvertibleT auto val, Vector2 const& v) noexcept
+inline constexpr Vector2 operator*(Float32ConvertibleT auto val, Vector2 const& v) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector2 result;

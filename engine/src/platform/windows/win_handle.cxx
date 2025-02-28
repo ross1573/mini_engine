@@ -1,5 +1,7 @@
 module;
 
+#include <windows.h>
+
 export module mini.windows:handle;
 
 import mini.platform;
@@ -26,7 +28,7 @@ public:
 
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 
-    HINSTANCE GetHINSTANCE() const { return m_Instance; }
+    inline HINSTANCE GetHINSTANCE() const { return m_Instance; }
 };
 
 } // namespace mini::windows

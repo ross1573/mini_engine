@@ -209,9 +209,6 @@
     <ClCompile Include="engine\src\platform\windows\win_window.cxx">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\platform\windows\win_api.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="engine\src\core\option.cxx">
       <Filter>Header Files</Filter>
     </ClCompile>

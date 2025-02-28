@@ -44,8 +44,8 @@ protected:
     alignas(AlignN) byte m_Buffer[sizeof(T) * CapacityN];
 
 public:
-    constexpr StaticBuffer() noexcept = default;
-    constexpr ~StaticBuffer() noexcept = default;
+    inline constexpr StaticBuffer() noexcept = default;
+    inline constexpr ~StaticBuffer() noexcept = default;
     StaticBuffer(StaticBuffer const&) = delete;
     StaticBuffer(StaticBuffer&&) = delete;
 
@@ -88,8 +88,8 @@ protected:
     alignas(AlignN) T m_Buffer[CapacityN];
 
 public:
-    constexpr StaticBuffer() noexcept = default;
-    constexpr ~StaticBuffer() noexcept = default;
+    inline constexpr StaticBuffer() noexcept = default;
+    inline constexpr ~StaticBuffer() noexcept = default;
     StaticBuffer(StaticBuffer const&) = delete;
     StaticBuffer(StaticBuffer&&) = delete;
 
@@ -128,7 +128,7 @@ struct StaticSize
 
     SizeType size;
 
-    constexpr StaticSize() noexcept = default;
+    inline constexpr StaticSize() noexcept = default;
     inline constexpr StaticSize(SizeT s) noexcept
         : size(static_cast<SizeType>(s))
     {

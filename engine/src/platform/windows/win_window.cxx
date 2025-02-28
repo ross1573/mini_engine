@@ -1,10 +1,13 @@
+module;
+
+#include <windows.h>
+
 export module mini.windows:window;
 
 import mini.core;
 import mini.math;
 import mini.platform;
 import mini.container;
-import :api;
 
 export namespace mini::windows
 {
@@ -34,8 +37,8 @@ public:
     void Show() final;
     void Hide() final;
 
-    RectInt GetSize() const final { return m_Rect; }
-    HWND GetHWND() const { return m_WindowHandle; }
+    inline RectInt GetSize() const final { return m_Rect; }
+    inline HWND GetHWND() const { return m_WindowHandle; }
 };
 
 } // namespace mini::windows

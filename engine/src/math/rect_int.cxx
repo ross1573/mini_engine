@@ -45,79 +45,79 @@ struct RectInt
 
 inline RectInt const RectInt::zero = RectInt();
 
-constexpr RectInt::RectInt() noexcept
+inline constexpr RectInt::RectInt() noexcept
     : x(0), y(0), width(0), height(0)
 {
 }
 
-constexpr RectInt::RectInt(int32 inX, int32 inY, int32 inWidth, int32 inHeight) noexcept
+inline constexpr RectInt::RectInt(int32 inX, int32 inY, int32 inWidth, int32 inHeight) noexcept
     : x(inX), y(inY), width(inWidth), height(inHeight)
 {
 }
 
-constexpr RectInt::RectInt(Vector2Int const& position, Vector2Int const& size) noexcept
+inline constexpr RectInt::RectInt(Vector2Int const& position, Vector2Int const& size) noexcept
     : x(position.x), y(position.y), width(size.x), height(size.y)
 {
 }
 
-constexpr Vector2 RectInt::Center() const noexcept
+inline constexpr Vector2 RectInt::Center() const noexcept
 {
     return Vector2(static_cast<float>(x) + (static_cast<float>(width) / 2.f),
                    static_cast<float>(y) + (static_cast<float>(height) / 2.f));
 }
 
-constexpr Vector2Int RectInt::Position() const noexcept
+inline constexpr Vector2Int RectInt::Position() const noexcept
 {
     return Vector2Int(x, y);
 }
 
-constexpr Vector2Int RectInt::Size() const noexcept
+inline constexpr Vector2Int RectInt::Size() const noexcept
 {
     return Vector2Int(width, height);
 }
 
-constexpr Vector2Int RectInt::Max() const noexcept
+inline constexpr Vector2Int RectInt::Max() const noexcept
 {
     return Vector2Int(x + width, y + height);
 }
 
-constexpr Vector2Int RectInt::Min() const noexcept
+inline constexpr Vector2Int RectInt::Min() const noexcept
 {
     return Vector2Int(x, y);
 }
 
-constexpr bool RectInt::Contains(Vector2Int const& v) const noexcept
+inline constexpr bool RectInt::Contains(Vector2Int const& v) const noexcept
 {
     return (v.x >= x) && (v.x <= (x + width)) && (v.y >= y) && (v.y <= (y + height));
 }
 
-constexpr bool RectInt::Contains(Vector3Int const& v) const noexcept
+inline constexpr bool RectInt::Contains(Vector3Int const& v) const noexcept
 {
     return Contains(Vector2Int(v));
 }
 
-constexpr bool RectInt::Intersects(RectInt const& r) const noexcept
+inline constexpr bool RectInt::Intersects(RectInt const& r) const noexcept
 {
     return (r.x < (x + width)) && (x < (r.x + r.width)) &&
         (r.y < (y + height)) && (y < (r.y + r.height));
 }
 
-constexpr bool RectInt::Overlaps(RectInt const& r) const noexcept
+inline constexpr bool RectInt::Overlaps(RectInt const& r) const noexcept
 {
     return (r.x > x) && (r.y > y) && (r.width < width) && (r.height < height);
 }
 
-constexpr bool RectInt::Intersect(RectInt const& r1, RectInt const& r2) noexcept
+inline constexpr bool RectInt::Intersect(RectInt const& r1, RectInt const& r2) noexcept
 {
     return r1.Intersects(r2);
 }
 
-constexpr bool RectInt::Overlap(RectInt const& r1, RectInt const& r2) noexcept
+inline constexpr bool RectInt::Overlap(RectInt const& r1, RectInt const& r2) noexcept
 {
     return r1.Overlaps(r2);
 }
 
-constexpr bool RectInt::operator==(RectInt const& r) const noexcept
+inline constexpr bool RectInt::operator==(RectInt const& r) const noexcept
 {
     return x == r.x && y == r.y && width == r.width && height == r.height;
 }

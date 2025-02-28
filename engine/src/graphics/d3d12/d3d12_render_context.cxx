@@ -37,8 +37,8 @@ public:
     void WaitForIdle() final;
     void Execute() final;
 
-    CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
-    ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
+    inline CommandQueue* GetCommandQueue() const { return m_CommandQueue; }
+    inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
 };
 
 } // namespace mini::d3d12

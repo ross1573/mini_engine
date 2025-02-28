@@ -9,7 +9,7 @@ import mini.core;
 import mini.iterator;
 
 template <typename T>
-constexpr void* MakeVoidPtr(T* ptr)
+inline constexpr void* MakeVoidPtr(T* ptr)
 {
     return const_cast<void*>(static_cast<const volatile void*>(ptr));
 }
@@ -36,7 +36,7 @@ inline constexpr decltype(auto) AddressOf(T ele) noexcept
 
 template <typename T, typename... Args>
     requires (!std::is_array_v<T>)
-constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     if (std::is_constant_evaluated())
     {
@@ -50,7 +50,7 @@ constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructible
 
 template <typename T>
     requires (!std::is_array_v<T>)
-constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
+inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     if (std::is_constant_evaluated())
     {
@@ -63,7 +63,7 @@ constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 }
 
 template <typename T, typename... Args>
-constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
+inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 {
     for (; begin != end; ++begin)
     {
@@ -72,7 +72,7 @@ constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 }
 
 template <typename T, typename U>
-constexpr void ConstructRange(T dest, U begin, U end)
+inline constexpr void ConstructRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest)
     {
@@ -81,7 +81,7 @@ constexpr void ConstructRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void ConstructBackward(T dest, U begin, U end)
+inline constexpr void ConstructBackward(T dest, U begin, U end)
 {
     for (; end != begin;)
     {
@@ -90,7 +90,7 @@ constexpr void ConstructBackward(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void MoveConstructRange(T dest, U begin, U end)
+inline constexpr void MoveConstructRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest)
     {
@@ -99,7 +99,7 @@ constexpr void MoveConstructRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void MoveConstructBackward(T dest, U begin, U end)
+inline constexpr void MoveConstructBackward(T dest, U begin, U end)
 {
     for (; end != begin;)
     {
@@ -108,7 +108,7 @@ constexpr void MoveConstructBackward(T dest, U begin, U end)
 }
 
 template <typename T>
-constexpr void DestructRange(T begin, T end)
+inline constexpr void DestructRange(T begin, T end)
 {
     for (; begin != end; ++begin)
     {
@@ -117,7 +117,7 @@ constexpr void DestructRange(T begin, T end)
 }
 
 template <typename T, typename U>
-constexpr void CopyRange(T dest, U begin, U end)
+inline constexpr void CopyRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest)
     {
@@ -126,7 +126,7 @@ constexpr void CopyRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void CopyBackward(T dest, U begin, U end)
+inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     for (; end != begin;)
     {
@@ -135,7 +135,7 @@ constexpr void CopyBackward(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void MoveRange(T dest, U begin, U end)
+inline constexpr void MoveRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest)
     {
@@ -144,7 +144,7 @@ constexpr void MoveRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr void MoveBackward(T dest, U begin, U end)
+inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     for (; end != begin;)
     {
@@ -153,7 +153,7 @@ constexpr void MoveBackward(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-constexpr bool EqualRange(T begin1, U begin2, U end2)
+inline constexpr bool EqualRange(T begin1, U begin2, U end2)
 {
     for (; begin2 != end2; ++begin1, ++begin2)
     {
@@ -167,7 +167,7 @@ constexpr bool EqualRange(T begin1, U begin2, U end2)
 }
 
 template <typename T, typename U>
-constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     for (; begin1 != end1 && begin2 != end2; ++begin1, ++begin2)
     {

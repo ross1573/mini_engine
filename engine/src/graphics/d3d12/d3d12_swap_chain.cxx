@@ -53,11 +53,11 @@ public:
     void SetVSync(uint8) final;
     void SetFullScreen(bool) final;
 
-    SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_Buffers[m_Index]; }
-    Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
-    uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
-    uint8 GetVSync() const final { return m_VSync; }
-    bool GetFullscreen() const final { return !m_FullscreenDesc.Windowed; }
+    inline SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_Buffers[m_Index]; }
+    inline Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
+    inline uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
+    inline uint8 GetVSync() const final { return m_VSync; }
+    inline bool GetFullscreen() const final { return !m_FullscreenDesc.Windowed; }
 
 private:
     void ReleaseBuffers();

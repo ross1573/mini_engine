@@ -335,7 +335,7 @@ inline constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other)
 }
 
 template <NonRefT T, NonRefT U>
-constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
+inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown>&& DerivedFromT<U, IUnknown>
 {
     SharedPtr<T> result;
@@ -349,7 +349,7 @@ constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
 }
 
 template <NonRefT T, NonRefT U>
-constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
+inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
     requires DerivedFromT<T, IUnknown>&& DerivedFromT<U, IUnknown>
 {
     SharedPtr<T> result;

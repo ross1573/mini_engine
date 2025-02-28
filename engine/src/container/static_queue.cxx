@@ -101,13 +101,13 @@ inline constexpr StaticQueue<T, N>::StaticQueue() noexcept
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticQueue<T, N>::~StaticQueue()
+inline constexpr StaticQueue<T, N>::~StaticQueue()
 {
     Clear();
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
+inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
     : m_Begin(0)
     , m_End(0)
     , m_Size(0)
@@ -120,7 +120,7 @@ constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
+inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
     : m_Begin(0)
     , m_End(0)
     , m_Size(0)
@@ -141,7 +141,7 @@ constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
-constexpr StaticQueue<T, N>::StaticQueue(Iter first, Iter last)
+inline constexpr StaticQueue<T, N>::StaticQueue(Iter first, Iter last)
     : m_Begin(0)
     , m_End(0)
     , m_Size(0)
@@ -152,7 +152,7 @@ constexpr StaticQueue<T, N>::StaticQueue(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <typename... Args> requires ConstructibleFromT<T, Args...>
-constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
+inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_End, ForwardArg<T>(args)...);
@@ -224,7 +224,7 @@ constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
 }
 
 template <MovableT T, SizeT N>
-constexpr T StaticQueue<T, N>::Dequeue()
+inline constexpr T StaticQueue<T, N>::Dequeue()
 {
     Ptr begin = m_Buffer.Data() + m_Begin;
     T ele = MoveArg(*begin);
@@ -235,7 +235,7 @@ constexpr T StaticQueue<T, N>::Dequeue()
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticQueue<T, N>::RemoveFirst()
+inline constexpr void StaticQueue<T, N>::RemoveFirst()
 {
     if (IsEmpty()) [[unlikely]]
     {
@@ -347,21 +347,21 @@ inline constexpr StaticQueue<T, N>::ConstIterator StaticQueue<T, N>::End() const
 }
 
 template <MovableT T, SizeT N>
-constexpr T& StaticQueue<T, N>::First()
+inline constexpr T& StaticQueue<T, N>::First()
 {
     AssertValidOffset(m_Begin);
     return *(m_Buffer.Data() + m_Begin);
 }
 
 template <MovableT T, SizeT N>
-constexpr T const& StaticQueue<T, N>::First() const
+inline constexpr T const& StaticQueue<T, N>::First() const
 {
     AssertValidOffset(m_Begin);
     return *(m_Buffer.Data() + m_Begin);
 }
 
 template <MovableT T, SizeT N>
-constexpr T& StaticQueue<T, N>::Last()
+inline constexpr T& StaticQueue<T, N>::Last()
 {
     SizeT cap = m_Buffer.Capacity();
     SizeT offset = (m_End - 1 + cap) % cap;
@@ -370,7 +370,7 @@ constexpr T& StaticQueue<T, N>::Last()
 }
 
 template <MovableT T, SizeT N>
-constexpr T const& StaticQueue<T, N>::Last() const
+inline constexpr T const& StaticQueue<T, N>::Last() const
 {
     SizeT cap = m_Buffer.Capacity();
     SizeT offset = (m_End - 1 + cap) % cap;
@@ -379,7 +379,7 @@ constexpr T const& StaticQueue<T, N>::Last() const
 }
 
 template <MovableT T, SizeT N>
-constexpr T& StaticQueue<T, N>::At(SizeT index)
+inline constexpr T& StaticQueue<T, N>::At(SizeT index)
 {
     SizeT offset = (m_Begin + index) % m_Buffer.Capacity();
     AssertValidOffset(offset);
@@ -387,7 +387,7 @@ constexpr T& StaticQueue<T, N>::At(SizeT index)
 }
 
 template <MovableT T, SizeT N>
-constexpr T const& StaticQueue<T, N>::At(SizeT index) const
+inline constexpr T const& StaticQueue<T, N>::At(SizeT index) const
 {
     SizeT offset = (m_Begin + index) % m_Buffer.Capacity();
     AssertValidOffset(offset);
@@ -446,7 +446,7 @@ inline constexpr T const& StaticQueue<T, N>::operator[](SizeT index) const
 
 template <MovableT T, SizeT N>
 template <EqualityComparableWithT<T> U, SizeT OtherN>
-constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const& other) const
+inline constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const& other) const
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -465,7 +465,7 @@ constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const& other
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue const& other)
+inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue const& other)
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -477,7 +477,7 @@ constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue const& oth
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& other) noexcept
+inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& other) noexcept
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -490,13 +490,13 @@ constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& other) n
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticQueue<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
+inline constexpr void StaticQueue<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
     CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexcept
+inline constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexcept
 {
     CONSTEXPR_ASSERT(m_Size != 0, "invalid access on empty queue");
 
@@ -515,7 +515,7 @@ constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offse
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
 }

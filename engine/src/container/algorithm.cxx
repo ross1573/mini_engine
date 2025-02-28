@@ -19,7 +19,7 @@ inline constexpr bool CheckDest(T dest)
 }
 
 template <ForwardIteratorT T>
-constexpr bool CheckRange(T begin, T end)
+inline constexpr bool CheckRange(T begin, T end)
 {
     if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]]
     {
@@ -41,7 +41,7 @@ export namespace mini
 
 template <typename T, typename U> 
     requires IteratorCopyableFromT<T, U>
-constexpr void CopyRange(T dest, U begin, U end)
+inline constexpr void CopyRange(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -50,7 +50,7 @@ constexpr void CopyRange(T dest, U begin, U end)
 
 template <typename T, typename U> 
     requires IteratorCopyableFromT<T, U>
-constexpr void CopyBackward(T dest, U begin, U end)
+inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -59,7 +59,7 @@ constexpr void CopyBackward(T dest, U begin, U end)
 
 template <typename T, typename U> 
     requires IteratorMovableFromT<T, U>
-constexpr void MoveRange(T dest, U begin, U end)
+inline constexpr void MoveRange(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -68,7 +68,7 @@ constexpr void MoveRange(T dest, U begin, U end)
 
 template <typename T, typename U> 
     requires IteratorMovableFromT<T, U>
-constexpr void MoveBackward(T dest, U begin, U end)
+inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -77,7 +77,7 @@ constexpr void MoveBackward(T dest, U begin, U end)
 
 template <ForwardIteratorT T, ForwardIteratorT U>
     requires ComparableWithT<typename T::Value, typename U::Value>
-constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));
@@ -100,7 +100,7 @@ constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 }
 
 template <ForwardIteratorT T>
-constexpr SizeT Distance(T first, T last)
+inline constexpr SizeT Distance(T first, T last)
 {
     if (first == last)
     {

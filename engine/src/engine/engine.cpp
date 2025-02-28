@@ -52,11 +52,6 @@ void Engine::Shutdown()
     DELETE(m_Engine);
 }
 
-bool Engine::IsRunning()
-{
-    return m_Engine && m_Engine->IsRunning();
-}
-
 void Engine::Launch()
 {
 #ifdef TEST_BUILD

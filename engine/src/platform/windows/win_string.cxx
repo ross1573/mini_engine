@@ -26,7 +26,7 @@ class StringConverter
     [[no_unique_address]] AllocT m_Alloc;
 
 public:
-    StringConverter(From* ptr)
+    inline StringConverter(From* ptr)
         : m_Data(nullptr)
         , m_Size(0)
         , m_Alloc{}
@@ -40,14 +40,14 @@ public:
         Initialize(ptr);
     }
 
-    StringConverter(NullptrT)
+    inline StringConverter(NullptrT)
         : m_Data(reinterpret_cast<CharT*>(&m_Size))
         , m_Size(0)
         , m_Alloc{}
     {
     }
 
-    StringConverter(StringView str)
+    inline StringConverter(StringView str)
         : m_Data(nullptr)
         , m_Size(0)
         , m_Alloc{}
@@ -57,14 +57,14 @@ public:
 
     StringConverter(StringConverter const&) = delete;
 
-    StringConverter(StringConverter&& other)
+    inline StringConverter(StringConverter&& other)
         : m_Data(other.m_Data)
         , m_Size(other.m_Size)
         , m_Alloc(MoveArg(other.m_Alloc))
     {
     }
 
-    ~StringConverter()
+    inline ~StringConverter()
     {
         if (m_Size != 0)
         {
@@ -77,7 +77,7 @@ public:
 
     StringConverter& operator=(StringConverter const&) = delete;
 
-    StringConverter& operator=(StringConverter&& other)
+    inline StringConverter& operator=(StringConverter&& other)
     {
         if (m_Size != 0)
         {
@@ -90,7 +90,7 @@ public:
     }
 
 private:
-    void Initialize(StringView const& str)
+    inline void Initialize(StringView const& str)
     {
         if (str.size() == 0)
         {

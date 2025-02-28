@@ -109,20 +109,20 @@ inline constexpr StaticArray<T, N>::StaticArray() noexcept
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticArray<T, N>::~StaticArray()
+inline constexpr StaticArray<T, N>::~StaticArray()
 {
     Clear();
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticArray<T, N>::StaticArray(StaticArray const& other)
+inline constexpr StaticArray<T, N>::StaticArray(StaticArray const& other)
 {
     memory::ConstructRange(m_Buffer.Data(), other.Begin(), other.End());
     m_Size = other.m_Size;
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept
+inline constexpr StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept
 {
     Ptr otherBegin = other.m_Buffer.Data();
     Ptr otherEnd = otherBegin + other.m_Size;
@@ -142,7 +142,7 @@ inline constexpr StaticArray<T, N>::StaticArray(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <typename... Args> requires ConstructibleFromT<T, Args...>
-constexpr void StaticArray<T, N>::Push(Args&&... args)
+inline constexpr void StaticArray<T, N>::Push(Args&&... args)
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_Size, ForwardArg<Args>(args)...);
@@ -229,7 +229,7 @@ constexpr void StaticArray<T, N>::AddRange(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void StaticArray<T, N>::InsertRange(SizeT index, Iter first, Iter last)
+inline constexpr void StaticArray<T, N>::InsertRange(SizeT index, Iter first, Iter last)
 {
     InsertRange(Begin() + (OffsetT)index, first, last);
 }
@@ -277,7 +277,7 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::RemoveLast()
+inline constexpr void StaticArray<T, N>::RemoveLast()
 {
     if (IsEmpty()) [[unlikely]]
     {
@@ -289,7 +289,7 @@ constexpr void StaticArray<T, N>::RemoveLast()
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
+inline constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
 {
     if (IsEmpty() || count == 0) [[unlikely]]
     {
@@ -536,7 +536,7 @@ inline constexpr T const& StaticArray<T, N>::operator[](SizeT index) const
 
 template <MovableT T, SizeT N>
 template <EqualityComparableWithT<T> U, SizeT OtherN>
-constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const& other) const
+inline constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const& other) const
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -555,7 +555,7 @@ constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const& other
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray const& other)
+inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray const& other)
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -567,7 +567,7 @@ constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray const& oth
 }
 
 template <MovableT T, SizeT N>
-constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& other) noexcept
+inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& other) noexcept
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]]
     {
@@ -580,19 +580,19 @@ constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& other) n
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
+inline constexpr void StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
     CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
+inline constexpr void StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, SizeT N>
-constexpr void StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
 }
