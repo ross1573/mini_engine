@@ -1,5 +1,7 @@
 export module mini.platform:window;
 
+namespace mini { class Platform; }
+
 import mini.math;
 import mini.container;
 
@@ -8,13 +10,10 @@ export namespace mini::platform
 
 class Window
 {
-protected:
-    Window() = default;
+    friend class mini::Platform;
 
 public:
     virtual ~Window() = default;
-
-    virtual bool Initialize() = 0;
 
     virtual void DialogCritical(String const&) = 0;
 
@@ -25,6 +24,11 @@ public:
     virtual void Hide() = 0;
 
     virtual RectInt GetSize() const = 0;
+
+protected:
+    Window() = default;
+
+    virtual bool Initialize() = 0;
 };
 
 } // namespace mini::platform

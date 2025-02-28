@@ -18,15 +18,15 @@ private:
     static Handle* m_Handle;
     static Window* m_Window;
 
+public:
+    template <typename T = Handle> static T* GetHandle() noexcept;
+    template <typename T = Window> static T* GetWindow() noexcept;
+
 private:
     Platform() = default;
 
     static bool Initialize();
     static void Shutdown();
-
-public:
-    template <typename T = Handle> static T* GetHandle() noexcept;
-    template <typename T = Window> static T* GetWindow() noexcept;
 };
 
 template <typename T>

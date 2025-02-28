@@ -26,6 +26,16 @@ private:
     static inline SwapChain* m_SwapChain = nullptr;
     static inline RenderContext* m_RenderContext = nullptr;
 
+public:
+    static void ChangeResolution(uint32, uint32, bool);
+
+    static bool IsDeviceCurrent() noexcept;
+    static bool IsDeviceCurrent(API) noexcept;
+
+    template <typename T = Device> static T* GetDevice() noexcept;
+    template <typename T = SwapChain> static T* GetSwapChain() noexcept;
+    template <typename T = RenderContext> static T* GetRenderContext() noexcept;
+
 private:
     Graphics() = default;
 
@@ -34,16 +44,6 @@ private:
 
     static void BeginFrame();
     static void EndFrame();
-
-public:
-    static void ChangeResolution(uint32, uint32, bool);
-
-    static inline bool IsDeviceCurrent() noexcept;
-    static inline bool IsDeviceCurrent(API) noexcept;
-
-    template <typename T = Device> static T* GetDevice() noexcept;
-    template <typename T = SwapChain> static T* GetSwapChain() noexcept;
-    template <typename T = RenderContext> static T* GetRenderContext() noexcept;
 };
 
 inline bool Graphics::IsDeviceCurrent() noexcept

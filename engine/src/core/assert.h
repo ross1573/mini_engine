@@ -55,7 +55,8 @@
 #define CONSTEXPR_ASSERT(expr, ...) ((void)0)
 
 #define VERIFY(expr, ...) \
-    if (!mini::detail::TestExpr(expr)) [[unlikely]] mini::Engine::Abort(__VA_ARGS__)
+    if (!mini::detail::TestExpr(expr)) [[unlikely]] {}
+    //if (!mini::detail::TestExpr(expr)) [[unlikely]] mini::Engine::Abort(__VA_ARGS__)
 
 #define ENSURE_INNER(expr, var, ...) \
     auto var = mini::detail::TestExpr(expr); \

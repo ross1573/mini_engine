@@ -1,20 +1,21 @@
+module;
+
 export module mini.graphics:swap_chain;
 
 import mini.core;
 import mini.math;
+
+namespace mini { class Graphics; }
 
 export namespace mini::graphics
 {
 
 class SwapChain
 {
-public:
+    friend class mini::Graphics;
+
+protected:
     static constexpr uint8 MaxBackBuffer = 3;
-
-    SwapChain() = default;
-
-    virtual bool Initialize() = 0;
-    virtual void Present() = 0;
 
 public:
     virtual ~SwapChain() = default;
@@ -28,6 +29,12 @@ public:
     virtual uint8 GetBackBufferCount() const = 0;
     virtual uint8 GetVSync() const = 0;
     virtual bool GetFullscreen() const = 0;
+
+protected:
+    SwapChain() = default;
+
+    virtual bool Initialize() = 0;
+    virtual void Present() = 0;
 };
 
 } // namespace mini::graphics

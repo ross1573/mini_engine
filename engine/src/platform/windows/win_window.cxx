@@ -27,8 +27,6 @@ public:
     Window();
     ~Window() = default;
 
-    bool Initialize() final;
-
     void DialogCritical(String const&) final;
 
     void Resize(RectInt const&) final;
@@ -39,6 +37,9 @@ public:
 
     inline RectInt GetSize() const final { return m_Rect; }
     inline HWND GetHWND() const { return m_WindowHandle; }
+
+protected:
+    bool Initialize() final;
 };
 
 } // namespace mini::windows

@@ -45,9 +45,6 @@ private:
 public:
     SwapChain();
 
-    bool Initialize() final;
-    void Present() final;
-
     void ResizeBackBuffer(uint32, uint32, bool) final;
     void SetBackBufferCount(uint8) final;
     void SetVSync(uint8) final;
@@ -58,6 +55,10 @@ public:
     inline uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
     inline uint8 GetVSync() const final { return m_VSync; }
     inline bool GetFullscreen() const final { return !m_FullscreenDesc.Windowed; }
+
+protected:
+    bool Initialize() final;
+    void Present() final;
 
 private:
     void ReleaseBuffers();

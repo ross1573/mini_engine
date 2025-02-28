@@ -48,7 +48,7 @@ public:
     typedef D3D12_DESCRIPTOR_HEAP_TYPE HeapTypeT;
     typedef D3D12_DESCRIPTOR_HEAP_DESC HeapDescT;
 
-protected:
+private:
     SharedPtr<ID3D12Device> m_Device;
     Array<DescriptorHeap> m_HeapList;
     HeapDescT m_HeapDesc;

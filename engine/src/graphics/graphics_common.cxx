@@ -24,7 +24,7 @@ enum class CommandType : int8
     Copy
 };
 
-String ToString(API api)
+inline String ToString(API api)
 {
     switch (api)
     {

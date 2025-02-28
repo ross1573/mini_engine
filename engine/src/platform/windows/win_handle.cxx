@@ -20,15 +20,16 @@ public:
     Handle();
     ~Handle() final;
 
+    void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
+
+    inline HINSTANCE GetHINSTANCE() const { return m_Instance; }
+
+protected:
     bool Initialize() final;
     void PollEvents() final;
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;
-
-    void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
-
-    inline HINSTANCE GetHINSTANCE() const { return m_Instance; }
 };
 
 } // namespace mini::windows
