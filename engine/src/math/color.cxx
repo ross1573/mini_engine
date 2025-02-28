@@ -1,11 +1,6 @@
-module;
-
-#include "mini_engine.h"
-#include "core/define.h"
-#include "core/type.h"
-
 export module mini.math:color;
 
+import mini.core;
 export import :common;
 
 export namespace mini

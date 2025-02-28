@@ -1,11 +1,6 @@
-module;
-
-#include "mini_engine.h"
-#include "core/define.h"
-#include "core/type.h"
-
 export module mini.math:vector4;
 
+import mini.core;
 import :common;
 import :vector3;
 

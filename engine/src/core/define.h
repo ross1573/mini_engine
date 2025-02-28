@@ -33,7 +33,6 @@
 #   ifndef DEBUG
 #   define DEBUG
 #   endif
-#   define _CRTDBG_MAP_ALLOC
 #endif // _DEBUG
 
 #ifdef NOASSERT
@@ -65,6 +64,7 @@
 #pragma warning(disable: 4201) // nameless struct/union
 #pragma warning(disable: 4265) // windows api stuff
 #pragma warning(disable: 4365) // ms doesn't care about signedness
+#pragma warning(disable: 4514) // unreferenced inline function has been removed
 #pragma warning(disable: 4625) // copy constructor implicitly deleted
 #pragma warning(disable: 4626) // operator implicitly deleted
 #pragma warning(disable: 4702) // unreachable code (from if constexpr)
@@ -76,11 +76,14 @@
 #pragma warning(disable: 5266) // const prvalue warning
 #pragma warning(disable: 6217) // fuck HRESULT
 #pragma warning(disable: 6262) // i love stackoverflow
+
+#pragma warning(disable: 5030)
+#pragma warning(disable: 5222)
 #endif // MSVC
 
 #if defined(MSVC)
 #   define force_inline msvc::forceinline
-#   define noinline msvc::noinline
+//#   define noinline msvc::noinline
 #   define no_unique_address msvc::no_unique_address // crappy way of fucking the msvc compiler
 #elif defined(CLANG)
 #   define force_inline clang::always_inline
@@ -99,31 +102,3 @@
 #   define CHAR_T wchar_t
 #   endif
 #endif
-
-namespace mini
-{
-
-using byte = std::uint8_t;
-
-using int8 = std::int8_t;
-using int16 = std::int16_t;
-using int32 = std::int32_t;
-using int64 = std::int64_t;
-
-using uint = std::uint32_t;
-using uint8 = std::uint8_t;
-using uint16 = std::uint16_t;
-using uint32 = std::uint32_t;
-using uint64 = std::uint64_t;
-
-using float32 = float;
-using float64 = double;
-
-using SizeT = uint32;
-using OffsetT = std::ptrdiff_t;
-
-using TrueT = std::true_type;
-using FalseT = std::false_type;
-using NullptrT = std::nullptr_t;
-
-} // namespace mini

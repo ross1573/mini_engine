@@ -1,7 +1,15 @@
-#include "mini_engine.h"
-#include "engine/engine.h"
+module;
+
+#include "core/assert.h"
+
+module mini.engine;
 
 import mini.math;
+import mini.memory;
+import mini.container;
+import mini.platform;
+import mini.graphics;
+import mini.options;
 
 #ifdef TEST_BUILD
 void TestMain();
@@ -72,11 +80,11 @@ void Engine::Launch()
 
         Graphics::BeginFrame();
         {
-            //RectInt windowSize = Platform::GetWindow()->GetSize();
-            //Rect windowRect(windowSize);
+            RectInt windowSize = Platform::GetWindow()->GetSize();
+            Rect windowRect(windowSize);
 
-            //Graphics::GetRenderContext()->SetViewport(windowRect, 0.1f, 100.f);
-            //Graphics::GetRenderContext()->SetScissorRect(windowSize);
+            Graphics::GetRenderContext()->SetViewport(windowRect, 0.1f, 100.f);
+            Graphics::GetRenderContext()->SetScissorRect(windowSize);
         }
         Graphics::EndFrame();
     }

@@ -1,11 +1,6 @@
-module;
-
-#include "mini_engine.h"
-#include "core/define.h"
-#include "core/type.h"
-
 export module mini.math:vertex;
 
+import mini.core;
 import :vector3;
 import :vector4;
 

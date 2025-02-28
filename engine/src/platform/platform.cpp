@@ -1,7 +1,16 @@
-#include "mini_engine.h"
+module;
+
+#include "core/define.h"
+#include "core/assert.h"
+#include "core/macro.h"
+
+module mini.platform;
+
+import mini.core;
+import mini.log;
 
 #ifdef PLATFORM_WINDOWS
-#include "platform/windows/handle.h"
+import mini.windows;
 using PlatformHandleT = mini::windows::Handle;
 #else
 using PlatformHandleT = void;
@@ -9,6 +18,9 @@ using PlatformHandleT = void;
 
 namespace mini
 {
+
+Platform::Handle* Platform::m_Handle = nullptr;
+Platform::Window* Platform::m_Window = nullptr;
 
 bool Platform::Initialize()
 {

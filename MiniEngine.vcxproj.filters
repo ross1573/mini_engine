@@ -23,100 +23,10 @@
     <ClInclude Include="resource\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\core\log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\engine\engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\d3d12\command_queue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\d3d12\device.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\device.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\windows\utility.h">
+    <ClInclude Include="engine\src\platform\windows\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\ministl\string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\mini_engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\core\option.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\core\type.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\core\utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vector2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vector3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vector4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vector2_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\vector3_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\rect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\rect_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\windows\window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\platform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\windows\handle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\swap_chain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\d3d12\swap_chain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\render_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\d3d12\render_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\graphics\d3d12\descriptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\math\color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\ministl\static_queue.h">
@@ -138,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\ministl\iterator\array_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="test\container.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\ministl\iterator\circular_iterator.h">
@@ -173,70 +80,13 @@
     <ClInclude Include="engine\src\ministl\memory\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\container\iterator\array_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\iterator\circular_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\iterator\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\iterator\move_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\iterator\ptr_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\allocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\deleter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\static_buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\algorithm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\array.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\shared_ptr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\static_array.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\static_queue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\container\string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\windows\shared_ptr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\platform\windows\string_convert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="engine\src\core\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="engine\src\core\macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\src\core\string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\src\memory\unique_ptr.h">
+    <ClInclude Include="test\test_macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -245,52 +95,43 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\src\platform\windows\log.cpp">
+    <ClCompile Include="engine\src\platform\windows\win_log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\engine\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\command_queue.cpp">
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_command_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\device.cpp">
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\graphics\graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\platform\windows\main.cpp">
+    <ClCompile Include="engine\src\platform\windows\win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\mini_engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\platform\windows\window.cpp">
+    <ClCompile Include="engine\src\platform\windows\win_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\platform\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\platform\windows\handle.cpp">
+    <ClCompile Include="engine\src\platform\windows\win_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\swap_chain.cpp">
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\render_context.cpp">
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_render_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\src\graphics\d3d12\descriptor.cpp">
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_descriptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\src\platform\windows\string_convert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test\array.cpp">
@@ -309,6 +150,189 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine\src\core\string.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\mini_engine.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\color.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\math_common.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\rect.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\rect_int.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vector2_int.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vector3.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vector3_int.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vector4.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vector2.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\vertex.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\math\math.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\windows.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\win_string.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\platform.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\window.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\handle.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\win_handle.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\win_window.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\win_api.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\option.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\swap_chain.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\graphics.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\device.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\render_context.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\graphics_common.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_command_queue.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_descriptor.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_device.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_render_context.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12_swap_chain.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\graphics\d3d12\d3d12.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\platform\windows\win_shared_ptr.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\engine\engine.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\container.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\array_iterator.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\circular_iterator.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\iter_common.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\move_iterator.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\ptr_iterator.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\algorithm.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\array.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\static_array.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\static_queue.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\string.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\iter_version.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\log.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\container\iterator\iterator.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\mem_common.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\allocator.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\buffer.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\deleter.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\shared_ptr.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\static_buffer.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\unique_ptr.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\memory\memory.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_common.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\core.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\string_convert.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\utility.cxx">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\src\core\type.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,8 @@
-#include "mini_engine.h"
-#include "container.h"
-#include "memory/shared_ptr.h"
+#include "core/assert.h"
+
+import mini.test;
+
+using namespace mini;
 
 static constexpr bool ConstexprSharedPtrTest()
 {

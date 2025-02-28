@@ -1,11 +1,10 @@
 module;
 
-#include "mini_engine.h"
 #include "core/define.h"
-#include "core/type.h"
 
 export module mini.math:vector2;
 
+import mini.core;
 import :common;
 
 export namespace mini

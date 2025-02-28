@@ -1,6 +1,9 @@
 #pragma once
 
-#include "core/type.h"
+#include <cassert>
+#include <utility>
+#include <source_location>
+#include "core/define.h"
 #include "core/macro.h"
 
 #if defined(DEBUG) && !defined(NOASSERT)
@@ -71,7 +74,7 @@ namespace mini::detail
 {
 
 template <typename... Args>
-struct FalseArgs : FalseT {};
+struct FalseArgs { static constexpr bool value = false; };
 
 #ifdef DEBUG_ASSERT
 
@@ -85,19 +88,19 @@ struct FalseArgs : FalseT {};
                                std::source_location const& =
                                std::source_location::current());
 
-[[force_inline]] constexpr bool TestExpr(bool arg) noexcept
+inline constexpr bool TestExpr(bool arg) noexcept
 {
     return arg;
 }
 
 template <typename T>
-[[force_inline]] constexpr bool TestExpr(T const& arg) noexcept
+inline constexpr bool TestExpr(T const& arg) noexcept
 {
     return !!(arg);
 }
 
 template <typename T>
-[[force_inline]] constexpr bool TestExpr(T* const pointer) noexcept
+inline constexpr bool TestExpr(T* const pointer) noexcept
 {
     return pointer != nullptr;
 }

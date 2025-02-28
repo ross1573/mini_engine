@@ -1,7 +1,3 @@
-module;
-
-#include "mini_engine.h"
-
 export module mini.math;
 
 export import :common;

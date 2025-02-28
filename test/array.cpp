@@ -1,11 +1,12 @@
-#include "mini_engine.h"
-#include "test/container.h"
-#include "container/iterator/ptr_iterator.h"
-
 #include <vector>
 #include <numeric>
+#include <memory>
+#include "test/test_macro.h"
+#include "core/assert.h"
 
-import mini;
+import mini.test;
+
+using namespace mini;
 
 [[maybe_unused]] static constexpr void ArrayConstraints()
 {

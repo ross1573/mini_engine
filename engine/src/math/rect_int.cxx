@@ -1,11 +1,10 @@
 module;
 
-#include "mini_engine.h"
 #include "core/define.h"
-#include "core/type.h"
 
 export module mini.math:rect_int;
 
+import mini.core;
 import :common;
 import :vector2;
 import :vector2_int;

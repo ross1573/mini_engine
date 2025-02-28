@@ -1,6 +1,7 @@
-#include "mini_engine.h"
 #include "core/assert.h"
-#include "core/string.h"
+
+import mini.core;
+import mini.log;
 
 namespace mini::detail
 {

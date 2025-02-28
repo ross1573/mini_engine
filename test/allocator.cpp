@@ -1,6 +1,6 @@
-#include "mini_engine.h"
-#include "container.h"
-#include "memory/allocator.h"
+import mini.test;
+
+using namespace mini;
 
 template <typename U>
 inline auto RebindAllocator(Allocator<Foo>);

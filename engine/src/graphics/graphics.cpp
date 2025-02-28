@@ -1,24 +1,12 @@
-#include "mini_engine.h"
+module;
 
-namespace mini::graphics
-{
+#include "core/macro.h"
+#include "core/assert.h"
 
-String ToString(API api)
-{
-    switch (api)
-    {
-        case API::D3D12: return String{"DirectX3D 12"};
-        case API::Metal: return String{"Metal"};
-        case API::Vulkan: return String{"Vulkan"};
+module mini.graphics;
 
-        case API::Null:
-        default: break;
-    }
-
-    return String{"null"};
-}
-
-} // namespace mini::graphics
+import mini.core;
+import mini.log;
 
 namespace mini
 {

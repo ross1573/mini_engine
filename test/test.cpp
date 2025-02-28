@@ -1,4 +1,4 @@
-#include "mini_engine.h"
+import mini;
 
 void AllocatorTest();
 void ArrayTest();

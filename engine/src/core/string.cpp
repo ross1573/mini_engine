@@ -1,5 +1,9 @@
-#include "mini_engine.h"
-#include "core/string.h"
+module;
+
+#include <windows.h>
+#include "core/define.h"
+
+module mini.core:string;
 
 namespace mini::memory
 {

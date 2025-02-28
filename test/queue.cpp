@@ -1,10 +1,12 @@
-#include "mini_engine.h"
-#include "test/container.h"
+#include "core/assert.h"
+#include "test/test_macro.h"
 
 #include <queue>
 #include <numeric>
 
-import mini;
+import mini.test;
+
+using namespace mini;
 
 [[maybe_unused]] static void QueueConstraints()
 {
