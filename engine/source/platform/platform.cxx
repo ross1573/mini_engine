@@ -1,0 +1,45 @@
+export module mini.platform;
+
+import mini.core;
+export import :window;
+export import :handle;
+
+export namespace mini
+{
+
+class Platform
+{
+    typedef mini::platform::Handle Handle;
+    typedef mini::platform::Window Window;
+
+    friend class Engine;
+    friend void MiniLaunch(Handle*);
+
+private:
+    static Handle* m_Handle;
+    static Window* m_Window;
+
+public:
+    template <typename T = Handle> static T* GetHandle() noexcept;
+    template <typename T = Window> static T* GetWindow() noexcept;
+
+private:
+    Platform() = default;
+
+    static bool Initialize(Handle*);
+    static void Shutdown();
+};
+
+template <typename T>
+inline T* Platform::GetHandle() noexcept
+{
+    return static_cast<T*>(m_Handle);
+}
+
+template <typename T>
+inline T* Platform::GetWindow() noexcept
+{
+    return static_cast<T*>(m_Window);
+}
+
+} // namespace mini

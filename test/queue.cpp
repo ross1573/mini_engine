@@ -1,8 +1,8 @@
-#include "core/assert.h"
-#include "test/test_macro.h"
-
 #include <queue>
 #include <numeric>
+
+#include "core/assert.h"
+#include "test/test_macro.h"
 
 import mini.test;
 
