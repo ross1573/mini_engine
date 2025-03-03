@@ -12,12 +12,13 @@ export namespace mini
 class ENGINE_API Engine
 {
 public:
-    typedef void (*QuitFunc)();
+    typedef void (*CallbackFunc)();
 
 private:
     bool m_Running;
 
-    Array<QuitFunc> m_QuitCallback;
+    Array<CallbackFunc> m_QuitCallback;
+    Array<CallbackFunc> m_ShutdownCallback;
 
 private:
     Engine();
@@ -31,7 +32,8 @@ public:
     static void Quit();
     static void Abort(String = "");
 
-    static void AtQuit(QuitFunc);
+    static void AtQuit(CallbackFunc);
+    static void AtShutdown(CallbackFunc);
 
     inline static bool IsRunning() { return g_Engine && g_Engine->m_Running; }
 };

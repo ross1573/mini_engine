@@ -22,7 +22,7 @@ public:
 
 protected:
     bool Initialize() final;
-    bool PollEvents() final;
+    void PollEvents() final;
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;

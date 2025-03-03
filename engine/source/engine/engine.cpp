@@ -17,6 +17,7 @@ namespace mini
 Engine::Engine()
     : m_Running(false)
     , m_QuitCallback()
+    , m_ShutdownCallback()
 {
 }
 
@@ -42,6 +43,11 @@ void Engine::Shutdown()
     Graphics::Shutdown();
     Platform::Shutdown();
 
+    for (auto func : g_Engine->m_ShutdownCallback)
+    {
+        func();
+    }
+
     DELETE(g_Engine);
 }
 
@@ -49,22 +55,17 @@ void Engine::Launch()
 {
     ASSERT(g_Engine == nullptr, "another instance of engine is running");
     g_Engine = new Engine();
-    
+
     if (!g_Engine->Initialize())
     {
         return;
     }
 
     Platform::GetWindow()->Show();
+    Platform::GetHandle()->PollEvents();
 
     while (g_Engine->m_Running)
     {
-        if (!Platform::GetHandle()->PollEvents())
-        {
-            g_Engine->m_Running = false;
-            break;
-        }
-
         Graphics::BeginFrame();
         {
             RectInt windowSize = Platform::GetWindow()->GetSize();
@@ -74,6 +75,8 @@ void Engine::Launch()
             Graphics::GetRenderContext()->SetScissorRect(windowSize);
         }
         Graphics::EndFrame();
+
+        Platform::GetHandle()->PollEvents();
     }
 
     g_Engine->Shutdown();
@@ -105,9 +108,14 @@ void Engine::Abort(String msg)
     std::exit(-1);
 }
 
-void Engine::AtQuit(QuitFunc func)
+void Engine::AtQuit(CallbackFunc func)
 {
     g_Engine->m_QuitCallback.Push(func);
+}
+
+void Engine::AtShutdown(CallbackFunc func)
+{
+    g_Engine->m_ShutdownCallback.Push(func);
 }
 
 } // namespace mini

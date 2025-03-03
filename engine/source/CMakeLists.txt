@@ -13,7 +13,7 @@ add_subdirectory(core)
 add_subdirectory(platform)
 add_subdirectory(graphics)
 
-if (MSVC)
+if (WIN32)
     add_subdirectory(windows)
     add_subdirectory(d3d12)
 endif()

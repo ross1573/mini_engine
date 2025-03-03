@@ -6,10 +6,10 @@ module;
 module mini.windows;
 
 import mini.core;
+import mini.engine;
 import mini.graphics;
 import mini.platform;
 import mini.windows;
-import mini.engine;
 
 #include "core/option.h"
 
@@ -82,7 +82,7 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
     return createDeviceFunc();
 }
 
-bool Handle::PollEvents()
+void Handle::PollEvents()
 {
     MSG msg{};
 
@@ -93,11 +93,9 @@ bool Handle::PollEvents()
 
         if (msg.message == WM_QUIT)
         {
-            return false;
+            Engine::Quit();
         }
     }
-
-    return true;
 }
 
 void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,

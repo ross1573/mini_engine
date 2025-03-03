@@ -1,37 +1,12 @@
-module;
-
-#pragma warning(push)
-#pragma warning(disable: 5202) // msvc complains about doing weird things
-
-#pragma comment(lib, "DXGI.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "D3D12.lib")
-#pragma comment(lib, "D3DCompiler.lib")
-
-#if defined(_M_ARM64EC)
-extern "C" __declspec(dllexport) extern const char* D3D12SDKPath = "./engine/external/D3D12/arm64/";
-#elif defined(_M_ARM64)
-extern "C" __declspec(dllexport) extern const char* D3D12SDKPath = "./engine/external/D3D12/arm64/";
-#elif defined(_M_AMD64)
-extern "C" __declspec(dllexport) extern const char* D3D12SDKPath = "./engine/external/D3D12/x64/";
-#elif defined(_M_IX86)
-extern "C" __declspec(dllexport) extern const char* D3D12SDKPath = "./engine/external/D3D12/win32/";
-#endif
-
-#pragma warning(pop)
-
 export module mini.d3d12;
 
 export import :device;
 export import :render_context;
 export import :swap_chain;
 
-namespace mini::graphics
-{
+extern "C" __declspec(dllexport) extern const char* D3D12SDKPath = "./";
 
-extern "C" __declspec(dllexport) Device* CreateGraphicDevice()
+extern "C" __declspec(dllexport) mini::graphics::Device* CreateGraphicDevice()
 {
-    return new d3d12::Device();
+    return new mini::d3d12::Device();
 }
-
-} // namespace mini::graphics

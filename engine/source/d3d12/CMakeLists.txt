@@ -38,6 +38,14 @@ PUBLIC
     mini.graphics
 
 PRIVATE
+    d3d12.lib
+    dxgi.lib
+    dxguid.lib
+    d3dcompiler.lib
     mini.windows
     mini.engine
 )
+
+include(${ENGINE_EXTERNAL_DIR}/D3D12/copy_d3d12.cmake)
+
+copy_d3d12(mini.d3d12)
