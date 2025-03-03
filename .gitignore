@@ -4,7 +4,6 @@ build/
 intermediate/
 
 # cmake
-cmake/
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -17,6 +16,8 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+*.generated.h
+*.dir/
 
 # visual studio
 .vs/
