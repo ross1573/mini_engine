@@ -46,6 +46,6 @@ PRIVATE
     mini.engine
 )
 
-include(${ENGINE_EXTERNAL_DIR}/D3D12/copy_d3d12.cmake)
+include(${ENGINE_EXTERNAL_DIR}/D3D12/d3d12.cmake)
 
 copy_d3d12(mini.d3d12)
