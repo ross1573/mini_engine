@@ -1,16 +1,17 @@
 module;
 
-#include <windows.h>
 #include "resource/resource.h"
-#include "windows/assert.h"
+#include "core/assert.h"
 
-module mini.windows:handle;
+module mini.windows;
 
-import mini.windows;
+import mini.core;
+import mini.graphics;
 import mini.platform;
-import mini.options;
+import mini.windows;
 import mini.engine;
-import mini.d3d12;
+
+#include "core/option.h"
 
 namespace mini::windows
 {
@@ -29,9 +30,9 @@ Handle::~Handle()
 
 bool Handle::Initialize()
 {
-    auto className = StringConverter<char, wchar_t>(mini::options::name);
+    auto className = mini::options::name;
 
-    WNDCLASSEXW wcex =
+    WNDCLASSEX wcex =
     {
         .cbSize = sizeof(WNDCLASSEX),
         .style = CS_HREDRAW | CS_VREDRAW,
@@ -39,16 +40,15 @@ bool Handle::Initialize()
         .cbClsExtra = 0,
         .cbWndExtra = 0,
         .hInstance = m_Instance,
-        .hIcon = LoadIconW(m_Instance, MAKEINTRESOURCEW(IDI_DIRECTX12)),
-        .hCursor = LoadCursorW(nullptr, IDC_ARROW),
+        .hIcon = LoadIconA(m_Instance, MAKEINTRESOURCE(IDI_DIRECTX12)),
+        .hCursor = LoadCursorA(nullptr, IDC_ARROW),
         .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
-        .lpszMenuName = MAKEINTRESOURCEW(IDC_DIRECTX12),
-        .lpszClassName = className.Data(),
-        .hIconSm = LoadIconW(wcex.hInstance, MAKEINTRESOURCEW(IDI_SMALL)),
+        .lpszMenuName = MAKEINTRESOURCE(IDC_DIRECTX12),
+        .lpszClassName = className,
+        .hIconSm = LoadIconA(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL)),
     };
 
-    RegisterClassExW(&wcex);
-
+    RegisterClassExA(&wcex);
     return true;
 }
 
@@ -59,28 +59,45 @@ platform::Window* Handle::CreatePlatformWindow()
 
 graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 {
+    HMODULE graphicModule = nullptr;
+    FARPROC createDeviceAddr = nullptr;
+
     switch (api)
     {
-        case graphics::API::D3D12: return new d3d12::Device();
+        case graphics::API::D3D12:
+            graphicModule = LoadLibraryA("mini.d3d12.dll");
+            createDeviceAddr = GetProcAddress(graphicModule, "CreateGraphicDevice");
+            break;
+
+        default: break;
     }
 
-    return nullptr;
+    ENSURE(createDeviceAddr) return nullptr;
+
+#pragma warning(push)
+#pragma warning(disable: 4191)
+    typedef graphics::Device* (*CreateDeviceFuncT)();
+    CreateDeviceFuncT createDeviceFunc = reinterpret_cast<CreateDeviceFuncT>(createDeviceAddr);
+#pragma warning(pop)
+    return createDeviceFunc();
 }
 
-void Handle::PollEvents()
+bool Handle::PollEvents()
 {
     MSG msg{};
 
-    while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+    while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE))
     {
         TranslateMessage(&msg);
-        DispatchMessageW(&msg);
+        DispatchMessageA(&msg);
 
         if (msg.message == WM_QUIT)
         {
-            Engine::Quit();
+            return false;
         }
     }
+
+    return true;
 }
 
 void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
@@ -95,9 +112,17 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
             break;
 
         case WM_KEYDOWN:
-            if (wParam == VK_ESCAPE)
+            switch (wParam)
             {
-                Engine::Abort("Abort!");
+                case VK_ESCAPE:
+                    Engine::Abort("Abort!");
+                    break;
+
+                case 'Q':
+                    Engine::Quit();
+                    break;
+
+                default: break;
             }
             break;
 
@@ -113,7 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     windows::Handle* handle = Platform::GetHandle<windows::Handle>();
     handle->ProcessMessage(hWnd, message, wParam, lParam);
-    return DefWindowProcW(hWnd, message, wParam, lParam);
+    return DefWindowProcA(hWnd, message, wParam, lParam);
 }
 
 } // namespace mini::windows

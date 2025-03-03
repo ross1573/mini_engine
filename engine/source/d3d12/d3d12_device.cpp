@@ -1,19 +1,17 @@
 module;
 
-#include <wrl.h>
-#include <dxgi1_6.h>
-#include <dxgidebug.h>
 #include "core/assert.h"
-#include "windows/assert.h"
 
-module mini.d3d12:device;
+module mini.d3d12;
 
 import mini.core;
 import mini.windows;
-import mini.options;
+import mini.engine;
 import :swap_chain;
 import :command_queue;
 import :render_context;
+
+#include "core/option.h"
 
 namespace mini::d3d12
 {
@@ -144,7 +142,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         case D3D_FEATURE_LEVEL_12_0: selectedLevelStr = "D3D_FEATURE_LEVEL_12_0"; break;
         case D3D_FEATURE_LEVEL_11_1: selectedLevelStr = "D3D_FEATURE_LEVEL_11_1"; break;
         case D3D_FEATURE_LEVEL_11_0: selectedLevelStr = "D3D_FEATURE_LEVEL_11_0"; break;
-        default: ASSERT(false);
+        default: ASSERT(false); selectedLevelStr = "unsupported feature level"; break;
     }
 
     DXGI_ADAPTER_DESC adapterDesc{};
@@ -162,8 +160,8 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 
 void Device::EnableDebugLayer()
 {
-#ifdef DEBUG
-    std::atexit([]() noexcept
+#if DEBUG
+    Engine::AtQuit([]() noexcept
     {
         SharedPtr<IDXGIDebug1> debug;
         ENSURE(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))

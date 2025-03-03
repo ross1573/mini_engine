@@ -1,8 +1,6 @@
 module;
 
 #include <atomic>
-#include "core/define.h"
-#include "core/assert.h"
 
 export module mini.core:shared_ptr;
 

@@ -1,12 +1,8 @@
 module;
 
-#include <d3d12.h>
-#include <wrl.h>
 #include "core/assert.h"
-#include "core/macro.h"
-#include "windows/assert.h"
 
-module mini.d3d12:render_context;
+module mini.d3d12;
 
 import mini.core;
 import :device;

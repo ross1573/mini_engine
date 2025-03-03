@@ -1,7 +1,6 @@
 module;
 
 #include <chrono>
-#include "core/define.h"
 
 export module mini.test;
 

@@ -1,7 +1,3 @@
-module;
-
-#include "core/define.h"
-
 export module mini.core:rect;
 
 import :type;

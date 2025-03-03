@@ -1,5 +1,6 @@
 module;
 
+#include <cstdlib>
 #include "core/assert.h"
 
 module mini.engine;
@@ -7,15 +8,15 @@ module mini.engine;
 import mini.core;
 import mini.platform;
 import mini.graphics;
-import mini.options;
+
+#include "core/option.h"
 
 namespace mini
 {
 
-Engine* Engine::m_Engine = nullptr;
-
 Engine::Engine()
     : m_Running(false)
+    , m_QuitCallback()
 {
 }
 
@@ -41,24 +42,28 @@ void Engine::Shutdown()
     Graphics::Shutdown();
     Platform::Shutdown();
 
-    DELETE(m_Engine);
+    DELETE(g_Engine);
 }
 
 void Engine::Launch()
 {
-    ASSERT(m_Engine == nullptr, "another instance of engine is running");
-    m_Engine = new Engine();
+    ASSERT(g_Engine == nullptr, "another instance of engine is running");
+    g_Engine = new Engine();
     
-    if (!m_Engine->Initialize())
+    if (!g_Engine->Initialize())
     {
         return;
     }
 
     Platform::GetWindow()->Show();
 
-    while (m_Engine->m_Running)
+    while (g_Engine->m_Running)
     {
-        Platform::GetHandle()->PollEvents();
+        if (!Platform::GetHandle()->PollEvents())
+        {
+            g_Engine->m_Running = false;
+            break;
+        }
 
         Graphics::BeginFrame();
         {
@@ -71,14 +76,19 @@ void Engine::Launch()
         Graphics::EndFrame();
     }
 
-    m_Engine->Shutdown();
+    g_Engine->Shutdown();
 }
 
 void Engine::Quit()
 {
-    if (m_Engine != nullptr)
+    for (auto func : g_Engine->m_QuitCallback)
     {
-        m_Engine->m_Running = false;
+        func();
+    }
+
+    if (g_Engine != nullptr)
+    {
+        g_Engine->m_Running = false;
     }
 }
 
@@ -86,13 +96,18 @@ void Engine::Abort(String msg)
 {
     Platform::GetWindow()->DialogCritical(msg);
 
-    if (m_Engine != nullptr)
+    if (g_Engine != nullptr)
     {
-        m_Engine->m_Running = false;
-        m_Engine->Shutdown();
+        g_Engine->m_Running = false;
+        g_Engine->Shutdown();
     }
 
     std::exit(-1);
+}
+
+void Engine::AtQuit(QuitFunc func)
+{
+    g_Engine->m_QuitCallback.Push(func);
 }
 
 } // namespace mini

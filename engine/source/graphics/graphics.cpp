@@ -1,6 +1,5 @@
 module;
 
-#include "core/macro.h"
 #include "core/assert.h"
 
 module mini.graphics;
@@ -12,41 +11,41 @@ namespace mini
 
 bool Graphics::Initialize(graphics::Device* device)
 {
-    VERIFY(m_Device == nullptr && device != nullptr);
+    VERIFY(g_Device == nullptr && device != nullptr);
 
-    m_Device = device;
-    m_CurrentAPI = m_Device->GetAPI();
-    VERIFY(m_CurrentAPI != graphics::API::Null);
-    VERIFY(m_Device->Initialize(), "failed to initialize graphics device");
+    g_Device = device;
+    g_CurrentAPI = g_Device->GetAPI();
+    VERIFY(g_CurrentAPI != graphics::API::Null);
+    VERIFY(g_Device->Initialize(), "failed to initialize graphics device");
 
-    m_RenderContext = m_Device->CreateRenderContext();
-    VERIFY(m_RenderContext->Initialize(), "Failed to create render context");
+    g_RenderContext = g_Device->CreateRenderContext();
+    VERIFY(g_RenderContext->Initialize(), "Failed to create render context");
 
-    m_SwapChain = m_Device->CreateSwapChain();
-    VERIFY(m_SwapChain->Initialize(), "Failed to create swap chain");
+    g_SwapChain = g_Device->CreateSwapChain();
+    VERIFY(g_SwapChain->Initialize(), "Failed to create swap chain");
 
     return true;
 }
 
 void Graphics::Shutdown()
 {
-    DELETE(m_RenderContext);
-    DELETE(m_SwapChain);
-    DELETE(m_Device);
+    DELETE(g_RenderContext);
+    DELETE(g_SwapChain);
+    DELETE(g_Device);
 
-    m_CurrentAPI = API::Null;
+    g_CurrentAPI = API::Null;
 }
 
 void Graphics::BeginFrame()
 {
-    m_RenderContext->BeginRender();
+    g_RenderContext->BeginRender();
 }
 
 void Graphics::EndFrame()
 {
-    m_RenderContext->EndRender();
-    m_RenderContext->Execute();
-    m_SwapChain->Present();
+    g_RenderContext->EndRender();
+    g_RenderContext->Execute();
+    g_SwapChain->Present();
 }
 
 void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)

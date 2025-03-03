@@ -1,7 +1,6 @@
 module;
 
 #include <memory>
-#include "core/assert.h"
 
 export module mini.core:memory;
 

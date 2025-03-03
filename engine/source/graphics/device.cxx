@@ -1,5 +1,3 @@
-module;
-
 export module mini.graphics:device;
 
 import mini.core;
@@ -12,7 +10,7 @@ namespace mini { class Graphics; }
 export namespace mini::graphics
 {
 
-class Device
+class GRAPHICS_API Device
 {
     friend class mini::Graphics;
 

@@ -1,10 +1,9 @@
 module;
 
 #include <windows.h>
-#include <source_location>
-#include "core/define.h"
+#include <string.h>
 
-module mini.core:mem_string;
+module mini.core;
 
 import :type;
 
@@ -13,23 +12,23 @@ namespace mini::memory
 
 #ifdef _MSC_VER
 
-SizeT ConvertLength(char const* src, SizeT srcLen)
+CORE_API SizeT ConvertLength(char const* src, SizeT srcLen)
 {
     return (SizeT)MultiByteToWideChar(CP_UTF8, 0, src, (int)srcLen, NULL, 0) + 1;
 }
 
-SizeT ConvertLength(wchar_t const* src, SizeT srcLen)
+CORE_API SizeT ConvertLength(wchar_t const* src, SizeT srcLen)
 {
     return (SizeT)WideCharToMultiByte(CP_UTF8, 0, src, (int)srcLen, NULL, 0, NULL, NULL) + 1;
 }
 
-void Convert(char const* src, SizeT srcLen, wchar_t* dst, SizeT dstLen)
+CORE_API void Convert(char const* src, SizeT srcLen, wchar_t* dst, SizeT dstLen)
 {
     MultiByteToWideChar(CP_UTF8, 0, src, (int)srcLen, dst, (int)dstLen);
     dst[dstLen - 1] = '\0';
 }
 
-void Convert(wchar_t const* src, SizeT srcLen, char* dst, SizeT dstLen)
+CORE_API void Convert(wchar_t const* src, SizeT srcLen, char* dst, SizeT dstLen)
 {
     WideCharToMultiByte(CP_UTF8, 0, src, (int)srcLen, dst, (int)dstLen, NULL, NULL);
     dst[dstLen - 1] = '\0';
@@ -37,7 +36,7 @@ void Convert(wchar_t const* src, SizeT srcLen, char* dst, SizeT dstLen)
 
 #endif // _MSC_VER
 
-SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
+CORE_API SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
 {
     if (src == nullptr || srcCount == 0)
     {
@@ -62,7 +61,7 @@ SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
     return (SizeT)(dest - begin);
 }
 
-SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
+CORE_API SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
 {
     SizeT len = 0;
     char buf[10] = {0, };
@@ -81,7 +80,7 @@ SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
     return len;
 }
 
-SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location const& loc)
+CORE_API SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location const& loc)
 {
     char* begin = dest;
     char const* funcName = loc.function_name();

@@ -1,9 +1,6 @@
-export module mini.options;
+#pragma once
 
-import mini.core;
-import mini.graphics;
-
-export namespace mini::options // should be saved into a file
+namespace mini::options // should be saved into a file
 {
 
 inline constexpr char const* name = "Engine";
@@ -13,7 +10,7 @@ inline constexpr RectInt windowRect = RectInt(300, 300, 1280, 720);
 inline constexpr uint32 x = 300;
 inline constexpr uint32 y = 300;
 inline constexpr uint32 width = 1280;
-inline constexpr uint32 height = 720; 
+inline constexpr uint32 height = 720;
 
 inline constexpr bool fullscreen = false;
 inline constexpr bool resizableWindow = true;

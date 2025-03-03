@@ -1,18 +1,23 @@
-module;
-
 export module mini.engine;
 
 import mini.core;
 
+namespace mini { class Engine; }
+
+ENGINE_API mini::Engine* g_Engine; 
+
 export namespace mini
 {
 
-class Engine
+class ENGINE_API Engine
 {
-private:
-    static Engine* m_Engine;
+public:
+    typedef void (*QuitFunc)();
 
+private:
     bool m_Running;
+
+    Array<QuitFunc> m_QuitCallback;
 
 private:
     Engine();
@@ -26,7 +31,9 @@ public:
     static void Quit();
     static void Abort(String = "");
 
-    inline static bool IsRunning() { return m_Engine && m_Engine->m_Running; }
+    static void AtQuit(QuitFunc);
+
+    inline static bool IsRunning() { return g_Engine && g_Engine->m_Running; }
 };
 
 } // namespace mini

@@ -3,7 +3,6 @@ module;
 #include <string>
 #include <string_view>
 #include <format>
-#include "core/define.h"
 
 export module mini.core:string;
 

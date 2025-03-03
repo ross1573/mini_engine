@@ -1,7 +1,6 @@
 module;
 
 #include <limits>
-#include "core/define.h"
 
 export module mini.core:static_buffer;
 

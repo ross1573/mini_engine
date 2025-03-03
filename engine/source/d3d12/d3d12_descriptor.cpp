@@ -1,10 +1,8 @@
 module;
 
-#include <d3d12.h>
 #include "core/assert.h"
-#include "windows/assert.h"
 
-module mini.d3d12:descriptor;
+module mini.d3d12;
 
 namespace mini::d3d12
 {

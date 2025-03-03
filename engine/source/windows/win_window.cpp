@@ -1,16 +1,14 @@
 module;
 
-#include <windows.h>
-#include "core/define.h"
 #include "resource/resource.h"
-#include "windows/assert.h"
+#include "core/assert.h"
 
-module mini.windows:window;
+module mini.windows;
 
 import mini.core;
-import mini.windows;
 import mini.platform;
-import mini.options;
+
+#include "core/option.h"
 
 namespace mini::windows
 {
@@ -24,8 +22,8 @@ Window::Window()
 
 bool Window::Initialize()
 {
-    auto className = StringConverter<char, wchar_t>(mini::options::name);
-    auto titleName = StringConverter<char, wchar_t>(mini::options::title);
+    auto className = mini::options::name;
+    auto titleName = mini::options::title;
     m_Rect = mini::options::windowRect;
 
     HINSTANCE instance = Platform::GetHandle<Handle>()->GetHINSTANCE();
@@ -37,9 +35,9 @@ bool Window::Initialize()
         style |= WS_THICKFRAME;
     }
 
-    m_WindowHandle = CreateWindowExW(styleEx,
-                                     className.Data(),
-                                     titleName.Data(),
+    m_WindowHandle = CreateWindowExA(styleEx,
+                                     className,
+                                     titleName,
                                      style,
                                      m_Rect.x, m_Rect.y,
                                      m_Rect.width, m_Rect.height,
@@ -57,12 +55,7 @@ bool Window::Initialize()
 
 void Window::DialogCritical(String const& msg)
 {
-    wchar_t buf[256]; // make sure there's no more allocation
-    SizeT len = mini::memory::ConvertLength(msg.data(), (SizeT)msg.size());
-    mini::memory::Convert(msg.data(), (SizeT)msg.size(), buf, len);
-    buf[255] = '\0';
-
-    MessageBoxW(m_WindowHandle, buf, nullptr, 0);
+    MessageBoxA(m_WindowHandle, msg.data(), nullptr, 0);
 }
 
 void Window::Resize(RectInt const& rect)

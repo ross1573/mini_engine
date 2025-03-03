@@ -1,7 +1,3 @@
-module;
-
-#include <windows.h>
-
 export module mini.windows:window;
 
 import mini.core;
@@ -10,7 +6,7 @@ import mini.platform;
 export namespace mini::windows
 {
 
-class Window : public platform::Window
+class WINDOWS_API Window : public platform::Window
 {
 private:
     HWND m_WindowHandle;

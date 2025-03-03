@@ -1,8 +1,3 @@
-module;
-
-#include <d3d12.h>
-#include <dxgi1_6.h>
-
 export module mini.d3d12:swap_chain;
 
 import mini.core;

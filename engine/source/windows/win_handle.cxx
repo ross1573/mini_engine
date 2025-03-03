@@ -1,7 +1,3 @@
-module;
-
-#include <windows.h>
-
 export module mini.windows:handle;
 
 import mini.platform;
@@ -11,7 +7,7 @@ import :window;
 export namespace mini::windows
 {
 
-class Handle : public platform::Handle
+class WINDOWS_API Handle : public platform::Handle
 {
 private:
     HINSTANCE m_Instance;
@@ -26,7 +22,7 @@ public:
 
 protected:
     bool Initialize() final;
-    void PollEvents() final;
+    bool PollEvents() final;
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;

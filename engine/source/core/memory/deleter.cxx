@@ -1,8 +1,3 @@
-module;
-
-#include "core/define.h"
-#include "core/assert.h"
-
 export module mini.core:deleter;
 
 import :type;

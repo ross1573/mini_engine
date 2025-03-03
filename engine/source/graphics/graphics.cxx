@@ -6,10 +6,15 @@ export import :device;
 export import :render_context;
 export import :swap_chain;
 
+GRAPHICS_API mini::graphics::API g_CurrentAPI = mini::graphics::API::Null;
+GRAPHICS_API mini::graphics::Device* g_Device = nullptr;
+GRAPHICS_API mini::graphics::SwapChain* g_SwapChain = nullptr;
+GRAPHICS_API mini::graphics::RenderContext* g_RenderContext = nullptr;
+
 export namespace mini
 {
 
-class Graphics
+class GRAPHICS_API Graphics
 {
     friend class Engine;
 
@@ -18,12 +23,6 @@ public:
     typedef graphics::Device Device;
     typedef graphics::SwapChain SwapChain;
     typedef graphics::RenderContext RenderContext;
-
-private:
-    static inline API m_CurrentAPI = API::Null;
-    static inline Device* m_Device = nullptr;
-    static inline SwapChain* m_SwapChain = nullptr;
-    static inline RenderContext* m_RenderContext = nullptr;
 
 public:
     static void ChangeResolution(uint32, uint32, bool);
@@ -45,32 +44,34 @@ private:
     static void EndFrame();
 };
 
+using namespace graphics;
+
 inline bool Graphics::IsDeviceCurrent() noexcept
 {
-    return m_Device != nullptr;
+    return g_Device != nullptr;
 }
 
 inline bool Graphics::IsDeviceCurrent(API api) noexcept
 {
-    return m_Device != nullptr && m_CurrentAPI == api;
+    return g_Device != nullptr && g_CurrentAPI == api;
 }
 
 template <typename T>
 inline T* Graphics::GetDevice() noexcept
 {
-    return static_cast<T*>(m_Device);
+    return static_cast<T*>(g_Device);
 }
 
 template <typename T>
 inline T* Graphics::GetSwapChain() noexcept
 {
-    return static_cast<T*>(m_SwapChain);
+    return static_cast<T*>(g_SwapChain);
 }
 
 template <typename T>
 inline T* Graphics::GetRenderContext() noexcept
 {
-    return static_cast<T*>(m_RenderContext);
+    return static_cast<T*>(g_RenderContext);
 }
 
 } // namespcae mini

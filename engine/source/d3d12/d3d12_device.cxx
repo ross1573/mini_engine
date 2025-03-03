@@ -1,9 +1,3 @@
-module;
-
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include "windows/assert.h"
-
 export module mini.d3d12:device;
 
 import mini.core;

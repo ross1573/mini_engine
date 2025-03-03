@@ -9,18 +9,17 @@ void TestMain();
 export module mini.launcher;
 
 import mini.platform;
-import mini.graphics;
 import mini.engine;
 
 export namespace mini
 {
 
-void MiniLaunch(platform::Handle* handle)
+void LaunchEngine(platform::Handle* handle)
 {
 #ifdef TEST_BUILD
     TestMain();
     return;
-#endif 
+#endif
 
     ASSERT(handle);
     VERIFY(Platform::Initialize(handle), "failed to initialize platform");

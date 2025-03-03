@@ -1,17 +1,22 @@
 #include <windows.h>
 
+#if DEBUG
+#   include <crtdbg.h>
+#   include "core/assert.h"
+#endif
+
 import mini.launcher;
 import mini.windows;
 
 int APIENTRY wWinMain(_In_ HINSTANCE inst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
 {
-#ifdef DEBUG
+#if DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    mini::MiniLaunch(new mini::windows::Handle(inst));
+    mini::LaunchEngine(new mini::windows::Handle(inst));
 
-#ifdef DEBUG
+#if DEBUG
     ASSERT(_CrtCheckMemory());
 #endif
     return TRUE;

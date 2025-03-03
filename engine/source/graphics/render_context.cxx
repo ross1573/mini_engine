@@ -7,7 +7,7 @@ namespace mini { class Graphics; }
 export namespace mini::graphics
 {
 
-class RenderContext
+class GRAPHICS_API RenderContext
 {
     friend class mini::Graphics;
 

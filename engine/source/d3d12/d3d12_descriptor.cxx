@@ -1,7 +1,3 @@
-module;
-
-#include <d3d12.h>
-
 export module mini.d3d12:descriptor;
 
 import mini.core;

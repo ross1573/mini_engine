@@ -9,7 +9,7 @@ namespace mini { class Graphics; }
 export namespace mini::graphics
 {
 
-class SwapChain
+class GRAPHICS_API SwapChain
 {
     friend class mini::Graphics;
 

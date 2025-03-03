@@ -1,21 +1,19 @@
 module;
 
-#include <d3d12.h>
-#include <dxgi1_6.h>
 #include "core/assert.h"
-#include "windows/assert.h"
 
-module mini.d3d12:swap_chain;
+module mini.d3d12;
 
 import mini.core;
 import mini.platform;
 import mini.windows;
-import mini.options;
 import :device;
 import :descriptor;
 import :swap_chain;
 import :command_queue;
 import :render_context;
+
+#include "core/option.h"
 
 namespace mini::d3d12
 {

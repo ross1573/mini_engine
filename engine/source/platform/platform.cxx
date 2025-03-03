@@ -4,20 +4,19 @@ import mini.core;
 export import :window;
 export import :handle;
 
+PLATFORM_API mini::platform::Handle* g_Handle = nullptr;
+PLATFORM_API mini::platform::Window* g_Window = nullptr;
+
 export namespace mini
 {
 
-class Platform
+class PLATFORM_API Platform
 {
     typedef mini::platform::Handle Handle;
     typedef mini::platform::Window Window;
 
     friend class Engine;
-    friend void MiniLaunch(Handle*);
-
-private:
-    static Handle* m_Handle;
-    static Window* m_Window;
+    friend void LaunchEngine(Handle*);
 
 public:
     template <typename T = Handle> static T* GetHandle() noexcept;
@@ -33,13 +32,13 @@ private:
 template <typename T>
 inline T* Platform::GetHandle() noexcept
 {
-    return static_cast<T*>(m_Handle);
+    return static_cast<T*>(g_Handle);
 }
 
 template <typename T>
 inline T* Platform::GetWindow() noexcept
 {
-    return static_cast<T*>(m_Window);
+    return static_cast<T*>(g_Window);
 }
 
 } // namespace mini

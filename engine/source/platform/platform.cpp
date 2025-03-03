@@ -1,39 +1,27 @@
 module;
 
-#include "core/define.h"
 #include "core/assert.h"
-#include "core/macro.h"
 
 module mini.platform;
 
 import mini.core;
 
-#if PLATFORM_WINDOWS
-import mini.windows;
-using PlatformHandleT = mini::windows::Handle;
-#else
-using PlatformHandleT = void;
-#endif
-
 namespace mini
 {
-
-Platform::Handle* Platform::m_Handle = nullptr;
-Platform::Window* Platform::m_Window = nullptr;
 
 bool Platform::Initialize(Handle* handle)
 {
     ASSERT(handle);
 
-    m_Handle = handle;
-    if (!m_Handle->Initialize())
+    g_Handle = handle;
+    if (!g_Handle->Initialize())
     {
         Log::Error("Failed to initialize platform handle");
         return false;
     }
 
-    m_Window = m_Handle->CreatePlatformWindow();
-    if (!m_Window->Initialize())
+    g_Window = g_Handle->CreatePlatformWindow();
+    if (!g_Window->Initialize())
     {
         Log::Error("Failed to initialize platform window");
         return false;
@@ -44,8 +32,8 @@ bool Platform::Initialize(Handle* handle)
 
 void Platform::Shutdown()
 {
-    DELETE(m_Window);
-    DELETE(m_Handle);
+    DELETE(g_Window);
+    DELETE(g_Handle);
 }
 
 } // namespace mini

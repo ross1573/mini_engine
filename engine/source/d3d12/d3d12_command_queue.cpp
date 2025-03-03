@@ -1,9 +1,8 @@
 module;
 
-#include <d3d12.h>
-#include "windows/assert.h"
+#include "core/assert.h"
 
-module mini.d3d12:command_queue;
+module mini.d3d12;
 
 namespace mini::d3d12
 {

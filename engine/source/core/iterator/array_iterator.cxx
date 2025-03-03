@@ -1,7 +1,3 @@
-module;
-
-#include "core/assert.h"
-
 export module mini.core:array_iterator;
 
 import :type;
@@ -83,8 +79,7 @@ inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator() noexcept
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, SizeT ver,
-                                                                   ArrayT* base) noexcept
+inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, SizeT ver, ArrayT* base) noexcept
     : m_Ptr(ptr)
     , m_Array(base)
     , m_Version(ver)
@@ -93,8 +88,7 @@ inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, SizeT ver,
 
 template <typename T, typename ArrayT>
 template <typename U, typename ArrayU>
-inline constexpr
-ArrayIterator<T, ArrayT>::ArrayIterator(ArrayIterator<U, ArrayU> const& o)
+inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(ArrayIterator<U, ArrayU> const& o)
 noexcept requires PtrConvertibleToT<U, T>&& SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
     : m_Ptr(static_cast<T*>(o.m_Ptr))
     , m_Array(o.m_Array)
@@ -104,8 +98,7 @@ noexcept requires PtrConvertibleToT<U, T>&& SameAsT<DecayT<ArrayT>, DecayT<Array
 
 template <typename T, typename ArrayT>
 template <typename U, typename ArrayU>
-inline constexpr ArrayIterator<T, ArrayT>&
-ArrayIterator<T, ArrayT>::operator=(ArrayIterator<U, ArrayU> const& o) noexcept
+inline constexpr ArrayIterator<T, ArrayT>& ArrayIterator<T, ArrayT>::operator=(ArrayIterator<U, ArrayU> const& o) noexcept
     requires PtrConvertibleToT<U, T>&& SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
 {
     m_Ptr = static_cast<T*>(o.m_Ptr);
@@ -297,24 +290,21 @@ operator+(OffsetT n, ArrayIterator<T, ArrayT> const& iter) noexcept
 }
 
 template <typename T, typename U, typename ArrayT, typename ArrayU>
-inline constexpr OffsetT operator-(ArrayIterator<T, ArrayT> const& l,
-                                             ArrayIterator<U, ArrayU> const& r) noexcept
+inline constexpr OffsetT operator-(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
 {
     return static_cast<OffsetT>(l.Address() - r.Address());
 }
 
 template <typename T, typename U, typename ArrayT, typename ArrayU>
-inline constexpr bool operator==(ArrayIterator<T, ArrayT> const& l,
-                                           ArrayIterator<U, ArrayU> const& r) noexcept
+inline constexpr bool operator==(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>&& EqualityComparableWithT<T*, U*>
 {
     return l.Address() == r.Address();
 }
 
 template <typename T, typename U, typename ArrayT, typename ArrayU>
-inline constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& l,
-                                            ArrayIterator<U, ArrayU> const& r) noexcept
+inline constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>&& ThreeWayComparableWithT<T*, U*>
 {
     return l.Address() <=> r.Address();

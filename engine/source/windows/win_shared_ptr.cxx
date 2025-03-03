@@ -1,6 +1,5 @@
 module;
 
-#include <windows.h>
 #include "core/assert.h"
 
 export module mini.windows:shared_ptr;

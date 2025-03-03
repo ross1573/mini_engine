@@ -1,7 +1,3 @@
-module;
-
-#include "core/assert.h"
-
 export module mini.core:buffer;
 
 import :type;

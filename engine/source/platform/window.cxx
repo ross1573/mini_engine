@@ -7,7 +7,7 @@ import mini.core;
 export namespace mini::platform
 {
 
-class Window
+class PLATFORM_API Window
 {
     friend class mini::Platform;
 

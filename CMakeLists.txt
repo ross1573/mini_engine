@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.28)
+
+project(MiniEngine 
+    LANGUAGES CXX
+    VERSION 0.1.0
+)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+set(ENGINE_EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/engine/external")
+set(ENGINE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/engine/source")
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include(GenerateExportHeader)
+
+add_subdirectory(${ENGINE_EXTERNAL_DIR})
+add_subdirectory(${ENGINE_SOURCE_DIR})

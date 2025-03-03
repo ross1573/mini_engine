@@ -1,18 +1,28 @@
 module;
 
-#include "core/define.h"
+#include <windows.h>
 
 export module mini.core:log;
 
 import :type;
 import :string;
 
-void LogMessage(char const* msg, bool endl = true);
+//void LogMessage(char const* msg, bool endl = true);
+
+CORE_API void LogMessage(char const* msg, bool endLine)
+{
+    OutputDebugStringA(msg);
+
+    if (endLine)
+    {
+        OutputDebugStringA("\n");
+    }
+}
 
 export namespace mini
 {
 
-export template <typename... Args>
+template <typename... Args>
 inline void Print(StringView const msg = "", Args&&... args)
 {
     LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), false);

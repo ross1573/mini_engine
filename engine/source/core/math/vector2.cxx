@@ -1,7 +1,3 @@
-module;
-
-#include "core/define.h"
-
 export module mini.core:vector2;
 
 import :type;
