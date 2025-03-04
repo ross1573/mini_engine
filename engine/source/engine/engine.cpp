@@ -1,7 +1,7 @@
 module;
 
 #include <cstdlib>
-#include "core/assert.h"
+#include "assertion.h"
 
 module mini.engine;
 
@@ -9,7 +9,7 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 
-#include "core/option.h"
+#include "option.h"
 
 namespace mini
 {

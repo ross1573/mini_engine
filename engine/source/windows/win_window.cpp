@@ -1,14 +1,14 @@
 module;
 
 #include "resource/resource.h"
-#include "core/assert.h"
+#include "assertion.h"
 
 module mini.windows;
 
 import mini.core;
 import mini.platform;
 
-#include "core/option.h"
+#include "option.h"
 
 namespace mini::windows
 {

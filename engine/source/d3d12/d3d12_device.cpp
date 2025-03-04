@@ -1,6 +1,6 @@
 module;
 
-#include "core/assert.h"
+#include "assertion.h"
 
 module mini.d3d12;
 
@@ -11,7 +11,7 @@ import :swap_chain;
 import :command_queue;
 import :render_context;
 
-#include "core/option.h"
+#include "option.h"
 
 namespace mini::d3d12
 {

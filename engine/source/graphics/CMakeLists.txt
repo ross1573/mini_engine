@@ -22,3 +22,5 @@ target_link_libraries(mini.graphics
 PUBLIC 
     mini.core
 )
+
+build_source_tree(mini.graphics)

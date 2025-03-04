@@ -1,7 +1,7 @@
 module;
 
 #include "resource/resource.h"
-#include "core/assert.h"
+#include "assertion.h"
 
 module mini.windows;
 
@@ -11,7 +11,7 @@ import mini.graphics;
 import mini.platform;
 import mini.windows;
 
-#include "core/option.h"
+#include "option.h"
 
 namespace mini::windows
 {

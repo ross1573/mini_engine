@@ -36,3 +36,5 @@ PRIVATE
     mini.graphics
     mini.engine
 )
+
+build_source_tree(mini.windows)

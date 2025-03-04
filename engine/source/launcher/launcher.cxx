@@ -1,6 +1,6 @@
 module;
 
-#include "core/assert.h"
+#include "assertion.h"
 
 #ifdef TEST_BUILD
 void TestMain();

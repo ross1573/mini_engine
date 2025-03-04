@@ -23,3 +23,5 @@ PUBLIC
 PRIVATE 
     mini.graphics
 )
+
+build_source_tree(mini.platform)

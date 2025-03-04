@@ -18,3 +18,5 @@ PRIVATE
     mini.platform
     mini.graphics
 )
+
+build_source_tree(mini.engine)

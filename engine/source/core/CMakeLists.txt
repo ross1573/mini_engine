@@ -3,7 +3,7 @@ add_module(mini.core STATIC)
 
 target_precompile_headers(mini.core
 PRIVATE
-    assert.h
+    assert/assertion.h
 )
 
 target_sources(mini.core
@@ -13,16 +13,15 @@ PUBLIC
         core.cxx
 
 PUBLIC
-    assert.h
-    option.h
+    assert/assertion.h
+    option/option.h
 
 PRIVATE
-    assert.cpp
+    assert/assertion.cpp
     memory/mem_string.cpp
 
 PRIVATE 
     FILE_SET core_private TYPE CXX_MODULES
-    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
     FILES
         algorithm.cxx
         log.cxx
@@ -65,3 +64,11 @@ PRIVATE
         type/type_define.cxx
         type/type_traits.cxx
 )
+
+target_include_directories(mini.core
+PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/assert/
+    ${CMAKE_CURRENT_SOURCE_DIR}/option/
+)
+
+build_source_tree(mini.core)
