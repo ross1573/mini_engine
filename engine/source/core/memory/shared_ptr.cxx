@@ -15,11 +15,6 @@ using MemoryOrder = std::memory_order;
 namespace mini
 {
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4582) // silence warning for ctor not called
-#endif
-
 template <typename T>
 struct AtomicUnion
 {
@@ -89,10 +84,6 @@ struct AtomicUnion
     AtomicUnion(AtomicUnion const&) = delete;
     AtomicUnion& operator=(AtomicUnion const&) = delete;
 };
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 
 class SharedCounter
 {

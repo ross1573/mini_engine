@@ -11,7 +11,7 @@ export namespace mini
 template <NonRefT T, DeleterT<T> DelT = DefaultDeleter<T>>
 class UniquePtr
 {
-    template <NonRefT U, DeleterT<T> DelU>
+    template <NonRefT U, DeleterT<U> DelU>
     friend class UniquePtr;
 
 public:
@@ -199,33 +199,66 @@ inline constexpr UniquePtr<T, DelT>::operator Ptr() const noexcept
 }
 
 template <NonRefT T, DeleterT<T> DelT>
-inline constexpr UniquePtr<T, DelT>&
-UniquePtr<T, DelT>::operator=(NullptrT) noexcept
+inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(NullptrT) noexcept
 {
     m_Deleter(m_Ptr);
     m_Ptr = nullptr;
+    return *this;
 }
 
 template <NonRefT T, DeleterT<T> DelT>
-inline constexpr 
-UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr&& other) noexcept
+inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr&& other) noexcept
 {
     m_Deleter(m_Ptr);
     m_Ptr = other.m_Ptr;
     m_Deleter = MoveArg(other.m_Deleter);
     other.m_Ptr = nullptr;
+    return *this;
 }
 
 template <NonRefT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
-inline constexpr
-UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
+inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
     requires ConvertibleToT<DelU, DelT>
 {
     m_Deleter(m_Ptr);
     m_Ptr = static_cast<Ptr>(other.m_Ptr);
     m_Deleter = MoveArg(other.m_Deleter);
     other.m_Ptr = nullptr;
+    return *this;
+}
+
+template <NonRefT T, typename... Args>
+inline constexpr UniquePtr<T> MakeUnique(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
+{
+    return UniquePtr<T>(new T(ForwardArg<Args>(args)...));
+}
+
+template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+inline constexpr bool operator==(UniquePtr<T, DelT> const& l, UniquePtr<U, DelU> const& r) noexcept
+    requires EqualityComparableWithT<T*, U*>
+{
+    return l.Get() == r.Get();
+}
+
+template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+inline constexpr bool operator<=>(UniquePtr<T, DelT> const& l, UniquePtr<U, DelU> const& r) noexcept
+    requires ThreeWayComparableWithT<T*, U*>
+{
+    return l.Get() <=> r.Get();
+}
+
+template <NonRefT T, DeleterT<T> DelT>
+inline constexpr bool operator==(UniquePtr<T, DelT> const& p, NullptrT) noexcept
+{
+    return p.Get() == nullptr;
+}
+
+template <NonRefT T, DeleterT<T> DelT>
+inline constexpr bool operator<=>(UniquePtr<T, DelT> const& p, NullptrT) noexcept
+{
+    return p.Get() <=> nullptr;
 }
 
 } // namespace mini

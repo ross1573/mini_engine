@@ -14,7 +14,11 @@ PRIVATE
     mini.windows
 )
 
-set_target_properties(mini.launcher PROPERTIES FOLDER modules)
+set_target_properties(mini.launcher
+PROPERTIES 
+    FOLDER modules
+    OUTPUT_NAME ${PROJECT_NAME}
+)
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
     set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT mini.launcher)

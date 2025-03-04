@@ -2,14 +2,12 @@ export module mini.engine;
 
 import mini.core;
 
-namespace mini { class Engine; }
-
-ENGINE_API mini::Engine* g_Engine; 
-
-export namespace mini
+namespace mini
 {
 
-class ENGINE_API Engine
+ENGINE_API UniquePtr<class Engine> g_Engine;
+
+export class ENGINE_API Engine
 {
 public:
     typedef void (*CallbackFunc)();
@@ -18,24 +16,25 @@ private:
     bool m_Running;
 
     Array<CallbackFunc> m_QuitCallback;
-    Array<CallbackFunc> m_ShutdownCallback;
+    Array<CallbackFunc> m_ExitCallback;
 
 private:
     Engine();
-    ~Engine();
  
     bool Initialize();
     void Shutdown();
 
 public:
+    ~Engine();
+
     static void Launch();
     static void Quit();
     static void Abort(String = "");
 
     static void AtQuit(CallbackFunc);
-    static void AtShutdown(CallbackFunc);
+    static void AtExit(CallbackFunc);
 
-    inline static bool IsRunning() { return g_Engine && g_Engine->m_Running; }
+    inline static bool IsRunning() { return g_Engine.Get() && g_Engine->m_Running; }
 };
 
 } // namespace mini

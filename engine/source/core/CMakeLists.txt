@@ -65,6 +65,10 @@ PRIVATE
         type/type_traits.cxx
 )
 
+if (MSVC)
+    set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)
+endif()
+
 target_include_directories(mini.core
 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/assert/

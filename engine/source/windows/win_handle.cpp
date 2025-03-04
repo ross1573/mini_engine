@@ -72,13 +72,10 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
         default: break;
     }
 
-    ENSURE(createDeviceAddr) return nullptr;
+    ENSURE(createDeviceAddr, "unable to find graphics module init function") return nullptr;
 
-#pragma warning(push)
-#pragma warning(disable: 4191)
     typedef graphics::Device* (*CreateDeviceFuncT)();
     CreateDeviceFuncT createDeviceFunc = reinterpret_cast<CreateDeviceFuncT>(createDeviceAddr);
-#pragma warning(pop)
     return createDeviceFunc();
 }
 
@@ -98,10 +95,8 @@ void Handle::PollEvents()
     }
 }
 
-void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
-                            [[maybe_unused]] uint32 msg,
-                            [[maybe_unused]] WPARAM wParam,
-                            [[maybe_unused]] LPARAM lParam)
+void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg,
+                            [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     switch (msg)
     {

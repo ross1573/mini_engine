@@ -13,15 +13,15 @@ bool Platform::Initialize(Handle* handle)
 {
     ASSERT(handle);
 
-    g_Handle = handle;
-    if (!g_Handle->Initialize())
+    g_Handle = UniquePtr(handle);
+    ENSURE(g_Handle->Initialize())
     {
         Log::Error("Failed to initialize platform handle");
         return false;
     }
 
-    g_Window = g_Handle->CreatePlatformWindow();
-    if (!g_Window->Initialize())
+    g_Window = UniquePtr(g_Handle->CreatePlatformWindow());
+    ENSURE(g_Window->Initialize())
     {
         Log::Error("Failed to initialize platform window");
         return false;
@@ -32,8 +32,8 @@ bool Platform::Initialize(Handle* handle)
 
 void Platform::Shutdown()
 {
-    DELETE(g_Window);
-    DELETE(g_Handle);
+    g_Window.Reset();
+    g_Handle.Reset();
 }
 
 } // namespace mini

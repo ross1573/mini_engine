@@ -6,11 +6,6 @@
 #define CONCAT_INNER(x, y) x ## y
 #define CONCAT(x, y) CONCAT_INNER(x, y)
 
-#ifdef DELETE
-#   undef DELETE
-#endif
-#define DELETE(x) if (x) { delete x; x = nullptr; }
-
 #if DEBUG && !defined(NOASSERT)
 #   define DEBUG_ASSERT 1
 #else
@@ -39,7 +34,7 @@
 #   endif
 #   define ASSERT_INNER(expr, ...) BUILTIN_ASSERT(_MD::AssertMsg(#expr __VA_OPT__(,) __VA_ARGS__), _MD::AssertLoc(), __LINE__);
 #   define ENSURE_INNER(expr, var, ...) ENSURE_EVAL(expr, var) ENSURE_EXPR(var) \
-        { ENSURE_LOG(expr) ASSERT_INNER(expr __VA_OPT__(,) __VA_ARGS__) BUILTIN_UNREACHABLE } ENSURE_EXPR(var)
+        { ENSURE_LOG(expr __VA_OPT__(,) __VA_ARGS__) ASSERT_INNER(expr __VA_OPT__(,) __VA_ARGS__) BUILTIN_UNREACHABLE } ENSURE_EXPR(var)
 
 #   define ASSERT(expr, ...) ASSERT_EXPR(expr) { ASSERT_INNER(expr __VA_OPT__(,) __VA_ARGS__) BUILTIN_UNREACHABLE }
 #   define VERIFY(expr, ...) ASSERT_EXPR(expr) { ASSERT_INNER(expr __VA_OPT__(,) __VA_ARGS__) BUILTIN_UNREACHABLE }
@@ -47,9 +42,11 @@
 #   define CONSTEXPR_ASSERT(expr, ...) if (BUILTIN_CONSTANT_EVAL) ASSERT(expr __VA_OPT__(,) __VA_ARGS__)
 #else
 #   define BUILTIN_ASSERT(msg, func, line) ((void)0)
-#   define ENSURE_INNER(expr, var, ...) ENSURE_EVAL(expr, var) ENSURE_EXPR(var) { ENSURE_LOG(expr) } ENSURE_EXPR(var)
+#   define ENSURE_INNER(expr, var, ...) ENSURE_EVAL(expr, var) ENSURE_EXPR(var) \
+        { ENSURE_LOG(expr __VA_OPT__(,) __VA_ARGS__) } ENSURE_EXPR(var)
+
 #   define ASSERT(expr, ...) ((void)0)
-#   define VERIFY(expr, ...) ASSERT_EXPR(expr) {} // ASSERT_EXPR(expr) mini::Engine::Abort(__VA_ARGS__)
+#   define VERIFY(expr, ...) ASSERT_EXPR(expr) {}
 #   define ENSURE(expr, ...) ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(,) __VA_ARGS__)
 #   define CONSTEXPR_ASSERT(expr, ...) ((void)0)
 #endif // DEBUG_ASSERT

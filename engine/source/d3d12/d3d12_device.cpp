@@ -161,7 +161,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 void Device::EnableDebugLayer()
 {
 #if DEBUG
-    Engine::AtShutdown([]() noexcept
+    Engine::AtExit([]() noexcept
     {
         SharedPtr<IDXGIDebug1> debug;
         ENSURE(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))) return;

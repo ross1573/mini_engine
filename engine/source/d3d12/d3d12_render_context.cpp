@@ -24,8 +24,6 @@ RenderContext::RenderContext()
 RenderContext::~RenderContext()
 {
     WaitForIdle();
-
-    DELETE(m_CommandQueue);
 }
 
 bool RenderContext::Initialize()
@@ -33,7 +31,7 @@ bool RenderContext::Initialize()
     ID3D12Device* device = Graphics::GetDevice<d3d12::Device>()->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_CommandQueue = new CommandQueue(graphics::CommandType::Direct);
+    m_CommandQueue = MakeUnique<CommandQueue>(graphics::CommandType::Direct);
 
     VERIFY(m_CommandQueue->Initialize(device));
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));

@@ -9,19 +9,19 @@ import mini.core;
 namespace mini
 {
 
-bool Graphics::Initialize(graphics::Device* device)
+bool Graphics::Initialize(Device* device)
 {
     VERIFY(g_Device == nullptr && device != nullptr);
 
-    g_Device = device;
+    g_Device = UniquePtr(device);
     g_CurrentAPI = g_Device->GetAPI();
-    VERIFY(g_CurrentAPI != graphics::API::Null);
+    VERIFY(g_CurrentAPI != API::Null);
     VERIFY(g_Device->Initialize(), "failed to initialize graphics device");
 
-    g_RenderContext = g_Device->CreateRenderContext();
+    g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
     VERIFY(g_RenderContext->Initialize(), "Failed to create render context");
 
-    g_SwapChain = g_Device->CreateSwapChain();
+    g_SwapChain = UniquePtr(g_Device->CreateSwapChain());
     VERIFY(g_SwapChain->Initialize(), "Failed to create swap chain");
 
     return true;
@@ -29,10 +29,9 @@ bool Graphics::Initialize(graphics::Device* device)
 
 void Graphics::Shutdown()
 {
-    DELETE(g_RenderContext);
-    DELETE(g_SwapChain);
-    DELETE(g_Device);
-
+    g_RenderContext.Reset();
+    g_SwapChain.Reset();
+    g_Device.Reset();
     g_CurrentAPI = API::Null;
 }
 

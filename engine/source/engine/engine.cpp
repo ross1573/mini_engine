@@ -17,7 +17,7 @@ namespace mini
 Engine::Engine()
     : m_Running(false)
     , m_QuitCallback()
-    , m_ShutdownCallback()
+    , m_ExitCallback()
 {
 }
 
@@ -43,18 +43,18 @@ void Engine::Shutdown()
     Graphics::Shutdown();
     Platform::Shutdown();
 
-    for (auto func : g_Engine->m_ShutdownCallback)
+    for (auto func : g_Engine->m_ExitCallback)
     {
         func();
     }
 
-    DELETE(g_Engine);
+    g_Engine.Reset();
 }
 
 void Engine::Launch()
 {
     ASSERT(g_Engine == nullptr, "another instance of engine is running");
-    g_Engine = new Engine();
+    g_Engine = UniquePtr(new Engine());
 
     if (!g_Engine->Initialize())
     {
@@ -88,6 +88,7 @@ void Engine::Quit()
     {
         func();
     }
+    g_Engine->m_QuitCallback.Clear();
 
     if (g_Engine != nullptr)
     {
@@ -113,9 +114,9 @@ void Engine::AtQuit(CallbackFunc func)
     g_Engine->m_QuitCallback.Push(func);
 }
 
-void Engine::AtShutdown(CallbackFunc func)
+void Engine::AtExit(CallbackFunc func)
 {
-    g_Engine->m_ShutdownCallback.Push(func);
+    g_Engine->m_ExitCallback.Push(func);
 }
 
 } // namespace mini
