@@ -52,7 +52,7 @@ void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
     SwapChain* swapChain = GetSwapChain();
     if (swapChain == nullptr) [[unlikely]]
     {
-        Log::Error("failed to change resolution. SwapChain is not initialized");
+        log::Error("failed to change resolution. SwapChain is not initialized");
         return;
     }
 

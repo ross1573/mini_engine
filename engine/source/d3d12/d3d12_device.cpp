@@ -99,7 +99,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         selectedLevel = featureLevels[levelIdx];
         if (selectedLevel < minimum)
         {
-            Log::Error("unable to find DirectX12 supported hardware");
+            log::Error("unable to find DirectX12 supported hardware");
             return;
         }
 
@@ -130,7 +130,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 
     if (m_Device == nullptr)
     {
-        Log::Error("failed creating D3D12 device");
+        log::Error("failed creating D3D12 device");
         return;
     }
 
@@ -152,10 +152,10 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 
-    Log::Info("Selected device: {} ({})", desc.Data(), adapterDesc.DeviceId);
-    Log::Info("D3D feature level: {}", selectedLevelStr);
-    Log::Info("GPU Memory: {} ({:4.2f} GB)", gpumem, (float)gpumem / (float)(1 << 30));
-    Log::Info("System Memory: {} ({:4.2f} GB)", sysmem, (float)sysmem / (float)(1 << 30));
+    log::Info("Selected device: {} ({})", desc.Data(), adapterDesc.DeviceId);
+    log::Info("D3D feature level: {}", selectedLevelStr);
+    log::Info("GPU Memory: {} ({:4.2f} GB)", gpumem, (float)gpumem / (float)(1 << 30));
+    log::Info("System Memory: {} ({:4.2f} GB)", sysmem, (float)sysmem / (float)(1 << 30));
 }
 
 void Device::EnableDebugLayer()

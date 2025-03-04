@@ -3,7 +3,7 @@ add_module(mini.core STATIC)
 
 target_precompile_headers(mini.core
 PRIVATE
-    assert/assertion.h
+    public/assertion.h
 )
 
 target_sources(mini.core
@@ -13,12 +13,17 @@ PUBLIC
         core.cxx
 
 PUBLIC
-    assert/assertion.h
-    option/option.h
+    public/assertion.h
+    public/option.h
 
 PRIVATE
-    assert/assertion.cpp
     memory/mem_string.cpp
+
+    $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
+    $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
+
+    $<$<PLATFORM_ID:Darwin>:macos/macos_log.cxx>
+    $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cxx>
 
 PRIVATE 
     FILE_SET core_private TYPE CXX_MODULES
@@ -65,14 +70,10 @@ PRIVATE
         type/type_traits.cxx
 )
 
+target_include_directories(mini.core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/)
+
+build_source_tree(mini.core)
+
 if (MSVC)
     set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)
 endif()
-
-target_include_directories(mini.core
-PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/assert/
-    ${CMAKE_CURRENT_SOURCE_DIR}/option/
-)
-
-build_source_tree(mini.core)

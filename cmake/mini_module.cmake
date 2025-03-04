@@ -38,9 +38,12 @@ function (build_source_tree name)
         list(APPEND modules ${module_files})
     endforeach()
 
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}
-        PREFIX "Source Files"
-        FILES ${sources} ${headers} ${modules})
+    foreach (file IN LISTS sources headers modules)
+        string(REGEX REPLACE "\\$<.*:(.*)>" "\\1" generator_removed ${file})
+        list(APPEND files ${generator_removed})
+    endforeach()
+
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
 
     if (MSVC)
         set(cmake_gen_path ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${name}.dir)

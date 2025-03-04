@@ -37,8 +37,8 @@ PRIVATE
     mini.engine
 )
 
+build_source_tree(mini.windows)
+
 if (MSVC)
     set_source_files_properties(win_handle.cxx PROPERTIES COMPILE_FLAGS /wd4191)
 endif()
-
-build_source_tree(mini.windows)

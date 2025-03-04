@@ -1,61 +1,34 @@
 module;
 
-#include <windows.h>
+#include <source_location>
+#include <format>
 
 export module mini.core:log;
 
 import :type;
 import :string;
 
-//void LogMessage(char const* msg, bool endl = true);
+export CORE_API void LogMessage(char const* msg);
 
-CORE_API void LogMessage(char const* msg, bool endLine)
-{
-    OutputDebugStringA(msg);
-
-    if (endLine)
-    {
-        OutputDebugStringA("\n");
-    }
-}
-
-export namespace mini
+export namespace mini::log
 {
 
 template <typename... Args>
-inline void Print(StringView const msg = "", Args&&... args)
+void Info(StringView msg, Args&& ...args)
 {
-    LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), false);
+    LogMessage(std::format("[ Info ] {}\n", std::vformat(msg, std::make_format_args(args...))).c_str());
 }
 
 template <typename... Args>
-inline void PrintLine(StringView const msg = "", Args&&... args)
+void Warning(StringView msg, Args&& ...args)
 {
-    LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), true);
+    LogMessage(std::format("[ Warning ] {}\n", std::vformat(msg, std::make_format_args(args...))).c_str());
 }
 
-struct Log
+template <typename... Args>
+void Error(StringView msg, Args&& ...args)
 {
-    template <typename... Args>
-    static void Info(StringView msg, Args&& ...args)
-    {
-        LogMessage("[ Info ] ", false);
-        LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), true);
-    }
+    LogMessage(std::format("[ Error ] {}\n", std::vformat(msg, std::make_format_args(args...))).c_str());
+}
 
-    template <typename... Args>
-    static void Warning(StringView msg, Args&& ...args)
-    {
-        LogMessage("[ Warning ] ", false);
-        LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), true);
-    }
-
-    template <typename... Args>
-    static void Error(StringView msg, Args&& ...args)
-    {
-        LogMessage("[ Error ] ", false);
-        LogMessage(Format(msg, ForwardArg<Args>(args)...).data(), true);
-    }
-};
-
-} // namespace mini
+} // namespace mini::log

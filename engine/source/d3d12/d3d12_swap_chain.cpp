@@ -105,7 +105,7 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 {
     if (width * height <= 0)
     {
-        Log::Error("Cannot resize to {} x {}", width, height);
+        log::Error("Cannot resize to {} x {}", width, height);
         return;
     }
 
@@ -142,7 +142,7 @@ void SwapChain::SetFullScreen(bool fullscreen)
 
     if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr)))
     {
-        Log::Error("Failed to set fullscreen state");
+        log::Error("Failed to set fullscreen state");
     }
     else
     {

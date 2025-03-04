@@ -102,8 +102,9 @@ inline constexpr bool TestExpr(HRESULT result) noexcept
 
 #if PLATFORM_WINDOWS && defined(__d3dcommon_h__)
 
-CORE_API void EnsureHelper(char const*, ID3DBlob*, std::source_location const&);
+[[noinline]] CORE_API void EnsureHelper(char const*, ID3DBlob*,
+                                        std::source_location const& = std::source_location::current());
 
-#endif // PLATFORM_WINDOWS && defined(__d3dcommon_h__)
+#endif
 
 } // namespace mini::detail
