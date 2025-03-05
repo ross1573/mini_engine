@@ -10,33 +10,7 @@ import :type;
 namespace mini::memory
 {
 
-#ifdef _MSC_VER
-
-CORE_API SizeT ConvertLength(char const* src, SizeT srcLen)
-{
-    return (SizeT)MultiByteToWideChar(CP_UTF8, 0, src, (int)srcLen, NULL, 0) + 1;
-}
-
-CORE_API SizeT ConvertLength(wchar_t const* src, SizeT srcLen)
-{
-    return (SizeT)WideCharToMultiByte(CP_UTF8, 0, src, (int)srcLen, NULL, 0, NULL, NULL) + 1;
-}
-
-CORE_API void Convert(char const* src, SizeT srcLen, wchar_t* dst, SizeT dstLen)
-{
-    MultiByteToWideChar(CP_UTF8, 0, src, (int)srcLen, dst, (int)dstLen);
-    dst[dstLen - 1] = '\0';
-}
-
-CORE_API void Convert(wchar_t const* src, SizeT srcLen, char* dst, SizeT dstLen)
-{
-    WideCharToMultiByte(CP_UTF8, 0, src, (int)srcLen, dst, (int)dstLen, NULL, NULL);
-    dst[dstLen - 1] = '\0';
-}
-
-#endif // _MSC_VER
-
-CORE_API SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
+SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
 {
     if (src == nullptr || srcCount == 0)
     {
@@ -61,7 +35,7 @@ CORE_API SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT 
     return (SizeT)(dest - begin);
 }
 
-CORE_API SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
+SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
 {
     SizeT len = 0;
     char buf[10] = {0, };
@@ -80,7 +54,7 @@ CORE_API SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
     return len;
 }
 
-CORE_API SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location const& loc)
+SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location const& loc)
 {
     char* begin = dest;
     char const* funcName = loc.function_name();

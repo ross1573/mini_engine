@@ -6,8 +6,18 @@ module;
 
 export module mini.core:string;
 
+import :type;
+
 export namespace mini
 {
+
+template <typename T>
+concept CharT = AnyOfT<RemoveConstVolatileT<T>,
+    char,
+    wchar_t,
+    char8_t,
+    char16_t,
+    char32_t>;
 
 using String = std::basic_string<char>;
 using StringView = std::basic_string_view<char>;

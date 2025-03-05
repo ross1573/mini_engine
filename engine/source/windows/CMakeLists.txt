@@ -23,7 +23,6 @@ PRIVATE
     FILES
         win_handle.cxx
         win_shared_ptr.cxx
-        win_string.cxx
         win_window.cxx
 )
 
@@ -38,7 +37,3 @@ PRIVATE
 )
 
 build_source_tree(mini.windows)
-
-if (MSVC)
-    set_source_files_properties(win_handle.cxx PROPERTIES COMPILE_FLAGS /wd4191)
-endif()

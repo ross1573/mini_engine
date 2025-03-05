@@ -29,7 +29,7 @@ public:
 
     static void Launch();
     static void Quit();
-    static void Abort(String = "");
+    static void Abort(String const& = "");
 
     static void AtQuit(CallbackFunc);
     static void AtExit(CallbackFunc);

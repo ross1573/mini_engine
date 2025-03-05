@@ -3,8 +3,8 @@
 namespace mini::options // should be saved into a file
 {
 
-inline constexpr char const* name = "Engine";
-inline constexpr char const* title = "Engine Window";
+inline constexpr char const* name = "Mini Engine";
+inline constexpr char const* title = "Mini Engine";
 
 inline constexpr RectInt windowRect = RectInt(300, 300, 1280, 720);
 inline constexpr uint32 x = 300;

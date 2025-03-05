@@ -96,7 +96,7 @@ void Engine::Quit()
     }
 }
 
-void Engine::Abort(String msg)
+void Engine::Abort(String const& msg)
 {
     Platform::GetWindow()->DialogCritical(msg);
 
@@ -106,6 +106,7 @@ void Engine::Abort(String msg)
         g_Engine->Shutdown();
     }
 
+    memory::DestructAt(&msg);
     std::exit(-1);
 }
 

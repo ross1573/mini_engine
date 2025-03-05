@@ -20,6 +20,12 @@ template <typename T>
 using RemoveVolatileT = std::remove_volatile<T>::type;
 
 template <typename T>
+using RemoveConstVolatileT = std::remove_cv<T>::type;
+
+template <typename T>
+using RemoveConstVolatileRefT = std::remove_cvref<T>::type;
+
+template <typename T>
 using DecayT = std::decay<T>::type;
 
 template <bool Cond, typename T, typename F>

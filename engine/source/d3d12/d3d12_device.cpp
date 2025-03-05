@@ -148,7 +148,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     DXGI_ADAPTER_DESC adapterDesc{};
     m_Adapter->GetDesc(&adapterDesc);
 
-    const auto desc = windows::StringConverter<wchar_t, char>(adapterDesc.Description);
+    const auto desc = StringConvert<char>(adapterDesc.Description);
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 

@@ -16,6 +16,7 @@ export import :vector3_int;
 export import :vector4;
 export import :vertex;
 
+export import :memory;
 export import :mem_string;
 export import :allocator;
 export import :deleter;
@@ -32,3 +33,4 @@ export import :array;
 export import :static_array;
 export import :static_queue;
 export import :string;
+export import :string_convert;

@@ -10,6 +10,7 @@ if (MSVC)
         $<$<CONFIG:Debug>:/ZI>
 
         /wd4061 # each case in switch is not handled explicitly
+        /wd4191 # reinterpret_cast warning
         /wd4201 # nameless struct/union
         /wd4251 # dll-interface missing (even in template)
         /wd4265 # windows api stuff

@@ -36,6 +36,7 @@ PRIVATE
         container/static_array.cxx
         container/static_queue.cxx
         container/string.cxx
+        container/string_convert.cxx
 
         iterator/array_iterator.cxx
         iterator/circular_iterator.cxx
@@ -69,6 +70,8 @@ PRIVATE
         type/type_define.cxx
         type/type_traits.cxx
 )
+
+target_link_libraries(mini.core PRIVATE convert_utf)
 
 target_include_directories(mini.core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/)
 
