@@ -1,6 +1,6 @@
 add_module(mini.graphics SHARED)
 
-target_sources(mini.graphics
+module_sources(mini.graphics
 PUBLIC
     FILE_SET graphics TYPE CXX_MODULES
     FILES
@@ -22,5 +22,3 @@ target_link_libraries(mini.graphics
 PUBLIC 
     mini.core
 )
-
-build_source_tree(mini.graphics)

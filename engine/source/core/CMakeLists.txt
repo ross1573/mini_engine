@@ -6,7 +6,7 @@ PRIVATE
     public/assertion.h
 )
 
-target_sources(mini.core
+module_sources(mini.core
 PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
@@ -71,11 +71,15 @@ PRIVATE
         type/type_traits.cxx
 )
 
-target_link_libraries(mini.core PRIVATE convert_utf)
+target_link_libraries(mini.core 
+PRIVATE 
+    convert_utf
+)
 
-target_include_directories(mini.core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/)
-
-build_source_tree(mini.core)
+target_include_directories(mini.core 
+PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/public/
+)
 
 if (MSVC)
     set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)

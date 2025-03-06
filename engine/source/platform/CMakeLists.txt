@@ -1,6 +1,6 @@
 add_module(mini.platform SHARED)
 
-target_sources(mini.platform
+module_sources(mini.platform
 PUBLIC
     FILE_SET platform TYPE CXX_MODULES
     FILES
@@ -23,5 +23,3 @@ PUBLIC
 PRIVATE 
     mini.graphics
 )
-
-build_source_tree(mini.platform)

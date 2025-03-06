@@ -1,6 +1,6 @@
 add_module(mini.engine SHARED)
 
-target_sources(mini.engine
+module_sources(mini.engine
 PUBLIC
     FILE_SET engine TYPE CXX_MODULES
     FILES
@@ -18,5 +18,3 @@ PRIVATE
     mini.platform
     mini.graphics
 )
-
-build_source_tree(mini.engine)

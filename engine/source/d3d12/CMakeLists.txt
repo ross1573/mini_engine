@@ -1,6 +1,7 @@
 add_module(mini.d3d12 SHARED)
 
 include(windows_header_define)
+include(${ENGINE_EXTERNAL_DIR}/D3D12/d3d12.cmake)
 
 target_precompile_headers(mini.d3d12
 PRIVATE
@@ -9,7 +10,7 @@ PRIVATE
     $<$<CONFIG:Debug>:<dxgidebug.h$<ANGLE-R>>
 )
 
-target_sources(mini.d3d12
+module_sources(mini.d3d12
 PUBLIC
     FILE_SET d3d12 TYPE CXX_MODULES
     FILES
@@ -45,9 +46,5 @@ PRIVATE
     mini.windows
     mini.engine
 )
-
-build_source_tree(mini.d3d12)
-
-include(${ENGINE_EXTERNAL_DIR}/D3D12/d3d12.cmake)
 
 copy_d3d12(mini.d3d12)
