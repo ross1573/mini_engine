@@ -8,7 +8,7 @@ PRIVATE
     <unknwn.h>
 )
 
-target_sources(mini.windows
+module_sources(mini.windows
 PUBLIC
     FILE_SET windows TYPE CXX_MODULES
     FILES
@@ -36,4 +36,7 @@ PRIVATE
     mini.engine
 )
 
-build_source_tree(mini.windows)
+target_include_directories(mini.windows
+PRIVATE
+    ${ENGINE_PROJECT_DIR}/engine/platform/windows
+)

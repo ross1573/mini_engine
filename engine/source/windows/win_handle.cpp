@@ -1,6 +1,6 @@
 module;
 
-#include "resource/resource.h"
+#include "resource.h"
 #include "assertion.h"
 
 module mini.windows;
