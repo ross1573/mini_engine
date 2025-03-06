@@ -17,7 +17,6 @@ export import :vector4;
 export import :vertex;
 
 export import :memory;
-export import :mem_string;
 export import :allocator;
 export import :deleter;
 export import :shared_ptr;

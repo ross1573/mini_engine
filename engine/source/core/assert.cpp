@@ -1,16 +1,9 @@
-module;
-
-#include <windows.h>
 #include <string.h>
 
-module mini.core;
-
-import :type;
-
-namespace mini::memory
+namespace mini::detail
 {
 
-SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
+int ConcatStrings(char* dest, int destLen, char const** src, int srcCount)
 {
     if (src == nullptr || srcCount == 0)
     {
@@ -18,26 +11,26 @@ SizeT ConcatStrings(char* dest, SizeT destLen, char const** src, SizeT srcCount)
     }
 
     char* begin = dest;
-    for (SizeT i = 0; i < srcCount && destLen > 0; ++i)
+    for (int i = 0; i < srcCount && destLen > 0; ++i)
     {
         if (src[i] == nullptr)
         {
             continue;
         }
 
-        SizeT len = (SizeT)strnlen(src[i], destLen - 1);
+        int len = (int)strnlen(src[i], destLen - 1);
         memcpy(dest, src[i], len);
         dest += len;
         destLen -= len;
     }
 
     *dest = '\0';
-    return (SizeT)(dest - begin);
+    return (int)(dest - begin);
 }
 
-SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
+int IntegerToASCII(char* dest, int destLen, int src)
 {
-    SizeT len = 0;
+    int len = 0;
     char buf[10] = {0, };
     for (; src > 0; ++len)
     {
@@ -45,8 +38,8 @@ SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
         src /= 10;
     }
 
-    SizeT min = len < destLen ? len : destLen;
-    for (SizeT i = 0; i < min; ++i)
+    int min = len < destLen ? len : destLen;
+    for (int i = 0; i < min; ++i)
     {
         dest[i] = buf[(len - 1) - i];
     }
@@ -54,17 +47,17 @@ SizeT IntegerToASCII(char* dest, SizeT destLen, SizeT src)
     return len;
 }
 
-SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location const& loc)
+int SourceLocationToString(char* dest, int destLen, std::source_location const& loc)
 {
     char* begin = dest;
     char const* funcName = loc.function_name();
-    SizeT funcLen = (SizeT)strnlen(funcName, destLen - 1);
+    int funcLen = (int)strnlen(funcName, destLen - 1);
     memcpy(dest, funcName, funcLen);
     dest += funcLen;
     destLen -= funcLen;
 
     char const* fileName = loc.file_name();
-    SizeT fileLen = (SizeT)strnlen(fileName, destLen - 1);
+    int fileLen = (int)strnlen(fileName, destLen - 1);
     if (destLen > fileLen + 4)
     {
         dest[0] = ' ';
@@ -74,7 +67,7 @@ SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location con
         destLen -= fileLen + 2;
 
         char lineBuf[10] = {0, };
-        SizeT lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), loc.line());
+        int lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), loc.line());
         if (destLen > lineLen + 2)
         {
             dest[0] = ':';
@@ -87,7 +80,7 @@ SizeT SourceLocationToString(char* dest, SizeT destLen, std::source_location con
     }
 
     *dest = '\0';
-    return (SizeT)(dest - begin);
+    return (int)(dest - begin);
 }
 
-} // namespace mini::memory
+} // namespace mini::detail

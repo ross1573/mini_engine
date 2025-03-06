@@ -59,15 +59,14 @@ namespace mini::detail
 template <typename... Args>
 struct FalseArgs { static constexpr bool value = false; };
 
-#if DEBUG_ASSERT
-
 [[noinline]] CORE_API CHAR_T* AssertMsg(char const*, char const* = nullptr);
 [[noinline]] CORE_API CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
-
-#endif // DEBUG_ASSERT
-
 [[noinline]] CORE_API void EnsureHelper(char const*, char const* = nullptr,
                                         std::source_location const& = std::source_location::current());
+
+CORE_API int ConcatStrings(char* dest, int destLen, char const** src, int srcCount);
+CORE_API int IntegerToASCII(char* dest, int destLen, int src);
+CORE_API int SourceLocationToString(char* dest, int destLen, std::source_location const& loc);
 
 inline constexpr bool TestExpr(bool arg) noexcept
 {

@@ -17,7 +17,7 @@ PUBLIC
     public/option.h
 
 PRIVATE
-    memory/mem_string.cpp
+    assert.cpp
 
     $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
@@ -60,7 +60,6 @@ PRIVATE
         memory/buffer.cxx
         memory/core_memory.cxx
         memory/deleter.cxx
-        memory/mem_string.cxx
         memory/shared_ptr.cxx
         memory/static_buffer.cxx
         memory/unique_ptr.cxx
