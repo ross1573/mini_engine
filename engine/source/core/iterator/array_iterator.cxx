@@ -4,6 +4,22 @@ import :type;
 import :iterator;
 import :iterator_version;
 
+namespace mini
+{
+
+template <typename T, typename ArrayT>
+class ArrayIterator;
+
+} // namespace mini
+
+namespace mini::memory
+{
+
+template <typename T, typename ArrayT>
+constexpr T* AddressOf(ArrayIterator<T, ArrayT> const&) noexcept;
+
+} // namespace mini::memory
+
 export namespace mini
 {
 
@@ -36,8 +52,6 @@ public:
     constexpr ArrayIterator(ArrayIterator<U, ArrayU> const&) noexcept
         requires PtrConvertibleToT<U, T>&& SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
-    constexpr Ptr Address() const noexcept;
-
     constexpr bool IsValid() const noexcept;
     constexpr bool IsValidWith(ArrayIterator const&) const noexcept;
     constexpr bool Reset() noexcept;
@@ -68,6 +82,9 @@ protected:
 
     constexpr bool CheckSource(ArrayIterator const&) const noexcept;
     constexpr bool CheckIterator(ArrayIterator const&) const noexcept;
+
+    template <typename U, typename ArrayU>
+    friend constexpr U* memory::AddressOf(ArrayIterator<U, ArrayU> const&) noexcept;
 };
 
 template <typename T, typename ArrayT>
@@ -117,12 +134,6 @@ template <typename T, typename ArrayT>
 inline constexpr bool ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcept
 {
     return iter.m_Array && iter.m_Array->IsValidIterator(iter);
-}
-
-template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::Ptr ArrayIterator<T, ArrayT>::Address() const noexcept
-{
-    return m_Ptr;
 }
 
 template <typename T, typename ArrayT>
@@ -293,21 +304,32 @@ template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr OffsetT operator-(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
 {
-    return static_cast<OffsetT>(l.Address() - r.Address());
+    return static_cast<OffsetT>(memory::AddressOf(l) - memory::AddressOf(r));
 }
 
 template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr bool operator==(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>&& EqualityComparableWithT<T*, U*>
 {
-    return l.Address() == r.Address();
+    return memory::AddressOf(l) == memory::AddressOf(r);
 }
 
 template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& l, ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>&& ThreeWayComparableWithT<T*, U*>
 {
-    return l.Address() <=> r.Address();
+    return memory::AddressOf(l) <=> memory::AddressOf(r);
 }
 
 } // namespace mini
+
+export namespace mini::memory
+{
+
+template <typename T, typename ArrayT>
+inline constexpr T* AddressOf(ArrayIterator<T, ArrayT> const& iter) noexcept
+{
+    return iter.m_Ptr;
+}
+
+} // namespace mini::memory

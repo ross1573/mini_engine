@@ -26,7 +26,6 @@ public:
 
     constexpr T const& Base() const& noexcept;
     constexpr T Base() && noexcept;
-    constexpr Ptr Address() const noexcept;
 
     constexpr bool IsValid() const;
     constexpr bool IsValidWith(MoveIterator const&) const;
@@ -89,12 +88,6 @@ template <ForwardIteratorT T>
 inline constexpr T MoveIterator<T>::Base() && noexcept
 {
     return MoveArg(m_Iter);
-}
-
-template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Ptr MoveIterator<T>::Address() const noexcept
-{
-    return m_Iter.Address();
 }
 
 template <ForwardIteratorT T>
@@ -264,3 +257,14 @@ inline constexpr auto operator<=>(MoveIterator<T> const& l, MoveIterator<U> cons
 }
 
 } // namespace mini
+
+export namespace mini::memory
+{
+
+template <ForwardIteratorT T>
+inline constexpr decltype(auto) AddressOf(MoveIterator<T> const& iter) noexcept
+{
+    return AddressOf(iter.Base());
+}
+
+} // namespace mini::memory

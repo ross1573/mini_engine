@@ -5,7 +5,7 @@ module;
 export module mini.core:memory;
 
 import :type;
-import :iterator;
+import :utility;
 
 template <typename T>
 inline constexpr void* MakeVoidPtr(T* ptr)
@@ -16,21 +16,10 @@ inline constexpr void* MakeVoidPtr(T* ptr)
 export namespace mini::memory
 {
 
-template <typename T>
+template <PtrT T>
 inline constexpr decltype(auto) AddressOf(T ele) noexcept
 {
-    if constexpr (PtrT<T>)
-    {
-        return ele;
-    }
-    else if constexpr (ForwardIteratorT<T>)
-    {
-        return ele.Address();
-    }
-    else
-    {
-        NEVER_CALLED("cannot extract pointer from the type", T);
-    }
+    return ele;
 }
 
 template <NonArrT T, typename... Args>

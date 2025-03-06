@@ -4,6 +4,22 @@ import :type;
 import :iterator;
 import :iterator_version;
 
+namespace mini
+{
+
+template <typename T, typename CircularT>
+class CircularIterator;
+
+} // namespace mini
+
+namespace mini::memory
+{
+
+template <typename T, typename CircularT>
+constexpr T* AddressOf(CircularIterator<T, CircularT> const&) noexcept;
+
+} // namespace mini::memory
+
 export namespace mini
 {
 
@@ -37,8 +53,6 @@ public:
     template <typename U, typename CircularU>
     constexpr CircularIterator(CircularIterator<U, CircularU> const&) noexcept
         requires PtrConvertibleToT<U, T>&& SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
-
-    constexpr Ptr Address() const noexcept;
 
     constexpr bool IsValid() const noexcept;
     constexpr bool IsValidWith(CircularIterator const&) const noexcept;
@@ -86,6 +100,9 @@ protected:
     friend constexpr auto operator<=>(CircularIterator<U, CircularU> const&,
                                       CircularIterator<Y, CircularY> const&) noexcept
         requires SameAsT<DecayT<CircularU>, DecayT<CircularY>>&& ThreeWayComparableWithT<U*, Y*>;
+
+    template <typename U, typename CircularU>
+    friend constexpr U* memory::AddressOf(CircularIterator<U, CircularU> const&) noexcept;
 };
 
 template <typename T, typename CircularT>
@@ -148,12 +165,6 @@ inline constexpr bool
 CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
 {
     return iter.m_Circular && iter.m_Circular->IsValidIterator(iter);
-}
-
-template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::Ptr CircularIterator<T, CircularT>::Address() const noexcept
-{
-    return m_Begin + (m_Offset % m_Capacity);
 }
 
 template <typename T, typename CircularT>
@@ -356,3 +367,14 @@ inline constexpr auto operator<=>(CircularIterator<T, CircularT> const& l, Circu
 }
 
 } // namespace mini
+
+export namespace mini::memory
+{
+
+template <typename T, typename CircularT>
+inline constexpr T* AddressOf(CircularIterator<T, CircularT> const& iter) noexcept
+{
+    return iter.m_Begin + (iter.m_Offset % iter.m_Capacity);
+}
+
+} // namespace mini::memory
