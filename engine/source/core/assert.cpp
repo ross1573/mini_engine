@@ -18,8 +18,8 @@ int ConcatStrings(char* dest, int destLen, char const** src, int srcCount)
             continue;
         }
 
-        int len = (int)strnlen(src[i], destLen - 1);
-        memcpy(dest, src[i], len);
+        int len = (int)strnlen(src[i], (size_t)destLen - 1);
+        memcpy(dest, src[i], (size_t)len);
         dest += len;
         destLen -= len;
     }
@@ -51,27 +51,27 @@ int SourceLocationToString(char* dest, int destLen, std::source_location const& 
 {
     char* begin = dest;
     char const* funcName = loc.function_name();
-    int funcLen = (int)strnlen(funcName, destLen - 1);
-    memcpy(dest, funcName, funcLen);
+    int funcLen = (int)strnlen(funcName, (size_t)destLen - 1);
+    memcpy(dest, funcName, (size_t)funcLen);
     dest += funcLen;
     destLen -= funcLen;
 
     char const* fileName = loc.file_name();
-    int fileLen = (int)strnlen(fileName, destLen - 1);
+    int fileLen = (int)strnlen(fileName, (size_t)destLen - 1);
     if (destLen > fileLen + 4)
     {
         dest[0] = ' ';
         dest[1] = '(';
-        memcpy(dest + 2, fileName, fileLen);
+        memcpy(dest + 2, fileName, (size_t)fileLen);
         dest += fileLen + 2;
         destLen -= fileLen + 2;
 
         char lineBuf[10] = {0, };
-        int lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), loc.line());
+        int lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), (int)loc.line());
         if (destLen > lineLen + 2)
         {
             dest[0] = ':';
-            memcpy(dest + 1, lineBuf, lineLen);
+            memcpy(dest + 1, lineBuf, (size_t)lineLen);
             dest += lineLen + 1;
         }
 

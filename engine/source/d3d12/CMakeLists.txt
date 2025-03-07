@@ -15,6 +15,11 @@ PUBLIC
     FILE_SET d3d12 TYPE CXX_MODULES
     FILES
         d3d12.cxx
+        d3d12_command_queue.cxx
+        d3d12_descriptor.cxx
+        d3d12_device.cxx
+        d3d12_render_context.cxx
+        d3d12_swap_chain.cxx
 
 PRIVATE
     d3d12_command_queue.cpp
@@ -22,15 +27,6 @@ PRIVATE
     d3d12_device.cpp
     d3d12_render_context.cpp
     d3d12_swap_chain.cpp
-
-PRIVATE
-    FILE_SET d3d12_private TYPE CXX_MODULES
-    FILES
-        d3d12_command_queue.cxx
-        d3d12_descriptor.cxx
-        d3d12_device.cxx
-        d3d12_render_context.cxx
-        d3d12_swap_chain.cxx
 )
 
 target_link_libraries(mini.d3d12

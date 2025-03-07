@@ -8,11 +8,6 @@ PRIVATE
 
 module_sources(mini.core
 PUBLIC
-    FILE_SET core TYPE CXX_MODULES
-    FILES
-        core.cxx
-
-PUBLIC
     public/assertion.h
     public/option.h
 
@@ -22,12 +17,13 @@ PRIVATE
     $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
 
-    $<$<PLATFORM_ID:Darwin>:macos/macos_log.cxx>
-    $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cxx>
+    $<$<PLATFORM_ID:Darwin>:macos/macos_log.cpp>
+    $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cpp>
 
-PRIVATE 
-    FILE_SET core_private TYPE CXX_MODULES
+PUBLIC
+    FILE_SET core TYPE CXX_MODULES
     FILES
+        core.cxx
         algorithm.cxx
         log.cxx
         utility.cxx

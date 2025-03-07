@@ -5,17 +5,13 @@ PUBLIC
     FILE_SET graphics TYPE CXX_MODULES
     FILES
         graphics.cxx
-
-PRIVATE
-    graphics.cpp
-
-PRIVATE
-    FILE_SET graphics_private TYPE CXX_MODULES
-    FILES
         device.cxx
         graphics_common.cxx
         render_context.cxx
         swap_chain.cxx
+
+PRIVATE
+    graphics.cpp
 )
 
 target_link_libraries(mini.graphics

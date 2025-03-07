@@ -20,7 +20,8 @@ if (MSVC)
     )
 else()
     add_compile_definitions(
+        "CHAR_T=char"
         "force_inline=gnu::always_inline"
-        "noinline=gnu:noinline"
+        "noinline=gnu::noinline"
     )
 endif()

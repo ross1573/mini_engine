@@ -1,14 +1,13 @@
-set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
 
 macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)
 endmacro()
 
-add_compile_options(
-    /W0
-    /utf-8
-)
+if (MSVC)
+    add_compile_options(/W0 /utf-8)
+endif()
 
 set(FMT_INSTALL OFF)
 set(FMT_MODULE OFF)

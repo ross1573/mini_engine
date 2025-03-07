@@ -19,3 +19,5 @@ target_include_directories(convert_utf
 PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+set_target_properties(convert_utf PROPERTIES CXX_SCAN_FOR_MODULES TRUE)

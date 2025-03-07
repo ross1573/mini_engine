@@ -2,6 +2,7 @@ module;
 
 #include <compare>
 #include <concepts>
+#include <type_traits>
 
 export module mini.core:type_concepts;
 
