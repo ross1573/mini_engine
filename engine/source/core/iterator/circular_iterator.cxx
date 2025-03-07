@@ -237,7 +237,7 @@ inline constexpr bool CircularIterator<T, CircularT>::Decrement() noexcept
 template <typename T, typename CircularT>
 inline constexpr bool CircularIterator<T, CircularT>::Advance(OffsetT d) noexcept
 {
-    if (d >= m_Capacity || !CheckIterator(*this + d)) [[unlikely]]
+    if (d >= (OffsetT)m_Capacity || !CheckIterator(*this + d)) [[unlikely]]
     {
         return false;
     }

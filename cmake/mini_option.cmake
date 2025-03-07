@@ -7,7 +7,7 @@ if (MSVC)
         /MP
         /sdl-
         /utf-8
-        $<$<CONFIG:Debug>:/ZI>
+        $<$<CONFIG:Debug>:/Zi>
 
         /wd4061 # each case in switch is not handled explicitly
         /wd4191 # reinterpret_cast warning

@@ -161,7 +161,7 @@ template <typename... Args> requires ConstructibleFromT<T, Args...>
 constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         Push(ForwardArg<Args>(args)...);
         return;
@@ -239,7 +239,7 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, Iter last)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         AddRange(first, last);
         return;
@@ -313,7 +313,7 @@ template <MovableT T, SizeT N>
 constexpr void StaticArray<T, N>::RemoveAt(ConstIterator iter)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         RemoveLast();
         return;

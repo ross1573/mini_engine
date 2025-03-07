@@ -245,7 +245,7 @@ template <typename... Args>
 constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         Push(ForwardArg<Args>(args)...);
         return;
@@ -365,7 +365,7 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, Iter first, Iter last)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         AddRange(first, last);
         return;
@@ -455,7 +455,7 @@ template <MovableT T, AllocatorT<T> AllocT>
 constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == m_Size)
+    if (locDiff == (OffsetT)m_Size)
     {
         RemoveLast();
         return;

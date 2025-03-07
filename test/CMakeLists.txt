@@ -16,7 +16,7 @@ target_sources(mini.test
 PUBLIC
     test_macro.h
 
-PRIVATE
+PUBLIC
 FILE_SET test_private TYPE CXX_MODULES
 FILES
     test.cxx
