@@ -1,4 +1,5 @@
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+set(CMAKE_MESSAGE_LOG_LEVEL STATUS)
 
 include(mini_module)
 include(mini_define)

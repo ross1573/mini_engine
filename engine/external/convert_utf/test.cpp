@@ -8,7 +8,7 @@ void PrintResult(std::string cat, ConversionResult result) {
 }
 
 void test() {
-    std::basic_string<char> str8 = "hello world! 안녕하세요! こんにちは!";
+    std::basic_string<char> str8 = "hello world! 안녕하세요! おげんきですか";
     
     size_t len32 = ConvertLength(&*str8.begin(), &*str8.end(), char32_t(0));
     std::basic_string<char32_t> str32(len32, '\0');
@@ -28,7 +28,7 @@ void test() {
 }
 
 void test8() {
-    std::basic_string<char8_t> stru8 = u8"hello world! 안녕하세요! こんにちは!";
+    std::basic_string<char8_t> stru8 = u8"hello world! 안녕하세요! おげんきですか";
     
     size_t len32 = ConvertLength(&*stru8.begin(), &*stru8.end(), char32_t(0));
     std::basic_string<char32_t> str32(len32, '\0');
@@ -48,7 +48,7 @@ void test8() {
 }
 
 void test16() {
-    std::basic_string<char16_t> str16 = u"hello world! 안녕하세요! こんにちは!";
+    std::basic_string<char16_t> str16 = u"hello world! 안녕하세요! おげんきですか";
     
     size_t len32 = ConvertLength(&*str16.begin(), &*str16.end(), char32_t(0));
     std::basic_string<char32_t> str32(len32, '\0');
@@ -68,7 +68,7 @@ void test16() {
 }
 
 void test32() {
-    std::basic_string<char32_t> str32 = U"hello world! 안녕하세요! こんにちは!";
+    std::basic_string<char32_t> str32 = U"hello world! 안녕하세요! おげんきですか";
     
     size_t len16 = ConvertLength(&*str32.begin(), &*str32.end(), char16_t(0));
     std::basic_string<char16_t> str16(len16, '\0');
@@ -88,7 +88,7 @@ void test32() {
 }
 
 void testw() {
-    std::wstring wstr = L"hello world! 안녕하세요! こんにちは!";
+    std::wstring wstr = L"hello world! 안녕하세요! おげんきですか";
     
     size_t len8 = ConvertLength(&*wstr.begin(), &*wstr.end(), char8_t(0));
     std::basic_string<char8_t> str8(len8, '\0');

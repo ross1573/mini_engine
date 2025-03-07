@@ -4,7 +4,7 @@ module;
 
 export module mini.test;
 
-export import mini;
+export import mini.core;
 
 using namespace mini;
 
@@ -50,24 +50,23 @@ inline void InitializeCounter()
 
 inline void PrintCounter(StringView msg, SizeT time = 0)
 {
-    PrintLine();
-    Log::Info("Container: {} / {}", msg, time);
-    Log::Info("Constructor: {}", ctor);
-    Log::Info("Copy Constructor: {}", copyCtor);
-    Log::Info("Move Constructor: {}", moveCtor);
-    Log::Info("Copy Assign: {}", copyAssign);
-    Log::Info("Move Assign: {}", moveAssign);
-    Log::Info("Destructor: {}", dtor);
+    LogMessage(Format("\tContainer: {} / {}", msg, time).c_str());
+    LogMessage(Format("\t\tConstructor: {}", ctor).c_str());
+    LogMessage(Format("\t\tCopy Constructor: {}", copyCtor).c_str());
+    LogMessage(Format("\t\tMove Constructor: {}", moveCtor).c_str());
+    LogMessage(Format("\t\tCopy Assign: {}", copyAssign).c_str());
+    LogMessage(Format("\t\tMove Assign: {}", moveAssign).c_str());
+    LogMessage(Format("\t\tDestructor: {}", dtor).c_str());
 }
 
 struct Debug
 {
-    Debug() { PrintLine("[ DEBUG ] constructor"); }
-    ~Debug() { PrintLine("[ DEBUG ] destructor"); }
-    Debug(Debug const&) { PrintLine("[ DEBUG ] copy constructor"); }
-    Debug(Debug&&) noexcept { PrintLine("[ DEBUG ] move constructor"); }
-    void operator=(Debug const&) { PrintLine("[ DEBUG ] copy assgin"); }
-    void operator=(Debug&&) noexcept { PrintLine("[ DEBUG ] move assign"); }
+    Debug() { LogMessage("[ DEBUG ] constructor"); }
+    ~Debug() { LogMessage("[ DEBUG ] destructor"); }
+    Debug(Debug const&) { LogMessage("[ DEBUG ] copy constructor"); }
+    Debug(Debug&&) noexcept { LogMessage("[ DEBUG ] move constructor"); }
+    void operator=(Debug const&) { LogMessage("[ DEBUG ] copy assgin"); }
+    void operator=(Debug&&) noexcept { LogMessage("[ DEBUG ] move assign"); }
 };
 
 template <typename T>

@@ -28,3 +28,8 @@ include(GenerateExportHeader)
 
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
+
+if (INCLUDE_TEST)
+    enable_testing()
+    add_subdirectory(test)
+endif()

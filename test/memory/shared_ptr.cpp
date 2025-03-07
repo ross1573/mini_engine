@@ -1,10 +1,10 @@
-#include "core/assert.h"
+#include "test_macro.h"
 
 import mini.test;
 
 using namespace mini;
 
-static constexpr bool ConstexprSharedPtrTest()
+static constexpr bool ConstexprSharedPtr()
 {
     // TODO: MSVC bug
     //  destructor need to be "generated" before constant evaluation
@@ -18,9 +18,9 @@ static constexpr bool ConstexprSharedPtrTest()
     return p.Equals(p2) && p.OwnerEquals(p2);
 }
 
-void SharedPtrTest()
+int main()
 {
-    static_assert(ConstexprSharedPtrTest());
+    static_assert(ConstexprSharedPtr());
 
     SharedPtr<Foo> p;
     SharedPtr<Foo> p2(nullptr);
@@ -33,7 +33,6 @@ void SharedPtrTest()
     SharedPtr<String> p11(&p7->str, [](auto){});
     SharedPtr<String> p12(p7, &p7->str);
 
-    PrintLine();
     {
         auto alloc = FooAlloc{};
         SharedPtr<Foo> p8(new Foo("string3"), FooDel{}, alloc);
@@ -47,19 +46,18 @@ void SharedPtrTest()
         f3.Reset();
         f3.Swap(f2);
 
-        ASSERT(p2 == nullptr && nullptr == p2);
-        ASSERT(!p2);
-        ASSERT((p2 == p3) && (p3 == p4) && (p4 == p5));
-        ASSERT(f1 == f3);
+        TEST_ENSURE(p2 == nullptr && nullptr == p2);
+        TEST_ENSURE(!p2);
+        TEST_ENSURE((p2 == p3) && (p3 == p4) && (p4 == p5));
+        TEST_ENSURE(f1 == f3);
 
-        ASSERT(p7 == StaticCast<Foo const>(p7));
-        ASSERT(p7.Equals(ReinterpretCast<Foo>(p12)));
-        ASSERT(p7.OwnerEquals(p12));
+        TEST_ENSURE(p7 == StaticCast<Foo const>(p7));
+        TEST_ENSURE(p7.Equals(ReinterpretCast<Foo>(p12)));
+        TEST_ENSURE(p7.OwnerEquals(p12));
     }
-    PrintCounter("SharedPtr");
 
-    ASSERT(ctor == 1 && dtor == 1);
-    ASSERT(debugAllocCnt == 0);
+    TEST_ENSURE(ctor == 1 && dtor == 1);
+    TEST_ENSURE(debugAllocCnt == 0);
 
-    PrintLine();
+    return 0;
 }

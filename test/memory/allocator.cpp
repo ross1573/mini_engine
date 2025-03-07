@@ -11,7 +11,7 @@ inline auto RebindAllocator<Foo>(Allocator<Foo>)
     return FooAlloc{};
 }
 
-void AllocatorTest()
+int main()
 {
     [[maybe_unused]] DummyAllocator dummy{};
     auto&& r = RebindAllocator<Foo>(Allocator<Foo>{});
@@ -27,4 +27,6 @@ void AllocatorTest()
 
     static_assert(Allocator<Foo>{} == Allocator<int>{});
     static_assert(DummyAllocator{} == DummyAllocator{});
+
+    return 0;
 }

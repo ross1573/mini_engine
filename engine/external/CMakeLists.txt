@@ -1,5 +1,5 @@
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
-set(CMAKE_MESSAGE_LOG_LEVEL "WARNING") # silence messages from external source
+set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
 
 macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)

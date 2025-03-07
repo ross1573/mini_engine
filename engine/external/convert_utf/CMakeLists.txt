@@ -16,9 +16,6 @@ PRIVATE
 )
 
 target_include_directories(convert_utf 
-PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-
 PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )

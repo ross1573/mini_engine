@@ -16,7 +16,7 @@ PRIVATE
 
 set_target_properties(mini.launcher
 PROPERTIES 
-    FOLDER modules
+    FOLDER module
     OUTPUT_NAME ${PROJECT_NAME}
 )
 
