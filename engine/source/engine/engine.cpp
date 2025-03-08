@@ -28,8 +28,9 @@ Engine::~Engine()
 
 bool Engine::Initialize()
 {
-    platform::Handle* platformHandle = Platform::GetHandle();
-    graphics::Device* device = platformHandle->CreateGraphicDevice(options::graphicsAPI);
+    Platform::Handle* platformHandle = Platform::GetHandle();
+    // graphics::Device* device = platformHandle->CreateGraphicDevice(options::graphicsAPI);
+    Graphics::Device* device = platformHandle->CreateGraphicDevice(graphics::API::D3D12);
 
     ASSERT(device, "failed to create graphic device");
     VERIFY(Graphics::Initialize(device), "failed to initialize graphics");

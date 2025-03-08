@@ -12,33 +12,19 @@ PLATFORM_API UniquePtr<platform::Window> g_Window;
 
 export class PLATFORM_API Platform
 {
+public:
     typedef mini::platform::Handle Handle;
     typedef mini::platform::Window Window;
 
-    friend class Engine;
-    friend void LaunchEngine(Handle*);
+public:
+    inline static Handle* GetHandle() noexcept { return g_Handle.Get(); }
+    inline static Window* GetWindow() noexcept { return g_Window.Get(); }
 
 public:
-    template <typename T = Handle> static T* GetHandle() noexcept;
-    template <typename T = Window> static T* GetWindow() noexcept;
-
-private:
     Platform() = default;
 
     static bool Initialize(Handle*);
     static void Shutdown();
 };
-
-template <typename T>
-inline T* Platform::GetHandle() noexcept
-{
-    return static_cast<T*>(g_Handle.Get());
-}
-
-template <typename T>
-inline T* Platform::GetWindow() noexcept
-{
-    return static_cast<T*>(g_Window.Get());
-}
 
 } // namespace mini

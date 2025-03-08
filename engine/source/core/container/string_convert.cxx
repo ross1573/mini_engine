@@ -37,7 +37,7 @@ public:
     {
     }
 
-    template <CharT U> requires not SameAsT<T, U>
+    template <CharT U> requires (not SameAsT<T, U>)
     inline StringConvert(U* ptr)
         : m_Data(nullptr)
         , m_Size(0)
@@ -52,7 +52,7 @@ public:
         Initialize<U>(ptr);
     }
 
-    template <CharT U> requires not SameAsT<T, U>
+    template <CharT U> requires (not SameAsT<T, U>)
     inline StringConvert(std::basic_string_view<U> str)
         : m_Data(nullptr)
         , m_Size(0)
@@ -95,7 +95,7 @@ private:
     StringConvert(StringConvert const&) = delete;
     StringConvert& operator=(StringConvert const&) = delete;
 
-    template <CharT U> requires not SameAsT<T, U>
+    template <CharT U> requires (not SameAsT<T, U>)
     inline void Initialize(std::basic_string_view<U> const& str)
     {
         if (str.size() == 0)

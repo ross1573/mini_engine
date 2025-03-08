@@ -4,15 +4,11 @@ export module mini.graphics:swap_chain;
 
 import mini.core;
 
-namespace mini { class Graphics; }
-
-export namespace mini::graphics
+namespace mini::graphics
 {
 
-class GRAPHICS_API SwapChain
+export class GRAPHICS_API SwapChain
 {
-    friend class mini::Graphics;
-
 protected:
     static constexpr uint8 MaxBackBuffer = 3;
 
@@ -29,7 +25,7 @@ public:
     virtual uint8 GetVSync() const = 0;
     virtual bool GetFullscreen() const = 0;
 
-protected:
+public:
     SwapChain() = default;
 
     virtual bool Initialize() = 0;

@@ -5,12 +5,13 @@ import :utility;
 import :memory;
 import :algorithm;
 import :static_buffer;
+import :array_iterator;
 import :circular_iterator;
 
 export namespace mini
 {
 
-export template <
+template <
     MovableT T,
     SizeT CapacityN
 >
@@ -183,8 +184,8 @@ constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
         SizeT frontInsertCnt = distance - backCap;
         Ptr begin = m_Buffer.Data();
 
-        memory::ConstructRange(end, first, first + backCap);
-        memory::ConstructRange(begin, first + backCap, last);
+        memory::ConstructRange(end, first, first + (OffsetT)backCap);
+        memory::ConstructRange(begin, first + (OffsetT)backCap, last);
         m_End = frontInsertCnt;
     }
 
@@ -203,17 +204,18 @@ constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
     }
 
     AssertValidCapacity(distance);
+    OffsetT size = (OffsetT)m_Size;
     Iterator begin = Begin();
 
     if (distance > m_Size)
     {
-        memory::CopyRange(begin, first, first + m_Size);
-        memory::ConstructRange(begin + m_Size, first + m_Size, last);
+        memory::CopyRange(begin, first, first + size);
+        memory::ConstructRange(begin + size, first + size, last);
     }
     else
     {
         memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + distance, End());
+        memory::DestructRange(begin + (OffsetT)distance, End());
     }
 
     m_End = (m_Begin + distance) % m_Buffer.Capacity();

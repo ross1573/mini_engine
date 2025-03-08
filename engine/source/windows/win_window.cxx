@@ -3,10 +3,10 @@ export module mini.windows:window;
 import mini.core;
 import mini.platform;
 
-export namespace mini::windows
+namespace mini::windows
 {
 
-class WINDOWS_API Window : public platform::Window
+export class WINDOWS_API Window final : public platform::Window
 {
 private:
     HWND m_WindowHandle;
@@ -32,7 +32,7 @@ public:
     inline RectInt GetSize() const final { return m_Rect; }
     inline HWND GetHWND() const { return m_WindowHandle; }
 
-protected:
+public:
     bool Initialize() final;
 };
 

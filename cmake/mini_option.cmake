@@ -1,4 +1,4 @@
-if (MSVC)
+if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(
         /Wall
         /external:W0
@@ -32,12 +32,25 @@ if (MSVC)
     add_link_options(
         $<$<CONFIG:Debug>:/INCREMENTAL>
     )
-else()
+elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(
         -Wall
         -Wextra
         -Wshadow
         -Wpedantic
         -Wconversion
+
+        -Wno-unknown-attributes
+        -Wno-nested-anon-types
+        -Wno-gnu-anonymous-struct
     )
+
+    if (WIN32)
+        add_compile_options(
+            -Wno-language-extension-token # use in __uuidof and __declspec
+            -Wno-cast-function-type-mismatch # reinterept_cast of dll exported function
+        )
+    endif()
+else()
+    message(FATAL_ERROR "unsupported compiler")
 endif()

@@ -6,6 +6,13 @@ elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86")
     set(D3D12_ARCH_DIR "win32")
 endif()
 
+get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if (is_multi_config)
+    set(output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
+else()
+    set(output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+
 function (copy_d3d12 target)
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -13,7 +20,7 @@ function (copy_d3d12 target)
             "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/D3D12Core.pdb>"
             "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/d3d12SDKLayers.dll>"
             "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/d3d12SDKLayers.pdb>"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+            "${output_dir}"
         COMMAND_EXPAND_LISTS
     )
 endfunction()

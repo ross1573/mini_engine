@@ -9,7 +9,6 @@ import mini.core;
 import mini.engine;
 import mini.graphics;
 import mini.platform;
-import mini.windows;
 
 #include "option.h"
 
@@ -129,7 +128,7 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    windows::Handle* handle = Platform::GetHandle<windows::Handle>();
+    Handle* handle = (Handle*)Platform::GetHandle();
     handle->ProcessMessage(hWnd, message, wParam, lParam);
     return DefWindowProcA(hWnd, message, wParam, lParam);
 }

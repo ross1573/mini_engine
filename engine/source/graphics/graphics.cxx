@@ -9,15 +9,13 @@ export import :swap_chain;
 namespace mini
 {
 
-GRAPHICS_API graphics::API g_CurrentAPI = graphics::API::Null;
+GRAPHICS_API graphics::API g_CurrAPI = graphics::API::Null;
 GRAPHICS_API UniquePtr<graphics::Device> g_Device;
 GRAPHICS_API UniquePtr<graphics::SwapChain> g_SwapChain;
 GRAPHICS_API UniquePtr<graphics::RenderContext> g_RenderContext;
 
 export class GRAPHICS_API Graphics
 {
-    friend class Engine;
-
 public:
     typedef graphics::API API;
     typedef graphics::Device Device;
@@ -27,14 +25,14 @@ public:
 public:
     static void ChangeResolution(uint32, uint32, bool);
 
-    static bool IsDeviceCurrent() noexcept;
-    static bool IsDeviceCurrent(API) noexcept;
+    static bool IsDeviceCurrent() noexcept { return g_Device != nullptr; }
+    static bool IsDeviceCurrent(API api) noexcept { return (bool)g_Device && g_CurrAPI == api; }
 
-    template <typename T = Device> static T* GetDevice() noexcept;
-    template <typename T = SwapChain> static T* GetSwapChain() noexcept;
-    template <typename T = RenderContext> static T* GetRenderContext() noexcept;
+    inline static Device* GetDevice() noexcept { return g_Device.Get(); }
+    inline static SwapChain* GetSwapChain() noexcept { return g_SwapChain.Get(); }
+    inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
 
-private:
+public:
     Graphics() = default;
 
     static bool Initialize(Device*);
@@ -43,33 +41,5 @@ private:
     static void BeginFrame();
     static void EndFrame();
 };
-
-inline bool Graphics::IsDeviceCurrent() noexcept
-{
-    return g_Device != nullptr;
-}
-
-inline bool Graphics::IsDeviceCurrent(API api) noexcept
-{
-    return g_Device != nullptr && g_CurrentAPI == api;
-}
-
-template <typename T>
-inline T* Graphics::GetDevice() noexcept
-{
-    return static_cast<T*>(g_Device.Get());
-}
-
-template <typename T>
-inline T* Graphics::GetSwapChain() noexcept
-{
-    return static_cast<T*>(g_SwapChain.Get());
-}
-
-template <typename T>
-inline T* Graphics::GetRenderContext() noexcept
-{
-    return static_cast<T*>(g_RenderContext.Get());
-}
 
 } // namespcae mini

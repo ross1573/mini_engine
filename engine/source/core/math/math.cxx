@@ -50,7 +50,7 @@ inline constexpr OffsetT Pow(T base, T exp)
 {
     if (std::is_constant_evaluated())
     {
-        OffsetT expInt = static_cast<SizeT>(exp);
+        OffsetT expInt = static_cast<OffsetT>(exp);
         OffsetT result = 1;
 
         while (expInt)

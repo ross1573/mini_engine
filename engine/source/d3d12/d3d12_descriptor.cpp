@@ -4,6 +4,10 @@ module;
 
 module mini.d3d12;
 
+import mini.core;
+import mini.windows;
+import :descriptor;
+
 namespace mini::d3d12
 {
 

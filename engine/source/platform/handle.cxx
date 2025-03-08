@@ -4,33 +4,22 @@ import mini.core;
 import mini.graphics;
 import :window;
 
-namespace mini
+namespace mini::platform
 {
 
-class Engine;
-class Platform;
-
-} // namespace mini
-
-export namespace mini::platform
+export class PLATFORM_API Handle
 {
-
-class PLATFORM_API Handle
-{
-    friend class mini::Engine;
-    friend class mini::Platform;
-
 public:
     virtual ~Handle() = default;
 
-protected:
+public:
     Handle() = default;
 
     virtual bool Initialize() = 0;
     virtual void PollEvents() = 0;
 
     virtual platform::Window* CreatePlatformWindow() = 0;
-    virtual graphics::Device* CreateGraphicDevice(graphics::API) = 0;
+    virtual graphics::Device* CreateGraphicDevice(graphics::API api) = 0;
 };
 
 } // namespace mini::platform

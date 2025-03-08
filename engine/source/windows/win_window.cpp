@@ -26,7 +26,7 @@ bool Window::Initialize()
     auto titleName = mini::options::title;
     m_Rect = mini::options::windowRect;
 
-    HINSTANCE instance = Platform::GetHandle<Handle>()->GetHINSTANCE();
+    HINSTANCE instance = ((Handle*)Platform::GetHandle())->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
     uint32 style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 

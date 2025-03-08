@@ -5,9 +5,11 @@ import mini.core;
 namespace mini
 {
 
-ENGINE_API UniquePtr<class Engine> g_Engine;
+export class Engine;
 
-export class ENGINE_API Engine
+ENGINE_API UniquePtr<Engine> g_Engine;
+
+class ENGINE_API Engine
 {
 public:
     typedef void (*CallbackFunc)();

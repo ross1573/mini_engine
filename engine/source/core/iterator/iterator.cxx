@@ -21,8 +21,10 @@ concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> &&
     { i.IsValid() } -> ConvertibleToT<bool>;
     { i.IsValidWith(j) } -> ConvertibleToT<bool>;
     { i.Increment() } -> ConvertibleToT<bool>;
-
+    
+    { i.Address() } -> SameAsT<typename T::Ptr>;
     { i.operator->() } -> SameAsT<typename T::Ptr>;
+
     { *i } -> SameAsT<typename T::Ref>;
     { ++i } -> SameAsT<T&>;
     { i++ } -> SameAsT<T>;

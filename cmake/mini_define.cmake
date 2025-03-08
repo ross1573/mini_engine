@@ -10,18 +10,27 @@ add_compile_definitions(
     PLATFORM_LINUX=$<PLATFORM_ID:Linux>
 )
 
-if (MSVC)
+if (WIN32)
     add_compile_definitions(
         _ALLOW_KEYWORD_MACROS
         "CHAR_T=wchar_t"
-        "force_inline=msvc::forceinline"
-        #"inline=msvc::noinline"
         "no_unique_address=msvc::no_unique_address"
     )
 else()
     add_compile_definitions(
         "CHAR_T=char"
-        "force_inline=gnu::always_inline"
         "noinline=gnu::noinline"
     )
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    add_compile_definitions(
+        "force_inline=msvc::forceinline"
+    )
+elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    add_compile_definitions(
+        "force_inline=clang::always_inline"
+    )
+else()
+    message(FATAL_ERROR "unsupproted compiler")
 endif()

@@ -153,7 +153,7 @@ template <MovableT T, SizeT N>
 template <typename... Args> requires ConstructibleFromT<T, Args...>
 inline constexpr void StaticArray<T, N>::Insert(SizeT index, Args&&... args)
 {
-    Insert(Begin() + index, ForwardArg<Args>(args)...);
+    Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, SizeT N>
@@ -170,7 +170,7 @@ constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
     AssertValidCapacity(m_Size + 1);
     Ptr begin = m_Buffer.Data();
     Ptr loc = begin + locDiff;
-    Ptr end = begin + m_Size;
+    Ptr end = begin + (OffsetT)m_Size;
     Ptr last = end - 1;
 
     memory::ConstructAt(end, MoveArg(*last));
@@ -193,17 +193,18 @@ inline constexpr void StaticArray<T, N>::Assign(Iter first, Iter last)
     }
 
     AssertValidCapacity(distance);
+    OffsetT size = (OffsetT)m_Size;
     Ptr begin = m_Buffer.Data();
 
     if (m_Size < distance)
     {
-        memory::CopyRange(begin, first, first + m_Size);
-        memory::ConstructRange(begin + m_Size, first + m_Size, last);
+        memory::CopyRange(begin, first, first + size);
+        memory::ConstructRange(begin + size, first + size, last);
     }
     else
     {
         memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + distance, begin + m_Size);
+        memory::DestructRange(begin + distance, begin + size);
     }
 
     m_Size = distance;
@@ -258,7 +259,7 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 
     Ptr begin = m_Buffer.Data();
     Ptr loc = begin + locDiff;
-    Ptr end = begin + m_Size;
+    Ptr end = begin + (OffsetT)m_Size;
 
     if (static_cast<SizeT>(end - loc) > distance)
     {
@@ -322,7 +323,7 @@ constexpr void StaticArray<T, N>::RemoveAt(ConstIterator iter)
     AssertValidIterator(iter);
     Ptr begin = m_Buffer.Data();
     Ptr loc = begin + locDiff;
-    Ptr end = begin + m_Size;
+    Ptr end = begin + (OffsetT)m_Size;
 
     memory::DestructAt(loc);
     memory::MoveRange(loc, loc + 1, end);

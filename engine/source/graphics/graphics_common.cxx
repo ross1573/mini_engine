@@ -1,3 +1,5 @@
+module;
+
 export module mini.graphics:common;
 
 import mini.core;

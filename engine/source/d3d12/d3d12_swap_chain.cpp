@@ -46,9 +46,9 @@ bool SwapChain::Initialize()
     m_VSync = options::vsync;
 
     SharedPtr<IDXGISwapChain1> swapChain;
-    auto window = Platform::GetWindow<windows::Window>();
-    auto factory = Graphics::GetDevice<d3d12::Device>()->GetDXGIFactory();
-    auto renderContext = Graphics::GetRenderContext<d3d12::RenderContext>();
+    auto window = (windows::Window*)Platform::GetWindow();
+    auto factory = ((Device*)Graphics::GetDevice())->GetDXGIFactory();
+    auto renderContext = (RenderContext*)Graphics::GetRenderContext();
     auto commandQueue = renderContext->GetCommandQueue();
 
     //RectInt size = window->GetSize();
@@ -166,7 +166,7 @@ void SwapChain::CreateBuffers(uint8 count)
         return;
     }
 
-    Device* device = Graphics::GetDevice<d3d12::Device>();
+    Device* device = (Device*)Graphics::GetDevice();
     uint32 swapChainFlags = (m_VSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr);

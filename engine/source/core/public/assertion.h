@@ -27,7 +27,7 @@
 #define ENSURE_LOG(expr, ...) _MD::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__);
 
 #if DEBUG_ASSERT
-#   if MSVC
+#   if PLATFORM_WINDOWS
 #       define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
 #   else
 #       define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line)

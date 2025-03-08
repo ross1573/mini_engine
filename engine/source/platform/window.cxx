@@ -1,22 +1,18 @@
 export module mini.platform:window;
 
-namespace mini { class Platform; }
-
 import mini.core;
 
-export namespace mini::platform
+namespace mini::platform
 {
 
-class PLATFORM_API Window
+export class PLATFORM_API Window
 {
-    friend class mini::Platform;
-
 public:
     virtual ~Window() = default;
 
-    virtual void DialogCritical(String const&) = 0;
+    virtual void DialogCritical(String const& msg) = 0;
 
-    virtual void Resize(RectInt const&) = 0;
+    virtual void Resize(RectInt const& windowSize) = 0;
     virtual void Minimize() = 0;
     virtual void Maximize() = 0;
     virtual void Show() = 0;
@@ -24,7 +20,7 @@ public:
 
     virtual RectInt GetSize() const = 0;
 
-protected:
+public:
     Window() = default;
 
     virtual bool Initialize() = 0;

@@ -295,6 +295,7 @@ constexpr void Array<T, AllocT>::Assign(Iter first, Iter last)
         return;
     }
 
+    OffsetT size = (OffsetT)m_Size;
     SizeT capacity = m_Buffer.Capacity();
     Ptr begin = m_Buffer.Data();
 
@@ -302,13 +303,13 @@ constexpr void Array<T, AllocT>::Assign(Iter first, Iter last)
     {
         if (m_Size < distance)
         {
-            memory::CopyRange(begin, first, first + m_Size);
-            memory::ConstructRange(begin + m_Size, first + m_Size, last);
+            memory::CopyRange(begin, first, first + size);
+            memory::ConstructRange(begin + m_Size, first + size, last);
         }
         else
         {
             memory::CopyRange(begin, first, last);
-            memory::DestructRange(begin + distance, begin + m_Size);
+            memory::DestructRange(begin + distance, begin + size);
         }
     }
     else

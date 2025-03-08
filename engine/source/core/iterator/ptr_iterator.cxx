@@ -3,22 +3,6 @@ export module mini.core:ptr_iterator;
 import :type;
 import :iterator;
 
-namespace mini
-{
-
-template <PtrT T>
-class PtrIterator;
-
-} // namespace mini
-
-namespace mini::memory
-{
-
-template <PtrT T>
-constexpr T AddressOf(PtrIterator<T> const&) noexcept;
-
-} // namespace mini::memory
-
 export namespace mini
 {
 
@@ -39,6 +23,8 @@ protected:
 public:
     constexpr PtrIterator() noexcept;
     explicit constexpr PtrIterator(Ptr p) noexcept;
+
+    constexpr Ptr Address() const noexcept;
 
     constexpr bool IsValid() const noexcept;
     constexpr bool IsValidWith(PtrIterator const&) const noexcept;
@@ -96,6 +82,12 @@ PtrIterator<T>::operator=(PtrIterator<U> const& o) noexcept
 {
     m_Ptr = o.m_Ptr;
     return *this;
+}
+
+template <PtrT T>
+inline constexpr PtrIterator<T>::Ptr PtrIterator<T>::Address() const noexcept
+{
+    return m_Ptr;
 }
 
 template <PtrT T>

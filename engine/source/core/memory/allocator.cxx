@@ -10,10 +10,10 @@ import :memory;
 namespace mini
 {
 
-template <typename T>
+export template <typename T>
 struct AllocResult;
 
-template <typename T>
+export template <typename T>
 struct Allocator;
 
 template <typename AllocT>

@@ -17,7 +17,7 @@ inline constexpr bool resizableWindow = true;
 inline constexpr uint8 vsync = 0;
 inline constexpr uint8 bufferCount = 2;
 
-inline constexpr graphics::API graphicsAPI = graphics::API::D3D12;
+// inline constexpr graphics::API graphicsAPI = graphics::API::D3D12;
 
 inline constexpr bool debugLayer = true;
 inline constexpr bool gpuValidation = false;

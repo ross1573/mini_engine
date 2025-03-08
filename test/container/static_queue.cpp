@@ -67,7 +67,7 @@ int main()
         q.RemoveFirst(2);
         q.EnqueueRange(iter, end);
         q.RemoveFirst();
-        //q.Assign(q.Begin(), q.End());
+        q.Assign(q.Begin(), q.End());
 
         memory::AddressOf(q.End());
         iter = q.Begin();

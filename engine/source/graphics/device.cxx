@@ -5,21 +5,17 @@ import :common;
 import :render_context;
 import :swap_chain;
 
-namespace mini { class Graphics; }
-
-export namespace mini::graphics
+namespace mini::graphics
 {
 
-class GRAPHICS_API Device
+export class GRAPHICS_API Device
 {
-    friend class mini::Graphics;
-
 public:
     virtual ~Device() = default;
 
     virtual API GetAPI() const = 0;
 
-protected:
+public:
     Device() = default;
 
     virtual bool Initialize() = 0;

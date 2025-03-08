@@ -4,10 +4,10 @@ import mini.platform;
 import mini.graphics;
 import :window;
 
-export namespace mini::windows
+namespace mini::windows
 {
 
-class WINDOWS_API Handle : public platform::Handle
+export class WINDOWS_API Handle final : public platform::Handle
 {
 private:
     HINSTANCE m_Instance;
@@ -20,7 +20,7 @@ public:
 
     inline HINSTANCE GetHINSTANCE() const { return m_Instance; }
 
-protected:
+public:
     bool Initialize() final;
     void PollEvents() final;
 

@@ -2,15 +2,11 @@ export module mini.graphics:render_context;
 
 import mini.core;
 
-namespace mini { class Graphics; }
-
-export namespace mini::graphics
+namespace mini::graphics
 {
 
-class GRAPHICS_API RenderContext
+export class GRAPHICS_API RenderContext
 {
-    friend class mini::Graphics;
-
 public:
     virtual ~RenderContext() = default;
 
@@ -20,7 +16,7 @@ public:
     virtual void WaitForIdle() = 0;
     virtual void Execute() = 0;
 
-protected:
+public:
     RenderContext() = default;
 
     virtual bool Initialize() = 0;

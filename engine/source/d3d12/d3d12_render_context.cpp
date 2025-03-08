@@ -28,7 +28,7 @@ RenderContext::~RenderContext()
 
 bool RenderContext::Initialize()
 {
-    ID3D12Device* device = Graphics::GetDevice<d3d12::Device>()->GetD3D12Device();
+    ID3D12Device* device = ((Device*)Graphics::GetDevice())->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
     m_CommandQueue = MakeUnique<CommandQueue>(graphics::CommandType::Direct);
@@ -45,7 +45,7 @@ bool RenderContext::Initialize()
 void RenderContext::BeginRender()
 {
     m_CommandQueue->WaitForFence(m_CommandQueue->GetCurrentFence());
-    m_CurrentBuffer = Graphics::GetSwapChain<d3d12::SwapChain>()->GetCurrentBuffer();
+    m_CurrentBuffer = ((SwapChain*)Graphics::GetSwapChain())->GetCurrentBuffer();
 
     VERIFY(m_CommandAllocator->Reset(), "failed to reset command allocator");
     VERIFY(m_CommandList->Reset(m_CommandAllocator, nullptr), "failed to reset command list");

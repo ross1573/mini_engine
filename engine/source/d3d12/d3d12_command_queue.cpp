@@ -4,6 +4,8 @@ module;
 
 module mini.d3d12;
 
+import :command_queue;
+
 namespace mini::d3d12
 {
 

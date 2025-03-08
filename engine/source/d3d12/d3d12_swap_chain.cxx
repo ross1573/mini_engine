@@ -17,7 +17,7 @@ struct SwapChainBuffer
     SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* = nullptr);
 };
 
-class SwapChain : public graphics::SwapChain
+class SwapChain final : public graphics::SwapChain
 {
     static constexpr uint8 MaxBuffer = SwapChain::MaxBackBuffer;
 

@@ -32,9 +32,9 @@ public:
     template <PtrConvertibleToT<T> U> constexpr SharedPtr(SharedPtr<U>&&) noexcept;
     template <PtrConvertibleToT<T> U> explicit constexpr SharedPtr(U*) noexcept;
     template <DerivedFromT<IUnknown> U> 
-    constexpr SharedPtr(SharedPtr<T> const&, Ptr) noexcept;
+    constexpr SharedPtr(SharedPtr<U> const&, Ptr) noexcept;
     template <DerivedFromT<IUnknown> U> 
-    constexpr SharedPtr(SharedPtr<T>&&, Ptr) noexcept;
+    constexpr SharedPtr(SharedPtr<U>&&, Ptr) noexcept;
     constexpr SharedPtr(NullptrT) noexcept;
 
     constexpr Ptr Get() const noexcept;
@@ -128,7 +128,7 @@ inline constexpr SharedPtr<T>::SharedPtr(U* ptr) noexcept
 
 template <NonRefT T> requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U> 
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<T> const& other, Ptr ptr) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Ptr ptr) noexcept
     : m_Ptr(ptr)
 {
     if (m_Ptr)
@@ -139,7 +139,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<T> const& other, Ptr ptr) noe
 
 template <NonRefT T> requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<T>&& other, Ptr ptr) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Ptr ptr) noexcept
     : m_Ptr(ptr)
 {
     other.m_Ptr = nullptr;

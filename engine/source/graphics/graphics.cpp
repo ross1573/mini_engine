@@ -14,8 +14,8 @@ bool Graphics::Initialize(Device* device)
     VERIFY(g_Device == nullptr && device != nullptr);
 
     g_Device = UniquePtr(device);
-    g_CurrentAPI = g_Device->GetAPI();
-    VERIFY(g_CurrentAPI != API::Null);
+    g_CurrAPI = g_Device->GetAPI();
+    VERIFY(g_CurrAPI != API::Null);
     VERIFY(g_Device->Initialize(), "failed to initialize graphics device");
 
     g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
@@ -32,7 +32,7 @@ void Graphics::Shutdown()
     g_RenderContext.Reset();
     g_SwapChain.Reset();
     g_Device.Reset();
-    g_CurrentAPI = API::Null;
+    g_CurrAPI = API::Null;
 }
 
 void Graphics::BeginFrame()
