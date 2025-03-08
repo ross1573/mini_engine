@@ -22,20 +22,18 @@ public:
     RenderContext();
     ~RenderContext() final;
 
-    void SetViewport(Rect const&, float, float) final;
-    void SetScissorRect(RectInt const&) final;
-
-    void WaitForIdle() final;
-    void Execute() final;
-
-    inline CommandQueue* GetCommandQueue() const { return m_CommandQueue.Get(); }
-    inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
-
-protected:
     bool Initialize() final;
 
     void BeginRender() final;
     void EndRender() final;
+    void WaitForIdle() final;
+    void Execute() final;
+
+    void SetViewport(Rect const&, float, float) final;
+    void SetScissorRect(RectInt const&) final;
+
+    inline CommandQueue* GetCommandQueue() const { return m_CommandQueue.Get(); }
+    inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
 };
 
 } // namespace mini::d3d12

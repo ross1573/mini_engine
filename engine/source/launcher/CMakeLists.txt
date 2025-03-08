@@ -23,7 +23,7 @@ PRIVATE
 set_target_properties(mini.launcher
 PROPERTIES
     FOLDER module
-    OUTPUT_NAME ${PROJECT_NAME}
+    OUTPUT_NAME ${PROJECT_NAME}$<$<CONFIG:Debug>:Debug>
 )
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")

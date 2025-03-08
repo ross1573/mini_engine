@@ -4,8 +4,8 @@ module_sources(mini.graphics
 PUBLIC
     FILE_SET graphics TYPE CXX_MODULES
     FILES
-        graphics.cxx
         device.cxx
+        graphics.cxx
         graphics_common.cxx
         render_context.cxx
         swap_chain.cxx

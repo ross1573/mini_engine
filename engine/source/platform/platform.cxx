@@ -17,14 +17,13 @@ public:
     typedef mini::platform::Window Window;
 
 public:
-    inline static Handle* GetHandle() noexcept { return g_Handle.Get(); }
-    inline static Window* GetWindow() noexcept { return g_Window.Get(); }
-
-public:
     Platform() = default;
 
     static bool Initialize(Handle*);
     static void Shutdown();
+
+    inline static Handle* GetHandle() noexcept { return g_Handle.Get(); }
+    inline static Window* GetWindow() noexcept { return g_Window.Get(); }    
 };
 
 } // namespace mini

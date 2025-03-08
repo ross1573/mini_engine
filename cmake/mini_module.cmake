@@ -10,6 +10,7 @@ function (add_module name type)
     string(REPLACE "." "_" api ${api})
     string(REPLACE "." "_" header ${name})
 
+    set(out_name $<IF:$<CONFIG:Debug>,minid,mini>.${api})
     set(api ${api}_API)
     set(header "${header}.generated.h")
     string(TOUPPER ${api} api)
@@ -26,7 +27,10 @@ function (add_module name type)
         ${CMAKE_CURRENT_BINARY_DIR}/${header}
     )
 
-    set_target_properties(${name} PROPERTIES FOLDER module)
+    set_target_properties(${name} PROPERTIES 
+        FOLDER module
+        OUTPUT_NAME ${out_name}
+    )
 
     if (${ARGC} GREATER 2)
         module_sources(${name} ${ARGN})

@@ -23,18 +23,16 @@ private:
 public:
     Device();
 
+    bool Initialize() final;
+
     void CreateSwapChainBuffer(SwapChainBuffer&);
+    graphics::SwapChain* CreateSwapChain() final;
+    graphics::RenderContext* CreateRenderContext() final;
 
     inline graphics::API GetAPI() const final { return graphics::API::D3D12; }
     inline IDXGIFactory4* GetDXGIFactory() const { return m_Factory; }
     inline IDXGIAdapter* GetDXGIAdapter() const { return m_Adapter; }
     inline ID3D12Device* GetD3D12Device() const { return m_Device; }
-
-protected:
-    bool Initialize() final;
-
-    graphics::SwapChain* CreateSwapChain() final;
-    graphics::RenderContext* CreateRenderContext() final;
 
 private:
     void CreateDevice(D3D_FEATURE_LEVEL = D3D_FEATURE_LEVEL_11_0);

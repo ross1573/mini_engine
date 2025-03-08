@@ -23,6 +23,13 @@ public:
     typedef graphics::RenderContext RenderContext;
 
 public:
+    Graphics() = default;
+
+    static bool Initialize(Device*);
+    static void Shutdown();
+
+    static void BeginFrame();
+    static void EndFrame();
     static void ChangeResolution(uint32, uint32, bool);
 
     static bool IsDeviceCurrent() noexcept { return g_Device != nullptr; }
@@ -31,15 +38,6 @@ public:
     inline static Device* GetDevice() noexcept { return g_Device.Get(); }
     inline static SwapChain* GetSwapChain() noexcept { return g_SwapChain.Get(); }
     inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
-
-public:
-    Graphics() = default;
-
-    static bool Initialize(Device*);
-    static void Shutdown();
-
-    static void BeginFrame();
-    static void EndFrame();
 };
 
 } // namespcae mini

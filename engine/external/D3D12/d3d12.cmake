@@ -8,7 +8,7 @@ endif()
 
 get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (is_multi_config)
-    set(output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
+    set(output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)
 else()
     set(output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
