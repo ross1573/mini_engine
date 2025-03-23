@@ -1,3 +1,7 @@
+module;
+
+#include "assertion.h"
+
 export module mini.core:static_queue;
 
 import :type;

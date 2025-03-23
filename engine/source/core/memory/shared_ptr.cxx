@@ -2,6 +2,8 @@ module;
 
 #include <atomic>
 
+#include "assertion.h"
+
 export module mini.core:shared_ptr;
 
 import :type;

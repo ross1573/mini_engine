@@ -2,6 +2,8 @@ module;
 
 #include <memory>
 
+#include "assertion.h"
+
 export module mini.core:memory;
 
 import :type;

@@ -1,11 +1,6 @@
 # some template functions are not exported while using std::format
 add_module(mini.core STATIC)
 
-target_precompile_headers(mini.core
-PRIVATE
-    public/assertion.h
-)
-
 module_sources(mini.core
 PUBLIC
     public/assertion.h
