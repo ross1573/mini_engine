@@ -1,5 +1,8 @@
+#include <cstring>
+
+#include "assertion.h"
+
 import mini.core;
-import mini.log;
 
 constexpr int bufSize = DEBUG * 1023 + 1;
 
@@ -18,7 +21,7 @@ char* AssertMsg(char const* expr, char const* msg)
 
 char* AssertLoc(std::source_location const& loc)
 {
-    SizeT len = SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
+    int len = SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
     memcpy(funcInfo + len, "\n\0", 3);
     return funcInfo;
 }
@@ -31,7 +34,7 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
                       "  Expression: {0}\n"
                       "  Message: {1}\n"
                       "  Function: {2}\n\n",
-                      expr, (msg == nullptr ? "" : msg), locBuffer));
+                      expr, (msg == nullptr ? "" : msg), locBuffer).c_str());
 }
 
 } // namespace mini::detail

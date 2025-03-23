@@ -1,4 +1,5 @@
 #include <string.h>
+#include <source_location>
 
 namespace mini::detail
 {

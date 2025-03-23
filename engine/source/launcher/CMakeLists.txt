@@ -17,7 +17,10 @@ target_link_libraries(mini.launcher
 PRIVATE 
     mini.core
     mini.engine
-    mini.windows
+    mini.platform
+
+    $<$<PLATFORM_ID:Windows>:mini.windows>
+    # $<$<PLATFORM_ID:Darwin>:mini.macos>
 )
 
 set_target_properties(mini.launcher
