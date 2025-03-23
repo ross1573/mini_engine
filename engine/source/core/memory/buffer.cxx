@@ -8,15 +8,10 @@ import :type;
 import :memory;
 import :allocator;
 
-export namespace mini
-{
+export namespace mini {
 
-template <
-    typename T,
-    AllocatorT<T> AllocT
->
-class DynamicBuffer
-{
+template <typename T, AllocatorT<T> AllocT>
+class DynamicBuffer {
 protected:
     [[no_unique_address]] AllocT m_Alloc;
     SizeT m_Capacity;
@@ -66,8 +61,7 @@ public:
     {
     }
 
-    inline constexpr DynamicBuffer(SizeT capacity)
-        noexcept(NoThrowAllocatorT<AllocT, T>)
+    inline constexpr DynamicBuffer(SizeT capacity) noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc{}
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -76,8 +70,7 @@ public:
         m_Capacity = capacity;
     }
 
-    inline constexpr DynamicBuffer(SizeT capacity, AllocT const& alloc)
-        noexcept(NoThrowAllocatorT<AllocT, T>)
+    inline constexpr DynamicBuffer(SizeT capacity, AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(alloc)
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -86,8 +79,7 @@ public:
         m_Capacity = capacity;
     }
 
-    inline constexpr DynamicBuffer(SizeT capacity, AllocT&& alloc)
-        noexcept(NoThrowAllocatorT<AllocT, T>)
+    inline constexpr DynamicBuffer(SizeT capacity, AllocT&& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(MoveArg(alloc))
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -113,8 +105,7 @@ public:
 
     inline constexpr void Deallocate() noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if (m_Buffer == nullptr)
-        {
+        if (m_Buffer == nullptr) {
             return;
         }
 
@@ -123,15 +114,13 @@ public:
         m_Capacity = 0;
     }
 
-    [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const
-        noexcept(NoThrowAllocatorT<AllocT, T>)
+    [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Increment(m_Capacity, size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
     }
 
-    [[nodiscard]] inline constexpr DynamicBuffer Resize(SizeT size) const
-        noexcept(NoThrowAllocatorT<AllocT, T>)
+    [[nodiscard]] inline constexpr DynamicBuffer Resize(SizeT size) const noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Allocate(size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
@@ -144,15 +133,9 @@ public:
         mini::Swap(m_Alloc, other.m_Alloc);
     }
 
-    [[nodiscard]] inline AllocT const& GetAllocator() const noexcept
-    {
-        return m_Alloc;
-    }
+    [[nodiscard]] inline AllocT const& GetAllocator() const noexcept { return m_Alloc; }
 
-    inline constexpr bool operator==(DynamicBuffer const& other) const noexcept
-    {
-        return m_Buffer == other.m_Buffer;
-    }
+    inline constexpr bool operator==(DynamicBuffer const& other) const noexcept { return m_Buffer == other.m_Buffer; }
 
     inline constexpr DynamicBuffer& operator=(DynamicBuffer&& other) noexcept
     {

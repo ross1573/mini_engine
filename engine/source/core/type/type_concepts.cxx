@@ -7,25 +7,26 @@ module;
 export module mini.core:type_concepts;
 
 template <typename T, typename _1, typename... Args>
-struct AnyOfImpl2
-{
+struct AnyOfImpl2 {
     static constexpr bool value = std::is_same_v<T, _1> || AnyOfImpl2<T, Args...>::value;
 };
 
 template <typename T, typename U>
-struct AnyOfImpl2<T, U> 
-{ 
+struct AnyOfImpl2<T, U> {
     static constexpr bool value = std::is_same_v<T, U>;
 };
 
 template <typename T, typename... Args>
-struct AnyOfImpl { static constexpr bool value = AnyOfImpl2<T, Args...>::value; };
+struct AnyOfImpl {
+    static constexpr bool value = AnyOfImpl2<T, Args...>::value;
+};
 
 template <typename T>
-struct AnyOfImpl<T> { static constexpr bool value = false; };
+struct AnyOfImpl<T> {
+    static constexpr bool value = false;
+};
 
-export namespace mini
-{
+export namespace mini {
 
 template <typename T>
 concept IntT = std::integral<T>;
@@ -55,9 +56,7 @@ template <typename T>
 concept NonArrT = !ArrT<T>;
 
 template <typename T>
-concept ValueT = (NonPtrT<T> &&
-                  NonRefT<T> &&
-                  !std::is_array_v<T>);
+concept ValueT = NonPtrT<T> && NonRefT<T> && !std::is_array_v<T>;
 
 template <typename Base, typename Derived>
 concept BaseOfT = std::is_base_of_v<Base, Derived>;
@@ -75,9 +74,7 @@ template <typename From, typename To>
 concept ConvertibleToT = std::convertible_to<From, To>;
 
 template <typename From, typename To>
-concept PtrConvertibleToT = (NonRefT<From> &&
-                             NonRefT<To> &&
-                             ConvertibleToT<From*, To*>);
+concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*, To*>;
 
 template <typename T, typename... Args>
 concept ConstructibleFromT = std::constructible_from<T, Args...>;
@@ -95,8 +92,7 @@ template <typename T, typename U>
 concept AssignableFromT = std::assignable_from<T, U>;
 
 template <typename T, typename U>
-concept NoThrowAssignableFromT = (AssignableFromT<T, U> &&
-                                  std::is_nothrow_assignable_v<T, U>);
+concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
 
 template <typename T>
 concept DestructibleT = std::destructible<T>;
@@ -108,19 +104,15 @@ template <typename T>
 concept CopyableT = std::copyable<T>;
 
 template <typename T>
-concept NoThrowMovableT = (MovableT<T> &&
-                           std::is_nothrow_move_constructible_v<T> &&
-                           std::is_nothrow_move_assignable_v<T>);
+concept NoThrowMovableT = MovableT<T> && std::is_nothrow_move_constructible_v<T> &&
+                          std::is_nothrow_move_assignable_v<T>;
 
 template <typename T>
-concept NoThrowCopyableT = (NoThrowMovableT<T> &&
-                            std::is_nothrow_copy_constructible_v<T> &&
-                            std::is_nothrow_copy_assignable_v<T>);
+concept NoThrowCopyableT = NoThrowMovableT<T> && std::is_nothrow_copy_constructible_v<T> &&
+                           std::is_nothrow_copy_assignable_v<T>;
 
 template <typename T>
-concept TrivialT = (std::is_nothrow_default_constructible_v<T> &&
-                    std::is_trivially_copyable_v<T> &&
-                    NoThrowCopyableT<T>);
+concept TrivialT = std::is_nothrow_default_constructible_v<T> && std::is_trivially_copyable_v<T> && NoThrowCopyableT<T>;
 
 template <typename T, typename... Args>
 concept CallableT = std::is_invocable_v<T, Args...>;

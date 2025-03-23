@@ -3,11 +3,9 @@ export module mini.core:vertex;
 import :vector3;
 import :vector4;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vertex
-{
+struct Vertex {
     Vector3 position;
     Vector4 color;
 };

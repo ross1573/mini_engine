@@ -4,11 +4,9 @@ import mini.core;
 import mini.graphics;
 import :window;
 
-namespace mini::platform
-{
+namespace mini::platform {
 
-export class PLATFORM_API Handle
-{
+export class PLATFORM_API Handle {
 public:
     virtual ~Handle() = default;
 

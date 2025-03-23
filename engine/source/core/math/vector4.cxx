@@ -4,15 +4,11 @@ import :type;
 import :math;
 import :vector3;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vector4
-{
-    union
-    {
-        struct
-        {
+struct Vector4 {
+    union {
+        struct {
             float32 x;
             float32 y;
             float32 z;
@@ -78,12 +74,18 @@ inline Vector4 const Vector4::unitZ = Vector4(0.f, 0.f, 1.f, 0.f);
 inline Vector4 const Vector4::unitW = Vector4(0.f, 0.f, 0.f, 1.f);
 
 inline constexpr Vector4::Vector4() noexcept
-    : x(0.f), y(0.f), z(0.f), w(0.f)
+    : x(0.f)
+    , y(0.f)
+    , z(0.f)
+    , w(0.f)
 {
 }
 
 inline constexpr Vector4::Vector4(float inX, float inY, float inZ, float inW) noexcept
-    : x(inX), y(inY), z(inZ), w(inW)
+    : x(inX)
+    , y(inY)
+    , z(inZ)
+    , w(inW)
 {
 }
 

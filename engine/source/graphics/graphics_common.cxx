@@ -1,14 +1,14 @@
 module;
 
+#include <regex>
+
 export module mini.graphics:common;
 
 import mini.core;
 
-export namespace mini::graphics
-{
+namespace mini::graphics {
 
-enum class API : byte
-{
+export enum class API : byte {
     Null = 0,
 
     D3D12,
@@ -16,8 +16,7 @@ enum class API : byte
     Vulkan,
 };
 
-enum class CommandType : int8
-{
+export enum class CommandType : int8 {
     None = -1,
 
     Direct,
@@ -25,19 +24,36 @@ enum class CommandType : int8
     Copy
 };
 
-inline String ToString(API api)
+export GRAPHICS_API inline String ToString(API api)
 {
-    switch (api)
-    {
-        case API::D3D12: return String{"DirectX3D 12"};
-        case API::Metal: return String{"Metal"};
-        case API::Vulkan: return String{"Vulkan"};
+    switch (api) {
+        case API::D3D12:  return String{ "D3D12" };
+        case API::Metal:  return String{ "Metal" };
+        case API::Vulkan: return String{ "Vulkan" };
 
-        case API::Null:
-        default: break;
+        case API::Null: [[fallthrough]];
+        default:        break;
     }
 
-    return String{"null"};
+    return String{ "null" };
 }
 
-} // namespace mini:::graphics
+GRAPHICS_API const std::regex d3d12_regex("[Dd]3[Dd]12");
+GRAPHICS_API const std::regex metal_regex("[Mm][Ee][Tt][Aa][Ll]");
+GRAPHICS_API const std::regex vulkan_regex("[Vv][Uu][Ll][Kk][Aa][Nn]");
+
+export GRAPHICS_API inline API ParseAPI(String const& str)
+{
+    if (std::regex_match(str, d3d12_regex)) {
+        return API::D3D12;
+    }
+    else if (std::regex_match(str, metal_regex)) {
+        return API::Metal;
+    }
+    else if (std::regex_match(str, vulkan_regex)) {
+        return API::Vulkan;
+    }
+    return API::Null;
+}
+
+} // namespace mini::graphics

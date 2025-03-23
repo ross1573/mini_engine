@@ -3,19 +3,16 @@ export module mini.d3d12:descriptor;
 import mini.core;
 import mini.windows;
 
-export namespace mini::d3d12
-{
+export namespace mini::d3d12 {
 
-struct Descriptor
-{
+struct Descriptor {
     typedef D3D12_CPU_DESCRIPTOR_HANDLE CPUOffsetT;
 
     CPUOffsetT offset;
     SizeT heapIndex;
 };
 
-class DescriptorHeap
-{
+class DescriptorHeap {
 public:
     typedef D3D12_CPU_DESCRIPTOR_HANDLE CPUOffsetT;
     typedef D3D12_GPU_DESCRIPTOR_HANDLE GPUOffsetT;
@@ -35,8 +32,7 @@ public:
     CPUOffsetT GetOffset(uint32) const noexcept;
 };
 
-class DescriptorAllocator
-{
+class DescriptorAllocator {
 public:
     typedef D3D12_CPU_DESCRIPTOR_HANDLE CPUOffsetT;
     typedef D3D12_GPU_DESCRIPTOR_HANDLE GPUOffsetT;

@@ -2,11 +2,9 @@ export module mini.graphics:render_context;
 
 import mini.core;
 
-namespace mini::graphics
-{
+namespace mini::graphics {
 
-export class GRAPHICS_API RenderContext
-{
+export class GRAPHICS_API RenderContext {
 public:
     virtual ~RenderContext() = default;
 
@@ -24,4 +22,4 @@ protected:
     RenderContext() = default;
 };
 
-} // namespace mini::grpahics
+} // namespace mini::graphics

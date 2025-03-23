@@ -5,11 +5,9 @@ import :common;
 import :render_context;
 import :swap_chain;
 
-namespace mini::graphics
-{
+namespace mini::graphics {
 
-export class GRAPHICS_API Device
-{
+export class GRAPHICS_API Device {
 public:
     virtual ~Device() = default;
 

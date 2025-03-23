@@ -6,11 +6,9 @@ import :vector2;
 import :vector2_int;
 import :vector3_int;
 
-export namespace mini
-{
+export namespace mini {
 
-struct RectInt
-{
+struct RectInt {
     int32 x;
     int32 y;
     int32 width;
@@ -42,17 +40,26 @@ struct RectInt
 inline RectInt const RectInt::zero = RectInt();
 
 inline constexpr RectInt::RectInt() noexcept
-    : x(0), y(0), width(0), height(0)
+    : x(0)
+    , y(0)
+    , width(0)
+    , height(0)
 {
 }
 
 inline constexpr RectInt::RectInt(int32 inX, int32 inY, int32 inWidth, int32 inHeight) noexcept
-    : x(inX), y(inY), width(inWidth), height(inHeight)
+    : x(inX)
+    , y(inY)
+    , width(inWidth)
+    , height(inHeight)
 {
 }
 
 inline constexpr RectInt::RectInt(Vector2Int const& position, Vector2Int const& size) noexcept
-    : x(position.x), y(position.y), width(size.x), height(size.y)
+    : x(position.x)
+    , y(position.y)
+    , width(size.x)
+    , height(size.y)
 {
 }
 
@@ -94,8 +101,7 @@ inline constexpr bool RectInt::Contains(Vector3Int const& v) const noexcept
 
 inline constexpr bool RectInt::Intersects(RectInt const& r) const noexcept
 {
-    return (r.x < (x + width)) && (x < (r.x + r.width)) &&
-        (r.y < (y + height)) && (y < (r.y + r.height));
+    return (r.x < (x + width)) && (x < (r.x + r.width)) && (r.y < (y + height)) && (y < (r.y + r.height));
 }
 
 inline constexpr bool RectInt::Overlaps(RectInt const& r) const noexcept

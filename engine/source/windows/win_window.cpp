@@ -1,17 +1,15 @@
 module;
 
-#include "resource.h"
 #include "assertion.h"
+#include "option.h"
+#include "resource.h"
 
 module mini.windows;
 
 import mini.core;
 import mini.platform;
 
-#include "option.h"
-
-namespace mini::windows
-{
+namespace mini::windows {
 
 Window::Window()
     : m_WindowHandle(nullptr)
@@ -24,27 +22,18 @@ bool Window::Initialize()
 {
     auto className = mini::options::name;
     auto titleName = mini::options::title;
-    m_Rect = mini::options::windowRect;
+    m_Rect = RectInt(mini::options::x, mini::options::y, mini::options::width, mini::options::height);
 
     HINSTANCE instance = ((Handle*)Platform::GetHandle())->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
     uint32 style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 
-    if (mini::options::resizableWindow)
-    {
+    if (mini::options::resizableWindow) {
         style |= WS_THICKFRAME;
     }
 
-    m_WindowHandle = CreateWindowExA(styleEx,
-                                     className,
-                                     titleName,
-                                     style,
-                                     m_Rect.x, m_Rect.y,
-                                     m_Rect.width, m_Rect.height,
-                                     nullptr,
-                                     nullptr,
-                                     instance,
-                                     nullptr);
+    m_WindowHandle = CreateWindowExA(styleEx, className, titleName, style, m_Rect.x, m_Rect.y, m_Rect.width,
+                                     m_Rect.height, nullptr, nullptr, instance, nullptr);
 
     VERIFY(m_WindowHandle, "failed to create window");
 
@@ -76,8 +65,7 @@ void Window::Maximize()
 
 void Window::Show()
 {
-    if (m_IsShowing)
-    {
+    if (m_IsShowing) {
         return;
     }
 
@@ -87,8 +75,7 @@ void Window::Show()
 
 void Window::Hide()
 {
-    if (!m_IsShowing)
-    {
+    if (!m_IsShowing) {
         return;
     }
 

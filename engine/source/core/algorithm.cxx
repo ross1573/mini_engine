@@ -8,8 +8,7 @@ import :type;
 import :iterator;
 import :memory;
 
-namespace mini
-{
+namespace mini {
 
 template <ForwardIteratorT T>
 inline constexpr bool CheckDest(T dest)
@@ -20,13 +19,11 @@ inline constexpr bool CheckDest(T dest)
 template <ForwardIteratorT T>
 inline constexpr bool CheckRange(T begin, T end)
 {
-    if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]]
-    {
+    if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]] {
         return false;
     }
 
-    if constexpr (BidrectionalIteratorT<T>)
-    {
+    if constexpr (BidrectionalIteratorT<T>) {
         return (end - 1).IsValid();
     }
 
@@ -35,11 +32,10 @@ inline constexpr bool CheckRange(T begin, T end)
 
 } // namespace mini
 
-export namespace mini
-{
+export namespace mini {
 
-template <typename T, typename U> 
-    requires IteratorCopyableFromT<T, U>
+template <typename T, typename U>
+requires IteratorCopyableFromT<T, U>
 inline constexpr void CopyRange(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
@@ -47,8 +43,8 @@ inline constexpr void CopyRange(T dest, U begin, U end)
     memory::CopyRange(dest, begin, end);
 }
 
-template <typename T, typename U> 
-    requires IteratorCopyableFromT<T, U>
+template <typename T, typename U>
+requires IteratorCopyableFromT<T, U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
@@ -56,8 +52,8 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
     memory::CopyBackward(dest, begin, end);
 }
 
-template <typename T, typename U> 
-    requires IteratorMovableFromT<T, U>
+template <typename T, typename U>
+requires IteratorMovableFromT<T, U>
 inline constexpr void MoveRange(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
@@ -65,8 +61,8 @@ inline constexpr void MoveRange(T dest, U begin, U end)
     memory::MoveRange(dest, begin, end);
 }
 
-template <typename T, typename U> 
-    requires IteratorMovableFromT<T, U>
+template <typename T, typename U>
+requires IteratorMovableFromT<T, U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     ASSERT(CheckDest(dest));
@@ -75,20 +71,18 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
 }
 
 template <ForwardIteratorT T, ForwardIteratorT U>
-    requires ComparableWithT<typename T::Value, typename U::Value>
+requires ComparableWithT<typename T::Value, typename U::Value>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));
 
-    if constexpr (RandomAccessIteratorT<T> && RandomAccessIteratorT<U>)
-    {
+    if constexpr (RandomAccessIteratorT<T> && RandomAccessIteratorT<U>) {
         OffsetT diff1 = end1 - begin1;
         OffsetT diff2 = end2 - begin2;
         ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value");
 
-        if (diff1 != diff2)
-        {
+        if (diff1 != diff2) {
             return false;
         }
 
@@ -101,15 +95,13 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 template <ForwardIteratorT T>
 inline constexpr SizeT Distance(T first, T last)
 {
-    if (first == last)
-    {
+    if (first == last) {
         return 0;
     }
 
     ASSERT(CheckRange(first, last));
 
-    if constexpr (RandomAccessIteratorT<T>)
-    {
+    if constexpr (RandomAccessIteratorT<T>) {
         OffsetT diff = last - first;
         ASSERT(diff >= 0, "distance cannot be negative value");
         return static_cast<SizeT>(diff);

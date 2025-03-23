@@ -5,11 +5,9 @@ import mini.graphics;
 import mini.windows;
 import :descriptor;
 
-export namespace mini::d3d12
-{
+export namespace mini::d3d12 {
 
-struct SwapChainBuffer
-{
+struct SwapChainBuffer {
     SharedPtr<ID3D12Resource> resource;
     Descriptor descriptor;
     D3D12_RENDER_TARGET_VIEW_DESC* rtvDesc;
@@ -17,11 +15,10 @@ struct SwapChainBuffer
     SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* = nullptr);
 };
 
-class SwapChain final : public graphics::SwapChain
-{
+class SwapChain final : public graphics::SwapChain {
+private:
     static constexpr uint8 MaxBuffer = SwapChain::MaxBackBuffer;
 
-private:
     SharedPtr<IDXGISwapChain3> m_SwapChain;
     StaticArray<SwapChainBuffer, MaxBuffer> m_Buffers;
 

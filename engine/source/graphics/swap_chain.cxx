@@ -4,11 +4,9 @@ export module mini.graphics:swap_chain;
 
 import mini.core;
 
-namespace mini::graphics
-{
+namespace mini::graphics {
 
-export class GRAPHICS_API SwapChain
-{
+export class GRAPHICS_API SwapChain {
 protected:
     static constexpr uint8 MaxBackBuffer = 3;
 

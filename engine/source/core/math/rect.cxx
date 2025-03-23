@@ -6,11 +6,9 @@ import :rect_int;
 import :vector2;
 import :vector3;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Rect
-{
+struct Rect {
     float32 x;
     float32 y;
     float32 width;
@@ -43,17 +41,26 @@ struct Rect
 inline Rect const Rect::zero = Rect();
 
 inline constexpr Rect::Rect() noexcept
-    : x(0.f), y(0.f), width(0.f), height(0.f)
+    : x(0.f)
+    , y(0.f)
+    , width(0.f)
+    , height(0.f)
 {
 }
 
 inline constexpr Rect::Rect(float32 inX, float32 inY, float32 inWidth, float32 inHeight) noexcept
-    : x(inX), y(inY), width(inWidth), height(inHeight)
+    : x(inX)
+    , y(inY)
+    , width(inWidth)
+    , height(inHeight)
 {
 }
 
 inline constexpr Rect::Rect(Vector2 const& position, Vector2 const& size) noexcept
-    : x(position.x), y(position.y), width(size.x), height(size.y)
+    : x(position.x)
+    , y(position.y)
+    , width(size.x)
+    , height(size.y)
 {
 }
 
@@ -102,8 +109,7 @@ inline constexpr bool Rect::Contains(Vector3 const& v) const noexcept
 
 inline constexpr bool Rect::Intersects(Rect const& r) const noexcept
 {
-    return (r.x < (x + width)) && (x < (r.x + r.width)) &&
-        (r.y < (y + height)) && (y < (r.y + r.height));
+    return (r.x < (x + width)) && (x < (r.x + r.width)) && (r.y < (y + height)) && (y < (r.y + r.height));
 }
 
 inline constexpr bool Rect::Overlaps(Rect const& r) const noexcept

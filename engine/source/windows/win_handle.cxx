@@ -4,11 +4,9 @@ import mini.platform;
 import mini.graphics;
 import :window;
 
-namespace mini::windows
-{
+namespace mini::windows {
 
-export class WINDOWS_API Handle final : public platform::Handle
-{
+export class WINDOWS_API Handle final : public platform::Handle {
 private:
     HINSTANCE m_Instance;
 

@@ -8,12 +8,11 @@ import mini.core;
 import mini.windows;
 import :descriptor;
 
-namespace mini::d3d12
-{
+namespace mini::d3d12 {
 
 DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 incrementSize)
     : m_Heap(MoveArg(heap))
-    , m_CpuHeapStart{.ptr = 0}
+    , m_CpuHeapStart{ .ptr = 0 }
     , m_IncrementSize(incrementSize)
     , m_CurrentIndex(0)
 {
@@ -30,11 +29,11 @@ bool DescriptorHeap::Allocate(CPUOffsetT& offset)
 
     // if (m_FreeList.size() > 0)
     //{
-        // uint32 index = m_FreeList.front();
-        // m_FreeList.pop();
+    // uint32 index = m_FreeList.front();
+    // m_FreeList.pop();
 
-        // offset = GetOffset(index, incrementSize);
-        //return true;
+    // offset = GetOffset(index, incrementSize);
+    // return true;
     //}
 }
 
@@ -46,7 +45,7 @@ void DescriptorHeap::Deallocate(CPUOffsetT)
 DescriptorHeap::CPUOffsetT DescriptorHeap::GetOffset(uint32 index) const noexcept
 {
     SIZE_T ptr = m_CpuHeapStart.ptr + ((SIZE_T)index * (SIZE_T)m_IncrementSize);
-    return D3D12_CPU_DESCRIPTOR_HANDLE{.ptr = ptr};
+    return D3D12_CPU_DESCRIPTOR_HANDLE{ .ptr = ptr };
 }
 
 DescriptorAllocator::DescriptorAllocator(HeapTypeT type, uint32 size)
@@ -72,17 +71,15 @@ bool DescriptorAllocator::Initialize(ID3D12Device* device)
 
 Descriptor DescriptorAllocator::Allocate()
 {
-    CPUOffsetT offset = {.ptr = 0};
-    for (SizeT i = 0; i < m_HeapList.Size(); ++i)
-    {
-        if (m_HeapList[i].Allocate(offset))
-        {
-            return {.offset = offset, .heapIndex = i};
+    CPUOffsetT offset = { .ptr = 0 };
+    for (SizeT i = 0; i < m_HeapList.Size(); ++i) {
+        if (m_HeapList[i].Allocate(offset)) {
+            return { .offset = offset, .heapIndex = i };
         }
     }
 
     ASSERT(false, "failed to allocate descriptor");
-    return {.offset = offset, .heapIndex = SizeT(-1)};
+    return { .offset = offset, .heapIndex = SizeT(-1) };
 }
 
 void DescriptorAllocator::Deallocate(Descriptor desc)

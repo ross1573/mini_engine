@@ -3,14 +3,12 @@ export module mini.windows:window;
 import mini.core;
 import mini.platform;
 
-namespace mini::windows
-{
+namespace mini::windows {
 
-export class WINDOWS_API Window final : public platform::Window
-{
+export class WINDOWS_API Window final : public platform::Window {
 private:
     HWND m_WindowHandle;
-    
+
     RectInt m_Rect;
     uint32 width;
     uint32 height;

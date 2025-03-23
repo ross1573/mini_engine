@@ -1,7 +1,9 @@
 module;
 
 #include <cstdlib>
+
 #include "assertion.h"
+#include "option.h"
 
 module mini.engine;
 
@@ -9,10 +11,7 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 
-#include "option.h"
-
-namespace mini
-{
+namespace mini {
 
 Engine::Engine()
     : m_Running(false)
@@ -28,9 +27,10 @@ Engine::~Engine()
 
 bool Engine::Initialize()
 {
+    graphics::API api = graphics::ParseAPI(options::graphicsAPI);
+
     Platform::Handle* platformHandle = Platform::GetHandle();
-    // graphics::Device* device = platformHandle->CreateGraphicDevice(options::graphicsAPI);
-    Graphics::Device* device = platformHandle->CreateGraphicDevice(graphics::API::D3D12);
+    Graphics::Device* device = platformHandle->CreateGraphicDevice(api);
 
     ASSERT(device, "failed to create graphic device");
     VERIFY(Graphics::Initialize(device), "failed to initialize graphics");
@@ -44,8 +44,7 @@ void Engine::Shutdown()
     Graphics::Shutdown();
     Platform::Shutdown();
 
-    for (auto func : g_Engine->m_ExitCallback)
-    {
+    for (auto func : g_Engine->m_ExitCallback) {
         func();
     }
 
@@ -57,16 +56,14 @@ void Engine::Launch()
     ASSERT(g_Engine == nullptr, "another instance of engine is running");
     g_Engine = UniquePtr(new Engine());
 
-    if (!g_Engine->Initialize())
-    {
+    if (!g_Engine->Initialize()) {
         return;
     }
 
     Platform::GetWindow()->Show();
     Platform::GetHandle()->PollEvents();
 
-    while (g_Engine->m_Running)
-    {
+    while (g_Engine->m_Running) {
         Graphics::BeginFrame();
         {
             RectInt windowSize = Platform::GetWindow()->GetSize();
@@ -85,14 +82,12 @@ void Engine::Launch()
 
 void Engine::Quit()
 {
-    for (auto func : g_Engine->m_QuitCallback)
-    {
+    for (auto func : g_Engine->m_QuitCallback) {
         func();
     }
     g_Engine->m_QuitCallback.Clear();
 
-    if (g_Engine != nullptr)
-    {
+    if (g_Engine != nullptr) {
         g_Engine->m_Running = false;
     }
 }
@@ -101,8 +96,7 @@ void Engine::Abort(String const& msg)
 {
     Platform::GetWindow()->DialogCritical(msg);
 
-    if (g_Engine != nullptr)
-    {
+    if (g_Engine != nullptr) {
         g_Engine->m_Running = false;
         g_Engine->Shutdown();
     }

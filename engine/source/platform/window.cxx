@@ -2,11 +2,9 @@ export module mini.platform:window;
 
 import mini.core;
 
-namespace mini::platform
-{
+namespace mini::platform {
 
-export class PLATFORM_API Window
-{
+export class PLATFORM_API Window {
 public:
     virtual ~Window() = default;
 

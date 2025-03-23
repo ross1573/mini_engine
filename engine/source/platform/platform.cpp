@@ -6,8 +6,7 @@ module mini.platform;
 
 import mini.core;
 
-namespace mini
-{
+namespace mini {
 
 bool Platform::Initialize(Handle* handle)
 {

@@ -1,6 +1,7 @@
 module;
 
 #include "assertion.h"
+#include "option.h"
 
 module mini.d3d12;
 
@@ -11,10 +12,7 @@ import :swap_chain;
 import :command_queue;
 import :render_context;
 
-#include "option.h"
-
-namespace mini::d3d12
-{
+namespace mini::d3d12 {
 
 Device::Device()
     : m_Factory(nullptr)
@@ -34,8 +32,7 @@ bool Device::Initialize()
 
     VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_Factory)));
 
-    if (debugFlag)
-    {
+    if (debugFlag) {
         EnableDebugLayer();
     }
 
@@ -45,8 +42,7 @@ bool Device::Initialize()
         return false;
     }
 
-    if (debugFlag)
-    {
+    if (debugFlag) {
         SetDebugLayerInfo();
     }
 
@@ -70,9 +66,7 @@ graphics::RenderContext* Device::CreateRenderContext()
 void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
 {
     buffer.descriptor = m_RTVAllocator.Allocate();
-    m_Device->CreateRenderTargetView(buffer.resource,
-                                     buffer.rtvDesc,
-                                     buffer.descriptor.offset);
+    m_Device->CreateRenderTargetView(buffer.resource, buffer.rtvDesc, buffer.descriptor.offset);
 }
 
 void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
@@ -81,24 +75,16 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
     D3D_FEATURE_LEVEL selectedLevel{};
-    D3D_FEATURE_LEVEL featureLevels[] =
-    {
-        D3D_FEATURE_LEVEL_12_2,
-        D3D_FEATURE_LEVEL_12_1,
-        D3D_FEATURE_LEVEL_12_0,
+    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
 
-        D3D_FEATURE_LEVEL_11_1,
-        D3D_FEATURE_LEVEL_11_0
-    };
+                                          D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
 
     int levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
     int levelIdx = 0;
 
-    for (; levelIdx < levelCount && m_Device == nullptr; ++levelIdx)
-    {
+    for (; levelIdx < levelCount && m_Device == nullptr; ++levelIdx) {
         selectedLevel = featureLevels[levelIdx];
-        if (selectedLevel < minimum)
-        {
+        if (selectedLevel < minimum) {
             log::Error("unable to find DirectX12 supported hardware");
             return;
         }
@@ -107,18 +93,14 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
-        for (uint idx = 0; SUCCEEDED(m_Factory->EnumAdapters(idx, &adapter));
-             ++idx, adapter.Reset(), device.Reset())
-        {
+        for (uint idx = 0; SUCCEEDED(m_Factory->EnumAdapters(idx, &adapter)); ++idx, adapter.Reset(), device.Reset()) {
             if (FAILED(D3D12CreateDevice(adapter, selectedLevel, IID_PPV_ARGS(&device))) ||
-                FAILED(adapter->GetDesc(&adapterDesc)))
-            {
+                FAILED(adapter->GetDesc(&adapterDesc))) {
                 continue;
             }
 
             if (adapterDesc.VendorId == 0x1414 ||
-                lstrcmpW(adapterDesc.Description, L"Microsoft Basic Render Driver") == 0)
-            {
+                lstrcmpW(adapterDesc.Description, L"Microsoft Basic Render Driver") == 0) {
                 continue;
             }
 
@@ -128,21 +110,19 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         }
     }
 
-    if (m_Device == nullptr)
-    {
+    if (m_Device == nullptr) {
         log::Error("failed creating D3D12 device");
         return;
     }
 
     String selectedLevelStr{};
-    switch (selectedLevel)
-    {
+    switch (selectedLevel) {
         case D3D_FEATURE_LEVEL_12_2: selectedLevelStr = "D3D_FEATURE_LEVEL_12_2"; break;
         case D3D_FEATURE_LEVEL_12_1: selectedLevelStr = "D3D_FEATURE_LEVEL_12_1"; break;
         case D3D_FEATURE_LEVEL_12_0: selectedLevelStr = "D3D_FEATURE_LEVEL_12_0"; break;
         case D3D_FEATURE_LEVEL_11_1: selectedLevelStr = "D3D_FEATURE_LEVEL_11_1"; break;
         case D3D_FEATURE_LEVEL_11_0: selectedLevelStr = "D3D_FEATURE_LEVEL_11_0"; break;
-        default: ASSERT(false); selectedLevelStr = "unsupported feature level"; break;
+        default:                     selectedLevelStr = "unsupported feature level"; break;
     }
 
     DXGI_ADAPTER_DESC adapterDesc{};
@@ -161,8 +141,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 void Device::EnableDebugLayer()
 {
 #if DEBUG
-    Engine::AtExit([]() noexcept
-    {
+    Engine::AtExit([]() noexcept {
         SharedPtr<IDXGIDebug1> debug;
         ENSURE(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))) return;
         debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
@@ -177,8 +156,7 @@ void Device::EnableDebugLayer()
 
     debugCtrl->EnableDebugLayer();
 
-    if (mini::options::gpuValidation)
-    {
+    if (mini::options::gpuValidation) {
         SharedPtr<ID3D12Debug5> debugCtrl5 = DynamicCast<ID3D12Debug5>(debugCtrl);
         ENSURE(debugCtrl5, "failed to enable GPU validation")
         {
@@ -193,15 +171,11 @@ void Device::EnableDebugLayer()
 void Device::SetDebugLayerInfo()
 {
     D3D12_INFO_QUEUE_FILTER filter = {};
-    D3D12_MESSAGE_ID hide[] =
-    {
-        D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-        D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
+    D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE, D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
 
-        // Workarounds for debug layer issues on hybrid-graphics systems
-        D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
-        D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
-    };
+                                // Workarounds for debug layer issues on hybrid-graphics systems
+                                D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
+                                D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
 
     SharedPtr<ID3D12InfoQueue> infoQueue = DynamicCast<ID3D12InfoQueue>(m_Device);
     ENSURE(infoQueue, "failed to set debug layer info.")

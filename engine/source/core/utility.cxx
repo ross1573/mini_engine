@@ -2,8 +2,7 @@ export module mini.core:utility;
 
 import :type;
 
-export namespace mini
-{
+export namespace mini {
 
 template <typename T>
 inline constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept

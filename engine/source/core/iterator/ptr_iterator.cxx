@@ -3,12 +3,11 @@ export module mini.core:ptr_iterator;
 import :type;
 import :iterator;
 
-export namespace mini
-{
+export namespace mini {
 
 template <PtrT T>
-class PtrIterator
-{
+class PtrIterator {
+private:
     template <PtrT U>
     friend class PtrIterator;
 
@@ -46,12 +45,10 @@ public:
     constexpr PtrIterator operator-(OffsetT) const noexcept;
 
     template <PtrT U>
-    constexpr PtrIterator(PtrIterator<U> const&) noexcept
-        requires ConvertibleToT<U, T>;
+    constexpr PtrIterator(PtrIterator<U> const&) noexcept requires ConvertibleToT<U, T>;
 
     template <PtrT U>
-    constexpr PtrIterator& operator=(PtrIterator<U> const&) noexcept
-        requires ConvertibleToT<U, T>;
+    constexpr PtrIterator& operator=(PtrIterator<U> const&) noexcept requires ConvertibleToT<U, T>;
 };
 
 template <PtrT T>
@@ -68,16 +65,14 @@ inline constexpr PtrIterator<T>::PtrIterator(Ptr p) noexcept
 
 template <PtrT T>
 template <PtrT U>
-inline constexpr PtrIterator<T>::PtrIterator(PtrIterator<U> const& o)
-noexcept requires ConvertibleToT<U, T>
+inline constexpr PtrIterator<T>::PtrIterator(PtrIterator<U> const& o) noexcept requires ConvertibleToT<U, T>
     : m_Ptr(o.m_Ptr)
 {
 }
 
 template <PtrT T>
 template <PtrT U>
-inline constexpr PtrIterator<T>&
-PtrIterator<T>::operator=(PtrIterator<U> const& o) noexcept
+inline constexpr PtrIterator<T>& PtrIterator<T>::operator=(PtrIterator<U> const& o) noexcept
     requires ConvertibleToT<U, T>
 {
     m_Ptr = o.m_Ptr;
@@ -228,14 +223,3 @@ inline constexpr auto operator<=>(PtrIterator<T> const& l, PtrIterator<U> const&
 }
 
 } // namespace mini
-
-export namespace mini::memory
-{
-
-template <PtrT T>
-inline constexpr T AddressOf(PtrIterator<T> const& iter) noexcept
-{
-    return iter.operator->();
-}
-
-} // namespace mini::memory

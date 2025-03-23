@@ -3,15 +3,11 @@ export module mini.core:color;
 import :type;
 import :math;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Color
-{
-    union
-    {
-        struct
-        {
+struct Color {
+    union {
+        struct {
             float32 r;
             float32 g;
             float32 b;
@@ -57,12 +53,18 @@ inline Color const Color::green = Color(0.f, 1.f, 0.f, 1.f);
 inline Color const Color::blue = Color(0.f, 0.f, 1.f, 1.f);
 
 inline constexpr Color::Color() noexcept
-    : r(0.f), g(0.f), b(0.f), a(0.f)
+    : r(0.f)
+    , g(0.f)
+    , b(0.f)
+    , a(0.f)
 {
 }
 
 inline constexpr Color::Color(float32 inR, float32 inG, float32 inB, float32 inA) noexcept
-    : r(inR), g(inG), b(inB), a(inA)
+    : r(inR)
+    , g(inG)
+    , b(inB)
+    , a(inA)
 {
 }
 

@@ -4,8 +4,7 @@ module;
 
 export module mini.core:type_traits;
 
-export namespace mini
-{
+export namespace mini {
 
 template <typename T>
 using RemoveRefT = std::remove_reference<T>::type;

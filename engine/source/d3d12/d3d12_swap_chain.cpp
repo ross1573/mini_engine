@@ -1,6 +1,7 @@
 module;
 
 #include "assertion.h"
+#include "option.h"
 
 module mini.d3d12;
 
@@ -13,10 +14,7 @@ import :swap_chain;
 import :command_queue;
 import :render_context;
 
-#include "option.h"
-
-namespace mini::d3d12
-{
+namespace mini::d3d12 {
 
 SwapChainBuffer::SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* rtv)
     : resource(nullptr)
@@ -51,9 +49,9 @@ bool SwapChain::Initialize()
     auto renderContext = (RenderContext*)Graphics::GetRenderContext();
     auto commandQueue = renderContext->GetCommandQueue();
 
-    //RectInt size = window->GetSize();
-    m_Width = static_cast<uint32>(1280);
-    m_Height = static_cast<uint32>(720);
+    RectInt size = window->GetSize();
+    m_Width = static_cast<uint32>(size.width);
+    m_Height = static_cast<uint32>(size.height);
     ASSERT((m_Width * m_Height) > 0, "invalid width and height");
 
     m_RTVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -75,21 +73,15 @@ bool SwapChain::Initialize()
     m_SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     m_SwapChainDesc.Flags = m_VSync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
-    ENSURE(factory->CreateSwapChainForHwnd(commandQueue->GetD3D12CommandQueue(),
-                                           window->GetHWND(),
-                                           &m_SwapChainDesc,
-                                           &m_FullscreenDesc,
-                                           nullptr,
-                                           &swapChain), "failed to create DXGI swapchain")
+    ENSURE(factory->CreateSwapChainForHwnd(commandQueue->GetD3D12CommandQueue(), window->GetHWND(), &m_SwapChainDesc,
+                                           &m_FullscreenDesc, nullptr, &swapChain),
+           "failed to create DXGI swapchain")
     {
         return false;
     }
 
     m_SwapChain = DynamicCast<IDXGISwapChain3>(swapChain);
-    ENSURE(m_SwapChain, "IDXGISwapChain3 not supported")
-    {
-        return false;
-    }
+    ENSURE(m_SwapChain, "IDXGISwapChain3 not supported") return false;
 
     CreateBuffers(bufferCount);
     return true;
@@ -103,8 +95,7 @@ void SwapChain::Present()
 
 void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 {
-    if (width * height <= 0)
-    {
+    if (width * height <= 0) {
         log::Error("Cannot resize to {} x {}", width, height);
         return;
     }
@@ -122,10 +113,7 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 
 void SwapChain::SetBackBufferCount(uint8 count)
 {
-    ENSURE(count > 0 || count < MaxBackBuffer, "Invalid swap chain count")
-    {
-        return;
-    }
+    ENSURE(count > 0 || count < MaxBackBuffer, "Invalid swap chain count") return;
 
     ReleaseBuffers();
     CreateBuffers(count);
@@ -140,12 +128,10 @@ void SwapChain::SetFullScreen(bool fullscreen)
 {
     Graphics::GetRenderContext()->WaitForIdle();
 
-    if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr)))
-    {
+    if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr))) {
         log::Error("Failed to set fullscreen state");
     }
-    else
-    {
+    else {
         m_FullscreenDesc.Windowed = !fullscreen;
     }
 
@@ -161,24 +147,16 @@ void SwapChain::ReleaseBuffers()
 void SwapChain::CreateBuffers(uint8 count)
 {
     ASSERT(m_Buffers.Size() == 0, "swap chain buffer not released");
-    ENSURE(m_Width * m_Height > 0, "invalid width and height")
-    {
-        return;
-    }
+    ENSURE(m_Width * m_Height > 0, "invalid width and height") return;
 
     Device* device = (Device*)Graphics::GetDevice();
     uint32 swapChainFlags = (m_VSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr);
-    VERIFY(m_SwapChain->ResizeBuffers((uint)count,
-                                      m_Width,
-                                      m_Height,
-                                      DXGI_FORMAT_R8G8B8A8_UNORM,
-                                      swapChainFlags),
+    VERIFY(m_SwapChain->ResizeBuffers((uint)count, m_Width, m_Height, DXGI_FORMAT_R8G8B8A8_UNORM, swapChainFlags),
            "failed to create swap chain buffers");
 
-    for (uint32 i = 0; i < count; ++i)
-    {
+    for (uint32 i = 0; i < count; ++i) {
         SwapChainBuffer buffer(&m_RTVDesc);
 
         m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&buffer.resource));

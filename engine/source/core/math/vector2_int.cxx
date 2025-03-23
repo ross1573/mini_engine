@@ -4,15 +4,11 @@ import :type;
 import :math;
 import :vector2;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vector2Int
-{
-    union
-    {
-        struct
-        {
+struct Vector2Int {
+    union {
+        struct {
             int32 x;
             int32 y;
         };
@@ -67,22 +63,26 @@ inline Vector2Int const Vector2Int::unitX = Vector2Int(1, 0);
 inline Vector2Int const Vector2Int::unitY = Vector2Int(0, 1);
 
 inline constexpr Vector2Int::Vector2Int() noexcept
-    : x(0), y(0)
+    : x(0)
+    , y(0)
 {
 }
 
 inline constexpr Vector2Int::Vector2Int(int32 inX, int32 inY) noexcept
-    : x(inX), y(inY)
+    : x(inX)
+    , y(inY)
 {
 }
 
 inline constexpr Vector2Int::Vector2Int(uint32 inX, uint32 inY) noexcept
-    : x(static_cast<int32>(inX)), y(static_cast<int32>(inY))
+    : x(static_cast<int32>(inX))
+    , y(static_cast<int32>(inY))
 {
 }
 
 inline constexpr Vector2Int::Vector2Int(Vector2Int const& v) noexcept
-    : x(v.x), y(v.y)
+    : x(v.x)
+    , y(v.y)
 {
 }
 
@@ -116,14 +116,12 @@ inline constexpr void Vector2Int::Clamp(Vector2Int const& v1, Vector2Int const& 
     y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
 }
 
-inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1,
-                                                  Vector2Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1, Vector2Int const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1,
-                                                       Vector2Int const& v2) noexcept
+inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1, Vector2Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }

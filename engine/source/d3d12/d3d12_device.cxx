@@ -6,11 +6,9 @@ import mini.windows;
 import :swap_chain;
 import :descriptor;
 
-export namespace mini::d3d12
-{
+export namespace mini::d3d12 {
 
-class Device final : public graphics::Device
-{
+class Device final : public graphics::Device {
 private:
     SharedPtr<IDXGIFactory4> m_Factory;
     SharedPtr<IDXGIAdapter> m_Adapter;

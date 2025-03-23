@@ -12,15 +12,11 @@ import :static_buffer;
 import :array_iterator;
 import :circular_iterator;
 
-export namespace mini
-{
+export namespace mini {
 
-template <
-    MovableT T,
-    SizeT CapacityN
->
-class StaticQueue
-{
+template <MovableT T, SizeT CapacityN>
+class StaticQueue {
+private:
     typedef StaticBuffer<T, CapacityN> Buffer;
 
 public:
@@ -47,8 +43,8 @@ public:
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr StaticQueue(Iter, Iter);
 
-    template <typename... Args> requires ConstructibleFromT<T, Args...>
-    constexpr void Enqueue(Args&&...);
+    template <typename... Args>
+    constexpr void Enqueue(Args&&...) requires ConstructibleFromT<T, Args...>;
     template <ForwardIteratableByT<T> Iter>
     constexpr void EnqueueRange(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -153,8 +149,8 @@ inline constexpr StaticQueue<T, N>::StaticQueue(Iter first, Iter last)
 }
 
 template <MovableT T, SizeT N>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
-inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
+template <typename... Args>
+inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args) requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_End, ForwardArg<T>(args)...);
@@ -167,24 +163,25 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
-    switch (distance)
-    {
-        [[unlikely]] case 0: return;
-        case 1: Enqueue(ForwardArg<typename Iter::Value>(*first)); return;
-        default: break;
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:
+            Enqueue(ForwardArg<typename Iter::Value>(*first));
+            return;
+        default:
+            break;
     }
 
     AssertValidCapacity(m_Size + distance);
 
     Ptr end = m_Buffer.Data() + m_End;
     SizeT backCap = m_Buffer.Capacity() - m_End;
-    if (backCap >= distance)
-    {
+    if (backCap >= distance) {
         memory::ConstructRange(end, first, last);
         m_End += distance;
     }
-    else
-    {
+    else {
         SizeT frontInsertCnt = distance - backCap;
         Ptr begin = m_Buffer.Data();
 
@@ -201,8 +198,7 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
-    if (distance == 0) [[unlikely]]
-    {
+    if (distance == 0) [[unlikely]] {
         Clear();
         return;
     }
@@ -211,13 +207,11 @@ constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
     OffsetT size = (OffsetT)m_Size;
     Iterator begin = Begin();
 
-    if (distance > m_Size)
-    {
+    if (distance > m_Size) {
         memory::CopyRange(begin, first, first + size);
         memory::ConstructRange(begin + size, first + size, last);
     }
-    else
-    {
+    else {
         memory::CopyRange(begin, first, last);
         memory::DestructRange(begin + (OffsetT)distance, End());
     }
@@ -240,8 +234,7 @@ inline constexpr T StaticQueue<T, N>::Dequeue()
 template <MovableT T, SizeT N>
 inline constexpr void StaticQueue<T, N>::RemoveFirst()
 {
-    if (IsEmpty()) [[unlikely]]
-    {
+    if (IsEmpty()) [[unlikely]] {
         return;
     }
 
@@ -253,26 +246,22 @@ inline constexpr void StaticQueue<T, N>::RemoveFirst()
 template <MovableT T, SizeT N>
 constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
 {
-    if (IsEmpty() || count == 0) [[unlikely]]
-    {
+    if (IsEmpty() || count == 0) [[unlikely]] {
         return;
     }
 
     SizeT oldSize = Size();
-    if (count >= oldSize)
-    {
+    if (count >= oldSize) {
         count = oldSize;
     }
 
     Ptr begin = m_Buffer.Data() + m_Begin;
     SizeT frontCap = m_Buffer.Capacity() - m_Begin;
-    if (frontCap >= count)
-    {
+    if (frontCap >= count) {
         memory::DestructRange(begin, begin + count);
         m_Begin += count;
     }
-    else
-    {
+    else {
         Ptr bufBegin = m_Buffer.Data();
         memory::DestructRange(begin, begin + frontCap);
         memory::DestructRange(bufBegin, bufBegin + count - frontCap);
@@ -285,8 +274,7 @@ constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
 template <MovableT T, SizeT N>
 constexpr void StaticQueue<T, N>::Clear()
 {
-    if (IsEmpty()) [[unlikely]]
-    {
+    if (IsEmpty()) [[unlikely]] {
         return;
     }
 
@@ -294,12 +282,10 @@ constexpr void StaticQueue<T, N>::Clear()
     Ptr begin = buf + m_Begin;
     Ptr end = buf + m_End;
 
-    if (m_Begin < m_End)
-    {
+    if (m_Begin < m_End) {
         memory::DestructRange(begin, end);
     }
-    else
-    {
+    else {
         memory::DestructRange(begin, buf + (OffsetT)m_Buffer.Capacity());
         memory::DestructRange(buf, end);
     }
@@ -451,16 +437,13 @@ template <MovableT T, SizeT N>
 template <EqualityComparableWithT<T> U, SizeT OtherN>
 inline constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const& other) const
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return true;
     }
-    else if (m_Size != other.m_Size)
-    {
+    else if (m_Size != other.m_Size) {
         return false;
     }
-    else if (m_Size == 0) [[unlikely]]
-    {
+    else if (m_Size == 0) [[unlikely]] {
         return true;
     }
 
@@ -470,8 +453,7 @@ inline constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue const& other)
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return *this;
     }
 
@@ -482,8 +464,7 @@ inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue con
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& other) noexcept
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return *this;
     }
 
@@ -504,14 +485,11 @@ inline constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] Size
     CONSTEXPR_ASSERT(m_Size != 0, "invalid access on empty queue");
 
     [[maybe_unused]] bool isValid = false;
-    if (m_Begin < m_End)
-    {
+    if (m_Begin < m_End) {
         isValid = offset > m_Begin && offset < m_End;
     }
-    else
-    {
-        isValid = (offset >= 0 && offset < m_End) ||
-            (offset >= m_Begin && offset < m_Buffer.Capacity());
+    else {
+        isValid = (offset >= 0 && offset < m_End) || (offset >= m_Begin && offset < m_Buffer.Capacity());
     }
 
     CONSTEXPR_ASSERT(isValid, "invalid offset");

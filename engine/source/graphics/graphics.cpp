@@ -6,8 +6,7 @@ module mini.graphics;
 
 import mini.core;
 
-namespace mini
-{
+namespace mini {
 
 bool Graphics::Initialize(Device* device)
 {
@@ -50,8 +49,7 @@ void Graphics::EndFrame()
 void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
 {
     SwapChain* swapChain = GetSwapChain();
-    if (swapChain == nullptr) [[unlikely]]
-    {
+    if (swapChain == nullptr) [[unlikely]] {
         log::Error("failed to change resolution. SwapChain is not initialized");
         return;
     }

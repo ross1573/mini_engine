@@ -12,15 +12,11 @@ import :static_buffer;
 import :array_iterator;
 import :move_iterator;
 
-namespace mini
-{
+namespace mini {
 
-export template <
-    MovableT T,
-    SizeT CapacityN
->
-class StaticArray
-{
+export template <MovableT T, SizeT CapacityN>
+class StaticArray {
+private:
     typedef StaticBuffer<T, CapacityN> Buffer;
 
 public:
@@ -45,12 +41,12 @@ public:
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr StaticArray(Iter, Iter);
 
-    template <typename... Args> requires ConstructibleFromT<T, Args...>
-    constexpr void Push(Args&&...);
-    template <typename... Args> requires ConstructibleFromT<T, Args...>
-    constexpr void Insert(SizeT, Args&&...);
-    template <typename... Args> requires ConstructibleFromT<T, Args...>
-    constexpr void Insert(ConstIterator, Args&&...);
+    template <typename... Args>
+    constexpr void Push(Args&&...) requires ConstructibleFromT<T, Args...>;
+    template <typename... Args>
+    constexpr void Insert(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
+    template <typename... Args>
+    constexpr void Insert(ConstIterator, Args&&...) requires ConstructibleFromT<T, Args...>;
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -66,8 +62,8 @@ public:
     constexpr void RemoveRange(SizeT, SizeT);
     constexpr void RemoveRange(ConstIterator, ConstIterator);
 
-    template <typename... Args> requires ConstructibleFromT<T, Args...>
-    constexpr void Resize(SizeT, Args&&...);
+    template <typename... Args>
+    constexpr void Resize(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
     constexpr void Clear();
 
     constexpr Ptr Data() noexcept;
@@ -145,8 +141,8 @@ inline constexpr StaticArray<T, N>::StaticArray(Iter first, Iter last)
 }
 
 template <MovableT T, SizeT N>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
-inline constexpr void StaticArray<T, N>::Push(Args&&... args)
+template <typename... Args>
+inline constexpr void StaticArray<T, N>::Push(Args&&... args) requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_Size, ForwardArg<Args>(args)...);
@@ -154,19 +150,18 @@ inline constexpr void StaticArray<T, N>::Push(Args&&... args)
 }
 
 template <MovableT T, SizeT N>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
-inline constexpr void StaticArray<T, N>::Insert(SizeT index, Args&&... args)
+template <typename... Args>
+inline constexpr void StaticArray<T, N>::Insert(SizeT index, Args&&... args) requires ConstructibleFromT<T, Args...>
 {
     Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, SizeT N>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
-constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
+template <typename... Args>
+constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args) requires ConstructibleFromT<T, Args...>
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == (OffsetT)m_Size)
-    {
+    if (locDiff == (OffsetT)m_Size) {
         Push(ForwardArg<Args>(args)...);
         return;
     }
@@ -190,8 +185,7 @@ template <ForwardIteratableByT<T> Iter>
 inline constexpr void StaticArray<T, N>::Assign(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
-    if (distance == 0) [[unlikely]]
-    {
+    if (distance == 0) [[unlikely]] {
         Clear();
         return;
     }
@@ -200,13 +194,11 @@ inline constexpr void StaticArray<T, N>::Assign(Iter first, Iter last)
     OffsetT size = (OffsetT)m_Size;
     Ptr begin = m_Buffer.Data();
 
-    if (m_Size < distance)
-    {
+    if (m_Size < distance) {
         memory::CopyRange(begin, first, first + size);
         memory::ConstructRange(begin + size, first + size, last);
     }
-    else
-    {
+    else {
         memory::CopyRange(begin, first, last);
         memory::DestructRange(begin + distance, begin + size);
     }
@@ -219,11 +211,14 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticArray<T, N>::AddRange(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
-    switch (distance)
-    {
-        [[unlikely]] case 0: return;
-        case 1: Push(ForwardArg<typename Iter::Value>(*first)); return;
-        default: break;
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:
+            Push(ForwardArg<typename Iter::Value>(*first));
+            return;
+        default:
+            break;
     }
 
     SizeT newSize = m_Size + distance;
@@ -244,18 +239,20 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, Iter last)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == (OffsetT)m_Size)
-    {
+    if (locDiff == (OffsetT)m_Size) {
         AddRange(first, last);
         return;
     }
 
     SizeT distance = Distance(first, last);
-    switch (distance)
-    {
-        [[unlikely]] case 0: return;
-        case 1: Insert(iter, ForwardArg<typename Iter::Value>(*first)); return;
-        default: break;
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:
+            Insert(iter, ForwardArg<typename Iter::Value>(*first));
+            return;
+        default:
+            break;
     }
 
     SizeT newSize = m_Size + distance;
@@ -265,14 +262,12 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
     Ptr loc = begin + locDiff;
     Ptr end = begin + (OffsetT)m_Size;
 
-    if (static_cast<SizeT>(end - loc) > distance)
-    {
+    if (static_cast<SizeT>(end - loc) > distance) {
         memory::MoveConstructBackward(end + distance, end - distance, end);
         memory::MoveBackward(end, loc, end - distance);
         memory::DestructRange(loc, loc + distance);
     }
-    else
-    {
+    else {
         memory::MoveConstructBackward(end + distance, loc, end);
         memory::DestructRange(loc, end);
     }
@@ -284,8 +279,7 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveLast()
 {
-    if (IsEmpty()) [[unlikely]]
-    {
+    if (IsEmpty()) [[unlikely]] {
         return;
     }
 
@@ -296,8 +290,7 @@ inline constexpr void StaticArray<T, N>::RemoveLast()
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
 {
-    if (IsEmpty() || count == 0) [[unlikely]]
-    {
+    if (IsEmpty() || count == 0) [[unlikely]] {
         return;
     }
 
@@ -318,8 +311,7 @@ template <MovableT T, SizeT N>
 constexpr void StaticArray<T, N>::RemoveAt(ConstIterator iter)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == (OffsetT)m_Size)
-    {
+    if (locDiff == (OffsetT)m_Size) {
         RemoveLast();
         return;
     }
@@ -346,11 +338,14 @@ template <MovableT T, SizeT N>
 constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator last)
 {
     SizeT distance = Distance(first, last);
-    switch (distance)
-    {
-        [[unlikely]] case 0: return;
-        case 1: RemoveAt(first); return;
-        default: break;
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:
+            RemoveAt(first);
+            return;
+        default:
+            break;
     }
 
     AssertValidIterator(first);
@@ -364,8 +359,7 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
     memory::DestructRange(locFirst, locLast);
 
     Ptr end = begin + m_Size;
-    if (locLast != end)
-    {
+    if (locLast != end) {
         memory::MoveRange(locFirst, locFirst + distance, end);
         memory::DestructRange(end - distance, end);
     }
@@ -374,11 +368,10 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 }
 
 template <MovableT T, SizeT N>
-template <typename... Args> requires ConstructibleFromT<T, Args...>
-constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
+template <typename... Args>
+constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args) requires ConstructibleFromT<T, Args...>
 {
-    if (m_Size == size) [[unlikely]]
-    {
+    if (m_Size == size) [[unlikely]] {
         return;
     }
 
@@ -386,13 +379,10 @@ constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
     Ptr begin = m_Buffer.Data();
     Ptr end = begin + m_Size;
 
-    if (m_Size < size)
-    {
-        memory::ConstructRangeArgs(end, begin + size,
-                                   ForwardArg<Args>(args)...);
+    if (m_Size < size) {
+        memory::ConstructRangeArgs(end, begin + size, ForwardArg<Args>(args)...);
     }
-    else
-    {
+    else {
         memory::DestructRange(begin + size, end);
     }
 
@@ -402,8 +392,7 @@ constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::Clear()
 {
-    if (m_Size == 0) [[unlikely]]
-    {
+    if (m_Size == 0) [[unlikely]] {
         return;
     }
 
@@ -543,16 +532,13 @@ template <MovableT T, SizeT N>
 template <EqualityComparableWithT<T> U, SizeT OtherN>
 inline constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const& other) const
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return true;
     }
-    else if (m_Size != other.m_Size)
-    {
+    else if (m_Size != other.m_Size) {
         return false;
     }
-    else if (m_Size == 0) [[unlikely]]
-    {
+    else if (m_Size == 0) [[unlikely]] {
         return true;
     }
 
@@ -562,8 +548,7 @@ inline constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray const& other)
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return *this;
     }
 
@@ -574,8 +559,7 @@ inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray con
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& other) noexcept
 {
-    if (m_Buffer == other.m_Buffer) [[unlikely]]
-    {
+    if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return *this;
     }
 

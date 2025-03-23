@@ -6,8 +6,7 @@ module mini.d3d12;
 
 import :command_queue;
 
-namespace mini::d3d12
-{
+namespace mini::d3d12 {
 
 CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType)
     : m_CommandQueue(nullptr)
@@ -22,12 +21,11 @@ CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType
     ASSERT(m_QueueType != graphics::CommandType::None, "invalid command queue type");
 
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
-    switch (m_QueueType)
-    {
-        case graphics::CommandType::Direct: type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
-        case graphics::CommandType::Copy: type = D3D12_COMMAND_LIST_TYPE_COPY; break;
+    switch (m_QueueType) {
+        case graphics::CommandType::Direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
+        case graphics::CommandType::Copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
         case graphics::CommandType::Compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
-        default: VERIFY(false, "unknown command queue type");
+        default:                             VERIFY(false, "unknown command queue type");
     }
 
     m_QueueDesc.Type = type;
@@ -46,8 +44,7 @@ CommandQueue::~CommandQueue()
 {
     m_Fence.Reset();
 
-    if (m_FenceHandle)
-    {
+    if (m_FenceHandle) {
         CloseHandle(m_FenceHandle);
         m_FenceHandle = nullptr;
     }
@@ -60,14 +57,12 @@ void CommandQueue::Wait(CommandQueue* commandQueue)
 
 void CommandQueue::WaitForFence(uint64 fenceValue)
 {
-    if (m_LastCompeletedFence > fenceValue)
-    {
+    if (m_LastCompeletedFence > fenceValue) {
         return;
     }
 
     m_LastCompeletedFence = m_Fence->GetCompletedValue();
-    if (m_LastCompeletedFence < fenceValue)
-    {
+    if (m_LastCompeletedFence < fenceValue) {
         m_Fence->SetEventOnCompletion(fenceValue, m_FenceHandle);
         WaitForSingleObject(m_FenceHandle, INFINITE);
     }

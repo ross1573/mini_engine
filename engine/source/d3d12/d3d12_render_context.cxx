@@ -6,11 +6,9 @@ import mini.windows;
 import :command_queue;
 import :swap_chain;
 
-export namespace mini::d3d12
-{
+export namespace mini::d3d12 {
 
-class RenderContext final : public graphics::RenderContext
-{
+class RenderContext final : public graphics::RenderContext {
 private:
     UniquePtr<CommandQueue> m_CommandQueue;
     SwapChainBuffer* m_CurrentBuffer;

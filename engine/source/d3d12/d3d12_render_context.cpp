@@ -10,8 +10,7 @@ import :render_context;
 import :swap_chain;
 import :command_queue;
 
-namespace mini::d3d12
-{
+namespace mini::d3d12 {
 
 RenderContext::RenderContext()
     : m_CommandQueue(nullptr)
@@ -34,8 +33,7 @@ bool RenderContext::Initialize()
     m_CommandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
 
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));
-    VERIFY(device->CreateCommandList(0, type, m_CommandAllocator,
-                                     nullptr, IID_PPV_ARGS(&m_CommandList)));
+    VERIFY(device->CreateCommandList(0, type, m_CommandAllocator, nullptr, IID_PPV_ARGS(&m_CommandList)));
 
     m_CommandList->Close();
     return true;
@@ -61,8 +59,7 @@ void RenderContext::BeginRender()
     barrier.Transition = transition;
 
     m_CommandList->ResourceBarrier(1, &barrier);
-    m_CommandList->ClearRenderTargetView(m_CurrentBuffer->descriptor.offset,
-                                         Color::clear.data, 0, nullptr);
+    m_CommandList->ClearRenderTargetView(m_CurrentBuffer->descriptor.offset, Color::clear.data, 0, nullptr);
 }
 
 void RenderContext::EndRender()

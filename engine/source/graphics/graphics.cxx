@@ -6,16 +6,14 @@ export import :device;
 export import :render_context;
 export import :swap_chain;
 
-namespace mini
-{
+namespace mini {
 
 GRAPHICS_API graphics::API g_CurrAPI = graphics::API::Null;
 GRAPHICS_API UniquePtr<graphics::Device> g_Device;
 GRAPHICS_API UniquePtr<graphics::SwapChain> g_SwapChain;
 GRAPHICS_API UniquePtr<graphics::RenderContext> g_RenderContext;
 
-export class GRAPHICS_API Graphics
-{
+export class GRAPHICS_API Graphics {
 public:
     typedef graphics::API API;
     typedef graphics::Device Device;
@@ -40,4 +38,4 @@ public:
     inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
 };
 
-} // namespcae mini
+} // namespace mini

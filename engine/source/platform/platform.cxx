@@ -4,14 +4,12 @@ import mini.core;
 export import :window;
 export import :handle;
 
-namespace mini
-{
+namespace mini {
 
 PLATFORM_API UniquePtr<platform::Handle> g_Handle;
 PLATFORM_API UniquePtr<platform::Window> g_Window;
 
-export class PLATFORM_API Platform
-{
+export class PLATFORM_API Platform {
 public:
     typedef mini::platform::Handle Handle;
     typedef mini::platform::Window Window;
@@ -23,7 +21,7 @@ public:
     static void Shutdown();
 
     inline static Handle* GetHandle() noexcept { return g_Handle.Get(); }
-    inline static Window* GetWindow() noexcept { return g_Window.Get(); }    
+    inline static Window* GetWindow() noexcept { return g_Window.Get(); }
 };
 
 } // namespace mini

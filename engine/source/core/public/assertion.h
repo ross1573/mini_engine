@@ -3,29 +3,30 @@
 #include <cassert>
 #include <source_location>
 
-#define CONCAT_INNER(x, y) x ## y
-#define CONCAT(x, y) CONCAT_INNER(x, y)
+#define CONCAT_INNER(x, y) x##y
+#define CONCAT(x, y)       CONCAT_INNER(x, y)
 
 #if DEBUG && !defined(NOASSERT)
-#   define DEBUG_ASSERT 1
+#  define DEBUG_ASSERT 1
 #else
-#   define DEBUG_ASSERT 0
+#  define DEBUG_ASSERT 0
 #endif // DEBUG && !NOASSERT
 
 #if MSVC
-#   define BUILTIN_UNREACHABLE __assume(false);
-#   define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
+#  define BUILTIN_UNREACHABLE   __assume(false);
+#  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
 #else
-#   define BUILTIN_UNREACHABLE __builtin_unreachable();
-#   define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
+#  define BUILTIN_UNREACHABLE   __builtin_unreachable();
+#  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
 #endif // MSVC
 
-#define _MD mini::detail
-#define ASSERT_EXPR(expr) if (!_MD::TestExpr(expr)) [[unlikely]]
-#define ENSURE_EXPR(expr) if (!expr) [[unlikely]]
+#define _MD                    mini::detail
+#define ASSERT_EXPR(expr)      if (!_MD::TestExpr(expr)) [[unlikely]]
+#define ENSURE_EXPR(expr)      if (!expr) [[unlikely]]
 #define ENSURE_EVAL(expr, var) const bool var = _MD::TestExpr(expr);
-#define ENSURE_LOG(expr, ...) _MD::EnsureHelper(#expr __VA_OPT__(,) __VA_ARGS__);
+#define ENSURE_LOG(expr, ...)  _MD::EnsureHelper(#expr __VA_OPT__(, ) __VA_ARGS__);
 
+// clang-format off
 #if DEBUG_ASSERT
 #   if PLATFORM_WINDOWS
 #       define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
@@ -53,11 +54,13 @@
 
 #define NEVER_CALLED(msg, ...) static_assert(detail::FalseArgs<__VA_ARGS__>::value, msg); BUILTIN_UNREACHABLE
 
-namespace mini::detail
-{
+// clang-format on
+namespace mini::detail {
 
 template <typename... Args>
-struct FalseArgs { static constexpr bool value = false; };
+struct FalseArgs {
+    static constexpr bool value = false;
+};
 
 [[noinline]] CORE_API CHAR_T* AssertMsg(char const*, char const* = nullptr);
 [[noinline]] CORE_API CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());

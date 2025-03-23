@@ -72,5 +72,9 @@ PUBLIC
 )
 
 if (MSVC)
-    set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)
+    target_compile_options(mini.core
+    PRIVATE 
+        /wd4582)
+    # set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)
+    # set_source_files_properties(math/rect.cxx PROPERTIES COMPILE_FLAGS /wd4582)
 endif()

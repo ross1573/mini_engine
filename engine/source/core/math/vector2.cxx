@@ -3,15 +3,11 @@ export module mini.core:vector2;
 import :type;
 import :math;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vector2
-{
-    union
-    {
-        struct
-        {
+struct Vector2 {
+    union {
+        struct {
             float32 x;
             float32 y;
         };
@@ -69,12 +65,14 @@ inline Vector2 const Vector2::unitX = Vector2(1.f, 0.f);
 inline Vector2 const Vector2::unitY = Vector2(0.f, 1.f);
 
 inline constexpr Vector2::Vector2() noexcept
-    : x(0), y(0)
+    : x(0)
+    , y(0)
 {
 }
 
 inline constexpr Vector2::Vector2(float32 inX, float32 inY) noexcept
-    : x(inX), y(inY)
+    : x(inX)
+    , y(inY)
 {
 }
 

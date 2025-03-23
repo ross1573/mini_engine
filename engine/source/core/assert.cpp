@@ -1,21 +1,17 @@
-#include <string.h>
+#include <cstring>
 #include <source_location>
 
-namespace mini::detail
-{
+namespace mini::detail {
 
 int ConcatStrings(char* dest, int destLen, char const** src, int srcCount)
 {
-    if (src == nullptr || srcCount == 0)
-    {
+    if (src == nullptr || srcCount == 0) {
         return 0;
     }
 
     char* begin = dest;
-    for (int i = 0; i < srcCount && destLen > 0; ++i)
-    {
-        if (src[i] == nullptr)
-        {
+    for (int i = 0; i < srcCount && destLen > 0; ++i) {
+        if (src[i] == nullptr) {
             continue;
         }
 
@@ -32,16 +28,16 @@ int ConcatStrings(char* dest, int destLen, char const** src, int srcCount)
 int IntegerToASCII(char* dest, int destLen, int src)
 {
     int len = 0;
-    char buf[10] = {0, };
-    for (; src > 0; ++len)
-    {
+    char buf[10] = {
+        0,
+    };
+    for (; src > 0; ++len) {
         buf[len] = '0' + src % 10;
         src /= 10;
     }
 
     int min = len < destLen ? len : destLen;
-    for (int i = 0; i < min; ++i)
-    {
+    for (int i = 0; i < min; ++i) {
         dest[i] = buf[(len - 1) - i];
     }
 
@@ -59,18 +55,18 @@ int SourceLocationToString(char* dest, int destLen, std::source_location const& 
 
     char const* fileName = loc.file_name();
     int fileLen = (int)strnlen(fileName, (size_t)destLen - 1);
-    if (destLen > fileLen + 4)
-    {
+    if (destLen > fileLen + 4) {
         dest[0] = ' ';
         dest[1] = '(';
         memcpy(dest + 2, fileName, (size_t)fileLen);
         dest += fileLen + 2;
         destLen -= fileLen + 2;
 
-        char lineBuf[10] = {0, };
+        char lineBuf[10] = {
+            0,
+        };
         int lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), (int)loc.line());
-        if (destLen > lineLen + 2)
-        {
+        if (destLen > lineLen + 2) {
             dest[0] = ':';
             memcpy(dest + 1, lineBuf, (size_t)lineLen);
             dest += lineLen + 1;

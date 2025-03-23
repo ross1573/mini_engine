@@ -1,21 +1,19 @@
 module;
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 export module mini.core:type_define;
 
 template <typename T, T val>
-struct IntegralConstant
-{
+struct IntegralConstant {
     using ValueT = T;
     inline static constexpr ValueT value = val;
     inline constexpr operator ValueT() const noexcept { return val; }
     inline constexpr ValueT operator()() const noexcept { return val; }
 };
 
-export namespace mini
-{
+export namespace mini {
 
 using byte = std::uint8_t;
 

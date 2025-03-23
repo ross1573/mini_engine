@@ -6,15 +6,11 @@ import :vector2;
 import :vector2_int;
 import :vector3;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vector3Int
-{
-    union
-    {
-        struct
-        {
+struct Vector3Int {
+    union {
+        struct {
             int32 x;
             int32 y;
             int32 z;
@@ -83,12 +79,16 @@ inline Vector3Int const Vector3Int::forward = Vector3Int(0, 0, 1);
 inline Vector3Int const Vector3Int::backward = Vector3Int(0, 0, -1);
 
 inline constexpr Vector3Int::Vector3Int() noexcept
-    : x(0), y(0), z(0)
+    : x(0)
+    , y(0)
+    , z(0)
 {
 }
 
 inline constexpr Vector3Int::Vector3Int(int32 inX, int32 inY, int32 inZ) noexcept
-    : x(inX), y(inY), z(inZ)
+    : x(inX)
+    , y(inY)
+    , z(inZ)
 {
 }
 
@@ -133,14 +133,12 @@ inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& 
     z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
 }
 
-inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1,
-                                                  Vector3Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1, Vector3Int const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector3Int::DistanceSquared(Vector3Int const& v1,
-                                                       Vector3Int const& v2) noexcept
+inline /*constexpr*/ SizeT Vector3Int::DistanceSquared(Vector3Int const& v1, Vector3Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }

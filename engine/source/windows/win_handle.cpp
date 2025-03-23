@@ -1,7 +1,8 @@
 module;
 
-#include "resource.h"
 #include "assertion.h"
+#include "option.h"
+#include "resource.h"
 
 module mini.windows;
 
@@ -10,10 +11,7 @@ import mini.engine;
 import mini.graphics;
 import mini.platform;
 
-#include "option.h"
-
-namespace mini::windows
-{
+namespace mini::windows {
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -31,8 +29,7 @@ bool Handle::Initialize()
 {
     auto className = mini::options::name;
 
-    WNDCLASSEX wcex =
-    {
+    WNDCLASSEX wcex = {
         .cbSize = sizeof(WNDCLASSEX),
         .style = CS_HREDRAW | CS_VREDRAW,
         .lpfnWndProc = WndProc,
@@ -61,8 +58,7 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
     HMODULE graphicModule = nullptr;
     FARPROC createDeviceAddr = nullptr;
 
-    switch (api)
-    {
+    switch (api) {
         case graphics::API::D3D12:
 #if DEBUG
             graphicModule = LoadLibraryA("minid.d3d12.dll");
@@ -86,45 +82,33 @@ void Handle::PollEvents()
 {
     MSG msg{};
 
-    while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE))
-    {
+    while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
 
-        if (msg.message == WM_QUIT)
-        {
+        if (msg.message == WM_QUIT) {
             Engine::Quit();
         }
     }
 }
 
-void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg,
-                            [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
+void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg, [[maybe_unused]] WPARAM wParam,
+                            [[maybe_unused]] LPARAM lParam)
 {
-    switch (msg)
-    {
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            break;
+    switch (msg) {
+        case WM_DESTROY: PostQuitMessage(0); break;
 
         case WM_KEYDOWN:
-            switch (wParam)
-            {
-                case VK_ESCAPE:
-                    Engine::Abort("Abort!");
-                    break;
+            switch (wParam) {
+                case VK_ESCAPE: Engine::Abort("Abort!"); break;
 
-                case 'Q':
-                    Engine::Quit();
-                    break;
+                case 'Q': Engine::Quit(); break;
 
                 default: break;
             }
             break;
 
-        case WM_SIZE:
-            Graphics::ChangeResolution(LOWORD(lParam), HIWORD(lParam), false);
-            break;
+        case WM_SIZE: Graphics::ChangeResolution(LOWORD(lParam), HIWORD(lParam), false); break;
 
         default: return;
     }

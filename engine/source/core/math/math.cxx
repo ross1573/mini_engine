@@ -6,8 +6,7 @@ export module mini.core:math;
 
 import :type;
 
-export namespace mini
-{
+export namespace mini {
 
 template <typename T>
 concept Int8ConvertibleT = ConvertibleToT<T, int8>;
@@ -48,15 +47,12 @@ inline constexpr float Pow(T base, ConvertibleToT<T> auto exp)
 template <IntT T>
 inline constexpr OffsetT Pow(T base, T exp)
 {
-    if (std::is_constant_evaluated())
-    {
+    if (std::is_constant_evaluated()) {
         OffsetT expInt = static_cast<OffsetT>(exp);
         OffsetT result = 1;
 
-        while (expInt)
-        {
-            if (expInt & 1)
-            {
+        while (expInt) {
+            if (expInt & 1) {
                 result *= base;
             }
 
@@ -66,10 +62,8 @@ inline constexpr OffsetT Pow(T base, T exp)
 
         return result;
     }
-    else
-    {
-        return static_cast<OffsetT>(Pow(static_cast<float32>(base),
-                                        static_cast<float32>(exp)));
+    else {
+        return static_cast<OffsetT>(Pow(static_cast<float32>(base), static_cast<float32>(exp)));
     }
 }
 
@@ -91,4 +85,4 @@ inline constexpr T const& Max(T const& val1, T const& val2)
     return val1 > val2 ? val1 : val2;
 }
 
-} // export mini
+} // namespace mini

@@ -2,15 +2,13 @@ export module mini.engine;
 
 import mini.core;
 
-namespace mini
-{
+namespace mini {
 
 export class Engine;
 
 ENGINE_API UniquePtr<Engine> g_Engine;
 
-class ENGINE_API Engine
-{
+class ENGINE_API Engine {
 public:
     typedef void (*CallbackFunc)();
 
@@ -22,7 +20,7 @@ private:
 
 private:
     Engine();
- 
+
     bool Initialize();
     void Shutdown();
 

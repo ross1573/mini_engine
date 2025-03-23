@@ -4,11 +4,9 @@ import mini.core;
 import mini.graphics;
 import mini.windows;
 
-export namespace mini::d3d12
-{
+export namespace mini::d3d12 {
 
-class CommandQueue
-{
+class CommandQueue {
 private:
     SharedPtr<ID3D12CommandQueue> m_CommandQueue;
     SharedPtr<ID3D12Fence> m_Fence;

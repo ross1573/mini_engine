@@ -4,15 +4,11 @@ import :type;
 import :math;
 import :vector2;
 
-export namespace mini
-{
+export namespace mini {
 
-struct Vector3
-{
-    union
-    {
-        struct
-        {
+struct Vector3 {
+    union {
+        struct {
             float32 x;
             float32 y;
             float32 z;
@@ -87,12 +83,16 @@ inline Vector3 const Vector3::forward = Vector3(0.f, 0.f, 1.f);
 inline Vector3 const Vector3::backward = Vector3(0.f, 0.f, -1.f);
 
 inline constexpr Vector3::Vector3() noexcept
-    : x(0.f), y(0.f), z(0.f)
+    : x(0.f)
+    , y(0.f)
+    , z(0.f)
 {
 }
 
 inline constexpr Vector3::Vector3(float32 inX, float32 inY, float32 inZ) noexcept
-    : x(inX), y(inY), z(inZ)
+    : x(inX)
+    , y(inY)
+    , z(inZ)
 {
 }
 

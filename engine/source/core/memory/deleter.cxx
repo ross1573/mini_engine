@@ -6,27 +6,17 @@ export module mini.core:deleter;
 
 import :type;
 
-export namespace mini
-{
+export namespace mini {
 
 template <typename T, typename Value>
-concept DeleterT = NoThrowCopyableT<T> &&
-    requires(T del, Value * ptr)
-{
-    del(ptr);
-};
+concept DeleterT = NoThrowCopyableT<T> && requires(T del, Value* ptr) { del(ptr); };
 
 template <NonArrT T>
-struct DefaultDeleter
-{
-    inline constexpr void operator()(T* ptr)
-    {
-        delete ptr;
-    }
+struct DefaultDeleter {
+    inline constexpr void operator()(T* ptr) { delete ptr; }
 };
 
-struct DummyDeleter
-{
+struct DummyDeleter {
     template <typename T>
     constexpr void operator()(T&&)
     {
