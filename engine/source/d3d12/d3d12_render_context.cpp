@@ -31,9 +31,8 @@ bool RenderContext::Initialize()
     ID3D12Device* device = ((Device*)Graphics::GetDevice())->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_CommandQueue = MakeUnique<CommandQueue>(graphics::CommandType::Direct);
+    m_CommandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
 
-    VERIFY(m_CommandQueue->Initialize(device));
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));
     VERIFY(device->CreateCommandList(0, type, m_CommandAllocator,
                                      nullptr, IID_PPV_ARGS(&m_CommandList)));

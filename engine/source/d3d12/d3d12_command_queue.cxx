@@ -11,26 +11,23 @@ class CommandQueue
 {
 private:
     SharedPtr<ID3D12CommandQueue> m_CommandQueue;
+    SharedPtr<ID3D12Fence> m_Fence;
 
     graphics::CommandType m_QueueType;
     D3D12_COMMAND_QUEUE_DESC m_QueueDesc;
 
-    SharedPtr<ID3D12Fence> m_Fence;
     HANDLE m_FenceHandle;
     uint64 m_FenceValue;
     uint64 m_LastCompeletedFence;
 
 public:
-    CommandQueue(graphics::CommandType);
+    CommandQueue(ID3D12Device*, graphics::CommandType);
     ~CommandQueue();
-
-    bool Initialize(ID3D12Device* device);
 
     void Wait(CommandQueue*);
     void WaitForFence(uint64);
     void WaitForIdle();
 
-    uint64 IncrementFence();
     uint64 ExecuteCommandList(ID3D12CommandList*);
 
     inline ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue; }

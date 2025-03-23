@@ -9,32 +9,17 @@ import :command_queue;
 namespace mini::d3d12
 {
 
-CommandQueue::CommandQueue(graphics::CommandType type)
+CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType)
     : m_CommandQueue(nullptr)
-    , m_QueueType(type)
-    , m_QueueDesc{}
     , m_Fence(nullptr)
+    , m_QueueType(queueType)
+    , m_QueueDesc{}
     , m_FenceHandle(nullptr)
     , m_FenceValue(0)
     , m_LastCompeletedFence(0)
 {
-    ASSERT(m_QueueType != graphics::CommandType::None, "invalid command queue type");
-}
-
-CommandQueue::~CommandQueue()
-{
-    m_Fence.Reset();
-
-    if (m_FenceHandle)
-    {
-        CloseHandle(m_FenceHandle);
-        m_FenceHandle = nullptr;
-    }
-}
-
-bool CommandQueue::Initialize(ID3D12Device* device)
-{
     ASSERT(device, "cannot initialize command queue with null device");
+    ASSERT(m_QueueType != graphics::CommandType::None, "invalid command queue type");
 
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
     switch (m_QueueType)
@@ -55,16 +40,17 @@ bool CommandQueue::Initialize(ID3D12Device* device)
     m_LastCompeletedFence = 0;
     m_FenceHandle = CreateEventW(nullptr, FALSE, FALSE, L"CommandQueue");
     VERIFY(m_FenceHandle);
-
-    return true;
 }
 
-uint64 CommandQueue::IncrementFence()
+CommandQueue::~CommandQueue()
 {
-    m_FenceValue++;
-    m_CommandQueue->Signal(m_Fence, m_FenceValue);
+    m_Fence.Reset();
 
-    return m_FenceValue;
+    if (m_FenceHandle)
+    {
+        CloseHandle(m_FenceHandle);
+        m_FenceHandle = nullptr;
+    }
 }
 
 void CommandQueue::Wait(CommandQueue* commandQueue)
@@ -89,7 +75,10 @@ void CommandQueue::WaitForFence(uint64 fenceValue)
 
 void CommandQueue::WaitForIdle()
 {
-    WaitForFence(IncrementFence());
+    m_FenceValue++;
+    m_CommandQueue->Signal(m_Fence, m_FenceValue);
+
+    WaitForFence(m_FenceValue);
 }
 
 uint64 CommandQueue::ExecuteCommandList(ID3D12CommandList* commandList)

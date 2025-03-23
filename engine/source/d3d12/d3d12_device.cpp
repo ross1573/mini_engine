@@ -50,9 +50,9 @@ bool Device::Initialize()
         SetDebugLayerInfo();
     }
 
-    m_RTVAllocator.Initialize(m_Device);
-    m_DSVAllocator.Initialize(m_Device);
-    m_SRVAllocator.Initialize(m_Device);
+    ENSURE(m_RTVAllocator.Initialize(m_Device)) return false;
+    ENSURE(m_DSVAllocator.Initialize(m_Device)) return false;
+    ENSURE(m_SRVAllocator.Initialize(m_Device)) return false;
 
     return true;
 }
