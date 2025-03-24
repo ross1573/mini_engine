@@ -20,9 +20,9 @@ Window::Window()
 
 bool Window::Initialize()
 {
-    auto className = mini::options::name;
-    auto titleName = mini::options::title;
-    m_Rect = RectInt(mini::options::x, mini::options::y, mini::options::width, mini::options::height);
+    auto className = options::name;
+    auto titleName = options::title;
+    m_Rect = RectInt(options::x, options::y, options::width, options::height);
 
     HINSTANCE instance = ((Handle*)Platform::GetHandle())->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
@@ -32,8 +32,9 @@ bool Window::Initialize()
         style |= WS_THICKFRAME;
     }
 
-    m_WindowHandle = CreateWindowExA(styleEx, className, titleName, style, m_Rect.x, m_Rect.y, m_Rect.width,
-                                     m_Rect.height, nullptr, nullptr, instance, nullptr);
+    m_WindowHandle = CreateWindowExA(styleEx, className, titleName, style, m_Rect.x, m_Rect.y,
+                                     m_Rect.width, m_Rect.height, nullptr, nullptr, instance,
+                                     nullptr);
 
     VERIFY(m_WindowHandle, "failed to create window");
 

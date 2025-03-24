@@ -70,7 +70,8 @@ public:
         m_Capacity = capacity;
     }
 
-    inline constexpr DynamicBuffer(SizeT capacity, AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
+    inline constexpr DynamicBuffer(SizeT capacity, AllocT const& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(alloc)
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -79,7 +80,8 @@ public:
         m_Capacity = capacity;
     }
 
-    inline constexpr DynamicBuffer(SizeT capacity, AllocT&& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
+    inline constexpr DynamicBuffer(SizeT capacity, AllocT&& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
         : m_Alloc(MoveArg(alloc))
         , m_Capacity(0)
         , m_Buffer(nullptr)
@@ -114,13 +116,15 @@ public:
         m_Capacity = 0;
     }
 
-    [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const noexcept(NoThrowAllocatorT<AllocT, T>)
+    [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Increment(m_Capacity, size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
     }
 
-    [[nodiscard]] inline constexpr DynamicBuffer Resize(SizeT size) const noexcept(NoThrowAllocatorT<AllocT, T>)
+    [[nodiscard]] inline constexpr DynamicBuffer Resize(SizeT size) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         AllocResult<T> newBuffer = m_Alloc.Allocate(size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
@@ -135,7 +139,10 @@ public:
 
     [[nodiscard]] inline AllocT const& GetAllocator() const noexcept { return m_Alloc; }
 
-    inline constexpr bool operator==(DynamicBuffer const& other) const noexcept { return m_Buffer == other.m_Buffer; }
+    inline constexpr bool operator==(DynamicBuffer const& other) const noexcept
+    {
+        return m_Buffer == other.m_Buffer;
+    }
 
     inline constexpr DynamicBuffer& operator=(DynamicBuffer&& other) noexcept
     {

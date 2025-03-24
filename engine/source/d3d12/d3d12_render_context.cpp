@@ -33,7 +33,8 @@ bool RenderContext::Initialize()
     m_CommandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
 
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));
-    VERIFY(device->CreateCommandList(0, type, m_CommandAllocator, nullptr, IID_PPV_ARGS(&m_CommandList)));
+    VERIFY(device->CreateCommandList(0, type, m_CommandAllocator, nullptr,
+                                     IID_PPV_ARGS(&m_CommandList)));
 
     m_CommandList->Close();
     return true;
@@ -58,8 +59,10 @@ void RenderContext::BeginRender()
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
 
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_CurrentBuffer->descriptor.offset;
+
     m_CommandList->ResourceBarrier(1, &barrier);
-    m_CommandList->ClearRenderTargetView(m_CurrentBuffer->descriptor.offset, Color::clear.data, 0, nullptr);
+    m_CommandList->ClearRenderTargetView(cpuOffset, Color::clear.data, 0, nullptr);
 }
 
 void RenderContext::EndRender()

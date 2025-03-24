@@ -75,9 +75,9 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
     D3D_FEATURE_LEVEL selectedLevel{};
-    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
-
-                                          D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0 };
+    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1,
+                                          D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
+                                          D3D_FEATURE_LEVEL_11_0 };
 
     int levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
     int levelIdx = 0;
@@ -93,7 +93,11 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
-        for (uint idx = 0; SUCCEEDED(m_Factory->EnumAdapters(idx, &adapter)); ++idx, adapter.Reset(), device.Reset()) {
+        for (uint idx = 0;; ++idx, adapter.Reset(), device.Reset()) {
+            if (FAILED(m_Factory->EnumAdapters(idx, &adapter))) {
+                break;
+            }
+
             if (FAILED(D3D12CreateDevice(adapter, selectedLevel, IID_PPV_ARGS(&device))) ||
                 FAILED(adapter->GetDesc(&adapterDesc))) {
                 continue;
@@ -171,8 +175,8 @@ void Device::EnableDebugLayer()
 void Device::SetDebugLayerInfo()
 {
     D3D12_INFO_QUEUE_FILTER filter = {};
-    D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE, D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
-
+    D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
+                                D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
                                 // Workarounds for debug layer issues on hybrid-graphics systems
                                 D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
                                 D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };

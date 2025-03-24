@@ -45,10 +45,12 @@ public:
     constexpr PtrIterator operator-(OffsetT) const noexcept;
 
     template <PtrT U>
-    constexpr PtrIterator(PtrIterator<U> const&) noexcept requires ConvertibleToT<U, T>;
+    constexpr PtrIterator(PtrIterator<U> const&) noexcept
+        requires ConvertibleToT<U, T>;
 
     template <PtrT U>
-    constexpr PtrIterator& operator=(PtrIterator<U> const&) noexcept requires ConvertibleToT<U, T>;
+    constexpr PtrIterator& operator=(PtrIterator<U> const&) noexcept
+        requires ConvertibleToT<U, T>;
 };
 
 template <PtrT T>
@@ -65,7 +67,8 @@ inline constexpr PtrIterator<T>::PtrIterator(Ptr p) noexcept
 
 template <PtrT T>
 template <PtrT U>
-inline constexpr PtrIterator<T>::PtrIterator(PtrIterator<U> const& o) noexcept requires ConvertibleToT<U, T>
+inline constexpr PtrIterator<T>::PtrIterator(PtrIterator<U> const& o) noexcept
+    requires ConvertibleToT<U, T>
     : m_Ptr(o.m_Ptr)
 {
 }

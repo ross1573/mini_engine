@@ -18,12 +18,15 @@ consteval auto IsSizeLimited()
 template <SizeT CapacityN>
 consteval auto SizeTypeSelector() -> decltype(auto)
 {
-    if constexpr (IsSizeLimited<uint16, CapacityN>())
+    if constexpr (IsSizeLimited<uint16, CapacityN>()) {
         return uint32(0);
-    else if constexpr (IsSizeLimited<uint8, CapacityN>())
+    }
+    else if constexpr (IsSizeLimited<uint8, CapacityN>()) {
         return uint16(0);
-    else
+    }
+    else {
         return uint8(0);
+    }
 }
 
 template <SizeT CapacityN>
@@ -45,16 +48,21 @@ public:
     StaticBuffer(StaticBuffer&&) = delete;
 
     inline T* Data() noexcept { return Address(); }
-
     inline T const* Data() const noexcept { return Address(); }
 
     inline constexpr SizeT Alignment() const noexcept { return AlignN; }
     inline constexpr SizeT Capacity() const noexcept { return CapacityN; }
 
-    inline bool operator==(StaticBuffer const& other) const noexcept { return Address() == other.Address(); }
+    inline bool operator==(StaticBuffer const& other) const noexcept
+    {
+        return Address() == other.Address();
+    }
 
 private:
-    inline T* Address() const noexcept { return reinterpret_cast<T*>(const_cast<byte*>(&m_Buffer[0])); }
+    inline T* Address() const noexcept
+    {
+        return reinterpret_cast<T*>(const_cast<byte*>(&m_Buffer[0]));
+    }
 
     StaticBuffer& operator=(StaticBuffer const&) = delete;
     StaticBuffer& operator=(StaticBuffer&&) = delete;
@@ -72,13 +80,15 @@ public:
     StaticBuffer(StaticBuffer&&) = delete;
 
     inline constexpr T* Data() noexcept { return const_cast<T*>(Address()); }
-
     inline constexpr T const* Data() const noexcept { return Address(); }
 
     inline constexpr SizeT Alignment() const noexcept { return AlignN; }
     inline constexpr SizeT Capacity() const noexcept { return CapacityN; }
 
-    inline constexpr bool operator==(StaticBuffer const& other) const noexcept { return Address() == other.Address(); }
+    inline constexpr bool operator==(StaticBuffer const& other) const noexcept
+    {
+        return Address() == other.Address();
+    }
 
 private:
     inline constexpr T const* Address() const noexcept { return &m_Buffer[0]; }

@@ -37,22 +37,29 @@ private:
 public:
     constexpr Array() noexcept;
     constexpr ~Array();
-    constexpr Array(Array const&) requires CopyableT<T>;
-    constexpr Array(Array const&, AllocT const&) requires CopyableT<T>;
+    constexpr Array(Array const&)
+        requires CopyableT<T>;
+    constexpr Array(Array const&, AllocT const&)
+        requires CopyableT<T>;
     constexpr Array(Array&&) noexcept;
     constexpr Array(Array&&, AllocT const&) noexcept;
     constexpr Array(AllocT const&) noexcept;
     constexpr Array(AllocT&&) noexcept;
     explicit constexpr Array(SizeT, AllocT const& = AllocT());
     template <ForwardIteratableByT<T> Iter>
-    explicit constexpr Array(Iter, Iter, AllocT const& = AllocT()) requires CopyableT<T>;
+    explicit constexpr Array(Iter, Iter, AllocT const& = AllocT())
+        requires CopyableT<T>;
 
     template <typename... Args>
-    constexpr void Push(Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Push(Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Insert(SizeT, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(ConstIterator, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Insert(ConstIterator, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
+
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -70,7 +77,8 @@ public:
     constexpr void RemoveRange(ConstIterator, ConstIterator);
 
     template <typename... Args>
-    constexpr void Resize(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Resize(SizeT, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     constexpr void Reserve(SizeT);
     constexpr void Shrink();
     constexpr void Clear();
@@ -101,7 +109,8 @@ public:
     template <EqualityComparableWithT<T> U, AllocatorT<U> OtherAlloc>
     constexpr bool operator==(Array<U, OtherAlloc> const&) const;
 
-    constexpr Array& operator=(Array const&) requires CopyableT<T>;
+    constexpr Array& operator=(Array const&)
+        requires CopyableT<T>;
     constexpr Array& operator=(Array&&) noexcept;
 
 private:
@@ -125,7 +134,8 @@ inline constexpr Array<T, AllocT>::~Array()
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr Array<T, AllocT>::Array(Array const& other) requires CopyableT<T>
+inline constexpr Array<T, AllocT>::Array(Array const& other)
+    requires CopyableT<T>
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(other.m_Buffer.GetAllocator())
@@ -136,7 +146,8 @@ inline constexpr Array<T, AllocT>::Array(Array const& other) requires CopyableT<
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc) requires CopyableT<T>
+inline constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc)
+    requires CopyableT<T>
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(alloc)
@@ -189,7 +200,8 @@ inline constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc) requires CopyableT<T>
+inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc)
+    requires CopyableT<T>
     : m_Version(0)
     , m_Size(0)
     , m_Buffer(alloc)
@@ -206,7 +218,8 @@ inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& al
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <typename... Args>
-constexpr void Array<T, AllocT>::Push(Args&&... args) requires ConstructibleFromT<T, Args...>
+constexpr void Array<T, AllocT>::Push(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     SizeT capacity = m_Buffer.Capacity();
 
@@ -228,14 +241,16 @@ constexpr void Array<T, AllocT>::Push(Args&&... args) requires ConstructibleFrom
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <typename... Args>
-inline constexpr void Array<T, AllocT>::Insert(SizeT index, Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr void Array<T, AllocT>::Insert(SizeT index, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <typename... Args>
-constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args) requires ConstructibleFromT<T, Args...>
+constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     OffsetT locDiff = iter - Begin();
     if (locDiff == (OffsetT)m_Size) {
@@ -315,11 +330,8 @@ constexpr void Array<T, AllocT>::AddRange(Iter first, Iter last)
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:
-            Push(ForwardArg<typename Iter::Value>(*first));
-            return;
-        default:
-            break;
+        case 1:  Push(ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
     }
 
     SizeT capacity = m_Buffer.Capacity();
@@ -361,11 +373,8 @@ constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, Iter first, Ite
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:
-            Insert(iter, ForwardArg<typename Iter::Value>(*first));
-            return;
-        default:
-            break;
+        case 1:  Insert(iter, ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
     }
 
     AssertValidIterator(iter);
@@ -468,11 +477,8 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:
-            RemoveAt(first);
-            return;
-        default:
-            break;
+        case 1:  RemoveAt(first); return;
+        default: break;
     }
 
     AssertValidIterator(first);
@@ -496,7 +502,8 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <typename... Args>
-constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args) requires ConstructibleFromT<T, Args...>
+constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     if (m_Size == size) [[unlikely]] {
         return;
@@ -720,7 +727,8 @@ inline constexpr bool Array<T, AllocT>::operator==(Array<U, OtherAlloc> const& o
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other) requires CopyableT<T>
+inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other)
+    requires CopyableT<T>
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]] {
         return *this;

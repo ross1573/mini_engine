@@ -11,21 +11,16 @@ import :type;
 import :string;
 import :allocator;
 
-export namespace mini
-{
+export namespace mini {
 
-template <
-    CharT T,
-    AllocatorT<T> AllocT = mini::Allocator<T>
->
-class StringConvert
-{
+template <CharT T, AllocatorT<T> AllocT = mini::Allocator<T>>
+class StringConvert {
 public:
     typedef T ValueT;
     typedef T* PtrT;
     typedef T& RefT;
     typedef T const* ConstPtrT;
-    
+
 private:
     PtrT m_Data;
     SizeT m_Size;
@@ -39,14 +34,14 @@ public:
     {
     }
 
-    template <CharT U> requires (not SameAsT<T, U>)
+    template <CharT U>
+        requires(not SameAsT<T, U>)
     inline StringConvert(U* ptr)
         : m_Data(nullptr)
         , m_Size(0)
         , m_Alloc{}
     {
-        if (ptr == nullptr)
-        {
+        if (ptr == nullptr) {
             m_Data = reinterpret_cast<PtrT>(&m_Size);
             return;
         }
@@ -54,7 +49,8 @@ public:
         Initialize<U>(ptr);
     }
 
-    template <CharT U> requires (not SameAsT<T, U>)
+    template <CharT U>
+        requires(not SameAsT<T, U>)
     inline StringConvert(std::basic_string_view<U> str)
         : m_Data(nullptr)
         , m_Size(0)
@@ -72,8 +68,7 @@ public:
 
     inline ~StringConvert()
     {
-        if (m_Size != 0)
-        {
+        if (m_Size != 0) {
             m_Alloc.Deallocate(m_Data, m_Size);
         }
     }
@@ -83,8 +78,7 @@ public:
 
     inline StringConvert& operator=(StringConvert&& other)
     {
-        if (m_Size != 0)
-        {
+        if (m_Size != 0) {
             m_Alloc.Deallocate(m_Data, m_Size);
         }
 
@@ -97,11 +91,11 @@ private:
     StringConvert(StringConvert const&) = delete;
     StringConvert& operator=(StringConvert const&) = delete;
 
-    template <CharT U> requires (not SameAsT<T, U>)
+    template <CharT U>
+        requires(not SameAsT<T, U>)
     inline void Initialize(std::basic_string_view<U> const& str)
     {
-        if (str.size() == 0)
-        {
+        if (str.size() == 0) {
             m_Data = reinterpret_cast<PtrT>(&m_Size);
             return;
         }
@@ -116,8 +110,7 @@ private:
         ASSERT(m_Data && m_Size != 0, "failed to allocate convert buffer");
         Convert(begin, end, m_Data, m_Data + m_Size);
 
-        if (isNullTerminated)
-        {
+        if (isNullTerminated) {
             m_Data[m_Size] = ValueT(0);
             ++m_Size;
         }

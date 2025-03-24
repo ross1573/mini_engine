@@ -4,7 +4,7 @@ Standard: c++20
 LineEnding: LF
 BasedOnStyle: LLVM
 UseTab: Never
-ColumnLimit: 120
+ColumnLimit: 100
 IndentWidth: 4
 TabWidth: 4
 AccessModifierOffset: -4
@@ -152,7 +152,7 @@ RemoveBracesLLVM: false
 # RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: false
-RequiresClausePosition: WithPreceding
+RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Leave
 ShortNamespaceLines: 0

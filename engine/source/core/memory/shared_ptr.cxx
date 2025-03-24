@@ -111,8 +111,15 @@ public:
 
     constexpr virtual ~SharedCounter() = default;
 
-    inline constexpr SizeT Count() const noexcept { return (SizeT)m_Count.Load(MemoryOrder::relaxed); }
-    inline constexpr SizeT WeakCount() const noexcept { return (SizeT)m_Weak.Load(MemoryOrder::relaxed); }
+    inline constexpr SizeT Count() const noexcept
+    {
+        return (SizeT)m_Count.Load(MemoryOrder::relaxed);
+    }
+
+    inline constexpr SizeT WeakCount() const noexcept
+    {
+        return (SizeT)m_Weak.Load(MemoryOrder::relaxed);
+    }
 
     inline constexpr void Retain(SizeT count = 1) noexcept
     {
@@ -120,7 +127,10 @@ public:
         m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed);
     }
 
-    inline constexpr void RetainWeak(SizeT count = 1) noexcept { m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed); }
+    inline constexpr void RetainWeak(SizeT count = 1) noexcept
+    {
+        m_Weak.FetchAdd((int32)count, MemoryOrder::relaxed);
+    }
 
     inline constexpr void Release(SizeT count = 1) noexcept
     {
@@ -217,8 +227,9 @@ private:
 
 public:
     template <typename AllocU, typename... Args>
-    requires ConstructibleFromT<T, Args...>
-    inline constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+        requires ConstructibleFromT<T, Args...>
+    inline constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args)
+        noexcept(NoThrowConstructibleFromT<T, Args...>)
         : Base()
         , m_Alloc(ForwardArg<AllocU>(alloc))
     {
@@ -282,7 +293,8 @@ public:
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
     constexpr SharedPtr(U*, DelT&&) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
-    constexpr SharedPtr(U*, DelT&&, AllocT const&) requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
+    constexpr SharedPtr(U*, DelT&&, AllocT const&)
+        requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
     constexpr Ptr Get() const noexcept;
     constexpr bool IsValid() const noexcept;
@@ -294,10 +306,12 @@ public:
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
     constexpr void Reset(U*, DelT&&) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnbindedAllocatorT AllocT>
-    constexpr void Reset(U*, DelT&&, AllocT const&) requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
+    constexpr void Reset(U*, DelT&&, AllocT const&)
+        requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
     template <NonRefT U>
-    constexpr bool Equals(SharedPtr<U> const&) const noexcept requires EqualityComparableWithT<T*, U*>;
+    constexpr bool Equals(SharedPtr<U> const&) const noexcept
+        requires EqualityComparableWithT<T*, U*>;
     template <NonRefT U>
     constexpr bool OwnerEquals(SharedPtr<U> const&) const noexcept;
 
@@ -322,7 +336,8 @@ private:
 
     template <NonRefT U, UnbindedAllocatorT AllocT, typename... Args>
     friend constexpr SharedPtr<U> AllocateShared(AllocT const&, Args&&...)
-        requires RebindableWithT<AllocT, InplaceSharedBlock<U, AllocT>> && ConstructibleFromT<U, Args...>;
+        requires RebindableWithT<AllocT, InplaceSharedBlock<U, AllocT>> &&
+                 ConstructibleFromT<U, Args...>;
 };
 
 template <NonRefT T>
@@ -643,7 +658,8 @@ inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT&& alloc, Args&&.
 
 template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
 inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args)
-    requires RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>> && ConstructibleFromT<T, Args...>
+    requires RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>> &&
+             ConstructibleFromT<T, Args...>
 {
     SharedPtr<T> ret;
     ret.AllocateInplaceBlock(alloc, ForwardArg<Args>(args)...);
@@ -651,7 +667,8 @@ inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args
 }
 
 template <NonRefT T, typename... Args>
-inline constexpr SharedPtr<T> MakeShared(Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr SharedPtr<T> MakeShared(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     return AllocateShared<T, DummyAllocator, Args...>({}, ForwardArg<Args>(args)...);
 }

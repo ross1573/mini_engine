@@ -37,10 +37,11 @@ export template <typename AllocT, typename T>
 concept AllocatorT = UnbindedAllocatorT<AllocT> && SameAsT<typename AllocT::Value, T>;
 
 export template <typename AllocT, typename T>
-concept NoThrowAllocatorT = AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
-                            NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
-                            NoThrowCallableT<decltype(&AllocT::Increment), SizeT, SizeT> &&
-                            NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Ptr, SizeT>;
+concept NoThrowAllocatorT =
+    AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
+    NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
+    NoThrowCallableT<decltype(&AllocT::Increment), SizeT, SizeT> &&
+    NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Ptr, SizeT>;
 
 template <typename AllocT, typename T>
 concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
@@ -102,19 +103,22 @@ struct Allocator {
 };
 
 export template <typename U, typename T>
-inline constexpr decltype(auto) RebindAllocator(T const& alloc) requires AllocRebindDeclaredT<T, U>
+inline constexpr decltype(auto) RebindAllocator(T const& alloc)
+    requires AllocRebindDeclaredT<T, U>
 {
     return alloc.template Rebind<U>();
 }
 
 export template <typename U, typename T>
-inline constexpr T&& RebindAllocator(T&& alloc) requires AllocatorT<T, U>
+inline constexpr T&& RebindAllocator(T&& alloc)
+    requires AllocatorT<T, U>
 {
     return ForwardArg<T>(alloc);
 }
 
 export template <typename U, typename T>
-inline constexpr mini::Allocator<U> RebindAllocator(T const&) requires IsDefaultAlloc<T>::value
+inline constexpr mini::Allocator<U> RebindAllocator(T const&)
+    requires IsDefaultAlloc<T>::value
 {
     return mini::Allocator<U>{};
 }

@@ -44,7 +44,8 @@ public:
     explicit constexpr StaticQueue(Iter, Iter);
 
     template <typename... Args>
-    constexpr void Enqueue(Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Enqueue(Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     template <ForwardIteratableByT<T> Iter>
     constexpr void EnqueueRange(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -150,7 +151,8 @@ inline constexpr StaticQueue<T, N>::StaticQueue(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <typename... Args>
-inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_End, ForwardArg<T>(args)...);
@@ -166,11 +168,8 @@ constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:
-            Enqueue(ForwardArg<typename Iter::Value>(*first));
-            return;
-        default:
-            break;
+        case 1:  Enqueue(ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
     }
 
     AssertValidCapacity(m_Size + distance);

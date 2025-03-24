@@ -32,7 +32,8 @@ public:
     constexpr UniquePtr(NullptrT) noexcept;
 
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
-    constexpr UniquePtr(UniquePtr<T, DelU>&&) noexcept requires ConvertibleToT<DelU, DelT>;
+    constexpr UniquePtr(UniquePtr<T, DelU>&&) noexcept
+        requires ConvertibleToT<DelU, DelT>;
 
     constexpr Ptr Get() const noexcept;
     constexpr bool IsValid() const noexcept;
@@ -52,7 +53,8 @@ public:
     constexpr UniquePtr& operator=(NullptrT) noexcept;
     constexpr UniquePtr& operator=(UniquePtr&&) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
-    constexpr UniquePtr& operator=(UniquePtr<U, DelU>&&) noexcept requires ConvertibleToT<DelU, DelT>;
+    constexpr UniquePtr& operator=(UniquePtr<U, DelU>&&) noexcept
+        requires ConvertibleToT<DelU, DelT>;
 
 private:
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
@@ -115,7 +117,8 @@ inline constexpr UniquePtr<T, DelT>::UniquePtr(NullptrT) noexcept
 
 template <NonRefT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
-inline constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr<T, DelU>&& other) noexcept requires ConvertibleToT<DelU, DelT>
+inline constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr<T, DelU>&& other) noexcept
+    requires ConvertibleToT<DelU, DelT>
     : m_Ptr(static_cast<Ptr>(other.m_Ptr))
     , m_Deleter(MoveArg(other.m_Deleter))
 {
@@ -214,7 +217,8 @@ inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr&& o
 
 template <NonRefT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
-inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
+inline constexpr UniquePtr<T, DelT>&
+UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
     requires ConvertibleToT<DelU, DelT>
 {
     m_Deleter(m_Ptr);
@@ -225,7 +229,8 @@ inline constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, 
 }
 
 template <NonRefT T, typename... Args>
-inline constexpr UniquePtr<T> MakeUnique(Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr UniquePtr<T> MakeUnique(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     return UniquePtr<T>(new T(ForwardArg<Args>(args)...));
 }

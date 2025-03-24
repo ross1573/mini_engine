@@ -33,7 +33,8 @@ inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
 }
 
 template <NonArrT T, typename... Args>
-inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+inline constexpr void ConstructAt(T* ptr, Args&&... args)
+    noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     if (std::is_constant_evaluated()) {
         // TODO: only compiler can do constexpr construct_at

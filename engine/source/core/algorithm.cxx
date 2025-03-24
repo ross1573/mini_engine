@@ -35,8 +35,8 @@ inline constexpr bool CheckRange(T begin, T end)
 export namespace mini {
 
 template <typename T, typename U>
-requires IteratorCopyableFromT<T, U>
 inline constexpr void CopyRange(T dest, U begin, U end)
+    requires IteratorCopyableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -44,8 +44,8 @@ inline constexpr void CopyRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-requires IteratorCopyableFromT<T, U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
+    requires IteratorCopyableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -53,8 +53,8 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-requires IteratorMovableFromT<T, U>
 inline constexpr void MoveRange(T dest, U begin, U end)
+    requires IteratorMovableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -62,8 +62,8 @@ inline constexpr void MoveRange(T dest, U begin, U end)
 }
 
 template <typename T, typename U>
-requires IteratorMovableFromT<T, U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
+    requires IteratorMovableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
     ASSERT(CheckRange(begin, end));
@@ -71,8 +71,8 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
 }
 
 template <ForwardIteratorT T, ForwardIteratorT U>
-requires ComparableWithT<typename T::Value, typename U::Value>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+    requires ComparableWithT<typename T::Value, typename U::Value>
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));

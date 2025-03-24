@@ -47,7 +47,7 @@ bool SwapChain::Initialize()
     auto window = (windows::Window*)Platform::GetWindow();
     auto factory = ((Device*)Graphics::GetDevice())->GetDXGIFactory();
     auto renderContext = (RenderContext*)Graphics::GetRenderContext();
-    auto commandQueue = renderContext->GetCommandQueue();
+    auto commandQueue = renderContext->GetCommandQueue()->GetD3D12CommandQueue();
 
     RectInt size = window->GetSize();
     m_Width = static_cast<uint32>(size.width);
@@ -73,7 +73,7 @@ bool SwapChain::Initialize()
     m_SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     m_SwapChainDesc.Flags = m_VSync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
-    ENSURE(factory->CreateSwapChainForHwnd(commandQueue->GetD3D12CommandQueue(), window->GetHWND(), &m_SwapChainDesc,
+    ENSURE(factory->CreateSwapChainForHwnd(commandQueue, window->GetHWND(), &m_SwapChainDesc,
                                            &m_FullscreenDesc, nullptr, &swapChain),
            "failed to create DXGI swapchain")
     {
@@ -151,9 +151,10 @@ void SwapChain::CreateBuffers(uint8 count)
 
     Device* device = (Device*)Graphics::GetDevice();
     uint32 swapChainFlags = (m_VSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    DXGI_FORMAT formatFlag = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr);
-    VERIFY(m_SwapChain->ResizeBuffers((uint)count, m_Width, m_Height, DXGI_FORMAT_R8G8B8A8_UNORM, swapChainFlags),
+    VERIFY(m_SwapChain->ResizeBuffers((uint)count, m_Width, m_Height, formatFlag, swapChainFlags),
            "failed to create swap chain buffers");
 
     for (uint32 i = 0; i < count; ++i) {

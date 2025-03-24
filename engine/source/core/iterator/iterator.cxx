@@ -66,31 +66,37 @@ template <typename Iter, typename T>
 concept ForwardIteratableByT = ForwardIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
 
 template <typename Iter, typename T>
-concept BidirectionalIteratableByT = BidrectionalIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
+concept BidirectionalIteratableByT = BidrectionalIteratorT<Iter> &&
+                                     ConvertibleToT<typename Iter::Value, T>;
 
 template <typename Iter, typename T>
-concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
+concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> &&
+                                    ConvertibleToT<typename Iter::Value, T>;
 
 template <typename T>
-inline constexpr typename T::Iterator begin(T &c) requires ForwardIteratorT<typename T::Iterator>
+inline constexpr typename T::Iterator begin(T &c)
+    requires ForwardIteratorT<typename T::Iterator>
 {
     return c.Begin();
 }
 
 template <typename T>
-inline constexpr typename T::Iterator end(T &c) requires ForwardIteratorT<typename T::Iterator>
+inline constexpr typename T::Iterator end(T &c)
+    requires ForwardIteratorT<typename T::Iterator>
 {
     return c.End();
 }
 
 template <typename T>
-inline constexpr typename T::ConstIterator cbegin(T const &c) requires ForwardIteratorT<typename T::ConstIterator>
+inline constexpr typename T::ConstIterator cbegin(T const &c)
+    requires ForwardIteratorT<typename T::ConstIterator>
 {
     return c.Begin();
 }
 
 template <typename T>
-inline constexpr typename T::ConstIterator cend(T const &c) requires ForwardIteratorT<typename T::ConstIterator>
+inline constexpr typename T::ConstIterator cend(T const &c)
+    requires ForwardIteratorT<typename T::ConstIterator>
 {
     return c.End();
 }

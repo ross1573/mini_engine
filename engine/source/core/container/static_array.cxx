@@ -42,11 +42,15 @@ public:
     explicit constexpr StaticArray(Iter, Iter);
 
     template <typename... Args>
-    constexpr void Push(Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Push(Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Insert(SizeT, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(ConstIterator, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Insert(ConstIterator, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
+
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -55,6 +59,7 @@ public:
     constexpr void InsertRange(SizeT, Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(ConstIterator, Iter, Iter);
+
     constexpr void RemoveLast();
     constexpr void RemoveLast(SizeT);
     constexpr void RemoveAt(SizeT);
@@ -63,7 +68,8 @@ public:
     constexpr void RemoveRange(ConstIterator, ConstIterator);
 
     template <typename... Args>
-    constexpr void Resize(SizeT, Args&&...) requires ConstructibleFromT<T, Args...>;
+    constexpr void Resize(SizeT, Args&&...)
+        requires ConstructibleFromT<T, Args...>;
     constexpr void Clear();
 
     constexpr Ptr Data() noexcept;
@@ -142,7 +148,8 @@ inline constexpr StaticArray<T, N>::StaticArray(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <typename... Args>
-inline constexpr void StaticArray<T, N>::Push(Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr void StaticArray<T, N>::Push(Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_Size + 1);
     memory::ConstructAt(m_Buffer.Data() + m_Size, ForwardArg<Args>(args)...);
@@ -151,14 +158,16 @@ inline constexpr void StaticArray<T, N>::Push(Args&&... args) requires Construct
 
 template <MovableT T, SizeT N>
 template <typename... Args>
-inline constexpr void StaticArray<T, N>::Insert(SizeT index, Args&&... args) requires ConstructibleFromT<T, Args...>
+inline constexpr void StaticArray<T, N>::Insert(SizeT index, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     Insert(Begin() + (OffsetT)index, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, SizeT N>
 template <typename... Args>
-constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args) requires ConstructibleFromT<T, Args...>
+constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     OffsetT locDiff = iter - Begin();
     if (locDiff == (OffsetT)m_Size) {
@@ -212,13 +221,9 @@ constexpr void StaticArray<T, N>::AddRange(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0:
-            return;
-        case 1:
-            Push(ForwardArg<typename Iter::Value>(*first));
-            return;
-        default:
-            break;
+        [[unlikely]] case 0: return;
+        case 1:  Push(ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
     }
 
     SizeT newSize = m_Size + distance;
@@ -246,13 +251,9 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0:
-            return;
-        case 1:
-            Insert(iter, ForwardArg<typename Iter::Value>(*first));
-            return;
-        default:
-            break;
+        [[unlikely]] case 0: return;
+        case 1:  Insert(iter, ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
     }
 
     SizeT newSize = m_Size + distance;
@@ -339,13 +340,9 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0:
-            return;
-        case 1:
-            RemoveAt(first);
-            return;
-        default:
-            break;
+        [[unlikely]] case 0: return;
+        case 1:  RemoveAt(first); return;
+        default: break;
     }
 
     AssertValidIterator(first);
@@ -369,7 +366,8 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 
 template <MovableT T, SizeT N>
 template <typename... Args>
-constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args) requires ConstructibleFromT<T, Args...>
+constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
+    requires ConstructibleFromT<T, Args...>
 {
     if (m_Size == size) [[unlikely]] {
         return;
