@@ -42,7 +42,7 @@ GRAPHICS_API const std::regex d3d12_regex("[Dd]3[Dd]12");
 GRAPHICS_API const std::regex metal_regex("[Mm][Ee][Tt][Aa][Ll]");
 GRAPHICS_API const std::regex vulkan_regex("[Vv][Uu][Ll][Kk][Aa][Nn]");
 
-export GRAPHICS_API inline API ParseAPI(String const& str)
+export GRAPHICS_API API ParseAPI(String const& str)
 {
     if (std::regex_match(str, d3d12_regex)) {
         return API::D3D12;

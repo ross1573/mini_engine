@@ -35,7 +35,8 @@ public:
 
 ENGINE_API UniquePtr<Engine> g_Engine;
 
-bool Engine::IsRunning() {
+bool Engine::IsRunning()
+{
     return g_Engine.Get() && g_Engine->m_Running;
 }
 
