@@ -4,11 +4,7 @@ import mini.core;
 
 namespace mini {
 
-export class Engine;
-
-ENGINE_API UniquePtr<Engine> g_Engine;
-
-class ENGINE_API Engine {
+export class ENGINE_API Engine {
 public:
     typedef void (*CallbackFunc)();
 
@@ -34,7 +30,13 @@ public:
     static void AtQuit(CallbackFunc);
     static void AtExit(CallbackFunc);
 
-    inline static bool IsRunning() { return g_Engine.Get() && g_Engine->m_Running; }
+    inline static bool IsRunning();
 };
+
+ENGINE_API UniquePtr<Engine> g_Engine;
+
+bool Engine::IsRunning() {
+    return g_Engine.Get() && g_Engine->m_Running;
+}
 
 } // namespace mini
