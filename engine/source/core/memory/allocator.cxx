@@ -4,6 +4,29 @@ module;
 
 #include "assertion.h"
 
+// TODO: MSVC throws an error when compiling with nothrow tag
+#if MSVC
+#  define NOTHROW_T
+#else
+#  define NOTHROW_T    \
+      , std::nothrow_t \
+      {                \
+      }
+#endif
+
+// TODO: clang complains about recursion, while others dont
+#if CLANG
+template <typename T>
+concept AlwaysTrue = true;
+#  define REBIND_RESULT_T AlwaysTrue
+#else
+#  define REBIND_RESULT_T UnbindedAllocatorT
+#endif
+
+// TODO: only compiler can do constexpr (de)allocate
+#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{}.allocate(x)
+#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{}.deallocate(x, size)
+
 export module mini.core:allocator;
 
 import :type;
@@ -48,11 +71,7 @@ concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
 
 template <typename AllocT, typename U>
 concept AllocRebindDeclaredT = requires(AllocT alloc) {
-#ifndef CLANG
-    { alloc.template Rebind<U>() } -> UnbindedAllocatorT;
-#else
-    alloc.template Rebind<U>(); // TODO: clang complains about recursion, while others dont
-#endif
+    { alloc.template Rebind<U>() } -> REBIND_RESULT_T;
 };
 
 export template <typename T>
@@ -70,12 +89,10 @@ struct Allocator {
     {
         Ptr ptr = nullptr;
         if (std::is_constant_evaluated()) {
-            // TODO: only compiler can do constexpr allocate
-            ptr = std::allocator<T>{}.allocate(size);
+            ptr = CONSTEXPR_ALLOC(T, size);
         }
         else {
-            // ptr = static_cast<T*>(::operator new(size * sizeof(T), std::nothrow_t{}));
-            ptr = static_cast<T*>(::operator new(size * sizeof(T)));
+            ptr = static_cast<T*>(::operator new(size * sizeof(T) NOTHROW_T));
             VERIFY(ptr, "allocation failed. possible out-of-memory");
         }
 
@@ -92,13 +109,11 @@ struct Allocator {
     inline constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
         if (std::is_constant_evaluated()) {
-            // TODO: only compiler can do constexpr deallocate
-            std::allocator<T>{}.deallocate(loc, size);
+            CONSTEXPR_DEALLOC(T, loc, size);
             return;
         }
 
-        //::operator delete(MakeVoidPtr(loc), std::nothrow_t{});
-        ::operator delete(MakeVoidPtr(loc));
+        ::operator delete(MakeVoidPtr(loc) NOTHROW_T);
     }
 };
 
