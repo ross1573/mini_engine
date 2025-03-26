@@ -28,9 +28,7 @@ int ConcatStrings(char* dest, int destLen, char const** src, int srcCount)
 int IntegerToASCII(char* dest, int destLen, int src)
 {
     int len = 0;
-    char buf[10] = {
-        0,
-    };
+    char buf[10];
     for (; src > 0; ++len) {
         buf[len] = '0' + src % 10;
         src /= 10;
@@ -62,9 +60,7 @@ int SourceLocationToString(char* dest, int destLen, std::source_location const& 
         dest += fileLen + 2;
         destLen -= fileLen + 2;
 
-        char lineBuf[10] = {
-            0,
-        };
+        char lineBuf[10];
         int lineLen = IntegerToASCII(lineBuf, sizeof(lineBuf), (int)loc.line());
         if (destLen > lineLen + 2) {
             dest[0] = ':';
