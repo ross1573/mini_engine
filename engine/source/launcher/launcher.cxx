@@ -11,8 +11,8 @@ export namespace mini {
 
 void LaunchEngine(platform::Handle* handle)
 {
-    ASSERT(handle);
-    VERIFY(Platform::Initialize(handle), "failed to initialize platform");
+    ENSURE(handle, "unsupported platform") return;
+    ENSURE(Platform::Initialize(handle), "failed to initialize platform") return;
 
     Engine::Launch();
 }
