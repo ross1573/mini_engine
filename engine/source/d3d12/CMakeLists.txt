@@ -1,7 +1,7 @@
 add_module(mini.d3d12 SHARED)
 
 include(windows_header_define)
-include(${ENGINE_EXTERNAL_DIR}/D3D12/d3d12.cmake)
+include(${ENGINE_EXTERNAL_DIR}/d3d12/d3d12.cmake)
 
 target_precompile_headers(mini.d3d12
 PRIVATE

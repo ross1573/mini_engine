@@ -16,10 +16,10 @@ endif()
 function (copy_d3d12 target)
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/D3D12Core.dll"
-            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/D3D12Core.pdb>"
-            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/d3d12SDKLayers.dll>"
-            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/D3D12/${D3D12_ARCH_DIR}/d3d12SDKLayers.pdb>"
+            "${ENGINE_EXTERNAL_DIR}/d3d12/${D3D12_ARCH_DIR}/D3D12Core.dll"
+            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/d3d12/${D3D12_ARCH_DIR}/D3D12Core.pdb>"
+            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/d3d12/${D3D12_ARCH_DIR}/d3d12SDKLayers.dll>"
+            "$<$<CONFIG:Debug>:${ENGINE_EXTERNAL_DIR}/d3d12/${D3D12_ARCH_DIR}/d3d12SDKLayers.pdb>"
             "${output_dir}"
         COMMAND_EXPAND_LISTS
     )
