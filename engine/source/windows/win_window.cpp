@@ -36,7 +36,10 @@ bool Window::Initialize()
                                      m_Rect.width, m_Rect.height, nullptr, nullptr, instance,
                                      nullptr);
 
-    VERIFY(m_WindowHandle, "failed to create window");
+    ENSURE(m_WindowHandle, "failed to create window")
+    {
+        return false;
+    }
 
     SetMenu(m_WindowHandle, 0);
 

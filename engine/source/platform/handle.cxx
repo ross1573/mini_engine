@@ -11,7 +11,6 @@ public:
     virtual ~Handle() = default;
 
     virtual bool Initialize() = 0;
-
     virtual void PollEvents() = 0;
 
     virtual platform::Window* CreatePlatformWindow() = 0;
