@@ -1,8 +1,8 @@
 import mini.launcher;
-import mini.engine;
+import mini.macos;
 
 int main()
 {
-    mini::LaunchEngine(nullptr);
+    mini::LaunchEngine(new mini::macos::Handle());
     return 0;
 }

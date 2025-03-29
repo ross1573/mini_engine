@@ -20,7 +20,7 @@ PRIVATE
     mini.platform
 
     $<$<PLATFORM_ID:Windows>:mini.windows>
-    # $<$<PLATFORM_ID:Darwin>:mini.macos>
+    $<$<PLATFORM_ID:Darwin>:mini.macos>
 )
 
 set_target_properties(mini.launcher

@@ -19,7 +19,6 @@ if (WIN32)
 else()
     add_compile_definitions(
         "CHAR_T=char"
-        "noinline=gnu::noinline"
     )
 endif()
 
