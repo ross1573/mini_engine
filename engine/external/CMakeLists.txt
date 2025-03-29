@@ -16,3 +16,8 @@ set_external(fmt)
 
 add_subdirectory(convert_utf)
 set_external(convert_utf)
+
+if (APPLE)
+    add_subdirectory(metal-cpp)
+    set_external(metal_cpp)
+endif()

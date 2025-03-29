@@ -50,3 +50,6 @@ xcuserdata/
 *.userosscache
 *.userprefs
 *.sln.docstates
+
+# macos
+.DS_Store

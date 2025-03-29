@@ -1,4 +1,9 @@
 * text=auto
-*.txt text
-*.c text
-*.h text
+
+*.txt text eol=lf
+
+*.c text eol=lf
+*.h text eol=lf
+*.cpp text eol=lf
+*.cxx text eol=lf
+*.hpp text eol=lf
