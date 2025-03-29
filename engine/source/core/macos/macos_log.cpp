@@ -1,10 +1,10 @@
 module;
 
-#include <iostream>
+#include <stdio.h>
 
 module mini.core;
 
 void LogMessage(char const* msg)
 {
-    std::cout << msg;
+    fputs(msg, stdout);
 }

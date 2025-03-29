@@ -6,8 +6,8 @@ import mini.core;
 
 constexpr int bufSize = DEBUG * 1023 + 1;
 
-char assertMsg[bufSize];
-char funcInfo[bufSize];
+char assertMsg[bufSize] = { 0 };
+char funcInfo[bufSize] = { 0 };
 
 namespace mini::detail {
 
