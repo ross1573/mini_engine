@@ -1,5 +1,7 @@
 add_compile_definitions(
     DEBUG=$<CONFIG:Debug>
+    LIB_PREFIX="${ENGINE_MODULE_PREFIX}"
+
     CLANG=$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>
     GNUC=$<CXX_COMPILER_ID:GNU>
     MSVC=$<CXX_COMPILER_ID:MSVC>

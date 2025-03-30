@@ -10,7 +10,7 @@ function (add_module name type)
     string(REPLACE "." "_" api ${api})
     string(REPLACE "." "_" header ${name})
 
-    set(out_name $<IF:$<CONFIG:Debug>,minid,mini>.${api})
+    set(out_name ${ENGINE_MODULE_PREFIX}.${api})
     set(api ${api}_API)
     set(header "${header}.generated.h")
     string(TOUPPER ${api} api)
