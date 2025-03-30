@@ -26,9 +26,10 @@ Handle::~Handle()
 
 bool Handle::Initialize()
 {
-    m_Application = CreateApplication();
+    m_Application = CreateApplication(static_cast<ApplicationDelegate*>(this));
     ENSURE(m_Application, "failed to get shared NSApplication") return false;
 
+    Run();
     return true;
 }
 
@@ -44,6 +45,15 @@ platform::Window* Handle::CreatePlatformWindow()
 graphics::Device* Handle::CreateGraphicDevice(graphics::API)
 {
     return nullptr;
+}
+
+void Handle::ApplicationWillFinishLaunching(void*)
+{
+}
+
+void Handle::ApplicationDidFinishLaunching(void*)
+{
+    Stop();
 }
 
 } // namespace mini::macos

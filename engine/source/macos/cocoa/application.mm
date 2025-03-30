@@ -62,7 +62,7 @@ NSMenuItem* CreateWindowMenu()
     return windowsMenuItem;
 }
 
-NSApplication* CreateApplication()
+NSApplication* CreateApplication(ApplicationDelegate* delegate)
 {
     NSApplication* application = [NSApplication sharedApplication];
 
@@ -70,7 +70,7 @@ NSApplication* CreateApplication()
     [application.mainMenu addItem:CreateAboutMenu()];
     [application.mainMenu addItem:CreateWindowMenu()];
 
-    application.delegate = [[ApplicationDelegate alloc] init];
+    application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:delegate];
 
     return application;
 }
@@ -99,7 +99,7 @@ NSWindow* CreateWindow(WindowDelegate* windowDelegate)
 
     window.releasedWhenClosed = NO;
     window.minSize = NSMakeSize(640, 360);
-    window.delegate = windowDelegate;
+    window.delegate = [[CocoaWindowDelegate alloc] initWithDelegate:windowDelegate];
 
     return window;
 }

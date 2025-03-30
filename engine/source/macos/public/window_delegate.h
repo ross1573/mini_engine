@@ -1,0 +1,3 @@
+struct WindowDelegate {
+public:
+};

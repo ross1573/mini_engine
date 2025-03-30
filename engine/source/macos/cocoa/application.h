@@ -3,14 +3,16 @@
 class NSApplication;
 class NSWindow;
 
-class Application;
-class ApplicationDelegate;
-class Window;
-class WindowDelegate;
+class CocoaApplication;
+class CocoaApplicationDelegate;
+class CocoaWindowDelegate;
+
+struct ApplicationDelegate;
+struct WindowDelegate;
 
 namespace mini::macos {
 
-NSApplication* CreateApplication();
+NSApplication* CreateApplication(ApplicationDelegate*);
 NSWindow* CreateWindow(WindowDelegate*);
 
 }; // namespace mini::macos

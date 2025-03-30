@@ -2,15 +2,37 @@
 
 #import <AppKit/AppKit.h>
 
-@implementation ApplicationDelegate
+@implementation CocoaApplicationDelegate {
+    ApplicationDelegate* m_Delegate;
+}
+
+- (instancetype)initWithDelegate:(ApplicationDelegate*)delegate
+{
+    if (self = [super init]) {
+        m_Delegate = delegate;
+    }
+
+    return self;
+}
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification
 {
+    m_Delegate->ApplicationWillFinishLaunching(notification);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
-    [NSApp stop:nil];
+    m_Delegate->ApplicationDidFinishLaunching(notification);
 }
 
 @end
+
+void ApplicationDelegate::Run()
+{
+    if (![[NSRunningApplication currentApplication] isFinishedLaunching]) [NSApp run];
+}
+
+void ApplicationDelegate::Stop()
+{
+    [NSApp stop:nil];
+}

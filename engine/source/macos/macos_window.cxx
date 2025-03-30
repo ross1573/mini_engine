@@ -1,5 +1,7 @@
 module;
 
+#include "public/window_delegate.h"
+
 class NSWindow;
 
 export module mini.macos:window;
@@ -9,7 +11,9 @@ import mini.platform;
 
 namespace mini::macos {
 
-export class MACOS_API Window : public platform::Window {
+export class MACOS_API Window
+    : public platform::Window
+    , public WindowDelegate {
 private:
     NSWindow* m_Window;
 

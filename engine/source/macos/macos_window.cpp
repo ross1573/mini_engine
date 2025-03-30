@@ -19,8 +19,7 @@ Window::~Window()
 
 bool Window::Initialize()
 {
-    // TODO: implement WindowDelegate wrapper
-    m_Window = CreateWindow(nullptr);
+    m_Window = CreateWindow(static_cast<WindowDelegate*>(this));
     return true;
 }
 

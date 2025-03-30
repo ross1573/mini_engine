@@ -1,11 +1,10 @@
 module;
 
+#include "public/application_delegate.h"
+
 namespace NS {
-
 class AutoreleasePool;
-
 } // namespace NS
-
 class NSApplication;
 
 export module mini.macos:handle;
@@ -15,7 +14,9 @@ import mini.graphics;
 
 namespace mini::macos {
 
-export class MACOS_API Handle final : public platform::Handle {
+export class MACOS_API Handle final
+    : public platform::Handle
+    , public ApplicationDelegate {
 private:
     NS::AutoreleasePool* m_AutoReleasePool;
     NSApplication* m_Application;
@@ -29,6 +30,9 @@ public:
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;
+
+    void ApplicationWillFinishLaunching(void*) final;
+    void ApplicationDidFinishLaunching(void*) final;
 };
 
 } // namespace mini::macos

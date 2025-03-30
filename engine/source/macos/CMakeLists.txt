@@ -15,7 +15,6 @@ PRIVATE
     macos_window.cpp
     cocoa/application.mm
     cocoa/application_delegate.mm
-    cocoa/window.mm
     cocoa/window_delegate.mm
 )
 

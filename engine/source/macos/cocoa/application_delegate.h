@@ -2,7 +2,11 @@
 
 #import <AppKit/AppKit.h>
 
-@interface ApplicationDelegate : NSObject <NSApplicationDelegate>
+#include "../public/application_delegate.h"
+
+@interface CocoaApplicationDelegate : NSObject <NSApplicationDelegate>
+
+- (instancetype)initWithDelegate:(ApplicationDelegate*)delegate;
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification;
 - (void)applicationDidFinishLaunching:(NSNotification*)notification;
