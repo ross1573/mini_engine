@@ -48,7 +48,7 @@ bool Window::Initialize()
 
 void Window::DialogCritical(String const& msg)
 {
-    MessageBoxA(m_WindowHandle, msg.data(), nullptr, 0);
+    MessageBoxA(m_WindowHandle, msg.data(), nullptr, MB_ICONERROR | MB_OK);
 }
 
 void Window::Resize(RectInt const& rect)

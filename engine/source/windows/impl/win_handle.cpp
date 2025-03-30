@@ -92,8 +92,8 @@ void Handle::PollEvents()
     }
 }
 
-void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg, [[maybe_unused]] WPARAM wParam,
-                            [[maybe_unused]] LPARAM lParam)
+void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg,
+                            [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     switch (msg) {
         case WM_DESTROY: PostQuitMessage(0); break;
@@ -101,10 +101,8 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 
         case WM_KEYDOWN:
             switch (wParam) {
                 case VK_ESCAPE: Engine::Abort("Abort!"); break;
-
-                case 'Q': Engine::Quit(); break;
-
-                default: break;
+                case 'Q':       Engine::Quit(); break;
+                default:        break;
             }
             break;
 

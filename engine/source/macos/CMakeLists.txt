@@ -27,6 +27,7 @@ PUBLIC
 PRIVATE
     mini.graphics
     mini.engine
+    
     metal_cpp
     "-framework Foundation"
     "-framework AppKit"
