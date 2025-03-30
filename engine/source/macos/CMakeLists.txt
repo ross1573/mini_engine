@@ -11,8 +11,9 @@ PUBLIC
         macos_window.cxx
 
 PRIVATE
-    macos_handle.cpp
-    macos_window.cpp
+    impl/macos_handle.cpp
+    impl/macos_window.cpp
+
     cocoa/application.mm
     cocoa/application_delegate.mm
     cocoa/window_delegate.mm
@@ -29,6 +30,14 @@ PRIVATE
     metal_cpp
     "-framework Foundation"
     "-framework AppKit"
+)
+
+target_include_directories(mini.macos
+PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/public
+
+PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_compile_definitions(mini.macos

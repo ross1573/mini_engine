@@ -1,9 +1,10 @@
 module;
 
 #include <Foundation/NSAutoreleasePool.hpp>
+#include <Foundation/NSNotification.hpp>
 
 #include "assertion.h"
-#include "cocoa/application.h"
+#include "interface/application.h"
 
 module mini.macos;
 
@@ -47,11 +48,11 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API)
     return nullptr;
 }
 
-void Handle::ApplicationWillFinishLaunching(void*)
+void Handle::ApplicationWillFinishLaunching(NS::Notification*)
 {
 }
 
-void Handle::ApplicationDidFinishLaunching(void*)
+void Handle::ApplicationDidFinishLaunching(NS::Notification*)
 {
     Stop();
 }

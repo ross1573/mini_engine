@@ -1,20 +1,17 @@
 module;
 
-#include "public/application_delegate.h"
-
-namespace NS {
-class AutoreleasePool;
-} // namespace NS
-class NSApplication;
+#include "appkit.h"
+#include "foundation.hpp"
+#include "interface/application_delegate.h"
 
 export module mini.macos:handle;
 
 import mini.platform;
 import mini.graphics;
 
-namespace mini::macos {
+export namespace mini::macos {
 
-export class MACOS_API Handle final
+class MACOS_API Handle final
     : public platform::Handle
     , public ApplicationDelegate {
 private:
@@ -31,8 +28,8 @@ public:
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;
 
-    void ApplicationWillFinishLaunching(void*) final;
-    void ApplicationDidFinishLaunching(void*) final;
+    void ApplicationWillFinishLaunching(NS::Notification*) final;
+    void ApplicationDidFinishLaunching(NS::Notification*) final;
 };
 
 } // namespace mini::macos

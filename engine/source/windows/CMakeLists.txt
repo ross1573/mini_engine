@@ -18,8 +18,8 @@ PUBLIC
         win_window.cxx
 
 PRIVATE
-    win_handle.cpp
-    win_window.cpp        
+    impl/win_handle.cpp
+    impl/win_window.cpp        
 )
 
 target_link_libraries(mini.windows 

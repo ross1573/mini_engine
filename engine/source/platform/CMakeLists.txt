@@ -9,7 +9,7 @@ PUBLIC
         window.cxx
 
 PRIVATE
-    platform.cpp
+    impl/platform.cpp
 )
 
 target_link_libraries(mini.platform 

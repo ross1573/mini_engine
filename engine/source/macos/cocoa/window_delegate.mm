@@ -1,4 +1,4 @@
-#import "window_delegate.h"
+#import "cocoa/window_delegate.h"
 
 @implementation CocoaWindowDelegate {
     WindowDelegate* m_Delegate;

@@ -1,9 +1,9 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 
-#include "application_delegate.h"
+#include "cocoa/application_delegate.h"
+#include "cocoa/window_delegate.h"
 #include "option.h"
-#include "window_delegate.h"
 
 namespace mini::macos {
 

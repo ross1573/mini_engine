@@ -11,7 +11,7 @@ PUBLIC
         swap_chain.cxx
 
 PRIVATE
-    graphics.cpp
+    impl/graphics.cpp
 )
 
 target_link_libraries(mini.graphics

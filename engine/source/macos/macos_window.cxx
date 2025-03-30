@@ -1,8 +1,7 @@
 module;
 
-#include "public/window_delegate.h"
-
-class NSWindow;
+#include "appkit.h"
+#include "interface/window_delegate.h"
 
 export module mini.macos:window;
 
@@ -35,4 +34,5 @@ public:
 
     inline NSWindow* GetNSWindow() { return m_Window; }
 };
+
 } // namespace mini::macos

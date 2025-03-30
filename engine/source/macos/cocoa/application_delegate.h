@@ -2,7 +2,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "../public/application_delegate.h"
+#include "interface/application_delegate.h"
 
 @interface CocoaApplicationDelegate : NSObject <NSApplicationDelegate>
 

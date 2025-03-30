@@ -1,4 +1,4 @@
-#include "application_delegate.h"
+#import "cocoa/application_delegate.h"
 
 #import <AppKit/AppKit.h>
 
@@ -17,12 +17,12 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification
 {
-    m_Delegate->ApplicationWillFinishLaunching(notification);
+    m_Delegate->ApplicationWillFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
-    m_Delegate->ApplicationDidFinishLaunching(notification);
+    m_Delegate->ApplicationDidFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 @end

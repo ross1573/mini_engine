@@ -1,6 +1,7 @@
 module;
 
-#include "cocoa/application.h"
+#include "interface/application.h"
+#include "interface/window_delegate.h"
 
 module mini.macos;
 
