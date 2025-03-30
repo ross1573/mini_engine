@@ -16,9 +16,14 @@ function (build_source_tree name)
 
     foreach (file IN LISTS sources headers modules)
         string(REGEX REPLACE "\\$<.*:(.*)>" "\\1" generator_removed ${file})
-        list(APPEND files ${generator_removed})
+        if (${generator_removed} MATCHES "impl/.*")
+            list(APPEND implementations ${generator_removed})
+        else()
+            list(APPEND files ${generator_removed})
+        endif()
     endforeach()
 
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/impl PREFIX "Implementation Files" FILES ${implementations})
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
 
     if (MSVC)
