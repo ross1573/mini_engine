@@ -11,6 +11,10 @@ char funcInfo[bufSize] = { 0 };
 
 namespace mini::detail {
 
+int ConcatStrings(char* dest, int destLen, char const** src, int srcCount);
+int IntegerToASCII(char* dest, int destLen, int src);
+int SourceLocationToString(char* dest, int destLen, std::source_location const& loc);
+
 char* AssertMsg(char const* expr, char const* msg)
 {
     char const* str[3] = { expr, msg == nullptr ? nullptr : "', message: '", msg };

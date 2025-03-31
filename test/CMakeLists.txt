@@ -13,7 +13,7 @@ function (no_arg_test name)
     build_source_tree(test.${name})
 endfunction()
 
-add_library(mini.test)
+add_library(mini.test STATIC)
 
 target_sources(mini.test
 PUBLIC

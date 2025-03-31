@@ -13,18 +13,14 @@ bool Platform::Initialize(Handle* handle)
     ASSERT(handle);
 
     g_Handle = UniquePtr(handle);
-    ENSURE(g_Handle->Initialize())
-    {
-        log::Error("Failed to initialize platform handle");
-        return false;
-    }
+    ENSURE(g_Handle->Initialize(), "Failed to initialize platform handle") return false;
+
+    log::Info("platform handle initialized");
 
     g_Window = UniquePtr(g_Handle->CreatePlatformWindow());
-    ENSURE(g_Window->Initialize())
-    {
-        log::Error("Failed to initialize platform window");
-        return false;
-    }
+    ENSURE(g_Window->Initialize(), "Failed to initialize platform window") return false;
+
+    log::Info("platform window initialized");
 
     return true;
 }

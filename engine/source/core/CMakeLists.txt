@@ -1,5 +1,4 @@
-# some template functions are not exported while using std::format
-add_module(mini.core STATIC)
+add_module(mini.core SHARED)
 
 module_sources(mini.core
 PUBLIC

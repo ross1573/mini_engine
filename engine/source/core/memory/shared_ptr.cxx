@@ -89,7 +89,7 @@ struct AtomicUnion {
     AtomicUnion& operator=(AtomicUnion const&) = delete;
 };
 
-class SharedCounter {
+class CORE_API SharedCounter {
 private:
     typedef AtomicUnion<int32> Counter;
 
