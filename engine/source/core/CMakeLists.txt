@@ -1,4 +1,8 @@
-add_module(mini.core SHARED)
+if (MSVC)
+    add_module(mini.core STATIC)
+else()
+    add_module(mini.core SHARED)
+endif()
 
 module_sources(mini.core
 PUBLIC
