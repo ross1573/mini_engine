@@ -1,8 +1,6 @@
 module;
 
-#include "appkit.h"
 #include "cocoa_application.h"
-#include "foundation.hpp"
 
 export module mini.macos:handle;
 
@@ -16,7 +14,6 @@ class MACOS_API Handle final
     , private cocoa::Application {
 private:
     NS::AutoreleasePool* m_AutoReleasePool;
-    NSApplication* m_Application;
 
 public:
     Handle();
@@ -30,6 +27,8 @@ public:
 
     void ApplicationWillFinishLaunching(NS::Notification*) final;
     void ApplicationDidFinishLaunching(NS::Notification*) final;
+
+    inline NSApplication* GetNSApplication() { return m_Application; }
 };
 
 } // namespace mini::macos

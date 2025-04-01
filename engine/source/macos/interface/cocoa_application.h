@@ -1,11 +1,17 @@
 #pragma once
 
-#include "foundation.hpp"
+#include "appkit.h"
+#include "foundation.h"
 
 namespace mini::cocoa {
 
 class Application {
+protected:
+    NSApplication* m_Application;
+
 public:
+    Application();
+
     void Run();
     void Stop();
     void PollEvents();

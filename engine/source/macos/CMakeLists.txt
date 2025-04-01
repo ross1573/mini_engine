@@ -26,8 +26,7 @@ PUBLIC
 PRIVATE
     mini.graphics
     mini.engine
-    metal_cpp
-    "-framework Foundation"
+    metal.cpp
     "-framework AppKit"
 )
 
@@ -37,11 +36,4 @@ PUBLIC
 
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/interface
-)
-
-target_compile_definitions(mini.macos
-PRIVATE
-    NS_PRIVATE_IMPLEMENTATION
-    CA_PRIVATE_IMPLEMENTATION
-    MTL_PRIVATE_IMPLEMENTATION
 )

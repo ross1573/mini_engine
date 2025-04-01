@@ -1,10 +1,5 @@
-#import <AppKit/AppKit.h>
-#import <Foundation/Foundation.h>
-
-#include "cocoa_application.h"
-#include "cocoa_application_delegate.h"
-#include "cocoa_window.h"
-#include "cocoa_window_delegate.h"
+#import "cocoa_application_delegate.h"
+#import "cocoa_window_delegate.h"
 #include "option.h"
 
 namespace mini::cocoa {

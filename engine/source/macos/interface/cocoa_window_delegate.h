@@ -1,7 +1,6 @@
 #pragma once
 
-#import <AppKit/AppKit.h>
-
+#include "appkit.h"
 #include "cocoa_window.h"
 
 @interface CocoaWindowDelegate : NSObject <NSWindowDelegate>

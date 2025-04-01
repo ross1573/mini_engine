@@ -1,11 +1,18 @@
 #pragma once
 
+#include "appkit.h"
+
 namespace mini::cocoa {
 
 class Window {
+protected:
+    NSWindow* m_Window;
+
 public:
-    void Show(void*);
-    void Hide(void*);
+    Window();
+
+    void Show();
+    void Hide();
 };
 
 } // namespace mini::cocoa

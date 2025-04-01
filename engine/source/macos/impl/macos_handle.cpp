@@ -1,7 +1,6 @@
 module;
 
-#include <Foundation/NSAutoreleasePool.hpp>
-#include <Foundation/NSNotification.hpp>
+#include <Foundation/Foundation.hpp>
 
 #include "assertion.h"
 #include "cocoa.h"
@@ -15,7 +14,6 @@ namespace mini::macos {
 
 Handle::Handle()
     : m_AutoReleasePool(nullptr)
-    , m_Application(nullptr)
 {
     m_AutoReleasePool = NS::AutoreleasePool::alloc()->init();
 }

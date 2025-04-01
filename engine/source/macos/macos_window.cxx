@@ -1,6 +1,5 @@
 module;
 
-#include "appkit.h"
 #include "cocoa_window.h"
 
 export module mini.macos:window;
@@ -13,9 +12,6 @@ namespace mini::macos {
 export class MACOS_API Window
     : public platform::Window
     , private cocoa::Window {
-private:
-    NSWindow* m_Window;
-
 public:
     Window();
     ~Window();
@@ -27,8 +23,8 @@ public:
     void Resize(RectInt const& windowSize) final;
     void Minimize() final;
     void Maximize() final;
-    void Show() final { cocoa::Window::Show(m_Window); }
-    void Hide() final { cocoa::Window::Hide(m_Window); }
+    void Show() final { cocoa::Window::Show(); }
+    void Hide() final { cocoa::Window::Hide(); }
 
     inline RectInt GetSize() const final { return RectInt::zero; }
 

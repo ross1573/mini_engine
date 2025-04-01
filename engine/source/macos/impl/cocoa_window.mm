@@ -1,8 +1,4 @@
-#include "cocoa_window.h"
-
-#import <AppKit/AppKit.h>
-
-#include "cocoa_window_delegate.h"
+#import "cocoa_window_delegate.h"
 
 @implementation CocoaWindowDelegate {
     mini::cocoa::Window* m_Delegate;
@@ -20,16 +16,19 @@
 
 namespace mini::cocoa {
 
-void Window::Show(void* windowPtr)
+Window::Window()
+    : m_Window(nullptr)
 {
-    NSWindow* window = (NSWindow*)windowPtr;
-    [window orderFront:nil];
 }
 
-void Window::Hide(void* windowPtr)
+void Window::Show()
 {
-    NSWindow* window = (NSWindow*)windowPtr;
-    [window orderOut:nil];
+    [m_Window orderFront:nil];
+}
+
+void Window::Hide()
+{
+    [m_Window orderOut:nil];
 }
 
 } // namespace mini::cocoa

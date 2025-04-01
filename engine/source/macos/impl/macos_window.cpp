@@ -9,7 +9,6 @@ import mini.core;
 namespace mini::macos {
 
 Window::Window()
-    : m_Window(nullptr)
 {
 }
 

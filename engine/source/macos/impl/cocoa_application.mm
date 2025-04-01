@@ -1,8 +1,4 @@
-#include "cocoa_application.h"
-
-#import <AppKit/AppKit.h>
-
-#include "cocoa_application_delegate.h"
+#import "cocoa_application_delegate.h"
 
 @implementation CocoaApplicationDelegate {
     mini::cocoa::Application* m_Delegate;
@@ -31,9 +27,16 @@
 
 namespace mini::cocoa {
 
+Application::Application()
+    : m_Application(nullptr)
+{
+}
+
 void Application::Run()
 {
-    if (![[NSRunningApplication currentApplication] isFinishedLaunching]) [NSApp run];
+    if (![[NSRunningApplication currentApplication] isFinishedLaunching]) {
+        [m_Application run];
+    }
 }
 
 void Application::Stop()
@@ -49,8 +52,8 @@ void Application::Stop()
                                                data1:0
                                                data2:0];
 
-        [NSApp postEvent:event atStart:YES];
-        [NSApp stop:nil];
+        [m_Application postEvent:event atStart:YES];
+        [m_Application stop:nil];
     } // autoreleasepool
 }
 
@@ -58,16 +61,16 @@ void Application::PollEvents()
 {
     @autoreleasepool {
         while (true) {
-            NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                                untilDate:[NSDate distantPast]
-                                                   inMode:NSDefaultRunLoopMode
-                                                  dequeue:YES];
+            NSEvent* event = [m_Application nextEventMatchingMask:NSEventMaskAny
+                                                        untilDate:[NSDate distantPast]
+                                                           inMode:NSDefaultRunLoopMode
+                                                          dequeue:YES];
 
             if (event == nil) {
                 break;
             }
 
-            [NSApp sendEvent:event];
+            [m_Application sendEvent:event];
         }
     } // autoreleasepool
 }

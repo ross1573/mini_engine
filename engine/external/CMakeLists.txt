@@ -19,5 +19,5 @@ set_external(convert_utf)
 
 if (APPLE)
     add_subdirectory(metal-cpp)
-    set_external(metal_cpp)
+    set_external(metal.cpp)
 endif()
