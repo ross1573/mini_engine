@@ -2,10 +2,10 @@
 
 #import <AppKit/AppKit.h>
 
-#include "interface/window_delegate.h"
+#include "cocoa_window.h"
 
 @interface CocoaWindowDelegate : NSObject <NSWindowDelegate>
 
-- (instancetype)initWithDelegate:(WindowDelegate*)delegate;
+- (instancetype)initWithDelegate:(mini::cocoa::Window*)delegate;
 
 @end

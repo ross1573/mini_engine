@@ -1,11 +1,13 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 
-#include "cocoa/application_delegate.h"
-#include "cocoa/window_delegate.h"
+#include "cocoa_application.h"
+#include "cocoa_application_delegate.h"
+#include "cocoa_window.h"
+#include "cocoa_window_delegate.h"
 #include "option.h"
 
-namespace mini::macos {
+namespace mini::cocoa {
 
 NSMenuItem* CreateAboutMenu()
 {
@@ -62,7 +64,7 @@ NSMenuItem* CreateWindowMenu()
     return windowsMenuItem;
 }
 
-NSApplication* CreateApplication(ApplicationDelegate* delegate)
+NSApplication* CreateApplication(Application* delegate)
 {
     NSApplication* application = [NSApplication sharedApplication];
 
@@ -75,7 +77,7 @@ NSApplication* CreateApplication(ApplicationDelegate* delegate)
     return application;
 }
 
-NSWindow* CreateWindow(WindowDelegate* windowDelegate)
+NSWindow* CreateWindow(Window* windowDelegate)
 {
     auto x = options::x;
     auto y = options::y;
@@ -104,4 +106,4 @@ NSWindow* CreateWindow(WindowDelegate* windowDelegate)
     return window;
 }
 
-} // namespace mini::macos
+} // namespace mini::cocoa

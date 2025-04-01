@@ -1,7 +1,7 @@
 module;
 
 #include "appkit.h"
-#include "interface/window_delegate.h"
+#include "cocoa_window.h"
 
 export module mini.macos:window;
 
@@ -12,7 +12,7 @@ namespace mini::macos {
 
 export class MACOS_API Window
     : public platform::Window
-    , public WindowDelegate {
+    , public cocoa::Window {
 private:
     NSWindow* m_Window;
 

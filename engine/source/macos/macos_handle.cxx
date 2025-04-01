@@ -1,8 +1,8 @@
 module;
 
 #include "appkit.h"
+#include "cocoa_application.h"
 #include "foundation.hpp"
-#include "interface/application_delegate.h"
 
 export module mini.macos:handle;
 
@@ -13,7 +13,7 @@ export namespace mini::macos {
 
 class MACOS_API Handle final
     : public platform::Handle
-    , public ApplicationDelegate {
+    , public cocoa::Application {
 private:
     NS::AutoreleasePool* m_AutoReleasePool;
     NSApplication* m_Application;

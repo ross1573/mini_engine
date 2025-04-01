@@ -4,7 +4,7 @@ module;
 #include <Foundation/NSNotification.hpp>
 
 #include "assertion.h"
-#include "interface/application.h"
+#include "cocoa.h"
 
 module mini.macos;
 
@@ -27,7 +27,7 @@ Handle::~Handle()
 
 bool Handle::Initialize()
 {
-    m_Application = CreateApplication(static_cast<ApplicationDelegate*>(this));
+    m_Application = cocoa::CreateApplication(static_cast<cocoa::Application*>(this));
     ENSURE(m_Application, "failed to get shared NSApplication") return false;
 
     Run();

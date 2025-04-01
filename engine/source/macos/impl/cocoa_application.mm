@@ -1,12 +1,14 @@
-#import "cocoa/application_delegate.h"
+#include "cocoa_application.h"
 
 #import <AppKit/AppKit.h>
 
+#include "cocoa_application_delegate.h"
+
 @implementation CocoaApplicationDelegate {
-    ApplicationDelegate* m_Delegate;
+    mini::cocoa::Application* m_Delegate;
 }
 
-- (instancetype)initWithDelegate:(ApplicationDelegate*)delegate
+- (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate
 {
     if (self = [super init]) {
         m_Delegate = delegate;
@@ -27,12 +29,14 @@
 
 @end
 
-void ApplicationDelegate::Run()
+namespace mini::cocoa {
+
+void Application::Run()
 {
     if (![[NSRunningApplication currentApplication] isFinishedLaunching]) [NSApp run];
 }
 
-void ApplicationDelegate::Stop()
+void Application::Stop()
 {
     @autoreleasepool {
         NSEvent* event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
@@ -50,3 +54,5 @@ void ApplicationDelegate::Stop()
 
     [NSApp stop:nil];
 }
+
+} // namespace mini::cocoa

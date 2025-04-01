@@ -1,7 +1,6 @@
 module;
 
-#include "interface/application.h"
-#include "interface/window_delegate.h"
+#include "cocoa.h"
 
 module mini.macos;
 
@@ -20,7 +19,7 @@ Window::~Window()
 
 bool Window::Initialize()
 {
-    m_Window = CreateWindow(static_cast<WindowDelegate*>(this));
+    m_Window = cocoa::CreateWindow(static_cast<cocoa::Window*>(this));
     return true;
 }
 
