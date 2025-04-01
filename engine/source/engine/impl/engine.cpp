@@ -32,8 +32,8 @@ bool Engine::Initialize()
     Platform::Handle* platformHandle = Platform::GetHandle();
     Graphics::Device* device = platformHandle->CreateGraphicDevice(api);
 
-    ASSERT(device, "failed to create graphic device");
-    VERIFY(Graphics::Initialize(device), "failed to initialize graphics");
+    ENSURE(device, "failed to create graphic device") return false;
+    ENSURE(Graphics::Initialize(device), "failed to initialize graphics") return false;
 
     m_Running = true;
     return true;

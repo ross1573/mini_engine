@@ -20,4 +20,16 @@
 
 namespace mini::cocoa {
 
+void Window::Show(void* windowPtr)
+{
+    NSWindow* window = (NSWindow*)windowPtr;
+    [window orderFront:nil];
 }
+
+void Window::Hide(void* windowPtr)
+{
+    NSWindow* window = (NSWindow*)windowPtr;
+    [window orderOut:nil];
+}
+
+} // namespace mini::cocoa

@@ -39,12 +39,4 @@ void Window::Maximize()
 {
 }
 
-void Window::Show()
-{
-}
-
-void Window::Hide()
-{
-}
-
 } // namespace mini::macos

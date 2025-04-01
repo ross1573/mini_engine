@@ -12,7 +12,7 @@ namespace mini::macos {
 
 export class MACOS_API Window
     : public platform::Window
-    , public cocoa::Window {
+    , private cocoa::Window {
 private:
     NSWindow* m_Window;
 
@@ -27,8 +27,8 @@ public:
     void Resize(RectInt const& windowSize) final;
     void Minimize() final;
     void Maximize() final;
-    void Show() final;
-    void Hide() final;
+    void Show() final { cocoa::Window::Show(m_Window); }
+    void Hide() final { cocoa::Window::Hide(m_Window); }
 
     inline RectInt GetSize() const final { return RectInt::zero; }
 

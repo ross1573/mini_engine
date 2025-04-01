@@ -13,7 +13,7 @@ export namespace mini::macos {
 
 class MACOS_API Handle final
     : public platform::Handle
-    , public cocoa::Application {
+    , private cocoa::Application {
 private:
     NS::AutoreleasePool* m_AutoReleasePool;
     NSApplication* m_Application;
@@ -23,7 +23,7 @@ public:
     ~Handle();
 
     bool Initialize() final;
-    void PollEvents() final;
+    void PollEvents() final { cocoa::Application::PollEvents(); }
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;

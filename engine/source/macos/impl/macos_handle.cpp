@@ -34,10 +34,6 @@ bool Handle::Initialize()
     return true;
 }
 
-void Handle::PollEvents()
-{
-}
-
 platform::Window* Handle::CreatePlatformWindow()
 {
     return new Window();

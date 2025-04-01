@@ -50,9 +50,26 @@ void Application::Stop()
                                                data2:0];
 
         [NSApp postEvent:event atStart:YES];
-    }
+        [NSApp stop:nil];
+    } // autoreleasepool
+}
 
-    [NSApp stop:nil];
+void Application::PollEvents()
+{
+    @autoreleasepool {
+        while (true) {
+            NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                                untilDate:[NSDate distantPast]
+                                                   inMode:NSDefaultRunLoopMode
+                                                  dequeue:YES];
+
+            if (event == nil) {
+                break;
+            }
+
+            [NSApp sendEvent:event];
+        }
+    } // autoreleasepool
 }
 
 } // namespace mini::cocoa

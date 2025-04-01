@@ -10,7 +10,7 @@ namespace mini {
 
 bool Graphics::Initialize(Device* device)
 {
-    VERIFY(g_Device == nullptr && device != nullptr);
+    ASSERT(g_Device == nullptr && device != nullptr);
 
     g_Device = UniquePtr(device);
     g_CurrAPI = g_Device->GetAPI();
