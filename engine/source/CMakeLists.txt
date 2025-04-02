@@ -14,7 +14,7 @@ if (WIN32)
     add_subdirectory(d3d12)
 elseif (APPLE)
     add_subdirectory(macos)
-    # add_subdirectory(metal)
+    add_subdirectory(metal)
 endif()
 
 add_subdirectory(engine)

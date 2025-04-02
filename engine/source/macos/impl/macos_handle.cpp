@@ -1,12 +1,14 @@
 module;
 
 #include <Foundation/Foundation.hpp>
+#include <dlfcn.h>
 
 #include "assertion.h"
 #include "cocoa.h"
 
 module mini.macos;
 
+import mini.core;
 import mini.platform;
 import mini.graphics;
 
@@ -37,9 +39,32 @@ platform::Window* Handle::CreatePlatformWindow()
     return new Window();
 }
 
-graphics::Device* Handle::CreateGraphicDevice(graphics::API)
+graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 {
-    return nullptr;
+    char const* graphicModulePath = "lib" LIB_PREFIX ".metal.dylib";
+    void* graphicModule = nullptr;
+    void* createDeviceAddr = nullptr;
+
+    switch (api) {
+        case graphics::API::Metal:
+            graphicModule = dlopen(graphicModulePath, RTLD_NOW | RTLD_LOCAL);
+            break;
+
+        default: break;
+    }
+
+    ENSURE(graphicModule)
+    {
+        log::Error("failed to load module {}", graphicModulePath);
+        return nullptr;
+    }
+
+    createDeviceAddr = dlsym(graphicModule, "CreateGraphicDevice");
+    ENSURE(createDeviceAddr, "unable to find graphics module init function") return nullptr;
+
+    typedef graphics::Device* (*CreateDeviceFuncT)();
+    CreateDeviceFuncT createDeviceFunc = reinterpret_cast<CreateDeviceFuncT>(createDeviceAddr);
+    return createDeviceFunc();
 }
 
 void Handle::ApplicationWillFinishLaunching(NS::Notification*)
