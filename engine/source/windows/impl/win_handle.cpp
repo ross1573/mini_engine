@@ -60,7 +60,7 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 
     switch (api) {
         case graphics::API::D3D12:
-            graphicModule = LoadLibraryA(LIB_PREFIX".d3d12.dll");
+            graphicModule = LoadLibraryA(LIB_PREFIX ".d3d12.dll");
             createDeviceAddr = GetProcAddress(graphicModule, "CreateGraphicDevice");
             break;
 

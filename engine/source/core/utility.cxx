@@ -31,7 +31,8 @@ inline constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
 }
 
 template <typename T, typename U = T>
-inline constexpr T Exchange(T& v, U&& n) requires ConvertibleToT<U, T>
+inline constexpr T Exchange(T& v, U&& n)
+    requires ConvertibleToT<U, T>
 {
     T old = MoveArg(v);
     v = static_cast<T>(ForwardArg<U>(n));

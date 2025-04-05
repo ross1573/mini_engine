@@ -5,14 +5,11 @@ module;
 #include "assertion.h"
 
 // TODO: MSVC throws an error when compiling with nothrow tag
-#if MSVC
+#if MSVC // clang-format off
 #  define NOTHROW_T
 #else
-#  define NOTHROW_T    \
-      , std::nothrow_t \
-      {                \
-      }
-#endif
+#  define NOTHROW_T ,std::nothrow_t{}
+#endif // clang-format on
 
 // TODO: clang complains about recursion, while others dont
 #if CLANG

@@ -25,7 +25,7 @@ CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType
         case graphics::CommandType::Direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
         case graphics::CommandType::Copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
         case graphics::CommandType::Compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
-        default:                             VERIFY(false, "unknown command queue type");
+        default: VERIFY(false, "unknown command queue type");
     }
 
     m_QueueDesc.Type = type;

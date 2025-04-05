@@ -75,8 +75,7 @@ bool SwapChain::Initialize()
 
     ENSURE(factory->CreateSwapChainForHwnd(commandQueue, window->GetHWND(), &m_SwapChainDesc,
                                            &m_FullscreenDesc, nullptr, &swapChain),
-           "failed to create DXGI swapchain")
-    {
+           "failed to create DXGI swapchain") {
         return false;
     }
 

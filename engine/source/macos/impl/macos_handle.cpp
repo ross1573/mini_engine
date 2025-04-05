@@ -53,8 +53,7 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
         default: break;
     }
 
-    ENSURE(graphicModule)
-    {
+    ENSURE(graphicModule) {
         log::Error("failed to load module {}", graphicModulePath);
         return nullptr;
     }

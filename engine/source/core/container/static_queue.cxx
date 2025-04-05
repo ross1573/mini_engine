@@ -473,13 +473,15 @@ inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& o
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticQueue<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
+inline constexpr void
+StaticQueue<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
     CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexcept
+inline constexpr void
+StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexcept
 {
     CONSTEXPR_ASSERT(m_Size != 0, "invalid access on empty queue");
 
@@ -488,14 +490,16 @@ inline constexpr void StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] Size
         isValid = offset > m_Begin && offset < m_End;
     }
     else {
-        isValid = (offset >= 0 && offset < m_End) || (offset >= m_Begin && offset < m_Buffer.Capacity());
+        isValid = (offset >= 0 && offset < m_End) ||
+                  (offset >= m_Begin && offset < m_Buffer.Capacity());
     }
 
     CONSTEXPR_ASSERT(isValid, "invalid offset");
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void
+StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
 }

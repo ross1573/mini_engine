@@ -10,13 +10,29 @@ AccessModifierOffset: -4
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 PenaltyBreakAssignment: 20
-PenaltyBreakBeforeFirstCallParameter: 1
-PenaltyBreakFirstLessLess: 120
-PenaltyBreakOpenParenthesis: 0
-PenaltyBreakScopeResolution: 500
+PenaltyBreakBeforeFirstCallParameter: 500
+PenaltyBreakBeforeMemberAccess: 500
+PenaltyBreakFirstLessLess: 80
+PenaltyBreakOpenParenthesis: 500
+PenaltyBreakScopeResolution: 100
 PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
-PenaltyReturnTypeOnItsOwnLine: 120
+PenaltyReturnTypeOnItsOwnLine: 60
+
+WhitespaceSensitiveMacros:
+  - STRINGIZE
+IfMacros:
+  - ASSERT_EXPR
+  - ENSURE_EXPR
+  - ENSURE
+  - TEST_ENSURE_EXPR
+Macros:
+  - ASSERT(x)=(x)
+  - ASSERT(x, y)=(x)
+  - VERIFY(x)=(x)
+  - VERIFY(x, y)=(x)
+  - CONSEXPR_ASSERT(x)=(x)
+  - CONSEXPR_ASSERT(x, y)=(x)
 
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Right
@@ -59,8 +75,6 @@ AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AttributeMacros:
-  - __capability
 BitFieldColonSpacing: Both
 BreakBeforeBraces: Stroustrup
 BreakAdjacentStringLiterals: true
@@ -191,8 +205,6 @@ SpacesInParensOptions:
   InEmptyParentheses: false
   Other: false
 SpacesInSquareBrackets: false
-WhitespaceSensitiveMacros:
-  - STRINGIZE
 # WrapNamespaceBodyWithEmptyLines: always
 SpacesInParentheses: false
 SpacesInConditionalStatement: false

@@ -99,7 +99,8 @@ inline constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, SizeT cap, Ptr begin, SizeT ver,
+inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, SizeT cap, Ptr begin,
+                                                                  SizeT ver,
                                                                   CircularT* base) noexcept
     : m_Offset(idx)
     , m_Capacity(cap)
@@ -111,7 +112,8 @@ inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, Siz
 
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
-inline constexpr CircularIterator<T, CircularT>::CircularIterator(CircularIterator<U, CircularU> const& o) noexcept
+inline constexpr CircularIterator<T, CircularT>::
+    CircularIterator(CircularIterator<U, CircularU> const& o) noexcept
     requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
     : m_Offset(o.m_Offset)
     , m_Capacity(o.m_Capacity)
@@ -137,20 +139,22 @@ CircularIterator<T, CircularT>::operator=(CircularIterator<U, CircularU> const& 
 
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
-inline constexpr bool
-CircularIterator<T, CircularT>::CheckSource(CircularIterator<U, CircularU> const& iter) const noexcept
+inline constexpr bool CircularIterator<T, CircularT>::
+    CheckSource(CircularIterator<U, CircularU> const& iter) const noexcept
 {
     return m_Circular && m_Circular == iter.m_Circular && m_Version == iter.m_Version;
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
+inline constexpr bool
+CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
 {
     return iter.m_Circular && iter.m_Circular->IsValidIterator(iter);
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::Ptr CircularIterator<T, CircularT>::Address() const noexcept
+inline constexpr CircularIterator<T, CircularT>::Ptr
+CircularIterator<T, CircularT>::Address() const noexcept
 {
     return m_Begin + (m_Offset % m_Capacity);
 }
@@ -162,7 +166,8 @@ inline constexpr bool CircularIterator<T, CircularT>::IsValid() const noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::IsValidWith(CircularIterator const& o) const noexcept
+inline constexpr bool
+CircularIterator<T, CircularT>::IsValidWith(CircularIterator const& o) const noexcept
 {
     return CheckSource(o);
 }
@@ -251,35 +256,40 @@ inline constexpr T& CircularIterator<T, CircularT>::operator[](OffsetT const o) 
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator++() noexcept
+inline constexpr CircularIterator<T, CircularT>&
+CircularIterator<T, CircularT>::operator++() noexcept
 {
     ++m_Offset;
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator--() noexcept
+inline constexpr CircularIterator<T, CircularT>&
+CircularIterator<T, CircularT>::operator--() noexcept
 {
     --m_Offset;
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator+=(OffsetT d) noexcept
+inline constexpr CircularIterator<T, CircularT>&
+CircularIterator<T, CircularT>::operator+=(OffsetT d) noexcept
 {
     m_Offset = (SizeT)((OffsetT)m_Offset + d);
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator-=(OffsetT d) noexcept
+inline constexpr CircularIterator<T, CircularT>&
+CircularIterator<T, CircularT>::operator-=(OffsetT d) noexcept
 {
     m_Offset = (SizeT)((OffsetT)m_Offset - d);
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator++(int) noexcept
+inline constexpr CircularIterator<T, CircularT>
+CircularIterator<T, CircularT>::operator++(int) noexcept
 {
     CircularIterator t(*this);
     ++(*this);
@@ -287,7 +297,8 @@ inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator--(int) noexcept
+inline constexpr CircularIterator<T, CircularT>
+CircularIterator<T, CircularT>::operator--(int) noexcept
 {
     CircularIterator t(*this);
     --(*this);
@@ -295,7 +306,8 @@ inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator+(OffsetT d) const noexcept
+inline constexpr CircularIterator<T, CircularT>
+CircularIterator<T, CircularT>::operator+(OffsetT d) const noexcept
 {
     CircularIterator t(*this);
     t += d;
@@ -303,7 +315,8 @@ inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator-(OffsetT d) const noexcept
+inline constexpr CircularIterator<T, CircularT>
+CircularIterator<T, CircularT>::operator-(OffsetT d) const noexcept
 {
     CircularIterator t(*this);
     t -= d;
@@ -311,8 +324,8 @@ inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> operator+(OffsetT n,
-                                                          CircularIterator<T, CircularT> const& iter) noexcept
+inline constexpr CircularIterator<T, CircularT>
+operator+(OffsetT n, CircularIterator<T, CircularT> const& iter) noexcept
 {
     return iter + n;
 }

@@ -9,11 +9,12 @@
 
 #define JOIN_VA_ARGS(...) __VA_ARGS__
 
-#define TEST_ENSURE_EXPR(expr, var) ENSURE_EVAL(expr, var) ENSURE_EXPR(var)
+#define TEST_ENSURE_EXPR(expr, var) \
+    ENSURE_EVAL(expr, var);         \
+    ENSURE_EXPR(var)
 
 #define TEST_ENSURE_INNER(expr, var, ...)                             \
-    TEST_ENSURE_EXPR(expr, var)                                       \
-    {                                                                 \
+    TEST_ENSURE_EXPR(expr, var) {                                     \
         mini::detail::EnsureHelper(#expr __VA_OPT__(, ) __VA_ARGS__); \
         return -1;                                                    \
     }
@@ -21,12 +22,13 @@
 #define TEST_ENSURE(expr, ...)                                                       \
     TEST_ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 
-#define TEST_ENSURE_NOTHROW(expr, ...)                         \
-    try {                                                      \
-        expr;                                                  \
-    }                                                          \
-    catch (...) {                                              \
-        ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__) return -1; \
+#define TEST_ENSURE_NOTHROW(expr, ...)               \
+    try {                                            \
+        expr;                                        \
+    }                                                \
+    catch (...) {                                    \
+        ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__); \
+        return -1;                                   \
     }
 
 #define ITER_CONSTRAINTS(c, stl, x)             \

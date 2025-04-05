@@ -91,8 +91,7 @@ void DescriptorAllocator::Deallocate(Descriptor desc)
 bool DescriptorAllocator::AllocateHeap()
 {
     SharedPtr<ID3D12DescriptorHeap> heap;
-    ENSURE(m_Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(&heap)))
-    {
+    ENSURE(m_Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(&heap))) {
         return false;
     }
 

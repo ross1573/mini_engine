@@ -37,8 +37,7 @@ bool Device::Initialize()
     }
 
     CreateDevice();
-    ENSURE(m_Device, "D3D12 device not created")
-    {
+    ENSURE(m_Device, "D3D12 device not created") {
         return false;
     }
 
@@ -153,8 +152,7 @@ void Device::EnableDebugLayer()
 #endif
 
     SharedPtr<ID3D12Debug> debugCtrl = nullptr;
-    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugCtrl)), "failed to enable debug layer.")
-    {
+    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugCtrl)), "failed to enable debug layer.") {
         return;
     }
 
@@ -162,8 +160,7 @@ void Device::EnableDebugLayer()
 
     if (mini::options::gpuValidation) {
         SharedPtr<ID3D12Debug5> debugCtrl5 = DynamicCast<ID3D12Debug5>(debugCtrl);
-        ENSURE(debugCtrl5, "failed to enable GPU validation")
-        {
+        ENSURE(debugCtrl5, "failed to enable GPU validation") {
             return;
         }
 
@@ -182,8 +179,7 @@ void Device::SetDebugLayerInfo()
                                 D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
 
     SharedPtr<ID3D12InfoQueue> infoQueue = DynamicCast<ID3D12InfoQueue>(m_Device);
-    ENSURE(infoQueue, "failed to set debug layer info.")
-    {
+    ENSURE(infoQueue, "failed to set debug layer info.") {
         return;
     }
 

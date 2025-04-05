@@ -133,12 +133,14 @@ inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& 
     z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
 }
 
-inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1, Vector3Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1,
+                                                  Vector3Int const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector3Int::DistanceSquared(Vector3Int const& v1, Vector3Int const& v2) noexcept
+inline /*constexpr*/ SizeT Vector3Int::DistanceSquared(Vector3Int const& v1,
+                                                       Vector3Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }

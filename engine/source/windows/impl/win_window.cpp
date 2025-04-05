@@ -36,8 +36,7 @@ bool Window::Initialize()
                                      m_Rect.width, m_Rect.height, nullptr, nullptr, instance,
                                      nullptr);
 
-    ENSURE(m_WindowHandle, "failed to create window")
-    {
+    ENSURE(m_WindowHandle, "failed to create window") {
         return false;
     }
 

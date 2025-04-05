@@ -516,7 +516,8 @@ constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
             Buffer newBuf = m_Buffer.Resize(size);
             Ptr newBegin(newBuf.Data());
 
-            memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size, ForwardArg<Args>(args)...);
+            memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size,
+                                       ForwardArg<Args>(args)...);
             memory::MoveConstructRange(newBegin, begin, begin + m_Size);
             SwapNewBuffer(newBuf);
         }
@@ -760,13 +761,15 @@ inline constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
+inline constexpr void
+Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void
+Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
     CONSTEXPR_ASSERT(iter.m_Version == m_Version, "invalid version");

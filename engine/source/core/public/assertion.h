@@ -13,17 +13,17 @@
 #endif // DEBUG && !NOASSERT
 
 #if MSVC
-#  define BUILTIN_UNREACHABLE   __assume(false);
+#  define BUILTIN_UNREACHABLE   __assume(false)
 #  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
 #else
-#  define BUILTIN_UNREACHABLE   __builtin_unreachable();
+#  define BUILTIN_UNREACHABLE   __builtin_unreachable()
 #  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
 #endif // MSVC
 
 #define ASSERT_EXPR(expr)      if (!mini::detail::TestExpr(expr)) [[unlikely]]
 #define ENSURE_EXPR(expr)      if (!expr) [[unlikely]]
-#define ENSURE_EVAL(expr, var) const bool var = mini::detail::TestExpr(expr);
-#define ENSURE_LOG(expr, ...)  mini::detail::EnsureHelper(#expr __VA_OPT__(, ) __VA_ARGS__);
+#define ENSURE_EVAL(expr, var) const bool var = mini::detail::TestExpr(expr)
+#define ENSURE_LOG(expr, ...)  mini::detail::EnsureHelper(#expr __VA_OPT__(, ) __VA_ARGS__)
 
 #if DEBUG_ASSERT
 #  if PLATFORM_WINDOWS
@@ -34,23 +34,27 @@
 
 #  define ASSERT_INNER(expr, ...)                                               \
       BUILTIN_ASSERT(mini::detail::AssertMsg(#expr __VA_OPT__(, ) __VA_ARGS__), \
-                     mini::detail::AssertLoc(), __LINE__);
+                     mini::detail::AssertLoc(), __LINE__)
 
-#  define ENSURE_INNER(expr, var, ...)                                            \
-      ENSURE_EVAL(expr, var)                                                      \
-      ENSURE_EXPR(var){ ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__) ASSERT_INNER( \
-          expr __VA_OPT__(, ) __VA_ARGS__) BUILTIN_UNREACHABLE } ENSURE_EXPR(var)
+#  define ENSURE_INNER(expr, var, ...)                   \
+      ENSURE_EVAL(expr, var);                            \
+      ENSURE_EXPR(var) {                                 \
+          ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__);   \
+          ASSERT_INNER(expr __VA_OPT__(, ) __VA_ARGS__); \
+          BUILTIN_UNREACHABLE;                           \
+      }                                                  \
+      ENSURE_EXPR(var)
 
-#  define ASSERT(expr, ...)                                                 \
-      ASSERT_EXPR(expr)                                                     \
-      {                                                                     \
-          ASSERT_INNER(expr __VA_OPT__(, ) __VA_ARGS__) BUILTIN_UNREACHABLE \
+#  define ASSERT(expr, ...)                              \
+      ASSERT_EXPR(expr) {                                \
+          ASSERT_INNER(expr __VA_OPT__(, ) __VA_ARGS__); \
+          BUILTIN_UNREACHABLE;                           \
       }
 
-#  define VERIFY(expr, ...)                                                 \
-      ASSERT_EXPR(expr)                                                     \
-      {                                                                     \
-          ASSERT_INNER(expr __VA_OPT__(, ) __VA_ARGS__) BUILTIN_UNREACHABLE \
+#  define VERIFY(expr, ...)                              \
+      ASSERT_EXPR(expr) {                                \
+          ASSERT_INNER(expr __VA_OPT__(, ) __VA_ARGS__); \
+          BUILTIN_UNREACHABLE;                           \
       }
 
 #  define ENSURE(expr, ...)                                                       \
@@ -64,14 +68,15 @@
 #  define ASSERT(expr, ...)               ((void)0)
 #  define CONSTEXPR_ASSERT(expr, ...)     ((void)0)
 
-#  define ENSURE_INNER(expr, var, ...)                                                 \
-      ENSURE_EVAL(expr, var)                                                           \
-      ENSURE_EXPR(var){ ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__) } ENSURE_EXPR(var)
+#  define ENSURE_INNER(expr, var, ...)                 \
+      ENSURE_EVAL(expr, var)                           \
+      ENSURE_EXPR(var) {                               \
+          ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__); \
+      }                                                \
+      ENSURE_EXPR(var)
 
 #  define VERIFY(expr, ...) \
-      ASSERT_EXPR(expr)     \
-      {                     \
-      }
+      ASSERT_EXPR(expr) {}
 
 #  define ENSURE(expr, ...)                                                       \
       ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
@@ -89,14 +94,15 @@ struct FalseArgs {
     static constexpr bool value = false;
 };
 
-[[noinline]] CORE_API CHAR_T* AssertMsg(char const*, char const* = nullptr);
+[[noinline]]
+CORE_API CHAR_T* AssertMsg(char const*, char const* = nullptr);
 
-[[noinline]] CORE_API CHAR_T* AssertLoc(
-    std::source_location const& = std::source_location::current());
+[[noinline]]
+CORE_API CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
 
-[[noinline]] CORE_API void EnsureHelper(
-    char const*, char const* = nullptr,
-    std::source_location const& = std::source_location::current());
+[[noinline]]
+CORE_API void EnsureHelper(char const*, char const* = nullptr,
+                           std::source_location const& = std::source_location::current());
 
 inline constexpr bool TestExpr(bool arg) noexcept
 {
@@ -131,8 +137,9 @@ inline constexpr bool TestExpr(HRESULT result) noexcept
 
 #if PLATFORM_WINDOWS && defined(__d3dcommon_h__)
 
-[[noinline]] CORE_API void EnsureHelper(
-    char const*, ID3DBlob*, std::source_location const& = std::source_location::current());
+[[noinline]]
+CORE_API void EnsureHelper(char const*, ID3DBlob*,
+                           std::source_location const& = std::source_location::current());
 
 #endif
 

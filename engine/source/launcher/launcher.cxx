@@ -15,8 +15,9 @@ void LaunchEngine(platform::Handle* handle)
     log::Info("launching engine...");
 
     ENSURE(handle, "unsupported platform") return;
-    ENSURE(Platform::Initialize(handle), "failed to initialize platform") return;
-
+    ENSURE(Platform::Initialize(handle), "failed to initialize platform") {
+        return;
+    }
     log::Info("platform initialized");
 
     Engine::Launch();

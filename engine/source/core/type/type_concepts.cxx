@@ -112,7 +112,8 @@ concept NoThrowCopyableT = NoThrowMovableT<T> && std::is_nothrow_copy_constructi
                            std::is_nothrow_copy_assignable_v<T>;
 
 template <typename T>
-concept TrivialT = std::is_nothrow_default_constructible_v<T> && std::is_trivially_copyable_v<T> && NoThrowCopyableT<T>;
+concept TrivialT = std::is_nothrow_default_constructible_v<T> && std::is_trivially_copyable_v<T> &&
+                   NoThrowCopyableT<T>;
 
 template <typename T, typename... Args>
 concept CallableT = std::is_invocable_v<T, Args...>;

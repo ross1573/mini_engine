@@ -221,7 +221,8 @@ constexpr void StaticArray<T, N>::AddRange(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0: return;
+        [[unlikely]] case 0:
+            return;
         case 1:  Push(ForwardArg<typename Iter::Value>(*first)); return;
         default: break;
     }
@@ -251,7 +252,8 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0: return;
+        [[unlikely]] case 0:
+            return;
         case 1:  Insert(iter, ForwardArg<typename Iter::Value>(*first)); return;
         default: break;
     }
@@ -340,7 +342,8 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
-        [[unlikely]] case 0: return;
+        [[unlikely]] case 0:
+            return;
         case 1:  RemoveAt(first); return;
         default: break;
     }
@@ -567,19 +570,22 @@ inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& o
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
+inline constexpr void
+StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
     CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
+inline constexpr void
+StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, SizeT N>
-inline constexpr void StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+inline constexpr void
+StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
 }

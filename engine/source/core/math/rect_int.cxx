@@ -101,7 +101,8 @@ inline constexpr bool RectInt::Contains(Vector3Int const& v) const noexcept
 
 inline constexpr bool RectInt::Intersects(RectInt const& r) const noexcept
 {
-    return (r.x < (x + width)) && (x < (r.x + r.width)) && (r.y < (y + height)) && (y < (r.y + r.height));
+    return ((r.x < (x + width)) && (x < (r.x + r.width))) &&
+           ((r.y < (y + height)) && (y < (r.y + r.height)));
 }
 
 inline constexpr bool RectInt::Overlaps(RectInt const& r) const noexcept

@@ -116,12 +116,14 @@ inline constexpr void Vector2Int::Clamp(Vector2Int const& v1, Vector2Int const& 
     y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
 }
 
-inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1, Vector2Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1,
+                                                  Vector2Int const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1, Vector2Int const& v2) noexcept
+inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1,
+                                                       Vector2Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }
