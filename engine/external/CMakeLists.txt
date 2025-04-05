@@ -5,8 +5,10 @@ macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)
 endmacro()
 
-if (MSVC)
+if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(/W0 /utf-8)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    add_compile_options(-Wno-everything)
 endif()
 
 set(FMT_INSTALL OFF)

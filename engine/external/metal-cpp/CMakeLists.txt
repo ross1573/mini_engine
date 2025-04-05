@@ -1,7 +1,7 @@
 add_library(metal.cpp SHARED metal-cpp.cpp)
 
 target_include_directories(metal.cpp
-PUBLIC
+SYSTEM PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
