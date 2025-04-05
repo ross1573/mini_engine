@@ -11,7 +11,7 @@ ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 PenaltyBreakAssignment: 20
 PenaltyBreakBeforeFirstCallParameter: 500
-PenaltyBreakBeforeMemberAccess: 500
+# PenaltyBreakBeforeMemberAccess: 500
 PenaltyBreakFirstLessLess: 80
 PenaltyBreakOpenParenthesis: 500
 PenaltyBreakScopeResolution: 100
