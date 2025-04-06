@@ -13,9 +13,6 @@ namespace mini::metal {
 export class MACOS_API SwapChain final
     : public graphics::SwapChain
     , public CoreLayer {
-private:
-    CAMetalLayer* m_Layer;
-
 public:
     SwapChain();
 

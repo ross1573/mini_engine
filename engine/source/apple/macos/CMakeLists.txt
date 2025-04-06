@@ -15,6 +15,7 @@ PRIVATE
     impl/macos_window.cpp
     impl/cocoa_application.mm
     impl/cocoa_window.mm
+    impl/cocoa_view.mm
 )
 
 target_link_libraries(mini.macos

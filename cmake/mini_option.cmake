@@ -43,6 +43,8 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Wno-unknown-attributes
         -Wno-nested-anon-types
         -Wno-gnu-anonymous-struct
+
+        $<$<CONFIG:Debug>:-fsanitize=address>
     )
 
     if (WIN32)
@@ -51,6 +53,10 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
             -Wno-cast-function-type-mismatch # reinterept_cast of dll exported function
         )
     endif()
+
+    add_link_options(
+        $<$<CONFIG:Debug>:-fsanitize=address>
+    )
 else()
     message(FATAL_ERROR "unsupported compiler")
 endif()

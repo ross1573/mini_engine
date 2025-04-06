@@ -1,5 +1,22 @@
-#import "cocoa_window_delegate.h"
+#import "cocoa_delegate.h"
 #include "option.h"
+
+@interface CocoaWindow : NSWindow
+@end
+
+@implementation CocoaWindow
+
+- (BOOL)canBecomeKeyWindow
+{
+    return YES;
+}
+
+- (BOOL)canBecomeMainWindow
+{
+    return YES;
+}
+
+@end
 
 @implementation CocoaWindowDelegate {
     mini::cocoa::Window* m_Delegate;
@@ -13,100 +30,26 @@
     return self;
 }
 
-@end
-
-@implementation CocoaView
-
-- (BOOL)acceptsFirstResponder
+- (BOOL)windowShouldClose:(NSWindow*)window
 {
-    return YES;
+    return m_Delegate->ShouldClose();
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent*)event
+- (void)windowWillClose:(NSNotification*)notification
 {
-    return YES;
+    m_Delegate->WillClose();
 }
 
-- (void)keyDown:(NSEvent*)event
+- (NSSize)windowWillResize:(NSWindow*)sender toSize:(NSSize)frameSize
 {
-    [super keyDown:event];
-}
-
-- (void)keyUp:(NSEvent*)event
-{
-    [super keyUp:event];
-}
-
-- (void)flagsChanged:(NSEvent*)event
-{
-    [super flagsChanged:event];
-}
-
-- (void)mouseDown:(NSEvent*)event
-{
-    [super mouseDown:event];
-}
-
-- (void)rightMouseDown:(NSEvent*)event
-{
-    [super rightMouseDown:event];
-}
-
-- (void)otherMouseDown:(NSEvent*)event
-{
-    [super otherMouseDown:event];
-}
-
-- (void)mouseUp:(NSEvent*)event
-{
-    [super mouseUp:event];
-}
-
-- (void)rightMouseUp:(NSEvent*)event
-{
-    [super rightMouseUp:event];
-}
-
-- (void)otherMouseUp:(NSEvent*)event
-{
-    [super otherMouseUp:event];
-}
-
-- (void)mouseMoved:(NSEvent*)event
-{
-    [super mouseMoved:event];
-}
-
-- (void)mouseDragged:(NSEvent*)event
-{
-    [self mouseMoved:event];
-}
-
-- (void)rightMouseDragged:(NSEvent*)event
-{
-    [self mouseMoved:event];
-}
-
-- (void)otherMouseDragged:(NSEvent*)event
-{
-    [self mouseMoved:event];
-}
-
-- (void)mouseEntered:(NSEvent*)event
-{
-    [super mouseEntered:event];
-}
-
-- (void)mouseExited:(NSEvent*)event
-{
-    [super mouseExited:event];
+    return frameSize;
 }
 
 @end
 
 namespace mini::cocoa {
 
-Window::Window()
+Window::Window(mini::cocoa::Application* application)
     : m_Window(nullptr)
     , m_View(nullptr)
 {
@@ -124,17 +67,19 @@ Window::Window()
     windowRect.origin.x = (screen.frame.size.width / 2) - (windowRect.size.width / 2);
     windowRect.origin.y = (screen.frame.size.height / 2) - (windowRect.size.height / 2);
 
-    m_View = [[CocoaView alloc] init];
-    m_Window = [[NSWindow alloc] initWithContentRect:windowRect
-                                           styleMask:mask
-                                             backing:NSBackingStoreBuffered
-                                               defer:NO
-                                              screen:screen];
+    m_View = [[CocoaView alloc] initWithDelegate:application frameRect:windowRect];
+    m_Window = [[CocoaWindow alloc] initWithContentRect:windowRect
+                                              styleMask:mask
+                                                backing:NSBackingStoreBuffered
+                                                  defer:NO
+                                                 screen:screen];
 
     m_Window.releasedWhenClosed = NO;
     m_Window.minSize = NSMakeSize(640, 360);
     m_Window.delegate = [[CocoaWindowDelegate alloc] initWithDelegate:this];
     m_Window.contentView = m_View;
+
+    [m_Window makeFirstResponder:m_View];
 }
 
 Window::~Window()
@@ -143,9 +88,20 @@ Window::~Window()
     [m_Window release];
 }
 
+void Window::AlertError(char const* msg)
+{
+    NSString* errMsg = [NSString stringWithUTF8String:msg];
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"OK"];
+    [alert setInformativeText:@"Error"];
+    [alert setMessageText:errMsg];
+    [alert setAlertStyle:NSAlertStyleCritical];
+    [alert runModal];
+}
+
 void Window::Show()
 {
-    [m_Window orderFront:nil];
+    [m_Window makeKeyAndOrderFront:m_Window];
 }
 
 void Window::Hide()

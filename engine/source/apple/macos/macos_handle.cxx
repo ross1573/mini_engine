@@ -21,10 +21,14 @@ public:
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;
 
-    void ApplicationWillFinishLaunching(NS::Notification*) final;
-    void ApplicationDidFinishLaunching(NS::Notification*) final;
-
     inline NSApplication* GetNSApplication() { return m_Application; }
+
+private:
+    void ApplicationWillFinishLaunching(NS::Notification*) final {}
+    void ApplicationDidFinishLaunching(NS::Notification*) final {}
+
+    void Quit() final;
+    void Abort() final;
 };
 
 } // namespace mini::macos

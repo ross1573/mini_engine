@@ -1,5 +1,6 @@
 module;
 
+#include "cocoa_application.h"
 #include "cocoa_window.h"
 
 export module mini.macos:window;
@@ -13,7 +14,7 @@ export class MACOS_API Window
     : public platform::Window
     , private cocoa::Window {
 public:
-    Window();
+    Window(cocoa::Application*);
 
     bool Initialize() final;
 
@@ -29,6 +30,10 @@ public:
 
     inline void SetMetalLayer(CAMetalLayer* layer) { cocoa::Window::SetMetalLayer(layer); }
     inline NSWindow* GetNSWindow() { return m_Window; }
+
+private:
+    bool ShouldClose() final;
+    void WillClose() final;
 };
 
 } // namespace mini::macos

@@ -14,12 +14,14 @@ public:
     Application();
     ~Application();
 
-    void Run();
-    void Stop();
+    void Launch();
     void PollEvents();
 
     virtual void ApplicationWillFinishLaunching(NS::Notification*) = 0;
     virtual void ApplicationDidFinishLaunching(NS::Notification*) = 0;
+
+    virtual void Abort() = 0;
+    virtual void Quit() = 0;
 };
 
 } // namespace mini::cocoa

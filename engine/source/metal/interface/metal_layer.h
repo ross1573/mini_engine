@@ -5,13 +5,16 @@
 namespace mini::metal {
 
 class CoreLayer {
-private:
+protected:
     CAMetalLayer* m_Layer;
 
 public:
-    CoreLayer();
+    ~CoreLayer();
 
     inline CAMetalLayer* GetMetalLayer() { return m_Layer; }
+
+protected:
+    CoreLayer();
 };
 
 } // namespace mini::metal

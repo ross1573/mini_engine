@@ -1,4 +1,4 @@
-#import "cocoa_application_delegate.h"
+#import "cocoa_delegate.h"
 #include "option.h"
 
 @implementation CocoaApplicationDelegate {
@@ -103,29 +103,11 @@ Application::~Application()
     [m_AutoReleasePool release];
 }
 
-void Application::Run()
+void Application::Launch()
 {
     if (![[NSRunningApplication currentApplication] isFinishedLaunching]) {
-        [m_Application run];
+        [m_Application finishLaunching];
     }
-}
-
-void Application::Stop()
-{
-    @autoreleasepool {
-        NSEvent* event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
-                                            location:NSMakePoint(0, 0)
-                                       modifierFlags:0
-                                           timestamp:0
-                                        windowNumber:0
-                                             context:nil
-                                             subtype:0
-                                               data1:0
-                                               data2:0];
-
-        [m_Application postEvent:event atStart:YES];
-        [m_Application stop:nil];
-    } // autoreleasepool
 }
 
 void Application::PollEvents()

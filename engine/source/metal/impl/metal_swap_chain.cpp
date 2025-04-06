@@ -8,7 +8,6 @@ import :swap_chain;
 namespace mini::metal {
 
 SwapChain::SwapChain()
-    : m_Layer(nullptr)
 {
 }
 

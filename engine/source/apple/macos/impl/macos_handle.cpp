@@ -11,6 +11,7 @@ module mini.macos;
 import mini.core;
 import mini.platform;
 import mini.graphics;
+import mini.engine;
 
 namespace mini::macos {
 
@@ -25,13 +26,13 @@ bool Handle::Initialize()
         return false;
     }
 
-    Run();
+    Launch();
     return true;
 }
 
 platform::Window* Handle::CreatePlatformWindow()
 {
-    return new Window();
+    return new Window(static_cast<cocoa::Application*>(this));
 }
 
 graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
@@ -63,13 +64,14 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
     return createDeviceFunc();
 }
 
-void Handle::ApplicationWillFinishLaunching(NS::Notification*)
+void Handle::Quit()
 {
+    Engine::Quit();
 }
 
-void Handle::ApplicationDidFinishLaunching(NS::Notification*)
+void Handle::Abort()
 {
-    Stop();
+    Engine::Abort();
 }
 
 } // namespace mini::macos
