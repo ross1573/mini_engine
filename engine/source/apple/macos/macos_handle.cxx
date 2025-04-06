@@ -7,17 +7,13 @@ export module mini.macos:handle;
 import mini.platform;
 import mini.graphics;
 
-export namespace mini::macos {
+namespace mini::macos {
 
-class MACOS_API Handle final
+export class MACOS_API Handle final
     : public platform::Handle
     , private cocoa::Application {
-private:
-    NS::AutoreleasePool* m_AutoReleasePool;
-
 public:
     Handle();
-    ~Handle();
 
     bool Initialize() final;
     void PollEvents() final { cocoa::Application::PollEvents(); }

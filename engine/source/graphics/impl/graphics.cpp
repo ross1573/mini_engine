@@ -16,18 +16,21 @@ bool Graphics::Initialize(Device* device)
     g_CurrAPI = g_Device->GetAPI();
 
     ENSURE(g_CurrAPI != API::Null, "unknown api") return false;
-    ENSURE(g_Device->Initialize(), "failed to initialize graphics device") return false;
-
+    ENSURE(g_Device->Initialize(), "failed to initialize graphics device") {
+        return false;
+    }
     log::Info("graphic device initialized");
 
     g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
-    ENSURE(g_RenderContext->Initialize(), "Failed to create render context") return false;
-
+    ENSURE(g_RenderContext && g_RenderContext->Initialize(), "Failed to create render context") {
+        return false;
+    }
     log::Info("render context initialized");
 
     g_SwapChain = UniquePtr(g_Device->CreateSwapChain());
-    ENSURE(g_SwapChain->Initialize(), "Failed to create swap chain") return false;
-
+    ENSURE(g_SwapChain && g_SwapChain->Initialize(), "Failed to create swap chain") {
+        return false;
+    }
     log::Info("swap chain initialized");
 
     return true;

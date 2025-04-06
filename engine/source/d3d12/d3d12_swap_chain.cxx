@@ -5,9 +5,9 @@ import mini.graphics;
 import mini.windows;
 import :descriptor;
 
-export namespace mini::d3d12 {
+namespace mini::d3d12 {
 
-struct SwapChainBuffer {
+export struct SwapChainBuffer {
     SharedPtr<ID3D12Resource> resource;
     Descriptor descriptor;
     D3D12_RENDER_TARGET_VIEW_DESC* rtvDesc;
@@ -15,7 +15,7 @@ struct SwapChainBuffer {
     SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* = nullptr);
 };
 
-class SwapChain final : public graphics::SwapChain {
+export class SwapChain final : public graphics::SwapChain {
 private:
     static constexpr uint8 MaxBuffer = SwapChain::MaxBackBuffer;
 
@@ -44,7 +44,7 @@ public:
     inline Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
     inline uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
     inline uint8 GetVSync() const final { return m_VSync; }
-    inline bool GetFullscreen() const final { return !m_FullscreenDesc.Windowed; }
+    inline bool GetFullScreen() const final { return !m_FullscreenDesc.Windowed; }
 
 protected:
     bool Initialize() final;

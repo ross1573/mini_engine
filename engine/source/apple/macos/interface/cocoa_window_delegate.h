@@ -8,3 +8,7 @@
 - (instancetype)initWithDelegate:(mini::cocoa::Window*)delegate;
 
 @end
+
+@interface CocoaView : NSView
+
+@end

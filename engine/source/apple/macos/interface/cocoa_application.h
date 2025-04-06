@@ -7,10 +7,12 @@ namespace mini::cocoa {
 
 class Application {
 protected:
+    NSAutoreleasePool* m_AutoReleasePool;
     NSApplication* m_Application;
 
 public:
     Application();
+    ~Application();
 
     void Run();
     void Stop();

@@ -1,6 +1,6 @@
 module;
 
-#include "cocoa.h"
+#include "cocoa_window.h"
 
 module mini.macos;
 
@@ -9,16 +9,12 @@ import mini.core;
 namespace mini::macos {
 
 Window::Window()
-{
-}
-
-Window::~Window()
+    : cocoa::Window()
 {
 }
 
 bool Window::Initialize()
 {
-    m_Window = cocoa::CreateWindow(static_cast<cocoa::Window*>(this));
     return true;
 }
 

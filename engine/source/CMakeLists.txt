@@ -13,7 +13,7 @@ if (WIN32)
     add_subdirectory(windows)
     add_subdirectory(d3d12)
 elseif (APPLE)
-    add_subdirectory(macos)
+    add_subdirectory(apple)
     add_subdirectory(metal)
 endif()
 

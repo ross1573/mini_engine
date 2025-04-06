@@ -14,7 +14,6 @@ export class MACOS_API Window
     , private cocoa::Window {
 public:
     Window();
-    ~Window();
 
     bool Initialize() final;
 
@@ -23,11 +22,12 @@ public:
     void Resize(RectInt const& windowSize) final;
     void Minimize() final;
     void Maximize() final;
-    void Show() final { cocoa::Window::Show(); }
-    void Hide() final { cocoa::Window::Hide(); }
+    inline void Show() final { cocoa::Window::Show(); }
+    inline void Hide() final { cocoa::Window::Hide(); }
 
     inline RectInt GetSize() const final { return RectInt::zero; }
 
+    inline void SetMetalLayer(CAMetalLayer* layer) { cocoa::Window::SetMetalLayer(layer); }
     inline NSWindow* GetNSWindow() { return m_Window; }
 };
 

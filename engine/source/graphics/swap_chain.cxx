@@ -24,7 +24,7 @@ public:
     virtual Vector2Int GetBackBufferSize() const = 0;
     virtual uint8 GetBackBufferCount() const = 0;
     virtual uint8 GetVSync() const = 0;
-    virtual bool GetFullscreen() const = 0;
+    virtual bool GetFullScreen() const = 0;
 
 protected:
     SwapChain() = default;

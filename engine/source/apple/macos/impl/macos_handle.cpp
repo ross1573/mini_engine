@@ -4,7 +4,7 @@ module;
 #include <dlfcn.h>
 
 #include "assertion.h"
-#include "cocoa.h"
+#include "cocoa_application.h"
 
 module mini.macos;
 
@@ -15,20 +15,15 @@ import mini.graphics;
 namespace mini::macos {
 
 Handle::Handle()
-    : m_AutoReleasePool(nullptr)
+    : cocoa::Application()
 {
-    m_AutoReleasePool = NS::AutoreleasePool::alloc()->init();
-}
-
-Handle::~Handle()
-{
-    m_AutoReleasePool->release();
 }
 
 bool Handle::Initialize()
 {
-    m_Application = cocoa::CreateApplication(static_cast<cocoa::Application*>(this));
-    ENSURE(m_Application, "failed to get shared NSApplication") return false;
+    ENSURE(m_Application, "failed to get shared NSApplication") {
+        return false;
+    }
 
     Run();
     return true;
@@ -59,7 +54,9 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
     }
 
     createDeviceAddr = dlsym(graphicModule, "CreateGraphicDevice");
-    ENSURE(createDeviceAddr, "unable to find graphics module init function") return nullptr;
+    ENSURE(createDeviceAddr, "unable to find graphics module init function") {
+        return nullptr;
+    }
 
     typedef graphics::Device* (*CreateDeviceFuncT)();
     CreateDeviceFuncT createDeviceFunc = reinterpret_cast<CreateDeviceFuncT>(createDeviceAddr);

@@ -6,5 +6,6 @@
 
 class NSApplication;
 class NSWindow;
+class NSView;
 
 #endif // __OBJC__
