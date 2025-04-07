@@ -10,6 +10,8 @@ protected:
     NSWindow* m_Window;
     NSView* m_View;
 
+    bool m_FullScreen;
+
 public:
     Window(Application*);
     ~Window();
@@ -18,6 +20,7 @@ public:
     void Show();
     void Hide();
 
+    void SetFullScreen(bool);
     void SetMetalLayer(CAMetalLayer*);
 
     virtual bool ShouldClose() = 0;

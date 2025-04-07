@@ -26,6 +26,7 @@ public:
 
     inline RectInt GetSize() const final { return RectInt::zero; }
 
+    inline void SetFullScreen(bool active) final { cocoa::Window::SetFullScreen(active); }
     inline void SetMetalLayer(CAMetalLayer* layer) final { cocoa::Window::SetMetalLayer(layer); }
     inline NSWindow* GetNSWindow() { return m_Window; }
 

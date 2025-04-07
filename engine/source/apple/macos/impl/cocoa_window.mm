@@ -52,11 +52,13 @@ namespace mini::cocoa {
 Window::Window(mini::cocoa::Application* application)
     : m_Window(nullptr)
     , m_View(nullptr)
+    , m_FullScreen(false)
 {
     auto x = options::x;
     auto y = options::y;
     auto width = options::width;
     auto height = options::height;
+    auto fullScreen = options::fullscreen;
 
     NSWindowStyleMask mask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled |
                              NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
@@ -80,6 +82,11 @@ Window::Window(mini::cocoa::Application* application)
     m_Window.contentView = m_View;
 
     [m_Window makeFirstResponder:m_View];
+
+    if (fullScreen) {
+        [m_Window toggleFullScreen:m_Window];
+        m_FullScreen = true;
+    }
 }
 
 Window::~Window()
@@ -107,6 +114,16 @@ void Window::Show()
 void Window::Hide()
 {
     [m_Window orderOut:nil];
+}
+
+void Window::SetFullScreen(bool active)
+{
+    if (m_FullScreen == active) {
+        return;
+    }
+
+    m_FullScreen = active;
+    [m_Window toggleFullScreen:m_Window];
 }
 
 void Window::SetMetalLayer(CAMetalLayer* layer)
