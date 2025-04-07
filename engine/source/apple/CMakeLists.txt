@@ -1,7 +1,21 @@
-add_library(mini.apple INTERFACE)
+add_module(mini.apple STATIC)
+
+module_sources(mini.apple
+PUBLIC
+    FILE_SET apple TYPE CXX_MODULES
+    FILES
+        apple.cxx
+        apple_window.cxx
+)
+
+target_link_libraries(mini.apple
+PUBLIC
+    mini.core
+    mini.platform
+)
 
 target_include_directories(mini.apple
-INTERFACE
+PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/public
 )
 

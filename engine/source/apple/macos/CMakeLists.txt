@@ -19,10 +19,6 @@ PRIVATE
 )
 
 target_link_libraries(mini.macos
-PUBLIC
-    mini.core
-    mini.platform
-
 PRIVATE
     mini.graphics
     mini.engine

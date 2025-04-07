@@ -10,7 +10,7 @@ import mini.graphics;
 
 namespace mini::metal {
 
-export class MACOS_API SwapChain final
+export class METAL_API SwapChain final
     : public graphics::SwapChain
     , public CoreLayer {
 public:

@@ -25,14 +25,11 @@ PRIVATE
 
 target_link_libraries(mini.metal
 PUBLIC
-    mini.core
     mini.graphics
 
 PRIVATE
-    mini.platform
     mini.engine
     mini.apple
-    mini.macos
     metal.cpp
     "-framework Foundation"
     "-framework QuartzCore"

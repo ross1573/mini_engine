@@ -6,12 +6,12 @@ module;
 export module mini.macos:window;
 
 import mini.core;
-import mini.platform;
+import mini.apple;
 
 namespace mini::macos {
 
-export class MACOS_API Window
-    : public platform::Window
+export class MACOS_API Window final
+    : public apple::Window
     , private cocoa::Window {
 public:
     Window(cocoa::Application*);
@@ -28,7 +28,7 @@ public:
 
     inline RectInt GetSize() const final { return RectInt::zero; }
 
-    inline void SetMetalLayer(CAMetalLayer* layer) { cocoa::Window::SetMetalLayer(layer); }
+    inline void SetMetalLayer(CAMetalLayer* layer) final { cocoa::Window::SetMetalLayer(layer); }
     inline NSWindow* GetNSWindow() { return m_Window; }
 
 private:

@@ -2,7 +2,7 @@ module mini.metal;
 
 import mini.core;
 import mini.platform;
-import mini.macos;
+import mini.apple;
 import :swap_chain;
 
 namespace mini::metal {
@@ -13,7 +13,7 @@ SwapChain::SwapChain()
 
 bool SwapChain::Initialize()
 {
-    auto window = (macos::Window*)Platform::GetWindow();
+    auto window = (apple::Window*)Platform::GetWindow();
     window->SetMetalLayer(m_Layer);
 
     return true;
