@@ -16,11 +16,6 @@ Window::Window(cocoa::Application* application)
 {
 }
 
-bool Window::Initialize()
-{
-    return true;
-}
-
 void Window::DialogCritical(String const& msg)
 {
     cocoa::Window::AlertError(msg.c_str());

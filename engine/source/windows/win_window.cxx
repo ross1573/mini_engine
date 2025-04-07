@@ -19,8 +19,6 @@ public:
     Window();
     ~Window() = default;
 
-    bool Initialize() final;
-
     void DialogCritical(String const&) final;
 
     void Resize(RectInt const&) final;

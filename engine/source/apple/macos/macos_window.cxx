@@ -16,8 +16,6 @@ export class MACOS_API Window final
 public:
     Window(cocoa::Application*);
 
-    bool Initialize() final;
-
     void DialogCritical(String const& msg) final;
 
     void Resize(RectInt const& windowSize) final;

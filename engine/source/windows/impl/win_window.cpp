@@ -16,10 +16,6 @@ Window::Window()
     , m_Rect{}
     , m_IsShowing(false)
 {
-}
-
-bool Window::Initialize()
-{
     auto className = options::name;
     auto titleName = options::title;
     m_Rect = RectInt(options::x, options::y, options::width, options::height);
@@ -36,13 +32,7 @@ bool Window::Initialize()
                                      m_Rect.width, m_Rect.height, nullptr, nullptr, instance,
                                      nullptr);
 
-    ENSURE(m_WindowHandle, "failed to create window") {
-        return false;
-    }
-
     SetMenu(m_WindowHandle, 0);
-
-    return true;
 }
 
 void Window::DialogCritical(String const& msg)

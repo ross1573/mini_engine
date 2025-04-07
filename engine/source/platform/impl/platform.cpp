@@ -19,9 +19,6 @@ bool Platform::Initialize(Handle* handle)
     log::Info("platform handle initialized");
 
     g_Window = UniquePtr(g_Handle->CreatePlatformWindow());
-    ENSURE(g_Window->Initialize(), "Failed to initialize platform window") {
-        return false;
-    }
     log::Info("platform window initialized");
 
     return true;

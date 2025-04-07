@@ -8,8 +8,6 @@ export class PLATFORM_API Window {
 public:
     virtual ~Window() = default;
 
-    virtual bool Initialize() = 0;
-
     virtual void DialogCritical(String const& msg) = 0;
 
     virtual void Resize(RectInt const& windowSize) = 0;
