@@ -4,6 +4,7 @@ module;
 
 export module mini.macos:handle;
 
+import mini.core;
 import mini.platform;
 import mini.graphics;
 
@@ -27,8 +28,7 @@ private:
     void ApplicationWillFinishLaunching(NS::Notification*) final {}
     void ApplicationDidFinishLaunching(NS::Notification*) final {}
 
-    void Quit() final;
-    void Abort() final;
+    void OnKeyDown(uint) final;
 };
 
 } // namespace mini::macos

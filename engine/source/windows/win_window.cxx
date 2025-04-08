@@ -28,6 +28,9 @@ public:
     void Hide() final;
 
     inline RectInt GetSize() const final { return m_Rect; }
+    inline bool IsMinimized() const final { return false; } // TODO
+    inline bool IsMaximized() const final { return false; } // TODO
+
     inline HWND GetHWND() const { return m_WindowHandle; }
 };
 

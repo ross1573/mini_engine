@@ -30,16 +30,7 @@
 
 - (void)keyDown:(NSEvent*)event
 {
-    if ([event keyCode] == 0x0C) {
-        m_Delegate->Quit();
-    }
-    else if ([event keyCode] == 0x35) {
-        m_Delegate->Abort();
-    }
-    else {
-        [super keyDown:event];
-    }
-
+    m_Delegate->OnKeyDown([event keyCode]);
     [self interpretKeyEvents:[NSArray arrayWithObject:event]];
 }
 

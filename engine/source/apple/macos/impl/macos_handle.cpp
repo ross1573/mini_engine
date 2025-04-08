@@ -64,14 +64,13 @@ graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
     return createDeviceFunc();
 }
 
-void Handle::Quit()
+void Handle::OnKeyDown(uint keyCode)
 {
-    Engine::Quit();
-}
-
-void Handle::Abort()
-{
-    Engine::Abort();
+    switch (keyCode) {
+        case 0x0C: Engine::Quit(); break;
+        case 0x35: Engine::Abort(); break;
+        default:   break;
+    }
 }
 
 } // namespace mini::macos

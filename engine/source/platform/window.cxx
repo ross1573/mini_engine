@@ -17,6 +17,8 @@ public:
     virtual void Hide() = 0;
 
     virtual RectInt GetSize() const = 0;
+    virtual bool IsMinimized() const = 0;
+    virtual bool IsMaximized() const = 0;
 
 protected:
     Window() = default;

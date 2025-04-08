@@ -52,7 +52,6 @@ namespace mini::cocoa {
 Window::Window(mini::cocoa::Application* application)
     : m_Window(nullptr)
     , m_View(nullptr)
-    , m_FullScreen(false)
 {
     auto x = options::x;
     auto y = options::y;
@@ -82,11 +81,7 @@ Window::Window(mini::cocoa::Application* application)
     m_Window.contentView = m_View;
 
     [m_Window makeFirstResponder:m_View];
-
-    if (fullScreen) {
-        [m_Window toggleFullScreen:m_Window];
-        m_FullScreen = true;
-    }
+    SetFullScreen(fullScreen);
 }
 
 Window::~Window()
@@ -106,9 +101,24 @@ void Window::AlertError(char const* msg)
     [alert runModal];
 }
 
+void Window::Minimize()
+{
+    if (IsMinimized()) {
+        [m_Window deminiaturize:nil];
+    }
+    else {
+        [m_Window performMiniaturize:nil];
+    }
+}
+
+void Window::Maximize()
+{
+    [m_Window zoom:nil];
+}
+
 void Window::Show()
 {
-    [m_Window makeKeyAndOrderFront:m_Window];
+    [m_Window makeKeyAndOrderFront:nil];
 }
 
 void Window::Hide()
@@ -116,13 +126,27 @@ void Window::Hide()
     [m_Window orderOut:nil];
 }
 
+bool Window::IsMinimized() const
+{
+    return m_Window.miniaturized;
+}
+
+bool Window::IsMaximized() const
+{
+    return m_Window.zoomed;
+}
+
+bool Window::IsFullScreen() const
+{
+    return m_Window.styleMask & NSWindowStyleMaskFullScreen;
+}
+
 void Window::SetFullScreen(bool active)
 {
-    if (m_FullScreen == active) {
+    if (IsFullScreen() == active) {
         return;
     }
 
-    m_FullScreen = active;
     [m_Window toggleFullScreen:m_Window];
 }
 

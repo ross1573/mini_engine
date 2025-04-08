@@ -10,15 +10,20 @@ protected:
     NSWindow* m_Window;
     NSView* m_View;
 
-    bool m_FullScreen;
-
 public:
     Window(Application*);
     ~Window();
 
     void AlertError(char const*);
+
     void Show();
     void Hide();
+    void Minimize();
+    void Maximize();
+
+    bool IsMinimized() const;
+    bool IsMaximized() const;
+    bool IsFullScreen() const;
 
     void SetFullScreen(bool);
     void SetMetalLayer(CAMetalLayer*);

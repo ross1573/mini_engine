@@ -6,7 +6,6 @@ module;
 module mini.macos;
 
 import mini.core;
-import mini.engine;
 import :handle;
 
 namespace mini::macos {
@@ -23,24 +22,6 @@ void Window::DialogCritical(String const& msg)
 
 void Window::Resize(RectInt const&)
 {
-}
-
-void Window::Minimize()
-{
-}
-
-void Window::Maximize()
-{
-}
-
-bool Window::ShouldClose()
-{
-    return true;
-}
-
-void Window::WillClose()
-{
-    Engine::Quit();
 }
 
 } // namespace mini::macos

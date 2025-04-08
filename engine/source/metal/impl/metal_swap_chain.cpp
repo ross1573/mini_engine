@@ -38,7 +38,12 @@ void SwapChain::SetVSync([[maybe_unused]] uint8 vsync)
 
 void SwapChain::SetFullScreen(bool fullscreen)
 {
-    ((apple::Window*)Platform::GetWindow())->SetFullScreen(fullscreen);
+    static_cast<apple::Window*>(Platform::GetWindow())->SetFullScreen(fullscreen);
+}
+
+bool SwapChain::GetFullScreen() const
+{
+    return static_cast<apple::Window*>(Platform::GetWindow())->IsFullScreen();
 }
 
 } // namespace mini::metal

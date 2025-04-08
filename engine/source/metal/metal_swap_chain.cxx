@@ -24,10 +24,10 @@ public:
     void SetVSync(uint8) final;
     void SetFullScreen(bool) final;
 
-    inline Vector2Int GetBackBufferSize() const final { return Vector2Int(0, 0); }
-    inline uint8 GetBackBufferCount() const final { return 0; }
-    inline uint8 GetVSync() const final { return 0; }
-    inline bool GetFullScreen() const final { return false; }
+    inline Vector2Int GetBackBufferSize() const final { return Vector2Int(0, 0); } // TODO
+    inline uint8 GetBackBufferCount() const final { return 0; }                    // TODO
+    inline uint8 GetVSync() const final { return 0; }                              // TODO
+    bool GetFullScreen() const final;
 };
 
 } // namespace mini::metal

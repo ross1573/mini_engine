@@ -31,10 +31,30 @@
 - (NSMenuItem*)addItemWithModifier:(NSString*)string
                             action:(SEL)selector
                      keyEquivalent:(NSString*)charCode
-         keyEquivalentModifierMask:(NSEventModifierFlags)modifierFlags
+                   keyModifierMask:(NSEventModifierFlags)modifierFlags
 {
     NSMenuItem* menuItem = [self addItemWithTitle:string action:selector keyEquivalent:charCode];
     menuItem.keyEquivalentModifierMask = modifierFlags;
+    return menuItem;
+}
+
+- (NSMenuItem*)addHiddenItem:(NSString*)string
+                      action:(SEL)selector
+               keyEquivalent:(NSString*)charCode
+{
+    NSMenuItem* menuItem = [self addItemWithTitle:string action:selector keyEquivalent:charCode];
+    menuItem.hidden = YES;
+    return menuItem;
+}
+
+- (NSMenuItem*)addHiddenItem:(NSString*)string
+                      action:(SEL)selector
+               keyEquivalent:(NSString*)charCode
+             keyModifierMask:(NSEventModifierFlags)modifierFlags
+{
+    NSMenuItem* menuItem = [self addItemWithTitle:string action:selector keyEquivalent:charCode];
+    menuItem.keyEquivalentModifierMask = modifierFlags;
+    menuItem.hidden = YES;
     return menuItem;
 }
 
@@ -59,9 +79,9 @@ NSMenuItem* CreateAboutMenu()
                 keyEquivalent:@"h"];
 
     [appMenu addItemWithModifier:@"Hide Others"
-                           action:@selector(hideOtherApplications:)
-                    keyEquivalent:@"h"
-        keyEquivalentModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
+                          action:@selector(hideOtherApplications:)
+                   keyEquivalent:@"h"
+                 keyModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
 
     [appMenu addItemWithTitle:@"Show All"
                        action:@selector(unhideAllApplications:)
@@ -81,22 +101,33 @@ NSMenuItem* CreateAboutMenu()
 
 NSMenuItem* CreateWindowMenu()
 {
-    NSMenu* windowsMenu = [[NSMenu alloc] initWithTitle:@"Window"];
-    NSMenuItem* windowsMenuItem = [[NSMenuItem alloc] initWithTitle:@""
-                                                             action:nil
-                                                      keyEquivalent:@""];
+    NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
+    NSMenuItem* windowMenuItem = [[NSMenuItem alloc] initWithTitle:@""
+                                                            action:nil
+                                                     keyEquivalent:@""];
 
-    [windowsMenu addItemWithTitle:NSLocalizedString(@"Minimize", @"")
-                           action:@selector(performMiniaturize:)
-                    keyEquivalent:@"m"];
+    [windowMenu addItemWithTitle:NSLocalizedString(@"Minimize", @"")
+                          action:@selector(performMiniaturize:)
+                   keyEquivalent:@"m"];
 
-    [windowsMenu addItemWithModifier:NSLocalizedString(@"FullScreen", @"")
-                              action:@selector(toggleFullScreen:)
-                       keyEquivalent:@"f"
-           keyEquivalentModifierMask:NSEventModifierFlagShift | NSEventModifierFlagCommand];
+    [windowMenu addItemWithTitle:NSLocalizedString(@"Maximize", @"")
+                          action:@selector(zoom:)
+                   keyEquivalent:@""];
 
-    windowsMenuItem.submenu = windowsMenu;
-    return windowsMenuItem;
+    [windowMenu addItem:[NSMenuItem separatorItem]];
+
+    [windowMenu addItemWithModifier:NSLocalizedString(@"FullScreen", @"")
+                             action:@selector(toggleFullScreen:)
+                      keyEquivalent:@"f"
+                    keyModifierMask:NSEventModifierFlagFunction];
+
+    [windowMenu addHiddenItem:@"FullScreen"
+                       action:@selector(toggleFullScreen:)
+                keyEquivalent:@"f"
+              keyModifierMask:NSEventModifierFlagCommand | NSEventModifierFlagControl];
+
+    windowMenuItem.submenu = windowMenu;
+    return windowMenuItem;
 }
 
 namespace mini::cocoa {

@@ -20,8 +20,7 @@ public:
     virtual void ApplicationWillFinishLaunching(NS::Notification*) = 0;
     virtual void ApplicationDidFinishLaunching(NS::Notification*) = 0;
 
-    virtual void Abort() = 0;
-    virtual void Quit() = 0;
+    virtual void OnKeyDown(unsigned int keyCode) = 0;
 };
 
 } // namespace mini::cocoa
