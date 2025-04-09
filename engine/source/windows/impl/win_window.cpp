@@ -15,6 +15,7 @@ Window::Window()
     : m_WindowHandle(nullptr)
     , m_Rect{}
     , m_IsShowing(false)
+    , m_State(Default)
 {
     auto className = options::name;
     auto titleName = options::title;
@@ -48,12 +49,22 @@ void Window::Resize(RectInt const& rect)
 
 void Window::Minimize()
 {
+    if (IsMinimized()) {
+        return;
+    }
+
     ShowWindow(m_WindowHandle, SW_MINIMIZE);
+    m_State = Minimized;
 }
 
 void Window::Maximize()
 {
+    if (IsMaximized()) {
+        return;
+    }
+
     ShowWindow(m_WindowHandle, SW_MAXIMIZE);
+    m_State = Maximized;
 }
 
 void Window::Show()

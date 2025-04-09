@@ -5,6 +5,12 @@ import mini.platform;
 
 namespace mini::windows {
 
+enum WindowState : uint8 {
+    Default,
+    Minimized,
+    Maximized,
+};
+
 export class WINDOWS_API Window final : public platform::Window {
 private:
     HWND m_WindowHandle;
@@ -14,6 +20,7 @@ private:
     uint32 height;
 
     bool m_IsShowing;
+    WindowState m_State;
 
 public:
     Window();
@@ -28,8 +35,8 @@ public:
     void Hide() final;
 
     inline RectInt GetSize() const final { return m_Rect; }
-    inline bool IsMinimized() const final { return false; } // TODO
-    inline bool IsMaximized() const final { return false; } // TODO
+    inline bool IsMinimized() const final { return m_State == Minimized; }
+    inline bool IsMaximized() const final { return m_State == Maximized; }
 
     inline HWND GetHWND() const { return m_WindowHandle; }
 };
