@@ -1,7 +1,5 @@
 add_module(mini.metal SHARED)
 
-enable_language(OBJCXX)
-
 module_sources(mini.metal
 PUBLIC
     FILE_SET metal TYPE CXX_MODULES

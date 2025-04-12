@@ -60,6 +60,7 @@ PRIVATE
     $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
 
+    $<$<PLATFORM_ID:Darwin>:macos/macos_log.mm>
     $<$<PLATFORM_ID:Darwin>:macos/macos_log.cpp>
     $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cpp>
 )
@@ -68,6 +69,13 @@ target_link_libraries(mini.core
 PUBLIC
     convert_utf
 )
+
+if (APPLE)
+    target_link_libraries(mini.core
+    PRIVATE
+        "-framework Foundation"
+    )
+endif()
 
 target_include_directories(mini.core 
 PUBLIC 

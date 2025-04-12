@@ -1,7 +1,5 @@
 add_module(mini.macos SHARED)
 
-enable_language(OBJCXX)
-
 module_sources(mini.macos
 PUBLIC
     FILE_SET macos TYPE CXX_MODULES

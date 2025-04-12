@@ -1,6 +1,10 @@
 #import "cocoa_delegate.h"
 #include "option.h"
 
+#if DEBUG
+#  include <Foundation/NSDebug.h>
+#endif
+
 @implementation CocoaApplicationDelegate {
     mini::cocoa::Application* m_Delegate;
 }
@@ -150,6 +154,10 @@ Application::~Application()
 {
     [m_Application release];
     [m_AutoReleasePool release];
+
+#if DEBUG
+    [NSAutoreleasePool showPools];
+#endif
 }
 
 void Application::Launch()

@@ -1,10 +1,10 @@
 module;
 
-#include <stdio.h>
+CORE_API void DarwinLog(char const* msg);
 
 module mini.core;
 
 void LogMessage(char const* msg)
 {
-    fputs(msg, stdout);
+    DarwinLog(msg);
 }

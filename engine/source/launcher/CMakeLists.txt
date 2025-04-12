@@ -2,7 +2,14 @@ if (WIN32)
     add_executable(mini.launcher WIN32 windows/win_main.cpp)
 elseif (APPLE)
     add_executable(mini.launcher MACOSX_BUNDLE macos/macos_main.cpp)
-    set_target_properties(mini.launcher PROPERTIES MACOSX_BUNDLE TRUE)
+    set_target_properties(mini.launcher 
+    PROPERTIES 
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
+        MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
+        MACOSX_BUNDLE_COPYRIGHT ${ENGINE_PROJECT_AHTHOR}
+        MACOSX_BUNDLE_GUI_IDENTIFIER ${ENGINE_MACOS_IDENTIFIER}
+    )
 else()
     message(FATAL_ERROR "unable to build on unknown platform")
 endif()
