@@ -69,7 +69,7 @@
 #  define CONSTEXPR_ASSERT(expr, ...)     ((void)0)
 
 #  define ENSURE_INNER(expr, var, ...)                 \
-      ENSURE_EVAL(expr, var)                           \
+      ENSURE_EVAL(expr, var);                          \
       ENSURE_EXPR(var) {                               \
           ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__); \
       }                                                \

@@ -65,7 +65,7 @@ PRIVATE
 )
 
 target_link_libraries(mini.core 
-PRIVATE 
+PUBLIC
     convert_utf
 )
 
