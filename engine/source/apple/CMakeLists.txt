@@ -15,9 +15,4 @@ PUBLIC
     metal.cpp
 )
 
-target_include_directories(mini.apple
-PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/public
-)
-
 add_subdirectory(macos)

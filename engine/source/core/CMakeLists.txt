@@ -77,11 +77,6 @@ if (APPLE)
     )
 endif()
 
-target_include_directories(mini.core 
-PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/public/
-)
-
 if (MSVC)
     target_compile_options(mini.core
     PRIVATE 

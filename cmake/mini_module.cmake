@@ -27,6 +27,14 @@ function (add_module name type)
         ${CMAKE_CURRENT_BINARY_DIR}/${header}
     )
 
+    target_include_directories(${name}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/public
+
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/internal
+    )
+
     set_target_properties(${name} PROPERTIES 
         FOLDER module
         OUTPUT_NAME ${out_name}
