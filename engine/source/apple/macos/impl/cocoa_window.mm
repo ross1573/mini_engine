@@ -70,6 +70,7 @@ Window::Window(mini::cocoa::Application* application)
     windowRect.origin.x = (screen.frame.size.width / 2) - (windowRect.size.width / 2);
     windowRect.origin.y = (screen.frame.size.height / 2) - (windowRect.size.height / 2);
 
+    CocoaWindowDelegate* windowDelegate = [[CocoaWindowDelegate alloc] initWithDelegate:this];
     m_View = [[CocoaView alloc] initWithDelegate:application frameRect:windowRect];
     m_Window = [[CocoaWindow alloc] initWithContentRect:windowRect
                                               styleMask:mask
@@ -79,10 +80,11 @@ Window::Window(mini::cocoa::Application* application)
 
     m_Window.releasedWhenClosed = NO;
     m_Window.minSize = NSMakeSize(640, 360);
-    m_Window.delegate = [[CocoaWindowDelegate alloc] initWithDelegate:this];
+    m_Window.delegate = windowDelegate;
     m_Window.contentView = m_View;
 
     [m_Window makeFirstResponder:m_View];
+    [windowDelegate release];
     SetFullScreen(fullScreen);
 }
 

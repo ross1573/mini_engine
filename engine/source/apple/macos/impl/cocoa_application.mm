@@ -143,18 +143,19 @@ Application::Application()
     m_Application = [NSApplication sharedApplication];
     m_AutoReleasePool = [[NSAutoreleasePool alloc] init];
 
-    m_Application.mainMenu = [[NSMenu alloc] init];
-    [m_Application.mainMenu addItem:CreateAboutMenu()];
-    [m_Application.mainMenu addItem:CreateWindowMenu()];
+    @autoreleasepool {
+        m_Application.mainMenu = [[NSMenu alloc] init];
+        [m_Application.mainMenu addItem:CreateAboutMenu()];
+        [m_Application.mainMenu addItem:CreateWindowMenu()];
 
-    m_Application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:this];
+        m_Application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:this];
+    }
 }
 
 Application::~Application()
 {
     [m_Application release];
     [m_AutoReleasePool release];
-
 #if DEBUG
     [NSAutoreleasePool showPools];
 #endif

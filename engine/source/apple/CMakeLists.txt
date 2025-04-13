@@ -6,6 +6,7 @@ PUBLIC
     FILES
         apple.cxx
         apple_window.cxx
+        apple_shared_ptr.cxx
 )
 
 target_link_libraries(mini.apple
