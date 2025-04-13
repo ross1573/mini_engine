@@ -100,7 +100,9 @@ NSMenuItem* CreateAboutMenu()
     [appMenu addItem:[NSMenuItem separatorItem]];
 
     appMenuItem.submenu = appMenu;
-    return appMenuItem;
+
+    [appMenu release];
+    return [appMenuItem autorelease];
 }
 
 NSMenuItem* CreateWindowMenu()
@@ -131,7 +133,9 @@ NSMenuItem* CreateWindowMenu()
               keyModifierMask:NSEventModifierFlagCommand | NSEventModifierFlagControl];
 
     windowMenuItem.submenu = windowMenu;
-    return windowMenuItem;
+
+    [windowMenu release];
+    return [windowMenuItem autorelease];
 }
 
 namespace mini::cocoa {

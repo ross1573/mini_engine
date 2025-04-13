@@ -370,7 +370,7 @@ inline constexpr auto operator<=>(SharedPtr<T> const l, U* r) noexcept
 }
 
 template <NonRefT T>
-inline constexpr auto operator==(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr bool operator==(SharedPtr<T> const s, NullptrT) noexcept
     requires DerivedFromT<T, NS::Object>
 {
     return s.Get() == nullptr;

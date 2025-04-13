@@ -34,12 +34,7 @@ bool SwapChain::Initialize()
 
 void SwapChain::Present()
 {
-    if (m_Drawable == nullptr) {
-        return;
-    }
-
-    m_Drawable->release();
-    m_Drawable = nullptr;
+    m_Drawable.Reset();
 }
 
 void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width, [[maybe_unused]] uint32 height,
@@ -71,7 +66,7 @@ CA::MetalDrawable* SwapChain::GetCurrentDrawable()
         return m_Drawable.Get();
     }
 
-    m_Drawable = TransferShared(m_Layer->nextDrawable());
+    m_Drawable.Reset(m_Layer->nextDrawable());
     ASSERT(m_Drawable, "failed to retrieve next drawable");
     return m_Drawable.Get();
 }
