@@ -59,9 +59,9 @@ public:
     explicit constexpr operator bool() const noexcept;
     explicit constexpr operator Ptr() const noexcept;
 
-    SharedPtr& operator=(NullptrT) noexcept;
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
+    constexpr SharedPtr& operator=(NullptrT) noexcept;
     template <PtrConvertibleToT<T> U>
     SharedPtr& operator=(SharedPtr<U> const&) noexcept;
     template <PtrConvertibleToT<T> U>
@@ -251,18 +251,6 @@ inline constexpr SharedPtr<T>::operator Ptr() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
-inline SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
-{
-    if (m_Ptr) {
-        m_Ptr->release();
-        m_Ptr = nullptr;
-    }
-
-    return *this;
-}
-
-template <NonRefT T>
-    requires DerivedFromT<T, NS::Object>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
     if (m_Ptr) {
@@ -305,6 +293,18 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
 
     if (m_Ptr) {
         m_Ptr->retain();
+    }
+
+    return *this;
+}
+
+template <NonRefT T>
+    requires DerivedFromT<T, NS::Object>
+inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
+{
+    if (m_Ptr) {
+        m_Ptr->release();
+        m_Ptr = nullptr;
     }
 
     return *this;
