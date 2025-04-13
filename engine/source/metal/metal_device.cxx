@@ -1,6 +1,6 @@
 module;
 
-#include <Metal/Metal.hpp>
+#include <Metal/MTLDevice.hpp>
 
 export module mini.metal:device;
 

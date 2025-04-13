@@ -1,3 +1,5 @@
+#import <QuartzCore/CAMetalLayer.h>
+
 #import "cocoa_delegate.h"
 #include "option.h"
 
@@ -92,13 +94,15 @@ Window::~Window()
 
 void Window::AlertError(char const* msg)
 {
-    NSString* errMsg = [NSString stringWithUTF8String:msg];
-    NSAlert* alert = [[NSAlert alloc] init];
-    [alert addButtonWithTitle:@"OK"];
-    [alert setInformativeText:@"Error"];
-    [alert setMessageText:errMsg];
-    [alert setAlertStyle:NSAlertStyleCritical];
-    [alert runModal];
+    @autoreleasepool {
+        NSString* errMsg = [NSString stringWithUTF8String:msg];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert addButtonWithTitle:@"OK"];
+        [alert setInformativeText:@"Error"];
+        [alert setMessageText:errMsg];
+        [alert setAlertStyle:NSAlertStyleCritical];
+        [alert runModal];
+    }
 }
 
 void Window::Minimize()
@@ -150,10 +154,10 @@ void Window::SetFullScreen(bool active)
     [m_Window toggleFullScreen:m_Window];
 }
 
-void Window::SetMetalLayer(CAMetalLayer* layer)
+void Window::SetMetalLayer(CA::MetalLayer* layer)
 {
     m_View.wantsLayer = YES;
-    m_View.layer = layer;
+    m_View.layer = (__bridge CAMetalLayer*)layer;
 }
 
 } // namespace mini::cocoa

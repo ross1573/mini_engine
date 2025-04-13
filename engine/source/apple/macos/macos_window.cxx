@@ -31,7 +31,7 @@ public:
     inline bool IsFullScreen() const { return cocoa::Window::IsFullScreen(); }
 
     inline void SetFullScreen(bool active) final { cocoa::Window::SetFullScreen(active); }
-    inline void SetMetalLayer(CAMetalLayer* layer) final { cocoa::Window::SetMetalLayer(layer); }
+    inline void SetMetalLayer(CA::MetalLayer* layer) final { cocoa::Window::SetMetalLayer(layer); }
     inline NSWindow* GetNSWindow() { return m_Window; }
 
 private:

@@ -1,6 +1,6 @@
 module;
 
-#include "quartzcore.h"
+#include <QuartzCore/CAMetalLayer.hpp>
 
 export module mini.apple:window;
 
@@ -13,7 +13,7 @@ public:
     virtual bool IsFullScreen() const = 0;
 
     virtual void SetFullScreen(bool) = 0;
-    virtual void SetMetalLayer(CAMetalLayer*) = 0;
+    virtual void SetMetalLayer(CA::MetalLayer*) = 0;
 };
 
 } // namespace mini::apple

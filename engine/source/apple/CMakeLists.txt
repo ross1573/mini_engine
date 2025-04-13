@@ -12,6 +12,7 @@ target_link_libraries(mini.apple
 PUBLIC
     mini.core
     mini.platform
+    metal.cpp
 )
 
 target_include_directories(mini.apple

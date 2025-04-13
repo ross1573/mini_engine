@@ -21,7 +21,6 @@ PRIVATE
     mini.graphics
     mini.engine
     mini.apple
-    metal.cpp
     "-framework Foundation"
     "-framework AppKit"
 )

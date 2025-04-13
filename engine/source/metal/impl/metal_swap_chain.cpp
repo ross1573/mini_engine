@@ -1,3 +1,10 @@
+module;
+
+#include <Metal/MTLDevice.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
+
+#include "assertion.h"
+
 module mini.metal;
 
 import mini.core;
@@ -7,8 +14,25 @@ import :swap_chain;
 
 namespace mini::metal {
 
-SwapChain::SwapChain()
+SwapChain::SwapChain(MTL::Device* device)
+    : m_Layer(nullptr)
+    , m_Drawable(nullptr)
 {
+    m_Layer = CA::MetalLayer::layer();
+    ASSERT(m_Layer, "failed to retrieve MetalLayer object");
+
+    m_Layer->setDevice(device);
+}
+
+SwapChain::~SwapChain()
+{
+    if (m_Drawable) {
+        m_Drawable->release();
+    }
+
+    if (m_Layer) {
+        m_Layer->release();
+    }
 }
 
 bool SwapChain::Initialize()
@@ -21,6 +45,12 @@ bool SwapChain::Initialize()
 
 void SwapChain::Present()
 {
+    if (m_Drawable == nullptr) {
+        return;
+    }
+
+    m_Drawable->release();
+    m_Drawable = nullptr;
 }
 
 void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width, [[maybe_unused]] uint32 height,
@@ -44,6 +74,17 @@ void SwapChain::SetFullScreen(bool fullscreen)
 bool SwapChain::GetFullScreen() const
 {
     return static_cast<apple::Window*>(Platform::GetWindow())->IsFullScreen();
+}
+
+CA::MetalDrawable* SwapChain::GetCurrentDrawable()
+{
+    if (m_Drawable != nullptr) {
+        return m_Drawable;
+    }
+
+    m_Drawable = m_Layer->nextDrawable();
+    ASSERT(m_Drawable, "failed to retrieve next drawable");
+    return m_Drawable;
 }
 
 } // namespace mini::metal

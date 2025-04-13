@@ -1,7 +1,8 @@
 module;
 
-#include "metal_layer.h"
-#include "quartzcore.h"
+#include <Metal/MTLDevice.hpp>
+#include <QuartzCore/CAMetalDrawable.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
 
 export module mini.metal:swap_chain;
 
@@ -10,11 +11,14 @@ import mini.graphics;
 
 namespace mini::metal {
 
-export class METAL_API SwapChain final
-    : public graphics::SwapChain
-    , public CoreLayer {
+export class METAL_API SwapChain final : public graphics::SwapChain {
+private:
+    CA::MetalLayer* m_Layer;
+    CA::MetalDrawable* m_Drawable;
+
 public:
-    SwapChain();
+    SwapChain(MTL::Device*);
+    ~SwapChain() final;
 
     bool Initialize() final;
     void Present() final;
@@ -28,6 +32,9 @@ public:
     inline uint8 GetBackBufferCount() const final { return 0; }                    // TODO
     inline uint8 GetVSync() const final { return 0; }                              // TODO
     bool GetFullScreen() const final;
+
+    inline CA::MetalLayer* GetMetalLayer() { return m_Layer; }
+    CA::MetalDrawable* GetCurrentDrawable();
 };
 
 } // namespace mini::metal

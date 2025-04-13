@@ -1,6 +1,7 @@
 module;
 
-#include <Metal/Metal.hpp>
+#include <Foundation/NSAutoreleasePool.hpp>
+#include <Metal/MTLCommandQueue.hpp>
 
 export module mini.metal:render_context;
 
@@ -14,7 +15,7 @@ private:
     MTL::CommandQueue* m_CmdQueue;
 
 public:
-    RenderContext();
+    RenderContext(MTL::Device*);
     ~RenderContext() final;
 
     bool Initialize() final;

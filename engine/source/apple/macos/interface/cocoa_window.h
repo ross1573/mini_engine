@@ -1,7 +1,8 @@
 #pragma once
 
+#include <QuartzCore/CAMetalLayer.hpp>
+
 #include "appkit.h"
-#include "quartzcore.h"
 
 namespace mini::cocoa {
 
@@ -26,7 +27,7 @@ public:
     bool IsFullScreen() const;
 
     void SetFullScreen(bool);
-    void SetMetalLayer(CAMetalLayer*);
+    void SetMetalLayer(CA::MetalLayer*);
 
     virtual bool ShouldClose() = 0;
     virtual void WillClose() = 0;

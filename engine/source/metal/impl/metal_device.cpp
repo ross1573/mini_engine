@@ -34,12 +34,12 @@ bool Device::Initialize()
 
 graphics::SwapChain* Device::CreateSwapChain()
 {
-    return new SwapChain();
+    return new SwapChain(m_Device);
 }
 
 graphics::RenderContext* Device::CreateRenderContext()
 {
-    return new RenderContext();
+    return new RenderContext(m_Device);
 }
 
 } // namespace mini::metal

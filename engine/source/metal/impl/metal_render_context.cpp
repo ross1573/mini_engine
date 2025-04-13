@@ -1,17 +1,25 @@
 module;
 
-#include <Metal/Metal.hpp>
+#include <Metal/MTLCommandBuffer.hpp>
+#include <Metal/MTLRenderCommandEncoder.hpp>
+#include <Metal/MTLRenderPass.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
+
+#include "assertion.h"
 
 module mini.metal;
 
 import mini.core;
+import mini.graphics;
 import :render_context;
 
 namespace mini::metal {
 
-RenderContext::RenderContext()
+RenderContext::RenderContext(MTL::Device* device)
     : m_CmdQueue(nullptr)
 {
+    m_CmdQueue = device->newCommandQueue();
+    VERIFY(m_CmdQueue);
 }
 
 RenderContext::~RenderContext()
