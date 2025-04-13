@@ -11,6 +11,7 @@ module mini.metal;
 
 import mini.core;
 import mini.graphics;
+import mini.apple;
 import :render_context;
 
 namespace mini::metal {
@@ -18,15 +19,8 @@ namespace mini::metal {
 RenderContext::RenderContext(MTL::Device* device)
     : m_CmdQueue(nullptr)
 {
-    m_CmdQueue = device->newCommandQueue();
-    VERIFY(m_CmdQueue);
-}
-
-RenderContext::~RenderContext()
-{
-    if (m_CmdQueue) {
-        m_CmdQueue->release();
-    }
+    m_CmdQueue = TransferShared(device->newCommandQueue());
+    ASSERT(m_CmdQueue, "failed to create MTLCommandQueue");
 }
 
 bool RenderContext::Initialize()

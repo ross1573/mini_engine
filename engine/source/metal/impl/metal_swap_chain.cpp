@@ -18,27 +18,16 @@ SwapChain::SwapChain(MTL::Device* device)
     : m_Layer(nullptr)
     , m_Drawable(nullptr)
 {
-    m_Layer = CA::MetalLayer::layer();
+    m_Layer = TransferShared(CA::MetalLayer::layer());
     ASSERT(m_Layer, "failed to retrieve MetalLayer object");
 
     m_Layer->setDevice(device);
 }
 
-SwapChain::~SwapChain()
-{
-    if (m_Drawable) {
-        m_Drawable->release();
-    }
-
-    if (m_Layer) {
-        m_Layer->release();
-    }
-}
-
 bool SwapChain::Initialize()
 {
     auto window = (apple::Window*)Platform::GetWindow();
-    window->SetMetalLayer(m_Layer);
+    window->SetMetalLayer(m_Layer.Get());
 
     return true;
 }
@@ -79,12 +68,12 @@ bool SwapChain::GetFullScreen() const
 CA::MetalDrawable* SwapChain::GetCurrentDrawable()
 {
     if (m_Drawable != nullptr) {
-        return m_Drawable;
+        return m_Drawable.Get();
     }
 
-    m_Drawable = m_Layer->nextDrawable();
+    m_Drawable = TransferShared(m_Layer->nextDrawable());
     ASSERT(m_Drawable, "failed to retrieve next drawable");
-    return m_Drawable;
+    return m_Drawable.Get();
 }
 
 } // namespace mini::metal

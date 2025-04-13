@@ -7,16 +7,16 @@ export module mini.metal:render_context;
 
 import mini.core;
 import mini.graphics;
+import mini.apple;
 
 namespace mini::metal {
 
 export class METAL_API RenderContext final : public graphics::RenderContext {
 private:
-    MTL::CommandQueue* m_CmdQueue;
+    SharedPtr<MTL::CommandQueue> m_CmdQueue;
 
 public:
     RenderContext(MTL::Device*);
-    ~RenderContext() final;
 
     bool Initialize() final;
 
@@ -27,6 +27,8 @@ public:
 
     void SetViewport(Rect const&, float, float) final;
     void SetScissorRect(RectInt const&) final;
+
+    MTL::CommandQueue* GetMTLCommandQueue() { return m_CmdQueue.Get(); }
 };
 
 } // namespace mini::metal

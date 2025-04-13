@@ -58,6 +58,7 @@ public:
     explicit constexpr operator bool() const noexcept;
     constexpr operator Ptr() const noexcept; // TODO: this should be explicit..
 
+    SharedPtr& operator=(NullptrT) noexcept;
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
     template <PtrConvertibleToT<T> U>
@@ -266,6 +267,18 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 
     if (m_Ptr) {
         m_Ptr->AddRef();
+    }
+
+    return *this;
+}
+
+template <NonRefT T>
+    requires DerivedFromT<T, IUnknown>
+inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
+{
+    if (m_Ptr) {
+        m_Ptr->Release();
+        m_Ptr = nullptr;
     }
 
     return *this;

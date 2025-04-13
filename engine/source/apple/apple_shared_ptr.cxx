@@ -8,9 +8,9 @@ export module mini.apple:shared_ptr;
 
 import mini.core;
 
-namespace mini {
+export namespace mini {
 
-export template <NonRefT T>
+template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 class SharedPtr<T> {
 private:
@@ -251,6 +251,18 @@ inline constexpr SharedPtr<T>::operator Ptr() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
+inline SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
+{
+    if (m_Ptr) {
+        m_Ptr->release();
+        m_Ptr = nullptr;
+    }
+
+    return *this;
+}
+
+template <NonRefT T>
+    requires DerivedFromT<T, NS::Object>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
     if (m_Ptr) {
@@ -325,6 +337,20 @@ SharedPtr<T> MakeShared(Args&&...)
     requires DerivedFromT<T, NS::Object>
 {
     NEVER_CALLED("NSObject should not be constructed directly");
+}
+
+template <NonRefT T>
+inline constexpr SharedPtr<T> TransferShared(T* other) noexcept
+    requires DerivedFromT<T, NS::Object>
+{
+    return SharedPtr<T>(SharedPtr<T>{}, static_cast<T*>(other));
+}
+
+template <NonRefT T, NonRefT U>
+inline constexpr SharedPtr<T> TransferShared(U* other) noexcept
+    requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object>
+{
+    return SharedPtr<T>(SharedPtr<T>{}, static_cast<T*>(other));
 }
 
 template <NonRefT T, NonRefT U>

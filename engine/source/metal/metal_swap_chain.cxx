@@ -8,17 +8,17 @@ export module mini.metal:swap_chain;
 
 import mini.core;
 import mini.graphics;
+import mini.apple;
 
 namespace mini::metal {
 
 export class METAL_API SwapChain final : public graphics::SwapChain {
 private:
-    CA::MetalLayer* m_Layer;
-    CA::MetalDrawable* m_Drawable;
+    SharedPtr<CA::MetalLayer> m_Layer;
+    SharedPtr<CA::MetalDrawable> m_Drawable;
 
 public:
     SwapChain(MTL::Device*);
-    ~SwapChain() final;
 
     bool Initialize() final;
     void Present() final;
@@ -33,8 +33,8 @@ public:
     inline uint8 GetVSync() const final { return 0; }                              // TODO
     bool GetFullScreen() const final;
 
-    inline CA::MetalLayer* GetMetalLayer() { return m_Layer; }
     CA::MetalDrawable* GetCurrentDrawable();
+    inline CA::MetalLayer* GetMetalLayer() { return m_Layer.Get(); }
 };
 
 } // namespace mini::metal

@@ -7,6 +7,7 @@ module;
 module mini.metal;
 
 import mini.graphics;
+import mini.apple;
 import :swap_chain;
 import :render_context;
 
@@ -17,14 +18,9 @@ Device::Device()
 {
 }
 
-Device::~Device()
-{
-    m_Device->release();
-}
-
 bool Device::Initialize()
 {
-    m_Device = MTL::CreateSystemDefaultDevice();
+    m_Device = TransferShared(MTL::CreateSystemDefaultDevice());
     ENSURE(m_Device, "Metal device not created") {
         return false;
     }
@@ -34,12 +30,12 @@ bool Device::Initialize()
 
 graphics::SwapChain* Device::CreateSwapChain()
 {
-    return new SwapChain(m_Device);
+    return new SwapChain(m_Device.Get());
 }
 
 graphics::RenderContext* Device::CreateRenderContext()
 {
-    return new RenderContext(m_Device);
+    return new RenderContext(m_Device.Get());
 }
 
 } // namespace mini::metal
