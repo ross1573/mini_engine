@@ -15,12 +15,10 @@ import :swap_chain;
 namespace mini::metal {
 
 SwapChain::SwapChain(MTL::Device* device)
-    : m_Layer(nullptr)
+    : m_Layer(TransferShared(CA::MetalLayer::layer()))
     , m_Drawable(nullptr)
 {
-    m_Layer = TransferShared(CA::MetalLayer::layer());
     ASSERT(m_Layer, "failed to retrieve MetalLayer object");
-
     m_Layer->setDevice(device);
 }
 

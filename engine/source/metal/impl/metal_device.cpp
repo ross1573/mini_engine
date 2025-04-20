@@ -14,13 +14,12 @@ import :render_context;
 namespace mini::metal {
 
 Device::Device()
-    : m_Device(nullptr)
+    : m_Device(TransferShared(MTL::CreateSystemDefaultDevice()))
 {
 }
 
 bool Device::Initialize()
 {
-    m_Device = TransferShared(MTL::CreateSystemDefaultDevice());
     ENSURE(m_Device, "Metal device not created") {
         return false;
     }

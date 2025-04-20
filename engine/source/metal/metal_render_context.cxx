@@ -1,7 +1,11 @@
 module;
 
 #include <Foundation/NSAutoreleasePool.hpp>
+#include <Metal/MTLCommandBuffer.hpp>
 #include <Metal/MTLCommandQueue.hpp>
+#include <Metal/MTLEvent.hpp>
+#include <Metal/MTLRenderCommandEncoder.hpp>
+#include <QuartzCore/CAMetalDrawable.hpp>
 
 export module mini.metal:render_context;
 
@@ -13,7 +17,15 @@ namespace mini::metal {
 
 export class METAL_API RenderContext final : public graphics::RenderContext {
 private:
+    SharedPtr<NS::AutoreleasePool> m_AutoReleasePool;
     SharedPtr<MTL::CommandQueue> m_CmdQueue;
+
+    MTL::CommandBuffer* m_CmdBuffer;
+    MTL::RenderCommandEncoder* m_CmdEncoder;
+    CA::MetalDrawable* m_Drawable;
+
+    SharedPtr<MTL::SharedEvent> m_Event;
+    uint64 m_EventValue;
 
 public:
     RenderContext(MTL::Device*);
