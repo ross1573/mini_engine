@@ -1,3 +1,7 @@
-[submodule "engine/external/fmt"]
+[submodule "fmt"]
 	path = engine/external/fmt
 	url = https://github.com/fmtlib/fmt.git
+	
+[submodule "uni-algo"]
+	path = engine/external/uni-algo
+	url = https://github.com/uni-algo/uni-algo.git
