@@ -6,19 +6,9 @@ module;
 
 export module mini.core:type_concepts;
 
-template <typename T, typename _1, typename... Args>
-struct AnyOfImpl2 {
-    static constexpr bool value = std::is_same_v<T, _1> || AnyOfImpl2<T, Args...>::value;
-};
-
-template <typename T, typename U>
-struct AnyOfImpl2<T, U> {
-    static constexpr bool value = std::is_same_v<T, U>;
-};
-
 template <typename T, typename... Args>
 struct AnyOfImpl {
-    static constexpr bool value = AnyOfImpl2<T, Args...>::value;
+    static constexpr bool value = (std::is_same<T, Args>::value || ...);
 };
 
 template <typename T>
