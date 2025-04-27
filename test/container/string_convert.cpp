@@ -18,10 +18,10 @@ constexpr bool test_impl(std::basic_string_view<T> srcPtr, std::basic_string_vie
     std::basic_string<T> src(srcPtr);
     std::basic_string<U> target(dstPtr);
 
-    size_t len = ConvertLength(&*(src.begin()), &*(src.end()), U(0));
+    size_t len = ConvertLength(src.data(), src.data() + src.size(), U(0));
     std::basic_string<U> dst(len, '\0');
 
-    auto result = Convert(&*(src.begin()), &*(src.end()), &*(dst.begin()), &*(dst.end()),
+    auto result = Convert(src.data(), src.data() + src.size(), dst.data(), dst.data() + dst.size(),
                           ConversionFlags::strictConversion);
 
     return result == ConversionResult::conversionOK && dst == target;

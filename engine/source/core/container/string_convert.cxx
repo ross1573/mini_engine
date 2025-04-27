@@ -22,11 +22,11 @@ public:
     typedef T const* ConstPtrT;
 
 private:
-    ConstPtrT m_Data;
+    PtrT m_Data;
     SizeT m_Size;
     [[no_unique_address]] AllocT m_Alloc;
 
-    static constexpr T m_EmptyStr[1] = '\0';
+    static constexpr T m_EmptyStr[1] = { '\0' };
 
 public:
     constexpr StringConvert(NullptrT) noexcept;
@@ -56,7 +56,7 @@ private:
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr StringConvert<T, AllocT>::StringConvert(NullptrT) noexcept
-    : m_Data(m_EmptyStr)
+    : m_Data(const_cast<PtrT>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -82,7 +82,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr StringConvert<T, AllocT>::StringConvert(U* ptr)
-    : m_Data(m_EmptyStr)
+    : m_Data(const_cast<PtrT>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -97,7 +97,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr StringConvert<T, AllocT>::StringConvert(std::basic_string_view<U> str)
-    : m_Data(m_EmptyStr)
+    : m_Data(const_cast<PtrT>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -135,7 +135,7 @@ template <CharT U>
 inline constexpr void StringConvert<T, AllocT>::Initialize(std::basic_string_view<U> const& str)
 {
     if (str.size() == 0) {
-        m_Data = m_EmptyStr;
+        m_Data = const_cast<PtrT>(m_EmptyStr);
         return;
     }
 
