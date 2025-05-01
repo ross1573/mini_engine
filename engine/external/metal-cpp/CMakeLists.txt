@@ -1,4 +1,4 @@
-add_library(metal.cpp SHARED metal-cpp.cpp)
+add_library(metal.cpp STATIC metal-cpp.cpp)
 
 target_include_directories(metal.cpp
 SYSTEM PUBLIC

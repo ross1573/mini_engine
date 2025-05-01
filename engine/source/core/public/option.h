@@ -16,7 +16,7 @@ inline constexpr bool resizableWindow = true;
 inline constexpr unsigned char vsync = 0;
 inline constexpr unsigned char bufferCount = 2;
 
-inline constexpr char const* graphicsAPI = "D3D12";
+inline constexpr char const* graphicsAPI = "Metal";
 
 inline constexpr bool debugLayer = true;
 inline constexpr bool gpuValidation = false;

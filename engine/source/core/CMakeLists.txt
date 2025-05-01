@@ -20,8 +20,10 @@ PUBLIC
         container/array.cxx
         container/static_array.cxx
         container/static_queue.cxx
-        container/string.cxx
         container/string_convert.cxx
+        container/string_view.cxx
+        container/string.cxx
+        container/format.cxx
 
         iterator/array_iterator.cxx
         iterator/circular_iterator.cxx

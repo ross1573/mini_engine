@@ -6,6 +6,8 @@ module;
 
 export module mini.core:type_concepts;
 
+import :type_traits;
+
 template <typename T, typename... Args>
 struct AnyOfImpl {
     static constexpr bool value = (std::is_same<T, Args>::value || ...);
@@ -17,15 +19,6 @@ struct AnyOfImpl<T> {
 };
 
 export namespace mini {
-
-template <typename T>
-concept IntT = std::integral<T>;
-
-template <typename T>
-concept FloatT = std::floating_point<T>;
-
-template <typename T>
-concept ArithmeticT = std::is_arithmetic_v<T>;
 
 template <typename T>
 concept PtrT = std::is_pointer_v<T>;
@@ -128,5 +121,21 @@ concept ThreeWayComparableT = std::three_way_comparable<T>;
 
 template <typename T, typename U>
 concept ThreeWayComparableWithT = std::three_way_comparable_with<T, U>;
+
+} // namespace mini
+
+export namespace mini {
+
+template <typename T>
+concept IntT = std::integral<T>;
+
+template <typename T>
+concept FloatT = std::floating_point<T>;
+
+template <typename T>
+concept ArithmeticT = std::is_arithmetic_v<T>;
+
+template <typename T>
+concept CharT = AnyOfT<RemoveConstVolatileT<T>, char, wchar_t, char8_t, char16_t, char32_t>;
 
 } // namespace mini

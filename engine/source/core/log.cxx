@@ -7,6 +7,7 @@ export module mini.core:log;
 
 import :type;
 import :string;
+import :string_view;
 
 export CORE_API void LogMessage(char const* msg);
 

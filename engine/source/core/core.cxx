@@ -31,5 +31,7 @@ export import :circular_iterator;
 export import :array;
 export import :static_array;
 export import :static_queue;
-export import :string;
 export import :string_convert;
+export import :string_view;
+export import :string;
+export import :format;
