@@ -211,8 +211,8 @@ inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& al
         return;
     }
 
-    Buffer newBuf = m_Buffer.Allocate(distance);
-    memory::ConstructRange(newBuf.Data(), first, last);
+    m_Buffer.Allocate(distance);
+    memory::ConstructRange(m_Buffer.Data(), first, last);
     m_Size = distance;
 }
 

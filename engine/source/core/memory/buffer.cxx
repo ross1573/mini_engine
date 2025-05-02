@@ -8,9 +8,9 @@ import :type;
 import :memory;
 import :allocator;
 
-export namespace mini {
+namespace mini {
 
-template <typename T, AllocatorT<T> AllocT>
+export template <typename T, AllocatorT<T> AllocT>
 class DynamicBuffer {
 protected:
     [[no_unique_address]] AllocT m_Alloc;
@@ -91,7 +91,6 @@ public:
     }
 
     inline constexpr ~DynamicBuffer() { Deallocate(); }
-    constexpr DynamicBuffer(DynamicBuffer const&) = delete;
 
     inline constexpr T* Data() noexcept { return m_Buffer; }
     inline constexpr T const* Data() const noexcept { return m_Buffer; }
@@ -99,7 +98,7 @@ public:
 
     inline constexpr void Allocate(SizeT size) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
+        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
         AllocResult<T> buffer = m_Alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
@@ -107,7 +106,7 @@ public:
 
     inline constexpr void Deallocate() noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if (m_Buffer == nullptr) {
+        if (m_Buffer == nullptr) [[unlikely]] {
             return;
         }
 
@@ -155,7 +154,125 @@ public:
         return *this;
     }
 
-    constexpr DynamicBuffer& operator=(DynamicBuffer const&) = delete;
+    DynamicBuffer(DynamicBuffer const&) = delete;
+    DynamicBuffer& operator=(DynamicBuffer const&) = delete;
+};
+
+export template <TrivialT T>
+class TrivialBuffer {
+private:
+    SizeT m_Capacity;
+    T* m_Buffer;
+
+private:
+    inline constexpr TrivialBuffer(T* ptr, SizeT capacity)
+        : m_Capacity(capacity)
+        , m_Buffer(ptr)
+    {
+        if (ConstantEvaluated()) {
+            memory::ConstructRangeArgs(ptr, ptr + capacity);
+        }
+    }
+
+public:
+    inline constexpr TrivialBuffer() noexcept
+        : m_Capacity(0)
+        , m_Buffer(nullptr)
+    {
+    }
+
+    inline constexpr ~TrivialBuffer()
+    {
+        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer not deallocated");
+    }
+
+    inline constexpr TrivialBuffer(TrivialBuffer&& other) noexcept
+        : m_Capacity(mini::Exchange(other.m_Capacity, 0))
+        , m_Buffer(mini::Exchange(other.m_Buffer, nullptr))
+    {
+    }
+
+    template <AllocatorT<T> AllocT>
+    inline constexpr TrivialBuffer(SizeT capacity, AllocT const& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
+        : m_Capacity(0)
+        , m_Buffer(nullptr)
+    {
+        Allocate(capacity, alloc);
+    }
+
+    inline constexpr T* Data() noexcept { return m_Buffer; }
+    inline constexpr T const* Data() const noexcept { return m_Buffer; }
+    inline constexpr SizeT Capacity() const noexcept { return m_Capacity; }
+
+    template <AllocatorT<T> AllocT>
+    inline constexpr void Allocate(SizeT size, AllocT const& alloc)
+        noexcept(NoThrowAllocatorT<AllocT, T>)
+    {
+        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
+        AllocResult<T> buffer = alloc.Allocate(size);
+        m_Buffer = buffer.pointer;
+        m_Capacity = buffer.capacity;
+
+        if (ConstantEvaluated()) {
+            memory::ConstructRangeArgs(m_Buffer, m_Buffer + m_Capacity);
+        }
+    }
+
+    template <AllocatorT<T> AllocT>
+    inline constexpr void Deallocate(AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
+    {
+        if (m_Buffer == nullptr) [[unlikely]] {
+            return;
+        }
+
+        if (ConstantEvaluated()) {
+            memory::DestructRange(m_Buffer, m_Buffer + m_Capacity);
+        }
+
+        alloc.Deallocate(m_Buffer, m_Capacity);
+        m_Buffer = nullptr;
+        m_Capacity = 0;
+    }
+
+    template <AllocatorT<T> AllocT>
+    [[nodiscard]] inline constexpr TrivialBuffer Increment(SizeT size, AllocT const& alloc) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
+    {
+        AllocResult<T> newBuffer = alloc.Increment(m_Capacity, size);
+        return TrivialBuffer(newBuffer.pointer, newBuffer.capacity);
+    }
+
+    template <AllocatorT<T> AllocT>
+    [[nodiscard]] inline constexpr TrivialBuffer Resize(SizeT size, AllocT const& alloc) const
+        noexcept(NoThrowAllocatorT<AllocT, T>)
+    {
+        AllocResult<T> newBuffer = alloc.Allocate(size);
+        return TrivialBuffer(newBuffer.pointer, newBuffer.capacity);
+    }
+
+    inline constexpr void Swap(TrivialBuffer& other) noexcept
+    {
+        mini::Swap(m_Buffer, other.m_Buffer);
+        mini::Swap(m_Capacity, other.m_Capacity);
+    }
+
+    template <AllocatorT<T> AllocT>
+    inline constexpr void Assign(TrivialBuffer&& other, AllocT const& alloc) noexcept
+    {
+        Deallocate(alloc);
+        m_Buffer = mini::Exchange(other.m_Buffer, nullptr);
+        m_Capacity = mini::Exchange(other.m_Capacity, 0);
+    }
+
+    inline constexpr bool operator==(TrivialBuffer const& other) const noexcept
+    {
+        return m_Buffer == other.m_Buffer;
+    }
+
+    TrivialBuffer(TrivialBuffer const&) = delete;
+    TrivialBuffer& operator=(TrivialBuffer const&) = delete;
+    TrivialBuffer& operator=(TrivialBuffer&& other) noexcept = delete;
 };
 
 } // namespace mini
