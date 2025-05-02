@@ -1,28 +1,32 @@
+module;
+
+#include <type_traits>
+
 export module mini.core:utility;
 
 import :type;
 
-export namespace mini {
+namespace mini {
 
-template <typename T>
+export template <typename T>
 inline constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept
 {
     return static_cast<T&&>(arg);
 };
 
-template <typename T>
+export template <typename T>
 inline constexpr T&& ForwardArg(RemoveRefT<T>&& arg) noexcept
 {
     return static_cast<T&&>(arg);
 };
 
-template <typename T>
+export template <typename T>
 inline constexpr RemoveRefT<T>&& MoveArg(T&& arg) noexcept
 {
     return static_cast<RemoveRefT<T>&&>(arg);
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
 {
     T tmp = MoveArg(_1);
@@ -30,13 +34,18 @@ inline constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
     _2 = MoveArg(tmp);
 }
 
-template <typename T, typename U = T>
+export template <typename T, typename U = T>
 inline constexpr T Exchange(T& v, U&& n)
     requires ConvertibleToT<U, T>
 {
     T old = MoveArg(v);
     v = static_cast<T>(ForwardArg<U>(n));
     return old;
+}
+
+export constexpr bool ConstantEvaluated()
+{
+    return std::is_constant_evaluated();
 }
 
 } // namespace mini

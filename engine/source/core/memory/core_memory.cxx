@@ -36,7 +36,7 @@ template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args)
     noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    if (std::is_constant_evaluated()) {
+    if (ConstantEvaluated()) {
         // TODO: only compiler can do constexpr construct_at
         std::construct_at(ptr, ForwardArg<Args>(args)...);
         return;
@@ -48,7 +48,7 @@ inline constexpr void ConstructAt(T* ptr, Args&&... args)
 template <NonArrT T>
 inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
-    if (std::is_constant_evaluated()) {
+    if (ConstantEvaluated()) {
         // TODO: only compiler can do constexpr destroy
         std::destroy_at(ptr);
         return;
@@ -159,6 +159,14 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     }
 
     return begin1 == end1 && begin2 == end2;
+}
+
+template <typename T, typename U>
+inline constexpr void FillRange(T begin, T end, U const& value)
+{
+    for (; begin != end; ++begin) {
+        *begin = value;
+    }
 }
 
 } // namespace mini::memory

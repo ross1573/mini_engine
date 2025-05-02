@@ -27,6 +27,7 @@ concept AlwaysTrue = true;
 export module mini.core:allocator;
 
 import :type;
+import :utility;
 import :memory;
 
 namespace mini {
@@ -85,7 +86,7 @@ struct Allocator {
     [[nodiscard]] inline constexpr AllocResult<T> Allocate(SizeT size) const noexcept
     {
         Ptr ptr = nullptr;
-        if (std::is_constant_evaluated()) {
+        if (ConstantEvaluated()) {
             ptr = CONSTEXPR_ALLOC(T, size);
         }
         else {
@@ -105,7 +106,7 @@ struct Allocator {
 
     inline constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
-        if (std::is_constant_evaluated()) {
+        if (ConstantEvaluated()) {
             CONSTEXPR_DEALLOC(T, loc, size);
             return;
         }

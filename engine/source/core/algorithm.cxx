@@ -92,6 +92,13 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     return memory::EqualRange(begin1, end1, begin2, end2);
 }
 
+template <ForwardIteratorT T, typename U>
+inline constexpr void FillRange(T begin, T end, U const& value)
+{
+    ASSERT(CheckRange(begin, end));
+    memory::FillRange(begin, end, value);
+}
+
 template <ForwardIteratorT T>
 inline constexpr SizeT Distance(T first, T last)
 {

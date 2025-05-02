@@ -5,6 +5,7 @@ module;
 export module mini.core:math;
 
 import :type;
+import :utility;
 
 export namespace mini {
 
@@ -47,7 +48,7 @@ inline constexpr float Pow(T base, ConvertibleToT<T> auto exp)
 template <IntT T>
 inline constexpr OffsetT Pow(T base, T exp)
 {
-    if (std::is_constant_evaluated()) {
+    if (ConstantEvaluated()) {
         OffsetT expInt = static_cast<OffsetT>(exp);
         OffsetT result = 1;
 

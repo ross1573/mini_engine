@@ -59,7 +59,7 @@ concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
                                 requires(T i, U v) { *i = ForwardArg<typename U::Value>(*v); };
 
 template <typename T, typename U>
-concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> && //
+concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
                                requires(T i, U v) { *i = MoveArg(*v); };
 
 template <typename Iter, typename T>

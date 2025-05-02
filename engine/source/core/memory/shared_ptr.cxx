@@ -8,6 +8,7 @@ export module mini.core:shared_ptr;
 
 import :type;
 import :memory;
+import :utility;
 import :allocator;
 import :deleter;
 import :static_buffer;
@@ -25,7 +26,7 @@ struct AtomicUnion {
 
     inline constexpr AtomicUnion(T val) noexcept
     {
-        if (std::is_constant_evaluated())
+        if (ConstantEvaluated())
             value = val;
         else
             mini::memory::ConstructAt(&atomic, val);
@@ -33,14 +34,14 @@ struct AtomicUnion {
 
     inline constexpr ~AtomicUnion() noexcept
     {
-        if (!std::is_constant_evaluated()) {
+        if (!ConstantEvaluated()) {
             mini::memory::DestructAt(&atomic);
         }
     }
 
     inline constexpr void Store(T val, MemoryOrder order) noexcept
     {
-        if (std::is_constant_evaluated())
+        if (ConstantEvaluated())
             value = val;
         else
             atomic.store(val, order);
@@ -48,7 +49,7 @@ struct AtomicUnion {
 
     inline constexpr T Load(MemoryOrder order) const noexcept
     {
-        if (std::is_constant_evaluated())
+        if (ConstantEvaluated())
             return value;
         else
             return atomic.load(order);
@@ -56,7 +57,7 @@ struct AtomicUnion {
 
     inline constexpr T FetchAdd(T val, MemoryOrder order) noexcept
     {
-        if (std::is_constant_evaluated()) {
+        if (ConstantEvaluated()) {
             T tmp = value;
             value += val;
             return tmp;
@@ -68,7 +69,7 @@ struct AtomicUnion {
 
     inline constexpr T FetchSub(T val, MemoryOrder order) noexcept
     {
-        if (std::is_constant_evaluated()) {
+        if (ConstantEvaluated()) {
             T tmp = value;
             value -= val;
             return tmp;
@@ -80,7 +81,7 @@ struct AtomicUnion {
 
     inline constexpr void ThreadFence(MemoryOrder order) const noexcept
     {
-        if (!std::is_constant_evaluated()) {
+        if (!ConstantEvaluated()) {
             std::atomic_thread_fence(order);
         }
     }
