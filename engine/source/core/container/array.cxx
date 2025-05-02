@@ -106,9 +106,6 @@ public:
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
 
-    template <EqualityComparableWithT<T> U, AllocatorT<U> OtherAlloc>
-    constexpr bool operator==(Array<U, OtherAlloc> const&) const;
-
     constexpr Array& operator=(Array const&)
         requires CopyableT<T>;
     constexpr Array& operator=(Array&&) noexcept;
@@ -623,25 +620,29 @@ inline constexpr Array<T, AllocT>::ConstIterator Array<T, AllocT>::End() const n
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr T& Array<T, AllocT>::First()
 {
-    return At(0);
+    AssertValidIndex(0);
+    return *(m_Buffer.Data());
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr T const& Array<T, AllocT>::First() const
 {
-    return At(0);
+    AssertValidIndex(0);
+    return *(m_Buffer.Data());
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr T& Array<T, AllocT>::Last()
 {
-    return At(m_Size - 1);
+    AssertValidIndex(m_Size - 1);
+    return *(m_Buffer.Data() + m_Size - 1);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr T const& Array<T, AllocT>::Last() const
 {
-    return At(m_Size - 1);
+    AssertValidIndex(m_Size - 1);
+    return *(m_Buffer.Data() + m_Size - 1);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -708,26 +709,6 @@ inline constexpr T const& Array<T, AllocT>::operator[](SizeT index) const
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <EqualityComparableWithT<T> U, AllocatorT<U> OtherAlloc>
-inline constexpr bool Array<T, AllocT>::operator==(Array<U, OtherAlloc> const& other) const
-{
-    if (m_Buffer == other.m_Buffer) [[unlikely]] {
-        return true;
-    }
-    else if (m_Size != other.m_Size) {
-        return false;
-    }
-
-    for (SizeT i = 0; i < m_Size; ++i) {
-        if (*(m_Buffer + i) != *(other.m_Buffer + i)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array const& other)
     requires CopyableT<T>
 {
@@ -774,6 +755,20 @@ Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
     CONSTEXPR_ASSERT(iter.m_Version == m_Version, "invalid version");
     CONSTEXPR_ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
+}
+
+template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>
+inline constexpr bool operator==(Array<T, AllocT> const& l, Array<U, AllocU> const& r)
+    requires EqualityComparableWithT<T, U>
+{
+    if (l.Size() != r.Size()) {
+        return false;
+    }
+    else if (l.Data() == r.Data()) [[unlikely]] {
+        return true;
+    }
+
+    return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
 }
 
 } // namespace mini
