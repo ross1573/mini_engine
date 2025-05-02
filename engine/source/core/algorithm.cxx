@@ -72,7 +72,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
 
 template <ForwardIteratorT T, ForwardIteratorT U>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
-    requires ComparableWithT<typename T::Value, typename U::Value>
+    requires EqualityComparableWithT<typename T::Value, typename U::Value>
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));

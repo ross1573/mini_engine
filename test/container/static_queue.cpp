@@ -1,5 +1,6 @@
-#include <queue>
 #include <numeric>
+#include <queue>
+
 #include "test_macro.h"
 
 import mini.test;
@@ -10,8 +11,7 @@ template <typename T>
 static constexpr int AccumulateQueue(std::initializer_list<int> l)
 {
     T queue{};
-    for (auto ele : l)
-    {
+    for (auto ele : l) {
         queue.Enqueue(ele);
     }
     return std::accumulate(queue.Begin(), queue.End(), 0);
@@ -21,8 +21,7 @@ template <typename T, typename... Args>
 static constexpr SizeT SizeOfQueue(SizeT count, Args&&... args)
 {
     T queue{};
-    for (SizeT i = 0; i < count; ++i)
-    {
+    for (SizeT i = 0; i < count; ++i) {
         queue.Enqueue(ForwardArg<Args>(args)...);
     }
     return queue.Size();
@@ -42,7 +41,7 @@ static constexpr SizeT SizeOfQueue(SizeT count, Args&&... args)
 
 [[maybe_unused]] static constexpr void ConstexprQueue()
 {
-    static_assert(AccumulateQueue<StaticQueue<int, 3>>({1, 2, 3}) == 6);
+    static_assert(AccumulateQueue<StaticQueue<int, 3>>({ 1, 2, 3 }) == 6);
     static_assert(SizeOfQueue<StaticQueue<Vector3, 5>>(5) == 5);
 }
 
@@ -86,7 +85,8 @@ int main()
         TEST_ENSURE(iter.Decrement());
         TEST_ENSURE(iter.Advance(-5));
         TEST_ENSURE(iter.Advance(5));
-        iter -= 32; iter += 32;
+        iter -= 32;
+        iter += 32;
         TEST_ENSURE(++iter == q.End());
     }
 
@@ -107,8 +107,8 @@ int main()
     }
 
     TEST_ENSURE(q.Size() == arr.Size());
-    for (SizeT i = 0; i < q.Size(); ++i)
-    {
+    TEST_ENSURE(EqualRange(q.Begin(), q.End(), arr.Begin(), arr.End()));
+    for (SizeT i = 0; i < q.Size(); ++i) {
         TEST_ENSURE(q[i] == arr[i]);
         TEST_ENSURE(q.At(i) == arr.At(i));
     }

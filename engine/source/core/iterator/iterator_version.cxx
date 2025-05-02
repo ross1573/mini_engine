@@ -32,14 +32,6 @@ public:
         version = v;
         return *this;
     }
-
-    template <EqualityComparableWithT<ContainerT> ContainerU>
-    inline constexpr bool operator==(IteratorVersion<ContainerU> const& o) const noexcept
-    {
-        return version == o.version;
-    }
-
-    inline constexpr bool operator==(SizeT v) const noexcept { return version == v; }
 };
 
 template <StaticContainerT ContainerT>
@@ -55,14 +47,32 @@ public:
     inline constexpr operator SizeT() noexcept { return 0; }
 
     inline constexpr IteratorVersion& operator=(SizeT) noexcept { return *this; }
-
-    template <EqualityComparableWithT<ContainerT> ContainerU>
-    inline constexpr bool operator==(IteratorVersion<ContainerU> const&) const noexcept
-    {
-        return true;
-    }
-
-    inline constexpr bool operator==(SizeT) const noexcept { return true; }
 };
+
+template <typename T, typename U>
+inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
+{
+    return l.version == r.version;
+}
+
+template <typename T>
+inline constexpr bool operator==(IteratorVersion<T> const& l, SizeT r) noexcept
+{
+    return l.version == r;
+}
+
+template <typename T, StaticContainerT U>
+inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
+    requires EqualityComparableWithT<T, U>
+{
+    return true;
+}
+
+template <StaticContainerT T, StaticContainerT U>
+inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
+    requires EqualityComparableWithT<T, U>
+{
+    return true;
+}
 
 } // namespace mini
