@@ -62,14 +62,14 @@ inline constexpr bool operator==(IteratorVersion<T> const& l, SizeT r) noexcept
 }
 
 template <typename T, StaticContainerT U>
-inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
+inline constexpr bool operator==(IteratorVersion<T> const&, IteratorVersion<U> const&) noexcept
     requires EqualityComparableWithT<T, U>
 {
     return true;
 }
 
 template <StaticContainerT T, StaticContainerT U>
-inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
+inline constexpr bool operator==(IteratorVersion<T> const&, IteratorVersion<U> const&) noexcept
     requires EqualityComparableWithT<T, U>
 {
     return true;
