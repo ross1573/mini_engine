@@ -421,7 +421,7 @@ inline constexpr void Array<T, AllocT>::RemoveLast(SizeT count)
     SizeT removeCnt = m_Size < count ? m_Size : count;
     Ptr end = m_Buffer.Data() + m_Size;
     memory::DestructRange(end - removeCnt, end);
-    m_Size -= count;
+    m_Size -= removeCnt;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
