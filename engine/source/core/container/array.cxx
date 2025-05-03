@@ -30,7 +30,6 @@ public:
     using ConstIterator = ArrayIterator<ConstValue, Array const>;
 
 private:
-    SizeT m_Version;
     SizeT m_Size;
     Buffer m_Buffer;
 
@@ -118,8 +117,7 @@ private:
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array() noexcept
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer()
 {
 }
@@ -133,8 +131,7 @@ inline constexpr Array<T, AllocT>::~Array()
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(Array const& other)
     requires CopyableT<T>
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(other.m_Buffer.GetAllocator())
 {
     m_Buffer.Allocate(other.Size());
@@ -145,8 +142,7 @@ inline constexpr Array<T, AllocT>::Array(Array const& other)
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc)
     requires CopyableT<T>
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(alloc)
 {
     m_Buffer.Allocate(other.Size());
@@ -156,40 +152,35 @@ inline constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(Array&& other) noexcept
-    : m_Version(0)
-    , m_Size(Exchange(other.m_Size, SizeT(0)))
+    : m_Size(Exchange(other.m_Size, SizeT(0)))
     , m_Buffer(Exchange(other.m_Buffer, {}))
 {
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(Array&& other, AllocT const& alloc) noexcept
-    : m_Version(0)
-    , m_Size(Exchange(other.m_Size, SizeT(0)))
+    : m_Size(Exchange(other.m_Size, SizeT(0)))
     , m_Buffer(MoveArg(other.m_Buffer), alloc)
 {
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(AllocT const& alloc) noexcept
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(alloc)
 {
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(AllocT&& alloc) noexcept
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(MoveArg(alloc))
 {
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Array(SizeT capacity, AllocT const& alloc)
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(alloc)
 {
     m_Buffer.Allocate(capacity);
@@ -199,8 +190,7 @@ template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr Array<T, AllocT>::Array(Iter first, Iter last, AllocT const& alloc)
     requires CopyableT<T>
-    : m_Version(0)
-    , m_Size(0)
+    : m_Size(0)
     , m_Buffer(alloc)
 {
     SizeT distance = Distance(first, last);
@@ -578,7 +568,6 @@ inline constexpr void Array<T, AllocT>::Swap(Array& other) noexcept
 {
     m_Buffer.Swap(other.m_Buffer);
     Swap(m_Size, other.m_Size);
-    ++m_Version;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -596,25 +585,25 @@ inline constexpr Array<T, AllocT>::ConstPtr Array<T, AllocT>::Data() const noexc
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Iterator Array<T, AllocT>::Begin() noexcept
 {
-    return Iterator(m_Buffer.Data(), m_Version, this);
+    return Iterator(m_Buffer.Data(), m_Buffer.Version(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::ConstIterator Array<T, AllocT>::Begin() const noexcept
 {
-    return ConstIterator(m_Buffer.Data(), m_Version, this);
+    return ConstIterator(m_Buffer.Data(), m_Buffer.Version(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Iterator Array<T, AllocT>::End() noexcept
 {
-    return Iterator(m_Buffer.Data() + m_Size, m_Version, this);
+    return Iterator(m_Buffer.Data() + m_Size, m_Buffer.Version(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::ConstIterator Array<T, AllocT>::End() const noexcept
 {
-    return ConstIterator(m_Buffer.Data() + m_Size, m_Version, this);
+    return ConstIterator(m_Buffer.Data() + m_Size, m_Buffer.Version(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -686,7 +675,7 @@ inline constexpr bool Array<T, AllocT>::IsValidIndex(SizeT index) const noexcept
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr bool Array<T, AllocT>::IsValidIterator(ConstIterator iter) const noexcept
 {
-    if (iter.m_Version != m_Version) {
+    if (iter.m_Version != m_Buffer.Version()) {
         return false;
     }
 
@@ -738,7 +727,6 @@ inline constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
     Ptr begin(m_Buffer.Data());
     m_Buffer.Swap(buf);
     memory::DestructRange(begin, begin + m_Size);
-    ++m_Version;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -753,7 +741,7 @@ inline constexpr void
 Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
-    ASSERT(iter.m_Version == m_Version, "invalid version");
+    ASSERT(iter.m_Version == m_Buffer.Version(), "invalid version");
     ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
 }
 
