@@ -573,21 +573,21 @@ template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
-    CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
+    ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
-    CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
+    ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
+    ASSERT(IsValidIterator(iter), "invalid range");
 }
 
 } // namespace mini

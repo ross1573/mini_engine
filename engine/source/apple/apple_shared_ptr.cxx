@@ -223,7 +223,7 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::operator->() const noexcept
 {
-    CONSTEXPR_ASSERT(m_Ptr, "null pointer deference");
+    ASSERT(m_Ptr, "null pointer deference");
     return m_Ptr;
 }
 
@@ -231,7 +231,7 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::Ref SharedPtr<T>::operator*() const noexcept
 {
-    CONSTEXPR_ASSERT(m_Ptr, "null pointer deference");
+    ASSERT(m_Ptr, "null pointer deference");
     return *m_Ptr;
 }
 

@@ -745,7 +745,7 @@ template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void
 Array<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
-    CONSTEXPR_ASSERT(IsValidIndex(index), "invalid index");
+    ASSERT(IsValidIndex(index), "invalid index");
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -753,8 +753,8 @@ inline constexpr void
 Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
-    CONSTEXPR_ASSERT(iter.m_Version == m_Version, "invalid version");
-    CONSTEXPR_ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
+    ASSERT(iter.m_Version == m_Version, "invalid version");
+    ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
 }
 
 template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>

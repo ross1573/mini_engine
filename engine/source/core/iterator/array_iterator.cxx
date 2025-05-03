@@ -202,21 +202,21 @@ inline constexpr bool ArrayIterator<T, ArrayT>::Advance(OffsetT d) noexcept
 template <typename T, typename ArrayT>
 inline constexpr T* ArrayIterator<T, ArrayT>::operator->() const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(CheckIterator(*this), "invalid access");
     return m_Ptr;
 }
 
 template <typename T, typename ArrayT>
 inline constexpr T& ArrayIterator<T, ArrayT>::operator*() const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(CheckIterator(*this), "invalid access");
     return *m_Ptr;
 }
 
 template <typename T, typename ArrayT>
 inline constexpr T& ArrayIterator<T, ArrayT>::operator[](OffsetT const o) const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this + o), "invalid access");
+    ASSERT(CheckIterator(*this + o), "invalid access");
     return *(m_Ptr + o);
 }
 

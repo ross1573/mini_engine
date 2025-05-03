@@ -98,7 +98,7 @@ public:
 
     inline constexpr void Allocate(SizeT size) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
+        ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
         AllocResult<T> buffer = m_Alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
@@ -181,10 +181,7 @@ public:
     {
     }
 
-    inline constexpr ~TrivialBuffer()
-    {
-        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer not deallocated");
-    }
+    inline constexpr ~TrivialBuffer() { ASSERT(m_Buffer == nullptr, "buffer not deallocated"); }
 
     inline constexpr TrivialBuffer(TrivialBuffer&& other) noexcept
         : m_Capacity(mini::Exchange(other.m_Capacity, 0))
@@ -209,7 +206,7 @@ public:
     inline constexpr void Allocate(SizeT size, AllocT const& alloc)
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        CONSTEXPR_ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
+        ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
         AllocResult<T> buffer = alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;

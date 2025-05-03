@@ -476,14 +476,14 @@ template <MovableT T, SizeT N>
 inline constexpr void
 StaticQueue<T, N>::AssertValidCapacity([[maybe_unused]] SizeT cap) const noexcept
 {
-    CONSTEXPR_ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
+    ASSERT(cap <= m_Buffer.Capacity(), "invalid capacity");
 }
 
 template <MovableT T, SizeT N>
 inline constexpr void
 StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexcept
 {
-    CONSTEXPR_ASSERT(m_Size != 0, "invalid access on empty queue");
+    ASSERT(m_Size != 0, "invalid access on empty queue");
 
     [[maybe_unused]] bool isValid = false;
     if (m_Begin < m_End) {
@@ -494,14 +494,14 @@ StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexce
                   (offset >= m_Begin && offset < m_Buffer.Capacity());
     }
 
-    CONSTEXPR_ASSERT(isValid, "invalid offset");
+    ASSERT(isValid, "invalid offset");
 }
 
 template <MovableT T, SizeT N>
 inline constexpr void
 StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    CONSTEXPR_ASSERT(IsValidIterator(iter), "invalid range");
+    ASSERT(IsValidIterator(iter), "invalid range");
 }
 
 } // namespace mini

@@ -13,11 +13,13 @@
 #endif // DEBUG && !NOASSERT
 
 #if MSVC
-#  define BUILTIN_UNREACHABLE   __assume(false)
-#  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
+#  define BUILTIN_UNREACHABLE __assume(false)
 #else
-#  define BUILTIN_UNREACHABLE   __builtin_unreachable()
-#  define BUILTIN_CONSTANT_EVAL __builtin_is_constant_evaluated()
+#  if defined(__has_builtin) && __has_builtin(__builtin_unreachable)
+#    define BUILTIN_UNREACHABLE __builtin_unreachable()
+#  else
+#    define BUILTIN_UNREACHABLE
+#  endif
 #endif // MSVC
 
 #define ASSERT_EXPR(expr)      if (!mini::detail::TestExpr(expr)) [[unlikely]]
@@ -60,13 +62,9 @@
 #  define ENSURE(expr, ...)                                                       \
       ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 
-#  define CONSTEXPR_ASSERT(expr, ...)                                    \
-      if (BUILTIN_CONSTANT_EVAL) ASSERT(expr __VA_OPT__(, ) __VA_ARGS__)
-
 #else
 #  define BUILTIN_ASSERT(msg, func, line) ((void)0)
 #  define ASSERT(expr, ...)               ((void)0)
-#  define CONSTEXPR_ASSERT(expr, ...)     ((void)0)
 
 #  define ENSURE_INNER(expr, var, ...)                 \
       ENSURE_EVAL(expr, var);                          \

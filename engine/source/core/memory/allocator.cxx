@@ -100,7 +100,7 @@ struct Allocator {
     [[nodiscard]] inline constexpr AllocResult<T> Increment(SizeT oldCap, SizeT size) const noexcept
     {
         SizeT newCap = oldCap < size ? oldCap + size : oldCap << 1;
-        CONSTEXPR_ASSERT(newCap != 0, "invalid capacity on buffer increment");
+        ASSERT(newCap != 0, "invalid capacity on buffer increment");
         return Allocate(newCap);
     }
 

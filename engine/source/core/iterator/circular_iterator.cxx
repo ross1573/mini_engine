@@ -237,21 +237,21 @@ inline constexpr bool CircularIterator<T, CircularT>::Advance(OffsetT d) noexcep
 template <typename T, typename CircularT>
 inline constexpr T* CircularIterator<T, CircularT>::operator->() const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(CheckIterator(*this), "invalid access");
     return m_Begin + (m_Offset % m_Capacity);
 }
 
 template <typename T, typename CircularT>
 inline constexpr T& CircularIterator<T, CircularT>::operator*() const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(CheckIterator(*this), "invalid access");
     return *(m_Begin + (m_Offset % m_Capacity));
 }
 
 template <typename T, typename CircularT>
 inline constexpr T& CircularIterator<T, CircularT>::operator[](OffsetT const o) const noexcept
 {
-    CONSTEXPR_ASSERT(CheckIterator(*this + o), "invalid access");
+    ASSERT(CheckIterator(*this + o), "invalid access");
     return *(m_Begin + ((m_Offset + o) % m_Capacity));
 }
 
