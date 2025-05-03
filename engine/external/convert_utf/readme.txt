@@ -29,3 +29,17 @@ Version 1.3: Updated UTF-8 legality check;
 	Updated UTF-8 legality tests in harness.c
  
 Last update: October 19, 2004
+
+--------------------------------------------------------------------------------
+This version of ConvertUTF has been modified for cpp only, and requires c++20.
+It adoptes c++20 modules, and provides only single file (convert_utf.cxx)
+Most functions are converted into templated version, and all conversions support
+constexpr. The following cpp types and conversions are supported.
+	(wchar_t is supported only when it is 2 bytes or 4 bytes long)
+	char	 -> char, wchar_t, char8_t, char16_t, char32_t
+	wchar_t  -> char, wchar_t, char8_t, char16_t, char32_t
+	char8_t  -> char, wchar_t, char8_t, char16_t, char32_t
+	char16_t -> char, wchar_t, char8_t, char16_t, char32_t
+	char32_t -> char, wchar_t, char8_t, char16_t, char32_t
+
+Updated: May 04, 2025

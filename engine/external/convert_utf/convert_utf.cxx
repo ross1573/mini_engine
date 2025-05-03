@@ -35,16 +35,18 @@
 ------------------------------------------------------------------------ */
 
 /* --------------------------------------------------------------------------- *
- * this file requires c++20 or over
+ * This version of ConvertUTF has been modified for cpp only, and requires c++20.
+ * It adoptes c++20 modules, and provides only single file (convert_utf.cxx)
+ * Most functions are converted into templated version, and all conversions support
+ * constexpr. The following cpp types and conversions are supported.
+ *     (wchar_t is supported only when it is 2 bytes or 4 bytes long)
+ *     char	 -> char, wchar_t, char8_t, char16_t, char32_t
+ *     wchar_t  -> char, wchar_t, char8_t, char16_t, char32_t
+ *     char8_t  -> char, wchar_t, char8_t, char16_t, char32_t
+ *     char16_t -> char, wchar_t, char8_t, char16_t, char32_t
+ *     char32_t -> char, wchar_t, char8_t, char16_t, char32_t
  *
- * modified for C++ only usage (no longer supports C)
- * functions are added to support various C++ character types
- * platforms where wchar_t is not UTF-16 or UTF-32, are not supported
- *  - char
- *  - wchar_t (reinterpreted as platform specific type, char16_t or char32_t)
- *  - char8_t (reinterpreted as char)
- *  - char16_t
- *  - char32_t
+ * Updated: May 04, 2025
  * --------------------------------------------------------------------------- */
 
 module;
