@@ -36,7 +36,7 @@ template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args)
     noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    if (ConstantEvaluated()) {
+    if (IsConstantEvaluated()) {
         // TODO: only compiler can do constexpr construct_at
         std::construct_at(ptr, ForwardArg<Args>(args)...);
         return;
@@ -48,7 +48,7 @@ inline constexpr void ConstructAt(T* ptr, Args&&... args)
 template <NonArrT T>
 inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
-    if (ConstantEvaluated()) {
+    if (IsConstantEvaluated()) {
         // TODO: only compiler can do constexpr destroy
         std::destroy_at(ptr);
         return;

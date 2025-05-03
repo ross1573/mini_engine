@@ -86,7 +86,7 @@ struct Allocator {
     [[nodiscard]] inline constexpr AllocResult<T> Allocate(SizeT size) const noexcept
     {
         Ptr ptr = nullptr;
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             ptr = CONSTEXPR_ALLOC(T, size);
         }
         else {
@@ -106,7 +106,7 @@ struct Allocator {
 
     inline constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             CONSTEXPR_DEALLOC(T, loc, size);
             return;
         }

@@ -43,7 +43,7 @@ inline constexpr T Exchange(T& v, U&& n)
     return old;
 }
 
-export constexpr bool ConstantEvaluated()
+export constexpr bool IsConstantEvaluated()
 {
     return std::is_constant_evaluated();
 }

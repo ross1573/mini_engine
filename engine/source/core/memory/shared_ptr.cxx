@@ -19,6 +19,7 @@ namespace mini {
 
 template <typename T>
 struct AtomicUnion {
+public:
     union {
         std::atomic<T> atomic;
         T value;
@@ -26,38 +27,44 @@ struct AtomicUnion {
 
     inline constexpr AtomicUnion(T val) noexcept
     {
-        if (ConstantEvaluated())
+        if (IsConstantEvaluated()) {
             value = val;
-        else
+        }
+        else {
             mini::memory::ConstructAt(&atomic, val);
+        }
     }
 
     inline constexpr ~AtomicUnion() noexcept
     {
-        if (!ConstantEvaluated()) {
+        if (!IsConstantEvaluated()) {
             mini::memory::DestructAt(&atomic);
         }
     }
 
     inline constexpr void Store(T val, MemoryOrder order) noexcept
     {
-        if (ConstantEvaluated())
+        if (IsConstantEvaluated()) {
             value = val;
-        else
+        }
+        else {
             atomic.store(val, order);
+        }
     }
 
     inline constexpr T Load(MemoryOrder order) const noexcept
     {
-        if (ConstantEvaluated())
+        if (IsConstantEvaluated()) {
             return value;
-        else
+        }
+        else {
             return atomic.load(order);
+        }
     }
 
     inline constexpr T FetchAdd(T val, MemoryOrder order) noexcept
     {
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             T tmp = value;
             value += val;
             return tmp;
@@ -69,7 +76,7 @@ struct AtomicUnion {
 
     inline constexpr T FetchSub(T val, MemoryOrder order) noexcept
     {
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             T tmp = value;
             value -= val;
             return tmp;
@@ -81,11 +88,12 @@ struct AtomicUnion {
 
     inline constexpr void ThreadFence(MemoryOrder order) const noexcept
     {
-        if (!ConstantEvaluated()) {
+        if (!IsConstantEvaluated()) {
             std::atomic_thread_fence(order);
         }
     }
 
+private:
     AtomicUnion(AtomicUnion const&) = delete;
     AtomicUnion& operator=(AtomicUnion const&) = delete;
 };

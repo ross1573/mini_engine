@@ -169,7 +169,7 @@ private:
         : m_Capacity(capacity)
         , m_Buffer(ptr)
     {
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             memory::ConstructRangeArgs(ptr, ptr + capacity);
         }
     }
@@ -214,7 +214,7 @@ public:
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
 
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             memory::ConstructRangeArgs(m_Buffer, m_Buffer + m_Capacity);
         }
     }
@@ -226,7 +226,7 @@ public:
             return;
         }
 
-        if (ConstantEvaluated()) {
+        if (IsConstantEvaluated()) {
             memory::DestructRange(m_Buffer, m_Buffer + m_Capacity);
         }
 

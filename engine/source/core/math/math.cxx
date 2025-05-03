@@ -48,7 +48,7 @@ inline constexpr float Pow(T base, ConvertibleToT<T> auto exp)
 template <IntT T>
 inline constexpr OffsetT Pow(T base, T exp)
 {
-    if (ConstantEvaluated()) {
+    if (IsConstantEvaluated()) {
         OffsetT expInt = static_cast<OffsetT>(exp);
         OffsetT result = 1;
 
