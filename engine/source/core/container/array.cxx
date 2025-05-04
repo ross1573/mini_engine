@@ -435,7 +435,6 @@ constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
 {
     OffsetT locDiff = iter - Begin();
     if (locDiff == (OffsetT)m_Size) {
-        RemoveLast();
         return;
     }
 
