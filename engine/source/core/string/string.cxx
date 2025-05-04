@@ -1536,6 +1536,10 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
 export template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool operator==(BasicString<T, AllocT> const& s, T const* p) noexcept
 {
+    if (p == nullptr) [[unlikely]] {
+        return false;
+    }
+
     SizeT len = memory::StringLength(p);
     SizeT size = s.Size();
     if (size != len) {
@@ -1549,6 +1553,9 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& s, T const* p) no
 
     return memory::StringCompare(buffer, p, size) == 0;
 }
+
+export template <CharT T, AllocatorT<T> AllocT>
+bool operator==(BasicString<T, AllocT> const&, NullptrT) = delete;
 
 export template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void Swap(BasicString<T, AllocT> const& l,

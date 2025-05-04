@@ -140,6 +140,7 @@ static constexpr int TestAppend()
 
     str.Append(CStr::s);
     TEST_ENSURE(str == CStr::s);
+    TEST_ENSURE(str != static_cast<T const*>(nullptr));
 
     str.Clear();
     str.Append(CStr::l);
