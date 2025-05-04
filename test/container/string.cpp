@@ -271,7 +271,7 @@ static constexpr int TestRemove()
     TEST_ENSURE(str == stdstr);
 
     str.RemoveRange(str.End(), 5);
-    stdstr.erase(stdstr.end(), stdstr.end() + 5);
+    stdstr.erase(stdstr.end(), stdstr.end()); // MSVC refuses to handle it
     TEST_ENSURE(str == stdstr);
 
     str.RemoveRange(str.Begin(), 5);
