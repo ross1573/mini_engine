@@ -109,7 +109,7 @@ template <typename T, typename U>
 inline constexpr void CopyRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
-        *dest = *begin;
+        *AddressOf(dest) = *AddressOf(begin);
     }
 }
 
@@ -117,7 +117,7 @@ template <typename T, typename U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
-        *(--dest) = *(--end);
+        *AddressOf(--dest) = *AddressOf(--end);
     }
 }
 
@@ -125,7 +125,7 @@ template <typename T, typename U>
 inline constexpr void MoveRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
-        *dest = MoveArg(*begin);
+        *AddressOf(dest) = MoveArg(*AddressOf(begin));
     }
 }
 
@@ -133,7 +133,7 @@ template <typename T, typename U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
-        *(--dest) = MoveArg(*(--end));
+        *AddressOf(--dest) = MoveArg(*AddressOf(--end));
     }
 }
 
@@ -141,7 +141,7 @@ template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, U begin2, U end2)
 {
     for (; begin2 != end2; ++begin1, ++begin2) {
-        if (*begin1 != *begin2) {
+        if (*AddressOf(begin1) != *AddressOf(begin2)) {
             return false;
         }
     }
@@ -153,7 +153,7 @@ template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     for (; begin1 != end1 && begin2 != end2; ++begin1, ++begin2) {
-        if (*begin1 != *begin2) {
+        if (*AddressOf(begin1) != *AddressOf(begin2)) {
             return false;
         }
     }
@@ -165,7 +165,7 @@ template <typename T, typename U>
 inline constexpr void FillRange(T begin, T end, U const& value)
 {
     for (; begin != end; ++begin) {
-        *begin = value;
+        *AddressOf(begin) = value;
     }
 }
 
