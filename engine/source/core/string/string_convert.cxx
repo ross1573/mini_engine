@@ -146,7 +146,7 @@ inline constexpr void StringConvert<T, AllocT>::Initialize(std::basic_string_vie
     m_Size = (SizeT)ConvertLength(begin, end, ValueT(0));
     m_Data = m_Alloc.Allocate(m_Size + isNullTerminated).pointer;
 
-    CONSTEXPR_ASSERT(m_Data && m_Size != 0, "failed to allocate convert buffer");
+    ASSERT(m_Data && m_Size != 0, "failed to allocate convert buffer");
     Convert(begin, end, m_Data, m_Data + m_Size);
 
     if (isNullTerminated) {

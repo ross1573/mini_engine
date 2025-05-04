@@ -20,10 +20,6 @@ PUBLIC
         container/array.cxx
         container/static_array.cxx
         container/static_queue.cxx
-        container/string_convert.cxx
-        container/string_view.cxx
-        container/string.cxx
-        container/format.cxx
 
         iterator/array_iterator.cxx
         iterator/circular_iterator.cxx
@@ -50,6 +46,12 @@ PUBLIC
         memory/shared_ptr.cxx
         memory/static_buffer.cxx
         memory/unique_ptr.cxx
+
+        string/format.cxx
+        string/string_convert.cxx
+        string/string_utility.cxx
+        string/string_view.cxx
+        string/string.cxx
 
         type/core_type.cxx
         type/type_concepts.cxx

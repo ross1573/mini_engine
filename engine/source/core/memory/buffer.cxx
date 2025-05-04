@@ -298,6 +298,7 @@ public:
         m_Buffer = mini::Exchange(other.m_Buffer, nullptr);
         m_Capacity = mini::Exchange(other.m_Capacity, 0);
         ++m_Version;
+        other.m_Version = 0;
     }
 
     inline constexpr bool operator==(TrivialBuffer const& other) const noexcept

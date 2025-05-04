@@ -6,10 +6,7 @@ export module mini.test;
 
 export import mini.core;
 
-using namespace mini;
-
-export
-{
+export namespace mini { // clang-format off
 
 inline SizeT ctor = 0;
 inline SizeT dtor = 0;
@@ -24,15 +21,25 @@ typedef std::chrono::milliseconds MilliSecT;
 typedef std::chrono::microseconds MicroSecT;
 typedef Clock::time_point Time;
 
-inline auto microSecondsCast = [](auto diff) -> SizeT
-    {
-        return (SizeT)std::chrono::duration_cast<MicroSecT>(diff).count();
-    };
+inline auto microSecondsCast = [](auto diff) -> SizeT {
+    return (SizeT)std::chrono::duration_cast<MicroSecT>(diff).count();
+};
 
-inline auto millisecondsCast = [](auto diff) -> SizeT
-    {
-        return (SizeT)std::chrono::duration_cast<MilliSecT>(diff).count();
-    };
+inline auto millisecondsCast = [](auto diff) -> SizeT {
+    return (SizeT)std::chrono::duration_cast<MilliSecT>(diff).count();
+};
+
+template <typename T>
+inline constexpr RemoveRefT<T>& MakeLRef(T&& value)
+{
+    return static_cast<RemoveRefT<T>&>(value);
+}
+
+template <typename T>
+inline constexpr RemoveRefT<T>&& MakeRRef(T&& value)
+{
+    return static_cast<RemoveRefT<T>&&>(value);
+}
 
 inline void InitializeCounter()
 {
@@ -59,8 +66,7 @@ inline void PrintCounter(StringView msg, SizeT time = 0)
     LogMessage(Format("\t\tDestructor: {}", dtor).c_str());
 }
 
-struct Debug
-{
+struct Debug {
     Debug() { LogMessage("[ DEBUG ] constructor"); }
     ~Debug() { LogMessage("[ DEBUG ] destructor"); }
     Debug(Debug const&) { LogMessage("[ DEBUG ] copy constructor"); }
@@ -70,8 +76,7 @@ struct Debug
 };
 
 template <typename T>
-struct DebugAlloc : public Allocator<T> 
-{
+struct DebugAlloc : public Allocator<T> {
     DebugAlloc() { ++debugAllocCnt; }
     ~DebugAlloc() { --debugAllocCnt; }
     DebugAlloc(DebugAlloc const&) = default;
@@ -80,20 +85,19 @@ struct DebugAlloc : public Allocator<T>
     DebugAlloc& operator=(DebugAlloc&&) noexcept = default;
 };
 
-struct Foo
-{
+struct Foo {
     String str;
     uint64 a[16];
 
     Foo() : a{0, } { ++ctor; }
-    ~Foo() { ++dtor; }
     Foo(String const& s) : str(s), a{1, } { ++ctor; }
     Foo(String&& s) : str(MoveArg(s)), a{1, } { ++ctor; }
     Foo(Foo const& o) : str(o.str), a{o.a[0], } { ++copyCtor; }
-    Foo(Foo&& o) noexcept : str(Exchange(o.str, {})), a{1, } 
-    {
-        ++moveCtor;
-    }
+    Foo(Foo&& o) noexcept
+        : str(Exchange(o.str, {})), a{1, } 
+    { ++moveCtor; }
+
+    ~Foo() { ++dtor; }
 
     Foo& operator=(Foo const& o)
     {
@@ -109,28 +113,20 @@ struct Foo
         return *this;
     }
 
-    bool operator==(Foo const& o) const noexcept
-    {
-        return str == o.str;
-    }
+    bool operator==(Foo const& o) const noexcept { return str == o.str; }
 };
 
-struct ConstExprFoo
-{
+struct ConstExprFoo {
     String str;
 
     constexpr ConstExprFoo() = default;
     constexpr ConstExprFoo(String const& s) : str(s) {}
     constexpr ConstExprFoo(String&& s) : str(MoveArg(s)) {}
 
-    constexpr bool operator==(Foo const& o) const noexcept
-    {
-        return str == o.str;
-    }
+    constexpr bool operator==(Foo const& o) const noexcept { return str == o.str; }
 };
 
-struct FooAlloc
-{
+struct FooAlloc {
     typedef Foo Value;
     typedef Foo* Ptr;
 
@@ -138,33 +134,16 @@ struct FooAlloc
     Debug debug;
 
     template <typename U>
-    DebugAlloc<U> Rebind() const noexcept
-    {
-        return DebugAlloc<U>{};
-    }
+    DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
-    AllocResult<Foo> Allocate(SizeT s)
-    {
-        return Allocator<Foo>{}.Allocate(s);
-    }
+    AllocResult<Foo> Allocate(SizeT s) { return Allocator<Foo>{}.Allocate(s); }
+    AllocResult<Foo> Increment(SizeT o, SizeT s) { return Allocator<Foo>{}.Increment(o, s); }
 
-    AllocResult<Foo> Increment(SizeT o, SizeT s)
-    {
-        return Allocator<Foo>{}.Increment(o, s);
-    }
-
-    void Deallocate(Ptr ptr, SizeT s)
-    {
-        Allocator<Foo>{}.Deallocate(ptr, s);
-    }
+    void Deallocate(Ptr ptr, SizeT s) { Allocator<Foo>{}.Deallocate(ptr, s); }
 };
 
-struct FooDel
-{
-    void operator()(Foo* ptr)
-    {
-        delete ptr;
-    }
+struct FooDel {
+    void operator()(Foo* ptr) { delete ptr; }
 };
 
-}
+} // namespace, clang-format on

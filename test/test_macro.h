@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cassert>
-#include <format>
-#include <iostream>
-#include <iterator>
+#include <cstring>
+#include <type_traits>
 
 #include "assertion.h"
 
@@ -13,14 +11,18 @@
     ENSURE_EVAL(expr, var);         \
     ENSURE_EXPR(var)
 
-#define TEST_ENSURE_INNER(expr, var, ...)                             \
-    TEST_ENSURE_EXPR(expr, var) {                                     \
-        mini::detail::EnsureHelper(#expr __VA_OPT__(, ) __VA_ARGS__); \
-        return -1;                                                    \
+#define TEST_ENSURE(expr, ...)                                 \
+    if (std::is_constant_evaluated()) {                        \
+        if (!mini::detail::TestExpr(expr)) {                   \
+            memcpy(nullptr, nullptr, 0);                       \
+        }                                                      \
+    }                                                          \
+    else {                                                     \
+        TEST_ENSURE_EXPR(expr, CONCAT(ensure_, __COUNTER__)) { \
+            ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__);       \
+            return -1;                                         \
+        }                                                      \
     }
-
-#define TEST_ENSURE(expr, ...)                                                       \
-    TEST_ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 
 #define TEST_ENSURE_NOTHROW(expr, ...)               \
     try {                                            \
