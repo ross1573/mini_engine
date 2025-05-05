@@ -53,11 +53,6 @@ public:
     inline constexpr SizeT Alignment() const noexcept { return AlignN; }
     inline constexpr SizeT Capacity() const noexcept { return CapacityN; }
 
-    inline bool operator==(StaticBuffer const& other) const noexcept
-    {
-        return Address() == other.Address();
-    }
-
 private:
     inline T* Address() const noexcept
     {
@@ -85,11 +80,6 @@ public:
     inline constexpr SizeT Alignment() const noexcept { return AlignN; }
     inline constexpr SizeT Capacity() const noexcept { return CapacityN; }
 
-    inline constexpr bool operator==(StaticBuffer const& other) const noexcept
-    {
-        return Address() == other.Address();
-    }
-
 private:
     inline constexpr T const* Address() const noexcept { return &m_Buffer[0]; }
 
@@ -103,7 +93,11 @@ struct StaticSize {
 
     SizeType size;
 
-    inline constexpr StaticSize() noexcept = default;
+    inline constexpr StaticSize() noexcept
+        : size(0)
+    {
+    }
+
     inline constexpr StaticSize(SizeT s) noexcept
         : size(static_cast<SizeType>(s))
     {
@@ -157,6 +151,13 @@ struct StaticSize {
         return *this;
     }
 };
+
+template <typename T, SizeT CapT, SizeT AlignT, typename U, SizeT CapU, SizeT AlignU>
+inline constexpr bool operator==(StaticBuffer<T, CapT, AlignT> const& l,
+                                 StaticBuffer<U, CapU, AlignU> const& r) noexcept
+{
+    return l.Data() == r.Data();
+}
 
 template <IntT T, SizeT CapacityN>
 inline constexpr auto operator<=>(StaticSize<CapacityN> const& s, T o) noexcept

@@ -19,6 +19,9 @@ class StaticArray {
 private:
     typedef StaticBuffer<T, CapacityN> Buffer;
 
+    template <MovableT U, SizeT CapU>
+    friend class StaticArray;
+
 public:
     typedef T Value;
     typedef T* Ptr;
@@ -94,9 +97,6 @@ public:
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
-
-    template <EqualityComparableWithT<T> U, SizeT OtherN>
-    constexpr bool operator==(StaticArray<U, OtherN> const&) const;
 
     constexpr StaticArray& operator=(StaticArray const&);
     constexpr StaticArray& operator=(StaticArray&&) noexcept;
@@ -181,12 +181,14 @@ constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
     Ptr end = begin + (OffsetT)m_Size;
     Ptr last = end - 1;
 
+    // without the copy, invalid reference can get copied
+    Value temp(ForwardArg<Args>(args)...);
+
     memory::ConstructAt(end, MoveArg(*last));
     memory::MoveBackward(end, loc, last);
     memory::DestructAt(loc);
-
+    memory::ConstructAt(loc, MoveArg(temp));
     ++m_Size;
-    memory::ConstructAt(loc, ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, SizeT N>
@@ -381,7 +383,8 @@ constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
     Ptr end = begin + m_Size;
 
     if (m_Size < size) {
-        memory::ConstructRangeArgs(end, begin + size, ForwardArg<Args>(args)...);
+        Value temp(ForwardArg<Args>(args)...);
+        memory::ConstructRangeArgs(end, begin + size, temp);
     }
     else {
         memory::DestructRange(begin + size, end);
@@ -530,23 +533,6 @@ inline constexpr T const& StaticArray<T, N>::operator[](SizeT index) const
 }
 
 template <MovableT T, SizeT N>
-template <EqualityComparableWithT<T> U, SizeT OtherN>
-inline constexpr bool StaticArray<T, N>::operator==(StaticArray<U, OtherN> const& other) const
-{
-    if (m_Buffer == other.m_Buffer) [[unlikely]] {
-        return true;
-    }
-    else if (m_Size != other.m_Size) {
-        return false;
-    }
-    else if (m_Size == 0) [[unlikely]] {
-        return true;
-    }
-
-    return memory::EqualRange(Begin(), other.Begin(), other.End());
-}
-
-template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray const& other)
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]] {
@@ -588,6 +574,24 @@ inline constexpr void
 StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     ASSERT(IsValidIterator(iter), "invalid range");
+}
+
+export template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>
+inline constexpr bool operator==(StaticArray<T, CapT> const& l,
+                                 StaticArray<U, CapU> const& r) noexcept
+    requires EqualityComparableWithT<T, U>
+{
+    if (l.Size() != r.Size()) {
+        return false;
+    }
+    else if (l.Data() == r.Data()) [[unlikely]] {
+        return true;
+    }
+    else if (l.Size() == 0) [[unlikely]] {
+        return true;
+    }
+
+    return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
 }
 
 } // namespace mini
