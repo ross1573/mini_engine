@@ -53,7 +53,7 @@ public:
     }
 
     inline constexpr DynamicBuffer(DynamicBuffer&& other) noexcept
-        : m_Version(Exchange(other.m_Version, 0) + 1)
+        : m_Version(Exchange(other.m_Version, SizeT(0)) + 1)
         , m_Capacity(Exchange(other.m_Capacity, SizeT(0)))
         , m_Buffer(Exchange(other.m_Buffer, nullptr))
     {
@@ -62,11 +62,10 @@ public:
 
     inline constexpr DynamicBuffer(DynamicBuffer&& other, AllocT const& alloc) noexcept
         : m_Alloc(alloc)
+        , m_Version(Exchange(other.m_Version, SizeT(0)) + 1)
         , m_Capacity(Exchange(other.m_Capacity, SizeT(0)))
         , m_Buffer(Exchange(other.m_Buffer, nullptr))
     {
-        ++m_Version;
-        other.m_Version = 0;
     }
 
     inline constexpr DynamicBuffer(SizeT capacity) noexcept(NoThrowAllocatorT<AllocT, T>)
@@ -104,7 +103,7 @@ public:
     inline constexpr SizeT Capacity() const noexcept { return m_Capacity; }
     [[nodiscard]] inline constexpr T* Data() noexcept { return m_Buffer; }
     [[nodiscard]] inline constexpr T const* Data() const noexcept { return m_Buffer; }
-    [[nodiscard]] inline AllocT const& GetAllocator() const noexcept { return m_Alloc; }
+    [[nodiscard]] inline constexpr AllocT const& GetAllocator() const noexcept { return m_Alloc; }
 
     inline constexpr void IncrementVersion() { ++m_Version; }
 
