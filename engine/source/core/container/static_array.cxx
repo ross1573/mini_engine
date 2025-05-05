@@ -54,7 +54,7 @@ public:
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void AddRange(Iter, Iter);
+    constexpr void Append(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(SizeT, Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -143,7 +143,7 @@ template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr StaticArray<T, N>::StaticArray(Iter first, Iter last)
 {
-    AddRange(first, last);
+    Append(first, last);
 }
 
 template <MovableT T, SizeT N>
@@ -217,7 +217,7 @@ inline constexpr void StaticArray<T, N>::Assign(Iter first, Iter last)
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void StaticArray<T, N>::AddRange(Iter first, Iter last)
+constexpr void StaticArray<T, N>::Append(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
@@ -246,7 +246,7 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
 {
     OffsetT locDiff = iter - Begin();
     if (locDiff == (OffsetT)m_Size) {
-        AddRange(first, last);
+        Append(first, last);
         return;
     }
 
