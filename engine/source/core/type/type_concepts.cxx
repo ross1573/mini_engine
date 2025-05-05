@@ -62,9 +62,6 @@ concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*
 template <typename T, typename... Args>
 concept ConstructibleFromT = std::constructible_from<T, Args...>;
 
-template <typename T>
-concept DereferencableT = requires(T ele) { *ele; };
-
 template <typename T, typename... Args>
 concept NoThrowConstructibleFromT = std::is_nothrow_constructible_v<T, Args...>;
 

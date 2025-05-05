@@ -246,9 +246,11 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
     }
 
     AssertValidIterator(iter);
-
     SizeT capacity = m_Buffer.Capacity();
+
     if (m_Size < capacity) {
+        // without the copy, invalid reference can get copied
+        Value temp(ForwardArg<Args>(args)...);
         Ptr begin = m_Buffer.Data();
         Ptr loc = begin + locDiff;
         Ptr end = begin + m_Size;
@@ -257,9 +259,7 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
         memory::ConstructAt(end, MoveArg(*last));
         memory::MoveBackward(end, loc, last);
         memory::DestructAt(loc);
-
-        ++m_Size;
-        memory::ConstructAt(loc, ForwardArg<Args>(args)...);
+        memory::ConstructAt(loc, MoveArg(temp));
     }
     else {
         Buffer newBuf = m_Buffer.Increment(1);
@@ -272,8 +272,9 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
         memory::MoveConstructRange(newBegin, begin, loc);
         memory::MoveConstructRange(newLoc + 1, loc, begin + m_Size);
         SwapNewBuffer(newBuf);
-        ++m_Size;
     }
+
+    ++m_Size;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>

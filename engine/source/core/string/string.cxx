@@ -151,7 +151,6 @@ private:
     constexpr void DestroyBuffer();
     constexpr void SwitchToLarge(LargeBuffer&&);
     constexpr LargeBuffer SwitchToSmall(Ptr, SizeT);
-    constexpr bool IsOverlapping(ConstPtr) const noexcept;
 
     constexpr void InitWithCopy(BasicString const&);
     constexpr void InitWithMove(BasicString&&) noexcept;
@@ -1077,18 +1076,6 @@ BasicString<T, AllocT>::SwitchToSmall(Ptr ptr, SizeT size)
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsOverlapping(ConstPtr ptr) const noexcept
-{
-    // TODO: this is how clang manages comparison between pointers to unrelated objects
-    if (IsConstantEvaluated()) {
-        return false;
-    }
-
-    ConstPtr buffer = GetBuffer();
-    return (buffer <= ptr) && (buffer + m_Size > ptr);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& other)
 {
     ConstPtr from = nullptr;
@@ -1216,10 +1203,10 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
     SizeT newSize = m_Size + len;
 
     if (m_Layout == 0) {
+        Ptr oldBuffer = m_Small.Data();
         if (newSize > SmallBufferSize()) {
             LargeBuffer buffer(newSize + 1, m_Alloc);
             Ptr newBuffer = buffer.Data();
-            Ptr oldBuffer = m_Small.Data();
 
             memory::StringCopy(newBuffer, oldBuffer, index);
             memory::StringCopy(newBuffer + static_cast<OffsetT>(index + len),
@@ -1227,8 +1214,9 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
             memory::StringCopy(newBuffer + static_cast<OffsetT>(index), ptr, len);
             SwitchToLarge(MoveArg(buffer));
         }
-        else if (IsOverlapping(ptr)) {
-            Ptr loc = m_Small.Data() + static_cast<OffsetT>(index);
+        else if (memory::IsPtrOverlapping(ptr, oldBuffer,
+                                          oldBuffer + static_cast<OffsetT>(m_Size))) {
+            Ptr loc = oldBuffer + static_cast<OffsetT>(index);
             SmallBuffer temp;
 
             memory::StringCopy(temp.Data(), ptr, len);
@@ -1236,16 +1224,16 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
             memory::StringCopy(loc, temp.Data(), len);
         }
         else {
-            Ptr loc = m_Small.Data() + static_cast<OffsetT>(index);
+            Ptr loc = oldBuffer + static_cast<OffsetT>(index);
             memory::StringMove(loc + static_cast<OffsetT>(len), loc, m_Size - index);
             memory::StringCopy(loc, ptr, len);
         }
     }
     else {
+        Ptr oldBuffer = m_Large.Data();
         if (newSize > m_Large.Capacity()) {
             LargeBuffer buffer = m_Large.Increment(len, m_Alloc);
             Ptr newBuffer = buffer.Data();
-            Ptr oldBuffer = m_Large.Data();
 
             memory::StringCopy(newBuffer, oldBuffer, index);
             memory::StringCopy(newBuffer + static_cast<OffsetT>(index + len),
@@ -1253,8 +1241,9 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
             memory::StringCopy(newBuffer + static_cast<OffsetT>(index), ptr, len);
             m_Large.Assign(MoveArg(buffer), m_Alloc);
         }
-        else if (IsOverlapping(ptr)) {
-            Ptr loc = m_Large.Data() + static_cast<OffsetT>(index);
+        else if (memory::IsPtrOverlapping(ptr, oldBuffer,
+                                          oldBuffer + static_cast<OffsetT>(m_Size))) {
+            Ptr loc = oldBuffer + static_cast<OffsetT>(index);
             BasicString temp(ptr, len, m_Alloc);
 
             memory::StringCopy(temp.GetBuffer(), ptr, len);
@@ -1262,7 +1251,7 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
             memory::StringCopy(loc, temp.GetBuffer(), len);
         }
         else {
-            Ptr loc = m_Large.Data() + static_cast<OffsetT>(index);
+            Ptr loc = oldBuffer + static_cast<OffsetT>(index);
             memory::StringMove(loc + static_cast<OffsetT>(len), loc, m_Size - index);
             memory::StringCopy(loc, ptr, len);
         }

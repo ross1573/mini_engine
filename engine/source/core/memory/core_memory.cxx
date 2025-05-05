@@ -19,6 +19,12 @@ inline constexpr void* MakeVoidPtr(T* ptr)
 export namespace mini::memory {
 
 template <typename T>
+concept DereferencableT = requires(T ele) { *ele; };
+
+template <typename T>
+concept AddressableT = PtrT<T> || ForwardIteratorT<T>;
+
+template <AddressableT T>
 inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
 {
     if constexpr (PtrT<T>) {
@@ -30,6 +36,28 @@ inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
     else {
         NEVER_CALLED("unknown type for address conversion", T);
     }
+}
+
+template <PtrT T, PtrT U>
+inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
+{
+    // TODO: this is how clang manages comparison between pointers to unrelated objects
+    if (IsConstantEvaluated()) {
+        return false;
+    }
+
+    return (begin <= ptr) && (end > ptr);
+}
+
+template <PtrT T, PtrT U>
+inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
+{
+    // TODO: this is how clang manages comparison between pointers to unrelated objects
+    if (IsConstantEvaluated()) {
+        return false;
+    }
+
+    return IsPtrOverlapping(b1, b2, e2) || IsPtrOverlapping(e1, b2, e2);
 }
 
 template <NonArrT T, typename... Args>

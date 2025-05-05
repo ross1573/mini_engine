@@ -97,11 +97,11 @@ int main()
         arr.Push(Format("hello world! {}", 2));
 
         Array<Foo> arr2(arr);
-        arr.AddRange(arr.Begin(), arr.End());
+        arr.Append(arr.Begin(), arr.End());
         arr.RemoveRange(arr.Begin(), arr.Begin() + 3);
-        arr.AddRange(arr2.Begin(), arr2.End());
+        arr.Append(arr2.Begin(), arr2.End());
         arr.RemoveRange(arr.Begin(), arr.Begin() + 2);
-        arr.AddRange(arr2.Begin(), arr2.End());
+        arr.Append(arr2.Begin(), arr2.End());
         arr.RemoveAt(arr.Begin());
         arr.Assign(arr.Begin(), arr.End());
     }
