@@ -435,7 +435,8 @@ template <MovableT T, AllocatorT<T> AllocT>
 constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
 {
     OffsetT locDiff = iter - Begin();
-    if (locDiff == (OffsetT)m_Size) {
+    if (locDiff == OffsetT(m_Size) - 1) [[unlikely]] {
+        RemoveLast();
         return;
     }
 
@@ -444,7 +445,6 @@ constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
     Ptr loc = begin + locDiff;
     Ptr end = begin + m_Size;
 
-    memory::DestructAt(loc);
     memory::MoveRange(loc, loc + 1, end);
     memory::DestructAt(end - 1);
     --m_Size;
@@ -473,17 +473,10 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
 
     Iterator iterBegin = Begin();
     Ptr begin = m_Buffer.Data();
-    Ptr locFirst = begin + (first - iterBegin);
-    Ptr locLast = begin + (last - iterBegin);
-
-    memory::DestructRange(locFirst, locLast);
-
-    Ptr end = m_Buffer.Data() + m_Size;
-    if (locLast != end) {
-        memory::MoveRange(locFirst, locFirst + distance, end);
-        memory::DestructRange(end - distance, end);
-    }
-
+    Ptr end = begin + m_Size;
+    Ptr loc = begin + (first - iterBegin);
+    memory::MoveRange(loc, loc + distance, end);
+    memory::DestructRange(end - distance, end);
     m_Size -= distance;
 }
 
