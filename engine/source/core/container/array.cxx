@@ -62,7 +62,7 @@ public:
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void AddRange(Iter, Iter);
+    constexpr void Append(Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(SizeT, Iter, Iter);
     template <ForwardIteratableByT<T> Iter>
@@ -311,7 +311,7 @@ constexpr void Array<T, AllocT>::Assign(Iter first, Iter last)
 
 template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
-constexpr void Array<T, AllocT>::AddRange(Iter first, Iter last)
+constexpr void Array<T, AllocT>::Append(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
@@ -352,7 +352,7 @@ constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, Iter first, Ite
 {
     OffsetT locDiff = iter - Begin();
     if (locDiff == (OffsetT)m_Size) {
-        AddRange(first, last);
+        Append(first, last);
         return;
     }
 
