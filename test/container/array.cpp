@@ -45,7 +45,7 @@ static constexpr SizeT SizeOfArray(SizeT count, Args&&... args)
 [[maybe_unused]] static constexpr void ConstexprArray()
 {
     static_assert(AccumulateArray<Array<int>>({1, 2, 3}) == 6);
-    static_assert(SizeOfArray<Array<ConstExprFoo>>(5, "string") == 5);
+    static_assert(SizeOfArray<Array<ConstexprFoo>>(5, "string") == 5);
 }
 
 int main()

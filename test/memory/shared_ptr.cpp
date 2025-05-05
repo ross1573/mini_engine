@@ -8,12 +8,12 @@ static constexpr bool ConstexprSharedPtr()
 {
     // TODO: MSVC bug
     //  destructor need to be "generated" before constant evaluation
-    ConstExprFoo("string");
+    ConstexprFoo("string");
 
-    SharedPtr<ConstExprFoo> p(new ConstExprFoo("string"));
-    SharedPtr<ConstExprFoo> p2(p);
+    SharedPtr<ConstexprFoo> p(new ConstexprFoo("string"));
+    SharedPtr<ConstexprFoo> p2(p);
     {
-        SharedPtr<ConstExprFoo> p3(p);
+        SharedPtr<ConstexprFoo> p3(p);
     }
     return p.Equals(p2) && p.OwnerEquals(p2);
 }
@@ -25,12 +25,12 @@ int main()
     SharedPtr<Foo> p;
     SharedPtr<Foo> p2(nullptr);
     SharedPtr<Foo> p3(nullptr, mini::DefaultDeleter<Foo>{});
-    SharedPtr<Foo> p4(nullptr, [](NullptrT){});
-    SharedPtr<Foo> p5(nullptr, [](NullptrT){}, mini::Allocator<NullptrT>{});
+    SharedPtr<Foo> p4(nullptr, [](NullptrT) {});
+    SharedPtr<Foo> p5(nullptr, [](NullptrT) {}, mini::Allocator<NullptrT>{});
     SharedPtr<Foo> p6(new Foo("string1"));
     SharedPtr<Foo> p7(new Foo("string2"), FooDel{});
     SharedPtr<Foo> p10 = MakeShared<Foo>("string5");
-    SharedPtr<String> p11(&p7->str, [](auto){});
+    SharedPtr<String> p11(&p7->str, [](auto) {});
     SharedPtr<String> p12(p7, &p7->str);
 
     {

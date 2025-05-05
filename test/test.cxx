@@ -116,14 +116,14 @@ struct Foo {
     bool operator==(Foo const& o) const noexcept { return str == o.str; }
 };
 
-struct ConstExprFoo {
+struct ConstexprFoo {
     String str;
 
-    constexpr ConstExprFoo() = default;
-    constexpr ConstExprFoo(String const& s) : str(s) {}
-    constexpr ConstExprFoo(String&& s) : str(MoveArg(s)) {}
+    constexpr ConstexprFoo() = default;
+    constexpr ConstexprFoo(String const& s) : str(s) {}
+    constexpr ConstexprFoo(String&& s) : str(MoveArg(s)) {}
 
-    constexpr bool operator==(Foo const& o) const noexcept { return str == o.str; }
+    constexpr bool operator==(ConstexprFoo const& o) const noexcept { return str == o.str; }
 };
 
 struct FooAlloc {

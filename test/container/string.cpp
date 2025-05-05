@@ -137,22 +137,34 @@ static constexpr int TestAppend()
 {
     BasicString<T> str;
     BasicString<T> str2;
+    std::basic_string<T> stdstr;
 
     str.Append(CStr::s);
+    str2.Append(CStr::s);
+    stdstr.append(CStr::s);
     TEST_ENSURE(str == CStr::s);
-    TEST_ENSURE(str != static_cast<T const*>(nullptr));
+    TEST_ENSURE(str2 == stdstr);
 
     str.Clear();
     str.Append(CStr::l);
+    str2.Append(CStr::l);
+    stdstr.append(CStr::l);
     TEST_ENSURE(str == CStr::l);
+    TEST_ENSURE(str2 == stdstr);
 
     str.Clear();
     str.Append(CStr::s, 10);
+    str2.Append(CStr::s, 10);
+    stdstr.append(CStr::s, 10);
     TEST_ENSURE(str == CStr::s_10);
+    TEST_ENSURE(str2 == stdstr);
 
     str.Clear();
     str.Append(CStr::l, 30);
+    str2.Append(CStr::l, 30);
+    stdstr.append(CStr::l, 30);
     TEST_ENSURE(str == CStr::l_30);
+    TEST_ENSURE(str2 == stdstr);
 
     str2 = CStr::s;
     str.Clear();
@@ -317,6 +329,7 @@ static constexpr int TestOperator()
     BasicString<T> str;
 
     str = CStr::e;
+    TEST_ENSURE(str != static_cast<T const*>(nullptr));
     TEST_ENSURE((str == CStr::e && CStr::e == str));
 
     str = CStr::s;
