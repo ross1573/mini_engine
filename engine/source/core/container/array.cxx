@@ -492,17 +492,18 @@ constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
     Ptr begin(m_Buffer.Data());
 
     if (m_Size < size) {
+        Value temp(ForwardArg<Args>(args)...);
+
         if (m_Buffer.Capacity() < size) {
             Buffer newBuf = m_Buffer.Resize(size);
             Ptr newBegin(newBuf.Data());
 
-            memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size,
-                                       ForwardArg<Args>(args)...);
+            memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size, temp);
             memory::MoveConstructRange(newBegin, begin, begin + m_Size);
             SwapNewBuffer(newBuf);
         }
         else {
-            memory::ConstructRangeArgs(begin + m_Size, begin + size, ForwardArg<Args>(args)...);
+            memory::ConstructRangeArgs(begin + m_Size, begin + size, temp);
         }
     }
     else {
@@ -560,7 +561,7 @@ template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Array<T, AllocT>::Swap(Array& other) noexcept
 {
     m_Buffer.Swap(other.m_Buffer);
-    Swap(m_Size, other.m_Size);
+    mini::Swap(m_Size, other.m_Size);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -750,6 +751,12 @@ inline constexpr bool operator==(Array<T, AllocT> const& l, Array<U, AllocU> con
     }
 
     return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+inline constexpr void Swap(Array<T, AllocT>& l, Array<T, AllocT>& r) noexcept
+{
+    return l.Swap(r);
 }
 
 } // namespace mini
