@@ -744,7 +744,7 @@ Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const
     ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
 }
 
-template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>
+export template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>
 inline constexpr bool operator==(Array<T, AllocT> const& l, Array<U, AllocU> const& r)
     requires EqualityComparableWithT<T, U>
 {
