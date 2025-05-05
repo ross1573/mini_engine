@@ -136,7 +136,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 
     log::Info("selected device: {} ({})", desc.Data(), adapterDesc.DeviceId);
-    log::Info("D3D feature level: {}", selectedLevelStr);
+    log::Info("D3D feature level: {}", selectedLevelStr.Data());
     log::Info("gpu memory: {} ({:4.2f} GB)", gpumem, (float)gpumem / (float)(1 << 30));
     log::Info("system Memory: {} ({:4.2f} GB)", sysmem, (float)sysmem / (float)(1 << 30));
 }

@@ -44,13 +44,14 @@ GRAPHICS_API const std::regex vulkan_regex("[Vv][Uu][Ll][Kk][Aa][Nn]");
 
 export GRAPHICS_API API ParseAPI(String const& str)
 {
-    if (std::regex_match(str, d3d12_regex)) {
+    char const* src = str.Data();
+    if (std::regex_match(src, d3d12_regex)) {
         return API::D3D12;
     }
-    else if (std::regex_match(str, metal_regex)) {
+    else if (std::regex_match(src, metal_regex)) {
         return API::Metal;
     }
-    else if (std::regex_match(str, vulkan_regex)) {
+    else if (std::regex_match(src, vulkan_regex)) {
         return API::Vulkan;
     }
     return API::Null;

@@ -67,7 +67,7 @@ void Handle::OnKeyDown(uint keyCode)
 {
     switch (keyCode) {
         case 0x0C: Engine::Quit(); break;
-        case 0x35: Engine::Abort(); break;
+        case 0x35: Engine::Abort("escape"); break;
         default:   break;
     }
 }

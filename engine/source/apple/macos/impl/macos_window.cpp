@@ -17,7 +17,7 @@ Window::Window(cocoa::Application* application)
 
 void Window::DialogCritical(String const& msg)
 {
-    cocoa::Window::AlertError(msg.c_str());
+    cocoa::Window::AlertError(msg.Data());
 }
 
 void Window::Resize(RectInt const&)

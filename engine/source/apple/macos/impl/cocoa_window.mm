@@ -100,8 +100,8 @@ void Window::AlertError(char const* msg)
         NSString* errMsg = [NSString stringWithUTF8String:msg];
         NSAlert* alert = [[NSAlert alloc] init];
         [alert addButtonWithTitle:@"OK"];
-        [alert setInformativeText:@"Error"];
-        [alert setMessageText:errMsg];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:errMsg];
         [alert setAlertStyle:NSAlertStyleCritical];
         [alert runModal];
     }

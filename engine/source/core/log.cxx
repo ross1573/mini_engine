@@ -8,6 +8,7 @@ export module mini.core:log;
 import :type;
 import :string;
 import :string_view;
+import :format;
 
 export CORE_API void LogMessage(char const* msg);
 
@@ -16,22 +17,31 @@ export namespace mini::log {
 template <typename... Args>
 void Info(StringView msg, Args&&... args)
 {
-    LogMessage(std::format("[Info] {}\n", std::vformat(msg, std::make_format_args(args...)))
-                   .c_str());
+    String str(static_cast<SizeT>(8 + msg.size()));
+    str.Append("[Info] ");
+    str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
+    str.Push('\n');
+    LogMessage(str.Data());
 }
 
 template <typename... Args>
 void Warning(StringView msg, Args&&... args)
 {
-    LogMessage(std::format("[Warning] {}\n", std::vformat(msg, std::make_format_args(args...)))
-                   .c_str());
+    String str(static_cast<SizeT>(11 + msg.size()));
+    str.Append("[Warning] ");
+    str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
+    str.Push('\n');
+    LogMessage(str.Data());
 }
 
 template <typename... Args>
 void Error(StringView msg, Args&&... args)
 {
-    LogMessage(std::format("[Error] {}\n", std::vformat(msg, std::make_format_args(args...)))
-                   .c_str());
+    String str(static_cast<SizeT>(9 + msg.size()));
+    str.Append("[Error] ");
+    str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
+    str.Push('\n');
+    LogMessage(str.Data());
 }
 
 } // namespace mini::log

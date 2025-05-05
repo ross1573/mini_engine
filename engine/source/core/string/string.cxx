@@ -18,9 +18,16 @@ import :array_iterator;
 
 namespace mini {
 
-export using String = std::basic_string<char>;
-
 export template <CharT T, AllocatorT<T> AllocT = mini::Allocator<T>>
+class BasicString;
+
+export using String = BasicString<char>;
+export using WString = BasicString<wchar>;
+export using U8String = BasicString<char8>;
+export using U16String = BasicString<char16>;
+export using U32String = BasicString<char32>;
+
+template <CharT T, AllocatorT<T> AllocT>
 class BasicString {
 private:
     static consteval SizeT SmallBufferSize() noexcept;
@@ -61,6 +68,7 @@ public:
     constexpr BasicString(BasicString&&, AllocT const&) noexcept;
     constexpr BasicString(AllocT const&) noexcept;
     constexpr BasicString(AllocT&&) noexcept;
+    constexpr BasicString(SizeT, AllocT const& = AllocT());
     constexpr BasicString(Value, SizeT, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, SizeT, AllocT const& = AllocT());
@@ -236,6 +244,22 @@ inline constexpr BasicString<T, AllocT>::BasicString(AllocT&& alloc) noexcept
     , m_Size(0)
     , m_Small{}
 {
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>::BasicString(SizeT capacity, AllocT const& alloc)
+    : m_Alloc(alloc)
+    , m_Layout(0)
+    , m_Size(0)
+{
+    if (capacity <= SmallBufferSize()) {
+        memory::ConstructAt(&m_Small);
+    }
+    else {
+        memory::ConstructAt(&m_Large);
+        m_Large.Allocate(capacity + 1, m_Alloc);
+        m_Layout = 1;
+    }
 }
 
 template <CharT T, AllocatorT<T> AllocT>

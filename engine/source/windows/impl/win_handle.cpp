@@ -96,7 +96,7 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 
 
         case WM_KEYDOWN:
             switch (wParam) {
-                case VK_ESCAPE: Engine::Abort("Abort!"); break;
+                case VK_ESCAPE: Engine::Abort("escape"); break;
                 case 'Q':       Engine::Quit(); break;
                 default:        break;
             }
