@@ -19,7 +19,10 @@ inline constexpr bool CheckDest(T dest)
 template <ForwardIteratorT T>
 inline constexpr bool CheckRange(T begin, T end)
 {
-    if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]] {
+    if (begin == end) [[unlikely]] {
+        return true;
+    }
+    else if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]] {
         return false;
     }
 

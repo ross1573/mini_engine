@@ -19,6 +19,9 @@ class StaticQueue {
 private:
     typedef StaticBuffer<T, CapacityN> Buffer;
 
+    template <MovableT U, SizeT CapU>
+    friend class StaticQueue;
+
 public:
     typedef T Value;
     typedef T* Ptr;
@@ -78,9 +81,6 @@ public:
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
 
-    template <EqualityComparableWithT<T> U, SizeT OtherN>
-    constexpr bool operator==(StaticQueue<U, OtherN> const&) const;
-
     constexpr StaticQueue& operator=(StaticQueue const&);
     constexpr StaticQueue& operator=(StaticQueue&&) noexcept;
 
@@ -113,8 +113,8 @@ inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
     , m_Buffer()
 {
     memory::ConstructRange(m_Buffer.Data(), other.Begin(), other.End());
-    m_Begin = other.m_Begin;
-    m_End = other.m_End;
+    m_Begin = 0;
+    m_End = other.m_Size;
     m_Size = other.m_Size;
 }
 
@@ -125,13 +125,13 @@ inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
     , m_Size(0)
     , m_Buffer()
 {
-    Ptr otherBegin = other.m_Buffer.Data() + other.m_Begin;
-    Ptr otherEnd = other.m_Buffer.Data() + other.m_End;
+    Iterator otherBegin = other.Begin();
+    Iterator otherEnd = other.End();
 
     memory::MoveConstructRange(m_Buffer.Data(), otherBegin, otherEnd);
     memory::DestructRange(otherBegin, otherEnd);
-    m_Begin = other.m_Begin;
-    m_End = other.m_End;
+    m_Begin = 0;
+    m_End = other.m_Size;
     m_Size = other.m_Size;
     other.m_Begin = 0;
     other.m_End = 0;
@@ -322,6 +322,10 @@ template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::Iterator StaticQueue<T, N>::End() noexcept
 {
     SizeT cap = m_Buffer.Capacity();
+    if (m_Begin == m_End) {
+        return Iterator(m_Begin + m_Size, cap, m_Buffer.Data(), 0, this);
+    }
+
     SizeT endIdx = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + cap;
     return Iterator(endIdx, cap, m_Buffer.Data(), 0, this);
 }
@@ -330,6 +334,10 @@ template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::ConstIterator StaticQueue<T, N>::End() const noexcept
 {
     SizeT cap = m_Buffer.Capacity();
+    if (m_Begin == m_End) {
+        return ConstIterator(m_Begin + m_Size, cap, m_Buffer.Data(), 0, this);
+    }
+
     SizeT endIdx = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + cap;
     return ConstIterator(endIdx, cap, m_Buffer.Data(), 0, this);
 }
@@ -433,23 +441,6 @@ inline constexpr T const& StaticQueue<T, N>::operator[](SizeT index) const
 }
 
 template <MovableT T, SizeT N>
-template <EqualityComparableWithT<T> U, SizeT OtherN>
-inline constexpr bool StaticQueue<T, N>::operator==(StaticQueue<U, OtherN> const& other) const
-{
-    if (m_Buffer == other.m_Buffer) [[unlikely]] {
-        return true;
-    }
-    else if (m_Size != other.m_Size) {
-        return false;
-    }
-    else if (m_Size == 0) [[unlikely]] {
-        return true;
-    }
-
-    return memory::EqualRange(Begin(), other.Begin(), other.End());
-}
-
-template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue const& other)
 {
     if (m_Buffer == other.m_Buffer) [[unlikely]] {
@@ -487,7 +478,7 @@ StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexce
 
     [[maybe_unused]] bool isValid = false;
     if (m_Begin < m_End) {
-        isValid = offset > m_Begin && offset < m_End;
+        isValid = offset >= m_Begin && offset < m_End;
     }
     else {
         isValid = (offset >= 0 && offset < m_End) ||
@@ -502,6 +493,21 @@ inline constexpr void
 StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     ASSERT(IsValidIterator(iter), "invalid range");
+}
+
+template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>
+inline constexpr bool operator==(StaticQueue<T, CapT> const& l,
+                                 StaticQueue<U, CapU> const& r) noexcept
+    requires EqualityComparableWithT<T, U>
+{
+    if (l.Size() != r.Size()) {
+        return false;
+    }
+    else if (l.Size() == 0) [[unlikely]] {
+        return true;
+    }
+
+    return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
 }
 
 } // namespace mini
