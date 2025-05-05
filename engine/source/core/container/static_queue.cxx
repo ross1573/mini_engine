@@ -155,7 +155,7 @@ inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_Size + 1);
-    memory::ConstructAt(m_Buffer.Data() + m_End, ForwardArg<T>(args)...);
+    memory::ConstructAt(m_Buffer.Data() + m_End, ForwardArg<Args>(args)...);
     m_End = (m_End + 1) % m_Buffer.Capacity();
     ++m_Size;
 }
