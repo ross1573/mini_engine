@@ -52,6 +52,7 @@ public:
 
     constexpr UniquePtr& operator=(NullptrT) noexcept;
     constexpr UniquePtr& operator=(UniquePtr&&) noexcept;
+
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
     constexpr UniquePtr& operator=(UniquePtr<U, DelU>&&) noexcept
         requires ConvertibleToT<DelU, DelT>;
@@ -60,6 +61,7 @@ private:
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
     UniquePtr(UniquePtr<T, DelU> const&) = delete;
     UniquePtr(UniquePtr const&) = delete;
+
     template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
     UniquePtr& operator=(UniquePtr<U, DelU> const&) = delete;
     UniquePtr& operator=(UniquePtr const&) = delete;
