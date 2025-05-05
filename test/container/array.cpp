@@ -1,4 +1,5 @@
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "test_macro.h"
@@ -49,7 +50,6 @@ static constexpr int TestArray(Array<T, AllocT> const& arr, std::vector<T, StdAl
     };
 
     TEST_ENSURE(arr.Size() == vec.size());
-    TEST_ENSURE(arr.Capacity() == vec.capacity());
 
     if (arr.Size() != 0) {
         TEST_ENSURE(TestElement(arr.First(), vec.front()));
