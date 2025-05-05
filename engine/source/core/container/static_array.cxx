@@ -326,7 +326,6 @@ constexpr void StaticArray<T, N>::RemoveAt(ConstIterator iter)
     Ptr loc = begin + locDiff;
     Ptr end = begin + (OffsetT)m_Size;
 
-    memory::DestructAt(loc);
     memory::MoveRange(loc, loc + 1, end);
     memory::DestructAt(end - 1);
     --m_Size;
@@ -355,17 +354,11 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 
     Iterator iterBegin = Begin();
     Ptr begin = m_Buffer.Data();
-    Ptr locFirst = begin + (first - iterBegin);
-    Ptr locLast = begin + (last - iterBegin);
-
-    memory::DestructRange(locFirst, locLast);
-
     Ptr end = begin + m_Size;
-    if (locLast != end) {
-        memory::MoveRange(locFirst, locFirst + distance, end);
-        memory::DestructRange(end - distance, end);
-    }
+    Ptr loc = begin + (first - iterBegin);
 
+    memory::MoveRange(loc, loc + distance, end);
+    memory::DestructRange(end - distance, end);
     m_Size -= distance;
 }
 

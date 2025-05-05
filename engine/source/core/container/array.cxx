@@ -475,6 +475,7 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
     Ptr begin = m_Buffer.Data();
     Ptr end = begin + m_Size;
     Ptr loc = begin + (first - iterBegin);
+    
     memory::MoveRange(loc, loc + distance, end);
     memory::DestructRange(end - distance, end);
     m_Size -= distance;
