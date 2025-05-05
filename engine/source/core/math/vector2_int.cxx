@@ -19,10 +19,8 @@ struct Vector2Int {
     constexpr Vector2Int() noexcept;
     constexpr Vector2Int(int32, int32) noexcept;
     constexpr Vector2Int(uint32, uint32) noexcept;
-    constexpr Vector2Int(Vector2Int const&) noexcept;
     explicit constexpr Vector2Int(Vector2 const&) noexcept;
     explicit constexpr Vector2Int(Int32ConvertibleT auto) noexcept;
-    constexpr ~Vector2Int() noexcept = default;
 
     /*constexpr*/ float32 Length() const noexcept;
     /*constexpr*/ SizeT LengthSquared() const noexcept;
@@ -32,7 +30,6 @@ struct Vector2Int {
     static /*constexpr*/ float32 Distance(Vector2Int const&, Vector2Int const&) noexcept;
     static /*constexpr*/ SizeT DistanceSquared(Vector2Int const&, Vector2Int const&) noexcept;
 
-    constexpr Vector2Int& operator=(Vector2Int const&) noexcept;
     constexpr Vector2Int& operator+=(Vector2Int const&) noexcept;
     constexpr Vector2Int& operator-=(Vector2Int const&) noexcept;
     constexpr Vector2Int& operator*=(Int32ConvertibleT auto) noexcept;
@@ -80,12 +77,6 @@ inline constexpr Vector2Int::Vector2Int(uint32 inX, uint32 inY) noexcept
 {
 }
 
-inline constexpr Vector2Int::Vector2Int(Vector2Int const& v) noexcept
-    : x(v.x)
-    , y(v.y)
-{
-}
-
 inline constexpr Vector2Int::Vector2Int(Vector2 const& v) noexcept
     : x(static_cast<int32>(v.x))
     , y(static_cast<int32>(v.y))
@@ -126,13 +117,6 @@ inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1,
                                                        Vector2Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
-}
-
-inline constexpr Vector2Int& Vector2Int::operator=(Vector2Int const& v) noexcept
-{
-    x = v.x;
-    y = v.y;
-    return *this;
 }
 
 inline constexpr Vector2Int& Vector2Int::operator+=(Vector2Int const& v) noexcept
