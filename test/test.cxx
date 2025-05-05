@@ -86,12 +86,12 @@ struct DebugAlloc : public Allocator<T> {
 };
 
 struct Foo {
-    String str;
+    BasicString<char> str;
     uint64 a[16];
 
     Foo() : a{0, } { ++ctor; }
-    Foo(String const& s) : str(s), a{1, } { ++ctor; }
-    Foo(String&& s) : str(MoveArg(s)), a{1, } { ++ctor; }
+    Foo(BasicString<char> const& s) : str(s), a{1, } { ++ctor; }
+    Foo(BasicString<char>&& s) : str(MoveArg(s)), a{1, } { ++ctor; }
     Foo(Foo const& o) : str(o.str), a{o.a[0], } { ++copyCtor; }
     Foo(Foo&& o) noexcept
         : str(Exchange(o.str, {})), a{1, } 
@@ -117,11 +117,11 @@ struct Foo {
 };
 
 struct ConstexprFoo {
-    String str;
+    BasicString<char> str;
 
     constexpr ConstexprFoo() = default;
-    constexpr ConstexprFoo(String const& s) : str(s) {}
-    constexpr ConstexprFoo(String&& s) : str(MoveArg(s)) {}
+    constexpr ConstexprFoo(BasicString<char> const& s) : str(s) {}
+    constexpr ConstexprFoo(BasicString<char>&& s) : str(MoveArg(s)) {}
 
     constexpr bool operator==(ConstexprFoo const& o) const noexcept { return str == o.str; }
 };
@@ -130,7 +130,7 @@ struct FooAlloc {
     typedef Foo Value;
     typedef Foo* Ptr;
 
-    String str = "FooAlloc";
+    BasicString<char> str = "FooAlloc";
     Debug debug;
 
     template <typename U>

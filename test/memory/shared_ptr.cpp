@@ -30,8 +30,8 @@ int main()
     SharedPtr<Foo> p6(new Foo("string1"));
     SharedPtr<Foo> p7(new Foo("string2"), FooDel{});
     SharedPtr<Foo> p10 = MakeShared<Foo>("string5");
-    SharedPtr<String> p11(&p7->str, [](auto) {});
-    SharedPtr<String> p12(p7, &p7->str);
+    SharedPtr<BasicString<char>> p11(&p7->str, [](auto) {});
+    SharedPtr<BasicString<char>> p12(p7, &p7->str);
 
     {
         auto alloc = FooAlloc{};
