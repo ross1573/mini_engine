@@ -4,11 +4,15 @@ module;
 
 #include "assertion.h"
 
-#if CLANG || GCC
-#  define PACKED_STRUCT_BEGIN __attribute__((__packed__))
+#if CLANG || GNUC
+#  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
 #else
-#  define PACKED_STRUCT_BEGIN
+// TODO: might be a bug when using with c++20 modules
+//  windows standalone will mostly pack bit-fields, so it may not be necessary..?
+// #  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
+// #  define PACKED_STRUCT_END      __pragma(pack(pop))
+#  define PACKED_STRUCT_BEGIN(x)
 #  define PACKED_STRUCT_END
 #endif
 
@@ -55,7 +59,7 @@ private:
     typedef TrivialBuffer<T> LargeBuffer;
 
     struct LargeStorage {
-        PACKED_STRUCT_BEGIN
+        PACKED_STRUCT_BEGIN(1)
         struct {
             byte padding : 7;
             byte layout  : 1;
@@ -78,7 +82,7 @@ private:
     typedef StaticBuffer<T, SmallCapacity> SmallBuffer;
 
     struct SmallStorage {
-        PACKED_STRUCT_BEGIN
+        PACKED_STRUCT_BEGIN(1)
         struct {
             byte size   : 7;
             byte layout : 1;
