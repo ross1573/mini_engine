@@ -48,19 +48,29 @@ CSTR(char32, constexpr, U);
     static_assert(sizeof(BasicString<char32>) == 24);
 }
 
+template <typename T>
+static constexpr int TestSSO()
+{
+    using CStr = CStr_inline<T>;
+    constexpr auto SSOSize = (sizeof(BasicString<T>) / sizeof(T)) - 2;
+
+    TEST_ENSURE(BasicString<T>(CStr::ch, 4).Capacity() == SSOSize);
+    TEST_ENSURE(BasicString<T>(CStr::l, 30).Capacity() == 30);
+    TEST_ENSURE(BasicString<T>(CStr::ch, SSOSize - 1).Capacity() == SSOSize);
+
+    return 0;
+}
+
 template <typename T, typename CStr>
 static constexpr int TestCtor()
 {
-    constexpr auto sboSize = ((sizeof(BasicString<T>) - 8) / sizeof(T)) - 1;
     constexpr auto alloc = Allocator<T>{};
 
     TEST_ENSURE(BasicString<T>{} == CStr::e);
     TEST_ENSURE(BasicString<T>(alloc) == CStr::e);
 
-    TEST_ENSURE(BasicString<T>(CStr::ch, 2).Capacity() == sboSize);
     TEST_ENSURE(BasicString<T>(CStr::ch, 2).Size() == 2);
     TEST_ENSURE(BasicString<T>(CStr::ch, 2, alloc).Size() == 2);
-    TEST_ENSURE(BasicString<T>(CStr::ch, 32).Capacity() == 32);
     TEST_ENSURE(BasicString<T>(CStr::ch, 32).Size() == 32);
     TEST_ENSURE(BasicString<T>(CStr::ch, 32, alloc).Size() == 32);
 
@@ -318,7 +328,6 @@ static constexpr int TestModify()
 
     str2.Swap(str);
     TEST_ENSURE(str2.Size() == 0 && str2.Capacity() == 42);
-    TEST_ENSURE(str.Size() == 0 && str.Capacity() == 15);
 
     return 0;
 }
@@ -349,6 +358,13 @@ static constexpr int TestOperator()
 
 int main()
 {
+    // small-buffer-optimization is only applied on runtime
+    TEST_ENSURE((TestSSO<char>() == 0));
+    TEST_ENSURE((TestSSO<wchar>() == 0));
+    TEST_ENSURE((TestSSO<char8>() == 0));
+    TEST_ENSURE((TestSSO<char16>() == 0));
+    TEST_ENSURE((TestSSO<char32>() == 0));
+
     TEST_STRING(TestCtor, char);
     TEST_STRING(TestCtor, wchar);
     TEST_STRING(TestCtor, char8);
