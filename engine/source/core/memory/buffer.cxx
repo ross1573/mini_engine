@@ -296,8 +296,7 @@ public:
         Deallocate(alloc);
         m_Buffer = mini::Exchange(other.m_Buffer, nullptr);
         m_Capacity = mini::Exchange(other.m_Capacity, 0);
-        ++m_Version;
-        other.m_Version = 0;
+        m_Version = mini::Exchange(other.m_Version, 0) + 1;
     }
 
     inline constexpr bool operator==(TrivialBuffer const& other) const noexcept

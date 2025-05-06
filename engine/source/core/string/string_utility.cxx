@@ -218,15 +218,21 @@ inline constexpr T* StringCopy(T* dst, T const* src) noexcept
 export template <CharT T>
 inline constexpr T* StringMove(T* dst, T const* src, SizeT len) noexcept
 {
-    if (!IsConstantEvaluated()) {
-        if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMMOVE(static_cast<void*>(dst), static_cast<void const*>(src),
-                                        static_cast<size_t>(len));
-            return static_cast<T*>(ptr);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
-            return BUILTIN_WMEMMOVE(dst, src, static_cast<size_t>(len));
-        }
+    if (IsConstantEvaluated()) {
+        T* tmp = new T[len];
+        StringCopy(tmp, src, len);
+        StringCopy(dst, tmp, len);
+        delete[] tmp;
+        return dst;
+    }
+
+    if constexpr (AnyOfT<T, char, char8>) {
+        void* ptr = BUILTIN_MEMMOVE(static_cast<void*>(dst), static_cast<void const*>(src),
+                                    static_cast<size_t>(len));
+        return static_cast<T*>(ptr);
+    }
+    else if constexpr (SameAsT<T, wchar>) {
+        return BUILTIN_WMEMMOVE(dst, src, static_cast<size_t>(len));
     }
 
     if (dst < src) {
