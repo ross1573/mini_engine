@@ -57,8 +57,8 @@ private:
     struct LargeStorage {
         PACKED_STRUCT_BEGIN
         struct {
-            byte layout  : 1;
             byte padding : 7;
+            byte layout  : 1;
         };
         PACKED_STRUCT_END
         byte _[3];
@@ -80,8 +80,8 @@ private:
     struct SmallStorage {
         PACKED_STRUCT_BEGIN
         struct {
-            byte layout : 1;
             byte size   : 7;
+            byte layout : 1;
         };
         PACKED_STRUCT_END
         SmallBuffer buffer;
