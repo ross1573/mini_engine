@@ -124,10 +124,6 @@ public:
 
     inline constexpr void Deallocate() noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if (m_Buffer == nullptr) [[unlikely]] {
-            return;
-        }
-
         m_Alloc.Deallocate(m_Buffer, m_Capacity);
         m_Buffer = nullptr;
         m_Capacity = 0;
@@ -252,10 +248,6 @@ public:
     template <AllocatorT<T> AllocT>
     inline constexpr void Deallocate(AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if (m_Buffer == nullptr) [[unlikely]] {
-            return;
-        }
-
         if (IsConstantEvaluated()) {
             memory::DestructRange(m_Buffer, m_Buffer + m_Capacity);
         }
