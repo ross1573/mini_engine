@@ -211,7 +211,7 @@ inline constexpr T* StringCopy(T* dst, T const* src, SizeT len) noexcept
 export template <CharT T>
 inline constexpr T* StringCopy(T* dst, T const* src) noexcept
 {
-    SizeT len = StringLength(src);
+    SizeT len = StringLength(src) + 1;
     return StringCopy(dst, src, len);
 }
 
@@ -255,7 +255,7 @@ inline constexpr T* StringMove(T* dst, T const* src, SizeT len) noexcept
 export template <CharT T>
 inline constexpr T* StringMove(T* dst, T const* src) noexcept
 {
-    SizeT len = StringLength(src);
+    SizeT len = StringLength(src) + 1;
     return StringMove(dst, src, len);
 }
 
