@@ -107,6 +107,10 @@ struct Allocator {
     inline constexpr void Deallocate(Ptr loc, SizeT size) const noexcept
     {
         if (IsConstantEvaluated()) {
+            if (loc == nullptr) {
+                return;
+            }
+
             CONSTEXPR_DEALLOC(T, loc, size);
             return;
         }
