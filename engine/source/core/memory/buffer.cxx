@@ -194,8 +194,8 @@ private:
     }
 
 public:
-    inline constexpr TrivialBuffer() = default;
-    inline constexpr ~TrivialBuffer() = default;
+    constexpr TrivialBuffer() = default;
+    constexpr ~TrivialBuffer() = default;
 
     inline constexpr TrivialBuffer(TrivialBuffer&& other) noexcept
         : m_Version(mini::Exchange(other.m_Version, 0) + 1)
