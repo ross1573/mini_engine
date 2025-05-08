@@ -194,14 +194,8 @@ private:
     }
 
 public:
-    inline constexpr TrivialBuffer() noexcept
-        : m_Version(0)
-        , m_Capacity(0)
-        , m_Buffer(nullptr)
-    {
-    }
-
-    inline constexpr ~TrivialBuffer() { ASSERT(m_Buffer == nullptr, "buffer not deallocated"); }
+    inline constexpr TrivialBuffer() = default;
+    inline constexpr ~TrivialBuffer() = default;
 
     inline constexpr TrivialBuffer(TrivialBuffer&& other) noexcept
         : m_Version(mini::Exchange(other.m_Version, 0) + 1)
