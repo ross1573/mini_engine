@@ -25,6 +25,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd4710 # function not inlined
         /wd4711 # selected for automatic inline
         /wd4820 # implicit padding
+        /wd5026 # implicitly deleted move constructor
+        /wd5027 # implicitly deleted move assign operator
         /wd5030 # unrecognized attribute
         /wd5045 # spectre stuff
         /wd5222 # unrecognized attribute
@@ -45,9 +47,6 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Wno-unknown-attributes
         -Wno-nested-anon-types
         -Wno-gnu-anonymous-struct
-
-        $<$<CONFIG:Debug>:-g>
-        $<$<CONFIG:Debug>:-fno-limit-debug-info>
     )
 
     if (WIN32)
