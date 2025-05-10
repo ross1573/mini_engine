@@ -28,6 +28,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "build")
 
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake/modules")
+
 include(GenerateExportHeader)
 
 if (APPLE)
@@ -38,6 +40,9 @@ add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
 
 if (INCLUDE_TEST)
-    enable_testing()
     add_subdirectory(test)
+endif()
+
+if (INCLUDE_BENCHMARK)
+    add_subdirectory(benchmark)
 endif()

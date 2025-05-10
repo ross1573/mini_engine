@@ -2,6 +2,10 @@
 set(CMAKE_MESSAGE_LOG_LEVEL WARNING)
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/external")
+
 macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)
 endmacro()
