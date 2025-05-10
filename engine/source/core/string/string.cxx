@@ -191,9 +191,6 @@ public:
     template <ConvertibleToT<T> U, typename TraitsU, typename AllocU>
     constexpr BasicString(std::basic_string<U, TraitsU, AllocU> const&, AllocT const& = AllocT());
 
-    template <typename TraitsT = std::char_traits<T>, typename StdAllocT = std::allocator<T>>
-    constexpr std::basic_string<T, TraitsT, StdAllocT> ToStdString() const;
-
     explicit constexpr operator std::basic_string<T>() const;
 
 private:
@@ -1618,17 +1615,25 @@ inline constexpr BasicString<T, AllocT>::
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <typename TraitsT, typename StdAllocT>
-inline constexpr std::basic_string<T, TraitsT, StdAllocT>
-BasicString<T, AllocT>::ToStdString() const
-{
-    return std::basic_string<T, TraitsT, StdAllocT>(Data(), Size());
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::operator std::basic_string<T>() const
 {
     return std::basic_string<T>(Data(), Size());
+}
+
+export template <CharT T, AllocatorT<T> AllocT, ConvertibleToT<T> U = T,
+                 typename TraitsU = std::char_traits<U>, typename AllocU = std::allocator<U>>
+inline constexpr BasicString<T, AllocT> ToString(std::basic_string<U, TraitsU, AllocU> const& other,
+                                                 AllocT const& alloc = AllocT())
+{
+    return BasicString<T, AllocT>(other.data(), other.size(), alloc);
+}
+
+export template <CharT T, AllocatorT<T> AllocT, ConvertibleToT<T> U = T,
+                 typename TraitsU = std::char_traits<U>, typename AllocU = std::allocator<U>>
+inline constexpr std::basic_string<U, TraitsU, AllocU>
+ToStdString(BasicString<T, AllocT> const& other, AllocU const& alloc = AllocU())
+{
+    return std::basic_string<U, TraitsU, AllocU>(other.Data(), other.Size(), alloc);
 }
 
 template <CharT T, AllocatorT<T> AllocT>

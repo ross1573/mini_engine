@@ -83,39 +83,63 @@ BENCHMARK(CtorIter_stdlib);
 static void AssignOther(benchmark::State& state)
 {
     String str("Hello from string!");
+    String str2;
     for (auto _ : state) {
-        String str2;
-        str2 = str;
+        str2.Assign(str);
     }
+    benchmark::DoNotOptimize(str2);
 }
 
 static void AssignOther_stdlib(benchmark::State& state)
 {
     std::string str("Hello from string!");
+    std::string str2;
     for (auto _ : state) {
-        std::string str2;
         str2 = str;
     }
+    benchmark::DoNotOptimize(str2);
+}
+
+static void AssignShort(benchmark::State& state)
+{
+    String str;
+    for (auto _ : state) {
+        str = "Hello from string!";
+    }
+    benchmark::DoNotOptimize(str);
+}
+
+static void AssignShort_stdlib(benchmark::State& state)
+{
+    std::string str;
+    for (auto _ : state) {
+        str = "Hello from string!";
+    }
+    benchmark::DoNotOptimize(str);
 }
 
 static void AssignLong(benchmark::State& state)
 {
+    String str;
     for (auto _ : state) {
-        String str;
         str = "Hello world from long string!";
     }
+    benchmark::DoNotOptimize(str);
 }
 
 static void AssignLong_stdlib(benchmark::State& state)
 {
+    std::string str;
     for (auto _ : state) {
-        std::string str;
         str = "Hello world from long string!";
     }
+    benchmark::DoNotOptimize(str);
 }
 
 BENCHMARK(AssignOther);
 BENCHMARK(AssignOther_stdlib);
+BENCHMARK(AssignShort);
+BENCHMARK(AssignShort_stdlib);
 BENCHMARK(AssignLong);
 BENCHMARK(AssignLong_stdlib);
 
@@ -125,6 +149,7 @@ static void Append(benchmark::State& state)
         String str;
         str.Append("Hello from string!");
         str.Append("Hello world from long string!");
+        benchmark::DoNotOptimize(str);
     }
 }
 
@@ -134,6 +159,7 @@ static void Append_stdlib(benchmark::State& state)
         std::string str;
         str.append("Hello from string!");
         str.append("Hello world from long string!");
+        benchmark::DoNotOptimize(str);
     }
 }
 
@@ -146,6 +172,7 @@ static void Insert(benchmark::State& state)
         String str;
         str.Insert(0, "Hello from string!");
         str.Insert(5, "Hello world from long string!");
+        benchmark::DoNotOptimize(str);
     }
 }
 
@@ -155,6 +182,7 @@ static void Insert_stdlib(benchmark::State& state)
         std::string str;
         str.insert(0, "Hello from string!");
         str.insert(5, "Hello world from long string!");
+        benchmark::DoNotOptimize(str);
     }
 }
 
