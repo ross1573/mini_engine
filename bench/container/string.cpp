@@ -24,7 +24,7 @@ static void CtorEmpty_stdlib(benchmark::State& state)
 static void CtorShort(benchmark::State& state)
 {
     for (auto _ : state) {
-        String str("Hello world!");
+        String str("Hello from string!");
         benchmark::DoNotOptimize(str);
     }
 }
@@ -32,7 +32,7 @@ static void CtorShort(benchmark::State& state)
 static void CtorShort_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
-        std::string str("Hello world!");
+        std::string str("Hello from string!");
         benchmark::DoNotOptimize(str);
     }
 }
@@ -55,7 +55,7 @@ static void CtorLong_stdlib(benchmark::State& state)
 
 static void CtorIter(benchmark::State& state)
 {
-    String str("Hello world!");
+    String str("Hello from string!");
     for (auto _ : state) {
         String str2(str.Begin(), str.End());
         benchmark::DoNotOptimize(str2);
@@ -64,7 +64,7 @@ static void CtorIter(benchmark::State& state)
 
 static void CtorIter_stdlib(benchmark::State& state)
 {
-    std::string str("Hello world!");
+    std::string str("Hello from string!");
     for (auto _ : state) {
         std::string str2(str.begin(), str.end());
         benchmark::DoNotOptimize(str2);
@@ -82,7 +82,7 @@ BENCHMARK(CtorIter_stdlib);
 
 static void AssignOther(benchmark::State& state)
 {
-    String str("Hello world!");
+    String str("Hello from string!");
     for (auto _ : state) {
         String str2;
         str2 = str;
@@ -91,7 +91,7 @@ static void AssignOther(benchmark::State& state)
 
 static void AssignOther_stdlib(benchmark::State& state)
 {
-    std::string str("Hello world!");
+    std::string str("Hello from string!");
     for (auto _ : state) {
         std::string str2;
         str2 = str;
@@ -123,7 +123,7 @@ static void Append(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
-        str.Append("Hello world!");
+        str.Append("Hello from string!");
         str.Append("Hello world from long string!");
     }
 }
@@ -132,7 +132,7 @@ static void Append_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
-        str.append("Hello world!");
+        str.append("Hello from string!");
         str.append("Hello world from long string!");
     }
 }
@@ -144,7 +144,7 @@ static void Insert(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
-        str.Insert(0, "Hello world!");
+        str.Insert(0, "Hello from string!");
         str.Insert(5, "Hello world from long string!");
     }
 }
@@ -153,7 +153,7 @@ static void Insert_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
-        str.insert(0, "Hello world!");
+        str.insert(0, "Hello from string!");
         str.insert(5, "Hello world from long string!");
     }
 }

@@ -1,6 +1,6 @@
 include(FetchContent)
 
-# save binaries on external folder
+# save output on external folder
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/external")
@@ -25,3 +25,8 @@ set_target_properties(benchmark_main
 PROPERTIES
     FOLDER external
 )
+
+# restore output folder
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/${BUILD_TARGET_ARCH}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/${BUILD_TARGET_ARCH}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/${BUILD_TARGET_ARCH}")
