@@ -12,9 +12,9 @@ import :format;
 
 export CORE_API void LogMessage(char const* msg);
 
-export namespace mini::log {
+namespace mini::log {
 
-template <typename... Args>
+export template <typename... Args>
 void Info(StringView msg, Args&&... args)
 {
     String str(static_cast<SizeT>(8 + msg.size()));
@@ -24,7 +24,7 @@ void Info(StringView msg, Args&&... args)
     LogMessage(str.Data());
 }
 
-template <typename... Args>
+export template <typename... Args>
 void Warning(StringView msg, Args&&... args)
 {
     String str(static_cast<SizeT>(11 + msg.size()));
@@ -34,7 +34,7 @@ void Warning(StringView msg, Args&&... args)
     LogMessage(str.Data());
 }
 
-template <typename... Args>
+export template <typename... Args>
 void Error(StringView msg, Args&&... args)
 {
     String str(static_cast<SizeT>(9 + msg.size()));

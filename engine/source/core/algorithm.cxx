@@ -33,11 +33,7 @@ inline constexpr bool CheckRange(T begin, T end)
     return true;
 }
 
-} // namespace mini
-
-export namespace mini {
-
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void CopyRange(T dest, U begin, U end)
     requires IteratorCopyableFromT<T, U>
 {
@@ -46,7 +42,7 @@ inline constexpr void CopyRange(T dest, U begin, U end)
     memory::CopyRange(dest, begin, end);
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
     requires IteratorCopyableFromT<T, U>
 {
@@ -55,7 +51,7 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
     memory::CopyBackward(dest, begin, end);
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveRange(T dest, U begin, U end)
     requires IteratorMovableFromT<T, U>
 {
@@ -64,7 +60,7 @@ inline constexpr void MoveRange(T dest, U begin, U end)
     memory::MoveRange(dest, begin, end);
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
     requires IteratorMovableFromT<T, U>
 {
@@ -73,7 +69,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
     memory::MoveBackward(dest, begin, end);
 }
 
-template <ForwardIteratorT T, ForwardIteratorT U>
+export template <ForwardIteratorT T, ForwardIteratorT U>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     requires EqualityComparableWithT<typename T::Value, typename U::Value>
 {
@@ -95,14 +91,14 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     return memory::EqualRange(begin1, end1, begin2, end2);
 }
 
-template <ForwardIteratorT T, typename U>
+export template <ForwardIteratorT T, typename U>
 inline constexpr void FillRange(T begin, T end, U const& value)
 {
     ASSERT(CheckRange(begin, end));
     memory::FillRange(begin, end, value);
 }
 
-template <ForwardIteratorT T>
+export template <ForwardIteratorT T>
 inline constexpr SizeT Distance(T first, T last)
 {
     if (first == last) {

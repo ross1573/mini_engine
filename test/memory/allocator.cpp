@@ -13,7 +13,6 @@ inline auto RebindAllocator<Foo>(Allocator<Foo>)
 
 int main()
 {
-    [[maybe_unused]] DummyAllocator dummy{};
     auto&& r = RebindAllocator<Foo>(Allocator<Foo>{});
     auto&& r2 = RebindAllocator<ConstexprFoo>(Allocator<ConstexprFoo>{});
     auto&& r3 = RebindAllocator<Foo>(FooAlloc{});
@@ -26,7 +25,6 @@ int main()
     static_assert(SameAsT<Allocator<ConstexprFoo>&&, decltype(r2)>);
 
     static_assert(Allocator<Foo>{} == Allocator<int>{});
-    static_assert(DummyAllocator{} == DummyAllocator{});
 
     return 0;
 }

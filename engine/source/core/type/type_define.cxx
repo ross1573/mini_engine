@@ -13,34 +13,34 @@ struct IntegralConstant {
     inline constexpr ValueT operator()() const noexcept { return val; }
 };
 
-export namespace mini {
+namespace mini {
 
-using byte = std::uint8_t;
+export using byte = std::uint8_t;
 
-using wchar = wchar_t;
-using char8 = char8_t;
-using char16 = char16_t;
-using char32 = char32_t;
+export using wchar = wchar_t;
+export using char8 = char8_t;
+export using char16 = char16_t;
+export using char32 = char32_t;
 
-using int8 = std::int8_t;
-using int16 = std::int16_t;
-using int32 = std::int32_t;
-using int64 = std::int64_t;
+export using int8 = std::int8_t;
+export using int16 = std::int16_t;
+export using int32 = std::int32_t;
+export using int64 = std::int64_t;
 
-using uint = std::uint32_t;
-using uint8 = std::uint8_t;
-using uint16 = std::uint16_t;
-using uint32 = std::uint32_t;
-using uint64 = std::uint64_t;
+export using uint = std::uint32_t;
+export using uint8 = std::uint8_t;
+export using uint16 = std::uint16_t;
+export using uint32 = std::uint32_t;
+export using uint64 = std::uint64_t;
 
-using float32 = float;
-using float64 = double;
+export using float32 = float;
+export using float64 = double;
 
-using SizeT = uint32;
-using OffsetT = std::ptrdiff_t;
+export using SizeT = uint32;
+export using OffsetT = std::ptrdiff_t;
 
-using TrueT = IntegralConstant<bool, true>;
-using FalseT = IntegralConstant<bool, false>;
-using NullptrT = std::nullptr_t;
+export using TrueT = IntegralConstant<bool, true>;
+export using FalseT = IntegralConstant<bool, false>;
+export using NullptrT = std::nullptr_t;
 
 } // namespace mini

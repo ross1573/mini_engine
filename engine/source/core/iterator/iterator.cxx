@@ -7,9 +7,9 @@ export module mini.core:iterator;
 import :type;
 import :utility;
 
-export namespace mini {
+namespace mini {
 
-template <typename T>
+export template <typename T>
 concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
                            requires(T i, T const j, SizeT const n)   //
 {
@@ -29,7 +29,7 @@ concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
     { i++ } -> SameAsT<T>;
 };
 
-template <typename T>
+export template <typename T>
 concept BidrectionalIteratorT = ForwardIteratorT<T> && //
                                 requires(T i)          //
 {
@@ -39,7 +39,7 @@ concept BidrectionalIteratorT = ForwardIteratorT<T> && //
     { i-- } -> SameAsT<T>;
 };
 
-template <typename T>
+export template <typename T>
 concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> && //
                                 requires(T i, T const j, OffsetT n, SizeT s)  //
 {
@@ -54,47 +54,47 @@ concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> && //
     { j[n] } -> SameAsT<typename T::Ref>;
 };
 
-template <typename T, typename U>
+export template <typename T, typename U>
 concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
                                 requires(T i, U v) { *i = ForwardArg<typename U::Value>(*v); };
 
-template <typename T, typename U>
+export template <typename T, typename U>
 concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
                                requires(T i, U v) { *i = MoveArg(*v); };
 
-template <typename Iter, typename T>
+export template <typename Iter, typename T>
 concept ForwardIteratableByT = ForwardIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
 
-template <typename Iter, typename T>
+export template <typename Iter, typename T>
 concept BidirectionalIteratableByT = BidrectionalIteratorT<Iter> &&
                                      ConvertibleToT<typename Iter::Value, T>;
 
-template <typename Iter, typename T>
+export template <typename Iter, typename T>
 concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> &&
                                     ConvertibleToT<typename Iter::Value, T>;
 
-template <typename T>
+export template <typename T>
 inline constexpr typename T::Iterator begin(T &c)
     requires ForwardIteratorT<typename T::Iterator>
 {
     return c.Begin();
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr typename T::Iterator end(T &c)
     requires ForwardIteratorT<typename T::Iterator>
 {
     return c.End();
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr typename T::ConstIterator cbegin(T const &c)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
     return c.Begin();
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr typename T::ConstIterator cend(T const &c)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
@@ -103,9 +103,9 @@ inline constexpr typename T::ConstIterator cend(T const &c)
 
 } // namespace mini
 
-export namespace std {
+namespace std {
 
-template <mini::ForwardIteratorT T>
+export template <mini::ForwardIteratorT T>
 struct iterator_traits<T> {
     typedef std::forward_iterator_tag iterator_category;
     typedef typename T::Value value_type;
@@ -114,7 +114,7 @@ struct iterator_traits<T> {
     typedef mini::OffsetT difference_type;
 };
 
-template <mini::BidrectionalIteratorT T>
+export template <mini::BidrectionalIteratorT T>
 struct iterator_traits<T> {
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef typename T::Value value_type;
@@ -123,7 +123,7 @@ struct iterator_traits<T> {
     typedef mini::OffsetT difference_type;
 };
 
-template <mini::RandomAccessIteratorT T>
+export template <mini::RandomAccessIteratorT T>
 struct iterator_traits<T> {
     typedef std::random_access_iterator_tag iterator_category;
     typedef typename T::Value value_type;

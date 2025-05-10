@@ -2,14 +2,14 @@ export module mini.core:iterator_version;
 
 import :type;
 
-export namespace mini {
+namespace mini {
 
 template <typename ContainerT>
 concept StaticContainerT = requires(ContainerT c) {
     c.IsFull(); // TODO: check static container with more explicit methods
 };
 
-template <typename ContainerT>
+export template <typename ContainerT>
 struct IteratorVersion {
 public:
     SizeT version;
@@ -34,7 +34,7 @@ public:
     }
 };
 
-template <StaticContainerT ContainerT>
+export template <StaticContainerT ContainerT>
 struct IteratorVersion<ContainerT> {
 public:
     inline constexpr IteratorVersion(SizeT) noexcept {}
@@ -49,26 +49,26 @@ public:
     inline constexpr IteratorVersion& operator=(SizeT) noexcept { return *this; }
 };
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr bool operator==(IteratorVersion<T> const& l, IteratorVersion<U> const& r) noexcept
 {
     return l.version == r.version;
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr bool operator==(IteratorVersion<T> const& l, SizeT r) noexcept
 {
     return l.version == r;
 }
 
-template <typename T, StaticContainerT U>
+export template <typename T, StaticContainerT U>
 inline constexpr bool operator==(IteratorVersion<T> const&, IteratorVersion<U> const&) noexcept
     requires EqualityComparableWithT<T, U>
 {
     return true;
 }
 
-template <StaticContainerT T, StaticContainerT U>
+export template <StaticContainerT T, StaticContainerT U>
 inline constexpr bool operator==(IteratorVersion<T> const&, IteratorVersion<U> const&) noexcept
     requires EqualityComparableWithT<T, U>
 {

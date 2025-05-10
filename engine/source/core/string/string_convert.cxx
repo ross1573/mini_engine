@@ -11,9 +11,9 @@ import :type;
 import :string;
 import :allocator;
 
-export namespace mini {
+namespace mini {
 
-template <CharT T, AllocatorT<T> AllocT = mini::Allocator<T>>
+export template <CharT T, AllocatorT<T> AllocT = mini::Allocator<T>>
 class StringConvert {
 public:
     typedef T ValueT;

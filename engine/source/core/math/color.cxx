@@ -3,9 +3,10 @@ export module mini.core:color;
 import :type;
 import :math;
 
-export namespace mini {
+namespace mini {
 
-struct Color {
+export struct Color {
+public:
     union {
         struct {
             float32 r;
@@ -39,11 +40,11 @@ struct Color {
     static const Color blue;
 };
 
-constexpr Color operator+(Color const&, Color const&) noexcept;
-constexpr Color operator-(Color const&, Color const&) noexcept;
-constexpr Color operator*(Color const&, Float32ConvertibleT auto const) noexcept;
-constexpr Color operator/(Color const&, Float32ConvertibleT auto const) noexcept;
-constexpr Color operator*(Float32ConvertibleT auto const, Color const&) noexcept;
+export constexpr Color operator+(Color const&, Color const&) noexcept;
+export constexpr Color operator-(Color const&, Color const&) noexcept;
+export constexpr Color operator*(Color const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Color operator/(Color const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Color operator*(Float32ConvertibleT auto const, Color const&) noexcept;
 
 inline Color const Color::white = Color(1.f, 1.f, 1.f, 1.f);
 inline Color const Color::black = Color(0.f, 0.f, 0.f, 1.f);

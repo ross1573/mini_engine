@@ -4,9 +4,10 @@ import :type;
 import :math;
 import :vector2;
 
-export namespace mini {
+namespace mini {
 
-struct Vector2Int {
+export struct Vector2Int {
+public:
     union {
         struct {
             int32 x;
@@ -48,11 +49,11 @@ struct Vector2Int {
     static const Vector2Int unitY;
 };
 
-constexpr Vector2Int operator+(Vector2Int const&, Vector2Int const&) noexcept;
-constexpr Vector2Int operator-(Vector2Int const&, Vector2Int const&) noexcept;
-constexpr Vector2Int operator*(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
-constexpr Vector2Int operator/(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
-constexpr Vector2Int operator*(Int32ConvertibleT auto const, Vector2Int const&) noexcept;
+export constexpr Vector2Int operator+(Vector2Int const&, Vector2Int const&) noexcept;
+export constexpr Vector2Int operator-(Vector2Int const&, Vector2Int const&) noexcept;
+export constexpr Vector2Int operator*(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
+export constexpr Vector2Int operator/(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
+export constexpr Vector2Int operator*(Int32ConvertibleT auto const, Vector2Int const&) noexcept;
 
 inline Vector2Int const Vector2Int::zero = Vector2Int();
 inline Vector2Int const Vector2Int::one = Vector2Int(1, 1);

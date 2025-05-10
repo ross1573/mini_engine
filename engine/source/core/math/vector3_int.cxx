@@ -6,9 +6,10 @@ import :vector2;
 import :vector2_int;
 import :vector3;
 
-export namespace mini {
+namespace mini {
 
-struct Vector3Int {
+export struct Vector3Int {
+public:
     union {
         struct {
             int32 x;
@@ -60,11 +61,11 @@ struct Vector3Int {
     static const Vector3Int backward;
 };
 
-constexpr Vector3Int operator+(Vector3Int const&, Vector3Int const&) noexcept;
-constexpr Vector3Int operator-(Vector3Int const&, Vector3Int const&) noexcept;
-constexpr Vector3Int operator*(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
-constexpr Vector3Int operator/(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
-constexpr Vector3Int operator*(Int32ConvertibleT auto const, Vector3Int const&) noexcept;
+export constexpr Vector3Int operator+(Vector3Int const&, Vector3Int const&) noexcept;
+export constexpr Vector3Int operator-(Vector3Int const&, Vector3Int const&) noexcept;
+export constexpr Vector3Int operator*(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
+export constexpr Vector3Int operator/(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
+export constexpr Vector3Int operator*(Int32ConvertibleT auto const, Vector3Int const&) noexcept;
 
 inline Vector3Int const Vector3Int::zero = Vector3Int();
 inline Vector3Int const Vector3Int::one = Vector3Int(1, 1, 1);

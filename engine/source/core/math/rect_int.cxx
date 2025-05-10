@@ -6,9 +6,10 @@ import :vector2;
 import :vector2_int;
 import :vector3_int;
 
-export namespace mini {
+namespace mini {
 
-struct RectInt {
+export struct RectInt {
+public:
     int32 x;
     int32 y;
     int32 width;

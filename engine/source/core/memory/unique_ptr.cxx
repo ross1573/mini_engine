@@ -5,9 +5,9 @@ import :utility;
 import :allocator;
 import :deleter;
 
-export namespace mini {
+namespace mini {
 
-template <NonRefT T, DeleterT<T> DelT = DefaultDeleter<T>>
+export template <NonRefT T, DeleterT<T> DelT = DefaultDeleter<T>>
 class UniquePtr {
 private:
     template <NonRefT U, DeleterT<U> DelU>
@@ -230,34 +230,34 @@ UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
     return *this;
 }
 
-template <NonRefT T, typename... Args>
+export template <NonRefT T, typename... Args>
 inline constexpr UniquePtr<T> MakeUnique(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     return UniquePtr<T>(new T(ForwardArg<Args>(args)...));
 }
 
-template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+export template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
 inline constexpr bool operator==(UniquePtr<T, DelT> const& l, UniquePtr<U, DelU> const& r) noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r.Get();
 }
 
-template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+export template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
 inline constexpr bool operator<=>(UniquePtr<T, DelT> const& l, UniquePtr<U, DelU> const& r) noexcept
     requires ThreeWayComparableWithT<T*, U*>
 {
     return l.Get() <=> r.Get();
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+export template <NonRefT T, DeleterT<T> DelT>
 inline constexpr bool operator==(UniquePtr<T, DelT> const& p, NullptrT) noexcept
 {
     return p.Get() == nullptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+export template <NonRefT T, DeleterT<T> DelT>
 inline constexpr bool operator<=>(UniquePtr<T, DelT> const& p, NullptrT) noexcept
 {
     return p.Get() <=> nullptr;

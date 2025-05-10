@@ -3,9 +3,10 @@ export module mini.core:vector2;
 import :type;
 import :math;
 
-export namespace mini {
+namespace mini {
 
-struct Vector2 {
+export struct Vector2 {
+public:
     union {
         struct {
             float32 x;
@@ -53,11 +54,11 @@ struct Vector2 {
     static const Vector2 unitY;
 };
 
-constexpr Vector2 operator+(Vector2 const&, Vector2 const&) noexcept;
-constexpr Vector2 operator-(Vector2 const&, Vector2 const&) noexcept;
-constexpr Vector2 operator*(Vector2 const&, Float32ConvertibleT auto const) noexcept;
-constexpr Vector2 operator/(Vector2 const&, Float32ConvertibleT auto const) noexcept;
-constexpr Vector2 operator*(Float32ConvertibleT auto const, Vector2 const&) noexcept;
+export constexpr Vector2 operator+(Vector2 const&, Vector2 const&) noexcept;
+export constexpr Vector2 operator-(Vector2 const&, Vector2 const&) noexcept;
+export constexpr Vector2 operator*(Vector2 const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Vector2 operator/(Vector2 const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Vector2 operator*(Float32ConvertibleT auto const, Vector2 const&) noexcept;
 
 inline Vector2 const Vector2::zero = Vector2();
 inline Vector2 const Vector2::one = Vector2(1.f, 1.f);

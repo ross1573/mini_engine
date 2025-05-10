@@ -179,10 +179,6 @@ private:
     SharedCounter& operator=(SharedCounter&&) = delete;
 };
 
-} // namespace mini
-
-export namespace mini {
-
 template <typename T, typename AllocT, typename DelT>
 class SharedBlock : public SharedCounter {
 private:
@@ -264,7 +260,7 @@ private:
     InplaceSharedBlock& operator=(InplaceSharedBlock&&) = delete;
 };
 
-template <NonRefT T>
+export template <NonRefT T>
 class SharedPtr {
 private:
     typedef SharedCounter Base;
@@ -665,7 +661,7 @@ inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT&& alloc, Args&&.
     m_Counter = result.pointer;
 }
 
-template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
+export template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
 inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args)
     requires RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>> &&
              ConstructibleFromT<T, Args...>
@@ -675,84 +671,84 @@ inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args
     return ret;
 }
 
-template <NonRefT T, typename... Args>
+export template <NonRefT T, typename... Args>
 inline constexpr SharedPtr<T> MakeShared(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     return AllocateShared<T, DummyAllocator, Args...>({}, ForwardArg<Args>(args)...);
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr auto operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r.Get();
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr auto operator<=>(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
     requires ThreeWayComparableWithT<T*, U*>
 {
     return l.Get() <=> r.Get();
 }
 
-template <NonRefT T>
+export template <NonRefT T>
 inline constexpr auto operator==(SharedPtr<T> const s, NullptrT) noexcept
 {
     return s.Get() == nullptr;
 }
 
-template <NonRefT T>
+export template <NonRefT T>
 inline constexpr auto operator<=>(SharedPtr<T> const s, NullptrT) noexcept
 {
     return s.Get() <=> nullptr;
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> StaticCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, static_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), static_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
 {
     T* ptr = dynamic_cast<T*>(other.Get());
     return ptr ? SharedPtr<T>(other, ptr) : SharedPtr<T>();
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
 {
     T* ptr = dynamic_cast<T*>(other.Get());
     return ptr ? SharedPtr<T>(MoveArg(other), ptr) : SharedPtr<T>();
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> ConstCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, const_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> ConstCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), const_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, reinterpret_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+export template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), reinterpret_cast<T*>(other.Get()));

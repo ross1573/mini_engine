@@ -146,7 +146,8 @@ inline constexpr bool operator==(Allocator<T> const&, Allocator<U> const&)
     return true;
 }
 
-export struct DummyAllocator {
+struct DummyAllocator {
+public:
     typedef void Value;
     typedef void* Ptr;
 

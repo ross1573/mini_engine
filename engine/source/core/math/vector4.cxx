@@ -4,9 +4,10 @@ import :type;
 import :math;
 import :vector3;
 
-export namespace mini {
+namespace mini {
 
-struct Vector4 {
+export struct Vector4 {
+public:
     union {
         struct {
             float32 x;
@@ -60,11 +61,11 @@ struct Vector4 {
     static const Vector4 unitW;
 };
 
-constexpr Vector4 operator+(Vector4 const&, Vector4 const&) noexcept;
-constexpr Vector4 operator-(Vector4 const&, Vector4 const&) noexcept;
-constexpr Vector4 operator*(Vector4 const&, Float32ConvertibleT auto const) noexcept;
-constexpr Vector4 operator/(Vector4 const&, Float32ConvertibleT auto const) noexcept;
-constexpr Vector4 operator*(Float32ConvertibleT auto const, Vector4 const&) noexcept;
+export constexpr Vector4 operator+(Vector4 const&, Vector4 const&) noexcept;
+export constexpr Vector4 operator-(Vector4 const&, Vector4 const&) noexcept;
+export constexpr Vector4 operator*(Vector4 const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Vector4 operator/(Vector4 const&, Float32ConvertibleT auto const) noexcept;
+export constexpr Vector4 operator*(Float32ConvertibleT auto const, Vector4 const&) noexcept;
 
 inline Vector4 const Vector4::zero = Vector4();
 inline Vector4 const Vector4::one = Vector4(1.f, 1.f, 1.f, 1.f);

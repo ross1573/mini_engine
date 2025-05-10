@@ -4,6 +4,10 @@ module;
 
 #include "assertion.h"
 
+// TODO: constexpr placement new operator is coming soon!
+#define CONSTEXPR_CONSTRUCT_AT std::construct_at
+#define CONSTEXPR_DESTRUCT_AT  std::destroy_at
+
 export module mini.core:memory;
 
 import :type;
@@ -16,15 +20,15 @@ inline constexpr void* MakeVoidPtr(T* ptr)
     return const_cast<void*>(static_cast<const volatile void*>(ptr));
 }
 
-export namespace mini::memory {
+namespace mini::memory {
 
-template <typename T>
+export template <typename T>
 concept DereferencableT = requires(T ele) { *ele; };
 
-template <typename T>
+export template <typename T>
 concept AddressableT = PtrT<T> || ForwardIteratorT<T>;
 
-template <AddressableT T>
+export template <AddressableT T>
 inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
 {
     if constexpr (PtrT<T>) {
@@ -41,7 +45,6 @@ inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
 template <PtrT T, PtrT U>
 inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 {
-    // TODO: this is how clang manages comparison between pointers to unrelated objects
     if (IsConstantEvaluated()) {
         return false;
     }
@@ -52,7 +55,6 @@ inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 template <PtrT T, PtrT U>
 inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 {
-    // TODO: this is how clang manages comparison between pointers to unrelated objects
     if (IsConstantEvaluated()) {
         return false;
     }
@@ -60,32 +62,30 @@ inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
     return IsPtrOverlapping(b1, b2, e2) || IsPtrOverlapping(e1, b2, e2);
 }
 
-template <NonArrT T, typename... Args>
+export template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args)
     noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     if (IsConstantEvaluated()) {
-        // TODO: only compiler can do constexpr construct_at
-        std::construct_at(ptr, ForwardArg<Args>(args)...);
+        CONSTEXPR_CONSTRUCT_AT(ptr, ForwardArg<Args>(args)...);
         return;
     }
 
     ::new (MakeVoidPtr(ptr)) T(ForwardArg<Args>(args)...);
 }
 
-template <NonArrT T>
+export template <NonArrT T>
 inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     if (IsConstantEvaluated()) {
-        // TODO: only compiler can do constexpr destroy
-        std::destroy_at(ptr);
+        CONSTEXPR_DESTRUCT_AT(ptr);
         return;
     }
 
     ptr->~T();
 }
 
-template <typename T, typename... Args>
+export template <typename T, typename... Args>
 inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 {
     for (; begin != end; ++begin) {
@@ -93,7 +93,7 @@ inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void ConstructRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
@@ -101,7 +101,7 @@ inline constexpr void ConstructRange(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void ConstructBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
@@ -109,7 +109,7 @@ inline constexpr void ConstructBackward(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveConstructRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
@@ -117,7 +117,7 @@ inline constexpr void MoveConstructRange(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveConstructBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
@@ -125,7 +125,7 @@ inline constexpr void MoveConstructBackward(T dest, U begin, U end)
     }
 }
 
-template <typename T>
+export template <typename T>
 inline constexpr void DestructRange(T begin, T end)
 {
     for (; begin != end; ++begin) {
@@ -133,7 +133,7 @@ inline constexpr void DestructRange(T begin, T end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void CopyRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
@@ -141,7 +141,7 @@ inline constexpr void CopyRange(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
@@ -149,7 +149,7 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveRange(T dest, U begin, U end)
 {
     for (; begin != end; ++begin, ++dest) {
@@ -157,7 +157,7 @@ inline constexpr void MoveRange(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     for (; end != begin;) {
@@ -165,7 +165,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
     }
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, U begin2, U end2)
 {
     for (; begin2 != end2; ++begin1, ++begin2) {
@@ -177,7 +177,7 @@ inline constexpr bool EqualRange(T begin1, U begin2, U end2)
     return true;
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     for (; begin1 != end1 && begin2 != end2; ++begin1, ++begin2) {
@@ -189,7 +189,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     return begin1 == end1 && begin2 == end2;
 }
 
-template <typename T, typename U>
+export template <typename T, typename U>
 inline constexpr void FillRange(T begin, T end, U const& value)
 {
     for (; begin != end; ++begin) {

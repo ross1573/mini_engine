@@ -29,14 +29,7 @@ consteval auto SizeTypeSelector() -> decltype(auto)
     }
 }
 
-template <SizeT CapacityN>
-using SizeType = decltype(SizeTypeSelector<CapacityN>());
-
-} // namespace mini
-
-export namespace mini {
-
-template <typename T, SizeT CapacityN, SizeT AlignN = alignof(T)>
+export template <typename T, SizeT CapacityN, SizeT AlignN = alignof(T)>
 class StaticBuffer {
 protected:
     alignas(AlignN) byte m_Buffer[sizeof(T) * CapacityN];
@@ -63,7 +56,7 @@ private:
     StaticBuffer& operator=(StaticBuffer&&) = delete;
 };
 
-template <TrivialT T, SizeT CapacityN, SizeT AlignN>
+export template <TrivialT T, SizeT CapacityN, SizeT AlignN>
 class StaticBuffer<T, CapacityN, AlignN> {
 protected:
     alignas(AlignN) T m_Buffer[CapacityN];
@@ -87,10 +80,12 @@ private:
     StaticBuffer& operator=(StaticBuffer&&) = delete;
 };
 
-template <SizeT CapacityN>
+export template <SizeT CapacityN>
 struct StaticSize {
-    typedef SizeType<CapacityN> SizeType;
+public:
+    typedef decltype(SizeTypeSelector<CapacityN>()) SizeType;
 
+public:
     SizeType size;
 
     inline constexpr StaticSize() noexcept
@@ -152,20 +147,20 @@ struct StaticSize {
     }
 };
 
-template <typename T, SizeT CapT, SizeT AlignT, typename U, SizeT CapU, SizeT AlignU>
+export template <typename T, SizeT CapT, SizeT AlignT, typename U, SizeT CapU, SizeT AlignU>
 inline constexpr bool operator==(StaticBuffer<T, CapT, AlignT> const& l,
                                  StaticBuffer<U, CapU, AlignU> const& r) noexcept
 {
     return l.Data() == r.Data();
 }
 
-template <IntT T, SizeT CapacityN>
+export template <IntT T, SizeT CapacityN>
 inline constexpr auto operator<=>(StaticSize<CapacityN> const& s, T o) noexcept
 {
     return static_cast<T>(s.size) <=> o;
 }
 
-template <SizeT LCapN, SizeT RCapN>
+export template <SizeT LCapN, SizeT RCapN>
 inline constexpr auto operator<=>(StaticSize<LCapN> const& l, StaticSize<RCapN> const& r) noexcept
 {
     using CommonSizeT = CommonT<decltype(l.size), decltype(r.size)>;

@@ -475,7 +475,7 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
     Ptr begin = m_Buffer.Data();
     Ptr end = begin + m_Size;
     Ptr loc = begin + (first - iterBegin);
-    
+
     memory::MoveRange(loc, loc + distance, end);
     memory::DestructRange(end - distance, end);
     m_Size -= distance;
@@ -754,7 +754,7 @@ inline constexpr bool operator==(Array<T, AllocT> const& l, Array<U, AllocU> con
     return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
 }
 
-template <MovableT T, AllocatorT<T> AllocT>
+export template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Swap(Array<T, AllocT>& l, Array<T, AllocT>& r) noexcept
 {
     return l.Swap(r);

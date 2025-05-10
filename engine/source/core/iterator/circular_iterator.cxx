@@ -8,9 +8,9 @@ import :type;
 import :iterator;
 import :iterator_version;
 
-export namespace mini {
+namespace mini {
 
-template <typename T, typename CircularT>
+export template <typename T, typename CircularT>
 class CircularIterator {
 private:
     template <typename U, typename C>
@@ -323,14 +323,14 @@ CircularIterator<T, CircularT>::operator-(OffsetT d) const noexcept
     return t;
 }
 
-template <typename T, typename CircularT>
+export template <typename T, typename CircularT>
 inline constexpr CircularIterator<T, CircularT>
 operator+(OffsetT n, CircularIterator<T, CircularT> const& iter) noexcept
 {
     return iter + n;
 }
 
-template <typename T, typename CircularT, typename U, typename CircularU>
+export template <typename T, typename CircularT, typename U, typename CircularU>
 inline constexpr OffsetT operator-(CircularIterator<T, CircularT> const& l,
                                    CircularIterator<U, CircularU> const& r) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>>
@@ -339,7 +339,7 @@ inline constexpr OffsetT operator-(CircularIterator<T, CircularT> const& l,
     return (OffsetT)l.m_Offset - (OffsetT)r.m_Offset;
 }
 
-template <typename T, typename CircularT, typename U, typename CircularU>
+export template <typename T, typename CircularT, typename U, typename CircularU>
 inline constexpr bool operator==(CircularIterator<T, CircularT> const& l,
                                  CircularIterator<U, CircularU> const& r) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>> && EqualityComparableWithT<T*, U*>
@@ -347,7 +347,7 @@ inline constexpr bool operator==(CircularIterator<T, CircularT> const& l,
     return (l.m_Offset == r.m_Offset) && (l.m_Begin == r.m_Begin);
 }
 
-template <typename T, typename CircularT, typename U, typename CircularU>
+export template <typename T, typename CircularT, typename U, typename CircularU>
 inline constexpr auto operator<=>(CircularIterator<T, CircularT> const& l,
                                   CircularIterator<U, CircularU> const& r) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>> && ThreeWayComparableWithT<T*, U*>

@@ -3,9 +3,9 @@ export module mini.core:ptr_iterator;
 import :type;
 import :iterator;
 
-export namespace mini {
+namespace mini {
 
-template <PtrT T>
+export template <PtrT T>
 class PtrIterator {
 private:
     template <PtrT U>
@@ -199,26 +199,26 @@ inline constexpr PtrIterator<T> PtrIterator<T>::operator-(OffsetT d) const noexc
     return t;
 }
 
-template <PtrT T>
+export template <PtrT T>
 inline constexpr PtrIterator<T> operator+(OffsetT n, PtrIterator<T> const& iter) noexcept
 {
     return iter + n;
 }
 
-template <PtrT T, PtrT U>
+export template <PtrT T, PtrT U>
 inline constexpr OffsetT operator-(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
 {
     return static_cast<OffsetT>(l.operator->() - r.operator->());
 }
 
-template <PtrT T, PtrT U>
+export template <PtrT T, PtrT U>
 inline constexpr bool operator==(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
     requires EqualityComparableWithT<T, U>
 {
     return l.operator->() == r.operator->();
 }
 
-template <PtrT T, PtrT U>
+export template <PtrT T, PtrT U>
 inline constexpr auto operator<=>(PtrIterator<T> const& l, PtrIterator<U> const& r) noexcept
     requires ThreeWayComparableWithT<T, U>
 {

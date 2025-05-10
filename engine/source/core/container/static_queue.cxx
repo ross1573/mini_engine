@@ -12,9 +12,9 @@ import :static_buffer;
 import :array_iterator;
 import :circular_iterator;
 
-export namespace mini {
+namespace mini {
 
-template <MovableT T, SizeT CapacityN>
+export template <MovableT T, SizeT CapacityN>
 class StaticQueue {
 private:
     typedef StaticBuffer<T, CapacityN> Buffer;
@@ -495,7 +495,7 @@ StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) cons
     ASSERT(IsValidIterator(iter), "invalid range");
 }
 
-template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>
+export template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>
 inline constexpr bool operator==(StaticQueue<T, CapT> const& l,
                                  StaticQueue<U, CapU> const& r) noexcept
     requires EqualityComparableWithT<T, U>

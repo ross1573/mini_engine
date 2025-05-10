@@ -3,9 +3,9 @@ export module mini.core:move_iterator;
 import :type;
 import :iterator;
 
-export namespace mini {
+namespace mini {
 
-template <ForwardIteratorT T>
+export template <ForwardIteratorT T>
 class MoveIterator {
 private:
     template <ForwardIteratorT U>
@@ -222,49 +222,49 @@ inline constexpr MoveIterator<T> MoveIterator<T>::operator-(OffsetT n) const
     return t;
 }
 
-template <RandomAccessIteratorT T>
+export template <RandomAccessIteratorT T>
 inline constexpr MoveIterator<T> operator+(OffsetT n, MoveIterator<T> i)
 {
     return i + n;
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr OffsetT operator-(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() - r.Base();
 }
 
-template <ForwardIteratorT T, ForwardIteratorT U>
+export template <ForwardIteratorT T, ForwardIteratorT U>
 inline constexpr bool operator==(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() == r.Base();
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr bool operator<(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() < r.Base();
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr bool operator>(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() > r.Base();
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr bool operator<=(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() <= r.Base();
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr bool operator>=(MoveIterator<T> const& l, MoveIterator<U> const& r)
 {
     return l.Base() >= r.Base();
 }
 
-template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 inline constexpr auto operator<=>(MoveIterator<T> const& l, MoveIterator<U> const& r)
     requires ThreeWayComparableWithT<T, U>
 {

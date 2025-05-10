@@ -8,9 +8,9 @@ import :type;
 import :iterator;
 import :iterator_version;
 
-export namespace mini {
+namespace mini {
 
-template <typename T, typename ArrayT>
+export template <typename T, typename ArrayT>
 class ArrayIterator {
 private:
     template <typename U, typename A>
@@ -282,14 +282,14 @@ ArrayIterator<T, ArrayT>::operator-(OffsetT d) const noexcept
     return t;
 }
 
-template <typename T, typename ArrayT>
+export template <typename T, typename ArrayT>
 inline constexpr ArrayIterator<T, ArrayT> operator+(OffsetT n,
                                                     ArrayIterator<T, ArrayT> const& iter) noexcept
 {
     return iter + n;
 }
 
-template <typename T, typename U, typename ArrayT, typename ArrayU>
+export template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr OffsetT operator-(ArrayIterator<T, ArrayT> const& l,
                                    ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
@@ -297,7 +297,7 @@ inline constexpr OffsetT operator-(ArrayIterator<T, ArrayT> const& l,
     return static_cast<OffsetT>(l.Address() - r.Address());
 }
 
-template <typename T, typename U, typename ArrayT, typename ArrayU>
+export template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr bool operator==(ArrayIterator<T, ArrayT> const& l,
                                  ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>> && EqualityComparableWithT<T*, U*>
@@ -305,7 +305,7 @@ inline constexpr bool operator==(ArrayIterator<T, ArrayT> const& l,
     return l.Address() == r.Address();
 }
 
-template <typename T, typename U, typename ArrayT, typename ArrayU>
+export template <typename T, typename U, typename ArrayT, typename ArrayU>
 inline constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& l,
                                   ArrayIterator<U, ArrayU> const& r) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>> && ThreeWayComparableWithT<T*, U*>
