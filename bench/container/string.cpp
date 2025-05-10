@@ -13,7 +13,7 @@ static void CtorEmpty(benchmark::State& state)
     }
 }
 
-static void CtorEmpty_libcxx(benchmark::State& state)
+static void CtorEmpty_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -29,7 +29,7 @@ static void CtorShort(benchmark::State& state)
     }
 }
 
-static void CtorShort_libcxx(benchmark::State& state)
+static void CtorShort_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str("Hello world!");
@@ -45,7 +45,7 @@ static void CtorLong(benchmark::State& state)
     }
 }
 
-static void CtorLong_libcxx(benchmark::State& state)
+static void CtorLong_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str("Hello world from long string!");
@@ -62,7 +62,7 @@ static void CtorIter(benchmark::State& state)
     }
 }
 
-static void CtorIter_libcxx(benchmark::State& state)
+static void CtorIter_stdlib(benchmark::State& state)
 {
     std::string str("Hello world!");
     for (auto _ : state) {
@@ -72,13 +72,13 @@ static void CtorIter_libcxx(benchmark::State& state)
 }
 
 BENCHMARK(CtorEmpty);
-BENCHMARK(CtorEmpty_libcxx);
+BENCHMARK(CtorEmpty_stdlib);
 BENCHMARK(CtorShort);
-BENCHMARK(CtorShort_libcxx);
+BENCHMARK(CtorShort_stdlib);
 BENCHMARK(CtorLong);
-BENCHMARK(CtorLong_libcxx);
+BENCHMARK(CtorLong_stdlib);
 BENCHMARK(CtorIter);
-BENCHMARK(CtorIter_libcxx);
+BENCHMARK(CtorIter_stdlib);
 
 static void AssignOther(benchmark::State& state)
 {
@@ -89,7 +89,7 @@ static void AssignOther(benchmark::State& state)
     }
 }
 
-static void AssignOther_libcxx(benchmark::State& state)
+static void AssignOther_stdlib(benchmark::State& state)
 {
     std::string str("Hello world!");
     for (auto _ : state) {
@@ -106,7 +106,7 @@ static void AssignLong(benchmark::State& state)
     }
 }
 
-static void AssignLong_libcxx(benchmark::State& state)
+static void AssignLong_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -115,9 +115,9 @@ static void AssignLong_libcxx(benchmark::State& state)
 }
 
 BENCHMARK(AssignOther);
-BENCHMARK(AssignOther_libcxx);
+BENCHMARK(AssignOther_stdlib);
 BENCHMARK(AssignLong);
-BENCHMARK(AssignLong_libcxx);
+BENCHMARK(AssignLong_stdlib);
 
 static void Append(benchmark::State& state)
 {
@@ -128,7 +128,7 @@ static void Append(benchmark::State& state)
     }
 }
 
-static void Append_libcxx(benchmark::State& state)
+static void Append_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -138,7 +138,7 @@ static void Append_libcxx(benchmark::State& state)
 }
 
 BENCHMARK(Append);
-BENCHMARK(Append_libcxx);
+BENCHMARK(Append_stdlib);
 
 static void Insert(benchmark::State& state)
 {
@@ -149,7 +149,7 @@ static void Insert(benchmark::State& state)
     }
 }
 
-static void Insert_libcxx(benchmark::State& state)
+static void Insert_stdlib(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -159,6 +159,6 @@ static void Insert_libcxx(benchmark::State& state)
 }
 
 BENCHMARK(Insert);
-BENCHMARK(Insert_libcxx);
+BENCHMARK(Insert_stdlib);
 
 BENCHMARK_MAIN();

@@ -36,7 +36,7 @@ target_include_directories(mini.test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(mini.test PUBLIC mini.core)
 
 set_target_properties(mini.test PROPERTIES 
-    FOLDER test
+    FOLDER module
     OUTPUT_NAME $<IF:$<CONFIG:Debug>,minid,mini>.test
 )
 

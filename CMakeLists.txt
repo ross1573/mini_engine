@@ -44,5 +44,5 @@ if (INCLUDE_TEST)
 endif()
 
 if (INCLUDE_BENCHMARK)
-    add_subdirectory(benchmark)
+    add_subdirectory(bench)
 endif()

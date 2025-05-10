@@ -8,12 +8,14 @@ function (no_arg_benchmark name)
     
     target_link_libraries(benchmark.${name} PRIVATE mini.benchmark)
     set_target_properties(benchmark.${name} PROPERTIES
-        FOLDER benchmark
-        OUTPUT_NAME $<IF:$<CONFIG:Debug>,benchmarkd,benchmark>.${name}
-        ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/benchmark
-        LIBRARY_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/benchmark
-        RUNTIME_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/bin/benchmark
+        FOLDER bench
+        OUTPUT_NAME $<IF:$<CONFIG:Debug>,benchd,bench>.${name}
+        ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/bench
+        LIBRARY_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/bench
+        RUNTIME_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/bin/bench
     )
+
+    build_source_tree(benchmark.${name})
 endfunction()
 
 add_library(mini.benchmark STATIC)
@@ -33,7 +35,7 @@ PUBLIC
 
 set_target_properties(mini.benchmark
 PROPERTIES
-    FOLDER benchmark
+    FOLDER module
     OUTPUT_NAME $<IF:$<CONFIG:Debug>,minid,mini>.benchmark
 )
 
