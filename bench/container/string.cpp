@@ -86,10 +86,8 @@ static void AssignOther(benchmark::State& state)
     String str2("Hello world from long string!");
     for (auto _ : state) {
         String str3;
-        str3 = str2;
         str3 = str;
         str3 = str2;
-        str3 = str;
         benchmark::DoNotOptimize(str3);
     }
 }
@@ -100,11 +98,31 @@ static void AssignOther_stdlib(benchmark::State& state)
     std::string str2("Hello world from long string!");
     for (auto _ : state) {
         std::string str3;
-        str3 = str2;
         str3 = str;
         str3 = str2;
-        str3 = str;
         benchmark::DoNotOptimize(str3);
+    }
+}
+
+static void AssignMove(benchmark::State& state)
+{
+    String str("Hello world from long string!");
+    for (auto _ : state) {
+        String str2;
+        str2 = MoveArg(str);
+        str = MoveArg(str2);
+        benchmark::DoNotOptimize(str2);
+    }
+}
+
+static void AssignMove_stdlib(benchmark::State& state)
+{
+    std::string str("Hello world from long string!");
+    for (auto _ : state) {
+        std::string str2;
+        str2 = MoveArg(str);
+        str = MoveArg(str2);
+        benchmark::DoNotOptimize(str2);
     }
 }
 
@@ -131,6 +149,7 @@ static void AssignLong(benchmark::State& state)
     for (auto _ : state) {
         String str;
         str = "Hello world from long string!";
+        str = "Hello world from string!";
         benchmark::DoNotOptimize(str);
     }
 }
@@ -140,12 +159,15 @@ static void AssignLong_stdlib(benchmark::State& state)
     for (auto _ : state) {
         std::string str;
         str = "Hello world from long string!";
+        str = "Hello world from string!";
         benchmark::DoNotOptimize(str);
     }
 }
 
 BENCHMARK(AssignOther);
 BENCHMARK(AssignOther_stdlib);
+BENCHMARK(AssignMove);
+BENCHMARK(AssignMove_stdlib);
 BENCHMARK(AssignShort);
 BENCHMARK(AssignShort_stdlib);
 BENCHMARK(AssignLong);

@@ -15,6 +15,13 @@ function (no_arg_benchmark name)
         RUNTIME_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/bin/bench
     )
 
+    set(OPT_RESULT_PATH ${ENGINE_PROJECT_DIR}/bin/bench/benchmark.${name}.yaml)
+    target_compile_options(benchmark.${name}
+    PRIVATE
+        $<$<CXX_COMPILER_ID:Clang>:-fsave-optimization-record> 
+        $<$<CXX_COMPILER_ID:Clang>:-foptimization-record-file=${OPT_RESULT_PATH}>
+    )
+
     build_source_tree(benchmark.${name})
 endfunction()
 

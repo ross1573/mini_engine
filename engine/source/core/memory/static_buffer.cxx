@@ -5,7 +5,6 @@ module;
 export module mini.core:static_buffer;
 
 import :type;
-import :math;
 
 namespace mini {
 

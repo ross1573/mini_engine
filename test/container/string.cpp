@@ -58,6 +58,11 @@ static constexpr int TestSSO()
     TEST_ENSURE(BasicString<T>(CStr::l, 30).Capacity() == 30);
     TEST_ENSURE(BasicString<T>(CStr::ch, SSOSize - 1).Capacity() == SSOSize);
 
+    BasicString<T> str(CStr::l);
+    str.Resize(4);
+    str.Shrink();
+    TEST_ENSURE(str.Capacity() == SSOSize);
+
     return 0;
 }
 

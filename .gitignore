@@ -2,6 +2,7 @@
 bin/
 lib/
 out/
+opt/
 build/
 intermediate/
 
@@ -50,6 +51,11 @@ xcuserdata/
 *.userosscache
 *.userprefs
 *.sln.docstates
+
+# python
+venv/
+**/__pycache__/
+*.pyc
 
 # macos
 .DS_Store
