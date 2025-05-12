@@ -2,8 +2,6 @@ include(mini_define)
 include(mini_option)
 include(build_source_tree)
 
-enable_testing()
-
 function (no_arg_test name)
     add_executable(test.${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND $<TARGET_FILE:test.${name}>)
