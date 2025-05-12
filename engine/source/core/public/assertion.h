@@ -22,6 +22,12 @@
 #  endif
 #endif // MSVC
 
+#if PLATFORM_WINDOWS
+#  define PLATFOM_CHAR_T wchar_t
+#else
+#  define PLATFOM_CHAR_T char
+#endif // PLATFORM_WINDOWS
+
 #define ASSERT_EXPR(expr)      if (!mini::detail::TestExpr(expr)) [[unlikely]]
 #define ENSURE_EXPR(expr)      if (!expr) [[unlikely]]
 #define ENSURE_EVAL(expr, var) const bool var = mini::detail::TestExpr(expr)
@@ -93,10 +99,10 @@ struct FalseArgs {
 };
 
 [[noinline]]
-CORE_API CHAR_T* AssertMsg(char const*, char const* = nullptr);
+CORE_API PLATFOM_CHAR_T* AssertMsg(char const*, char const* = nullptr);
 
 [[noinline]]
-CORE_API CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
+CORE_API PLATFOM_CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
 
 [[noinline]]
 CORE_API void EnsureHelper(char const*, char const* = nullptr,
