@@ -357,6 +357,15 @@ static constexpr int TestOperator()
     TEST_ENSURE(str[10] == str.At(10));
     TEST_ENSURE((str == CStr::l && CStr::l == str));
 
+    str.Clear();
+    str += CStr::s_10;
+    TEST_ENSURE(str == CStr::s_10);
+
+    str += CStr::s[10];
+    str += CStr::s[11];
+    str += CStr::s[12];
+    TEST_ENSURE(str == CStr::s);
+
     auto stdstr = ToStdString(str);
     TEST_ENSURE(str == stdstr.data());
     TEST_ENSURE(str == BasicString<T>(stdstr));

@@ -188,6 +188,10 @@ public:
     constexpr BasicString& operator=(BasicString&&);
     constexpr BasicString& operator=(ConstPtr);
 
+    constexpr BasicString& operator+=(BasicString const&);
+    constexpr BasicString& operator+=(ConstPtr);
+    constexpr BasicString& operator+=(Value);
+
     template <ConvertibleToT<T> U, typename TraitsU, typename AllocU>
     constexpr BasicString(std::basic_string<U, TraitsU, AllocU> const&, AllocT const& = AllocT());
 
@@ -456,6 +460,10 @@ inline constexpr void BasicString<T, AllocT>::Assign(Iter begin, Iter end)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Push(Value ch)
 {
+    if (ch == T(0)) [[unlikely]] {
+        return;
+    }
+
     Ptr buffer = AppendWithSize(1);
     *buffer = ch;
 }
@@ -463,7 +471,7 @@ inline constexpr void BasicString<T, AllocT>::Push(Value ch)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Push(Value ch, SizeT count)
 {
-    if (count == 0) [[unlikely]] {
+    if (ch == T(0) || count == 0) [[unlikely]] {
         return;
     }
 
@@ -1162,6 +1170,47 @@ constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(ConstPtr ptr
     }
 
     AssignWithSource(ptr, len);
+    return *this;
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>&
+BasicString<T, AllocT>::operator+=(BasicString const& other)
+{
+    SizeT otherSize = other.Size();
+    if (otherSize == 0) [[unlikely]] {
+        return *this;
+    }
+
+    AppendWithSource(other.Data(), otherSize);
+    return *this;
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(ConstPtr ptr)
+{
+    if (ptr == nullptr) [[unlikely]] {
+        return *this;
+    }
+
+    SizeT len = memory::StringLength(ptr);
+    if (len == 0) [[unlikely]] {
+        return *this;
+    }
+
+    AppendWithSource(ptr, len);
+    return *this;
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(Value ch)
+{
+    if (ch == T(0)) [[unlikely]] {
+        return *this;
+    }
+
+    Ptr loc = AppendWithSize(1);
+    *loc = ch;
     return *this;
 }
 
