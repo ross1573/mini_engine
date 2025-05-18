@@ -5,6 +5,13 @@ import mini.benchmark;
 
 using namespace mini;
 
+static void NoOp(benchmark::State& state)
+{
+    for (; state.KeepRunning(););
+}
+
+BENCHMARK(NoOp);
+
 static void CtorEmpty(benchmark::State& state)
 {
     for (auto _ : state) {
@@ -13,10 +20,26 @@ static void CtorEmpty(benchmark::State& state)
     }
 }
 
-static void CtorEmpty_stdlib(benchmark::State& state)
+static void CtorEmpty_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void CtorCh(benchmark::State& state)
+{
+    for (auto _ : state) {
+        String str('c', 22);
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void CtorCh_std(benchmark::State& state)
+{
+    for (auto _ : state) {
+        std::string str(22, 'c');
         benchmark::DoNotOptimize(str);
     }
 }
@@ -29,7 +52,7 @@ static void CtorShort(benchmark::State& state)
     }
 }
 
-static void CtorShort_stdlib(benchmark::State& state)
+static void CtorShort_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str("Hello from string!");
@@ -45,11 +68,53 @@ static void CtorLong(benchmark::State& state)
     }
 }
 
-static void CtorLong_stdlib(benchmark::State& state)
+static void CtorLong_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str("Hello world from long string!");
         benchmark::DoNotOptimize(str);
+    }
+}
+
+static void CtorCopy(benchmark::State& state)
+{
+    String str("Hello from string!");
+    for (auto _ : state) {
+        String str2(str);
+        benchmark::DoNotOptimize(str2);
+    }
+}
+
+static void CtorCopy_std(benchmark::State& state)
+{
+    std::string str("Hello from string!");
+    for (auto _ : state) {
+        std::string str2(str);
+        benchmark::DoNotOptimize(str2);
+    }
+}
+
+static void CtorMove(benchmark::State& state)
+{
+    String str("Hello world from long string!");
+    for (auto _ : state) {
+        String str2(MoveArg(str));
+        memory::DestructAt(&str);
+        memory::ConstructAt(&str, MoveArg(str2));
+        benchmark::DoNotOptimize(str);
+        benchmark::DoNotOptimize(str2);
+    }
+}
+
+static void CtorMove_std(benchmark::State& state)
+{
+    std::string str("Hello world from long string!");
+    for (auto _ : state) {
+        std::string str2(MoveArg(str));
+        memory::DestructAt(&str);
+        memory::ConstructAt(&str, MoveArg(str2));
+        benchmark::DoNotOptimize(str);
+        benchmark::DoNotOptimize(str2);
     }
 }
 
@@ -62,7 +127,7 @@ static void CtorIter(benchmark::State& state)
     }
 }
 
-static void CtorIter_stdlib(benchmark::State& state)
+static void CtorIter_std(benchmark::State& state)
 {
     std::string str("Hello from string!");
     for (auto _ : state) {
@@ -72,13 +137,19 @@ static void CtorIter_stdlib(benchmark::State& state)
 }
 
 BENCHMARK(CtorEmpty);
-BENCHMARK(CtorEmpty_stdlib);
+BENCHMARK(CtorEmpty_std);
+BENCHMARK(CtorCh);
+BENCHMARK(CtorCh_std);
 BENCHMARK(CtorShort);
-BENCHMARK(CtorShort_stdlib);
+BENCHMARK(CtorShort_std);
 BENCHMARK(CtorLong);
-BENCHMARK(CtorLong_stdlib);
+BENCHMARK(CtorLong_std);
+BENCHMARK(CtorCopy);
+BENCHMARK(CtorCopy_std);
+BENCHMARK(CtorMove);
+BENCHMARK(CtorMove_std);
 BENCHMARK(CtorIter);
-BENCHMARK(CtorIter_stdlib);
+BENCHMARK(CtorIter_std);
 
 static void AssignOther(benchmark::State& state)
 {
@@ -92,7 +163,7 @@ static void AssignOther(benchmark::State& state)
     }
 }
 
-static void AssignOther_stdlib(benchmark::State& state)
+static void AssignOther_std(benchmark::State& state)
 {
     std::string str("Hello from string!");
     std::string str2("Hello world from long string!");
@@ -101,6 +172,24 @@ static void AssignOther_stdlib(benchmark::State& state)
         str3 = str;
         str3 = str2;
         benchmark::DoNotOptimize(str3);
+    }
+}
+
+static void AssignCopy(benchmark::State& state)
+{
+    String str("Hello from string!");
+    for (auto _ : state) {
+        String str2(str);
+        benchmark::DoNotOptimize(str2);
+    }
+}
+
+static void AssignCopy_std(benchmark::State& state)
+{
+    std::string str("Hello from string!");
+    for (auto _ : state) {
+        std::string str2(str);
+        benchmark::DoNotOptimize(str2);
     }
 }
 
@@ -115,7 +204,7 @@ static void AssignMove(benchmark::State& state)
     }
 }
 
-static void AssignMove_stdlib(benchmark::State& state)
+static void AssignMove_std(benchmark::State& state)
 {
     std::string str("Hello world from long string!");
     for (auto _ : state) {
@@ -135,7 +224,7 @@ static void AssignShort(benchmark::State& state)
     }
 }
 
-static void AssignShort_stdlib(benchmark::State& state)
+static void AssignShort_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -149,31 +238,49 @@ static void AssignLong(benchmark::State& state)
     for (auto _ : state) {
         String str;
         str = "Hello world from long string!";
-        str = "Hello world from string!";
         benchmark::DoNotOptimize(str);
     }
 }
 
-static void AssignLong_stdlib(benchmark::State& state)
+static void AssignLong_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
         str = "Hello world from long string!";
-        str = "Hello world from string!";
         benchmark::DoNotOptimize(str);
     }
 }
 
 BENCHMARK(AssignOther);
-BENCHMARK(AssignOther_stdlib);
+BENCHMARK(AssignOther_std);
+BENCHMARK(AssignCopy);
+BENCHMARK(AssignCopy_std);
 BENCHMARK(AssignMove);
-BENCHMARK(AssignMove_stdlib);
+BENCHMARK(AssignMove_std);
 BENCHMARK(AssignShort);
-BENCHMARK(AssignShort_stdlib);
+BENCHMARK(AssignShort_std);
 BENCHMARK(AssignLong);
-BENCHMARK(AssignLong_stdlib);
+BENCHMARK(AssignLong_std);
 
-static void Append(benchmark::State& state)
+static void AppendShort(benchmark::State& state)
+{
+    for (auto _ : state) {
+        String str;
+        str.Append("Hello from string!");
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void AppendShort_std(benchmark::State& state)
+{
+    for (auto _ : state) {
+        std::string str;
+        str.append("Hello from string!");
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void AppendLong(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
@@ -183,7 +290,7 @@ static void Append(benchmark::State& state)
     }
 }
 
-static void Append_stdlib(benchmark::State& state)
+static void AppendLong_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -193,10 +300,30 @@ static void Append_stdlib(benchmark::State& state)
     }
 }
 
-BENCHMARK(Append);
-BENCHMARK(Append_stdlib);
+BENCHMARK(AppendShort);
+BENCHMARK(AppendShort_std);
+BENCHMARK(AppendLong);
+BENCHMARK(AppendLong_std);
 
-static void Insert(benchmark::State& state)
+static void InsertShort(benchmark::State& state)
+{
+    for (auto _ : state) {
+        String str('c', 3);
+        str.Insert(0, "Hello from string!");
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void InsertShort_std(benchmark::State& state)
+{
+    for (auto _ : state) {
+        std::string str(3, 'c');
+        str.insert(0, "Hello from string!");
+        benchmark::DoNotOptimize(str);
+    }
+}
+
+static void InsertLong(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
@@ -206,7 +333,7 @@ static void Insert(benchmark::State& state)
     }
 }
 
-static void Insert_stdlib(benchmark::State& state)
+static void InsertLong_std(benchmark::State& state)
 {
     for (auto _ : state) {
         std::string str;
@@ -216,7 +343,9 @@ static void Insert_stdlib(benchmark::State& state)
     }
 }
 
-BENCHMARK(Insert);
-BENCHMARK(Insert_stdlib);
+BENCHMARK(InsertShort);
+BENCHMARK(InsertShort_std);
+BENCHMARK(InsertLong);
+BENCHMARK(InsertLong_std);
 
 BENCHMARK_MAIN();

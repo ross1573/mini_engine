@@ -39,6 +39,9 @@ CSTR(char32, constexpr, U);
     static_assert(func<type, CStr_constexpr<type>>() == 0); \
     TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
 
+/* Debuging */
+// #define TEST_STRING(func, type) TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
+
 [[maybe_unused]] static constexpr void StringConstraints()
 {
     static_assert(sizeof(BasicString<char>) == 24);
