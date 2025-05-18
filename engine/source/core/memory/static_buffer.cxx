@@ -34,11 +34,6 @@ protected:
     alignas(AlignN) byte m_Buffer[sizeof(T) * CapacityN];
 
 public:
-    inline constexpr StaticBuffer() noexcept = default;
-    inline constexpr ~StaticBuffer() noexcept = default;
-    StaticBuffer(StaticBuffer const&) = delete;
-    StaticBuffer(StaticBuffer&&) = delete;
-
     inline T* Data() noexcept { return Address(); }
     inline T const* Data() const noexcept { return Address(); }
 
@@ -50,9 +45,6 @@ private:
     {
         return reinterpret_cast<T*>(const_cast<byte*>(&m_Buffer[0]));
     }
-
-    StaticBuffer& operator=(StaticBuffer const&) = delete;
-    StaticBuffer& operator=(StaticBuffer&&) = delete;
 };
 
 export template <TrivialT T, SizeT CapacityN, SizeT AlignN>
@@ -61,11 +53,6 @@ protected:
     alignas(AlignN) T m_Buffer[CapacityN];
 
 public:
-    inline constexpr StaticBuffer() noexcept = default;
-    inline constexpr ~StaticBuffer() noexcept = default;
-    StaticBuffer(StaticBuffer const&) = delete;
-    StaticBuffer(StaticBuffer&&) = delete;
-
     inline constexpr T* Data() noexcept { return const_cast<T*>(Address()); }
     inline constexpr T const* Data() const noexcept { return Address(); }
 
@@ -74,9 +61,6 @@ public:
 
 private:
     inline constexpr T const* Address() const noexcept { return &m_Buffer[0]; }
-
-    StaticBuffer& operator=(StaticBuffer const&) = delete;
-    StaticBuffer& operator=(StaticBuffer&&) = delete;
 };
 
 export template <SizeT CapacityN>
