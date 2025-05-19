@@ -28,13 +28,8 @@ protected:
     }
 
 public:
-    inline constexpr DynamicBuffer() noexcept
-        : m_Alloc{}
-        , m_Version(0)
-        , m_Capacity(0)
-        , m_Buffer(nullptr)
-    {
-    }
+    inline constexpr DynamicBuffer() noexcept = default;
+    inline constexpr ~DynamicBuffer() { Deallocate(); }
 
     inline constexpr DynamicBuffer(AllocT const& alloc) noexcept
         : m_Alloc(alloc)
@@ -97,8 +92,6 @@ public:
         Allocate(capacity);
     }
 
-    inline constexpr ~DynamicBuffer() { Deallocate(); }
-
     inline constexpr SizeT Version() const noexcept { return m_Version; }
     inline constexpr SizeT Capacity() const noexcept { return m_Capacity; }
     [[nodiscard]] inline constexpr T* Data() noexcept { return m_Buffer; }
@@ -113,13 +106,7 @@ public:
         AllocResult<T> buffer = m_Alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
-
-        if (IsConstantEvaluated()) {
-            m_Version = 1;
-        }
-        else {
-            m_Version = static_cast<SizeT>(reinterpret_cast<uintptr_t>(m_Buffer));
-        }
+        ++m_Version;
     }
 
     inline constexpr void Deallocate() noexcept(NoThrowAllocatorT<AllocT, T>)
@@ -127,7 +114,6 @@ public:
         m_Alloc.Deallocate(m_Buffer, m_Capacity);
         m_Buffer = nullptr;
         m_Capacity = 0;
-        m_Version = 0;
     }
 
     [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const
@@ -161,13 +147,10 @@ public:
     inline constexpr DynamicBuffer& operator=(DynamicBuffer&& other) noexcept
     {
         Deallocate();
-        m_Buffer = other.m_Buffer;
-        m_Capacity = other.m_Capacity;
         m_Alloc = MoveArg(other.m_Alloc);
-        ++m_Version;
-        other.m_Buffer = nullptr;
-        other.m_Capacity = 0;
-        other.m_Version = 0;
+        m_Buffer = mini::Exchange(other.m_Buffer, nullptr);
+        m_Capacity = mini::Exchange(other.m_Capacity, 0);
+        m_Version = mini::Exchange(other.m_Capacity, 0) + 1;
         return *this;
     }
 
@@ -229,13 +212,10 @@ public:
         AllocResult<T> buffer = alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
+        ++m_Version;
 
         if (IsConstantEvaluated()) {
             memory::ConstructRangeArgs(m_Buffer, m_Buffer + m_Capacity);
-            m_Version = 1;
-        }
-        else {
-            m_Version = static_cast<SizeT>(reinterpret_cast<uintptr_t>(m_Buffer));
         }
     }
 
@@ -249,7 +229,6 @@ public:
         alloc.Deallocate(m_Buffer, m_Capacity);
         m_Buffer = nullptr;
         m_Capacity = 0;
-        m_Version = 0;
     }
 
     template <AllocatorT<T> AllocT>
