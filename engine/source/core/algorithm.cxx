@@ -22,7 +22,7 @@ inline constexpr bool CheckRange(T begin, T end)
     if (begin == end) [[unlikely]] {
         return true;
     }
-    else if (!begin.IsValid() || !begin.IsValidWith(end)) [[unlikely]] {
+    else if (!begin.IsValidWith(end)) [[unlikely]] {
         return false;
     }
 

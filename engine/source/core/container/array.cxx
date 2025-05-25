@@ -101,6 +101,7 @@ public:
     constexpr bool IsEmpty() const noexcept;
     constexpr bool IsValidIndex(SizeT) const noexcept;
     constexpr bool IsValidIterator(ConstIterator) const noexcept;
+    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -113,6 +114,7 @@ private:
     constexpr void SwapNewBuffer(Buffer&);
     constexpr void AssertValidIndex(SizeT) const noexcept;
     constexpr void AssertValidIterator(ConstIterator) const noexcept;
+    constexpr void AssertValidRange(ConstIterator, ConstIterator) const noexcept;
 };
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -468,9 +470,7 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
         default: break;
     }
 
-    AssertValidIterator(first);
-    AssertValidIterator(last - 1);
-
+    AssertValidRange(first, last);
     Iterator iterBegin = Begin();
     Ptr begin = m_Buffer.Data();
     Ptr end = begin + m_Size;
@@ -675,6 +675,16 @@ inline constexpr bool Array<T, AllocT>::IsValidIterator(ConstIterator iter) cons
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
+inline constexpr bool Array<T, AllocT>::IsValidRange(ConstIterator begin,
+                                                     ConstIterator end) const noexcept
+{
+    ConstPtr buffer = m_Buffer.Data();
+    SizeT beginIdx = static_cast<SizeT>(begin.m_Ptr - buffer);
+    SizeT endIdx = static_cast<SizeT>(end.m_Ptr - buffer);
+    return (beginIdx < m_Size) && (endIdx < m_Size + 1);
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr T& Array<T, AllocT>::operator[](SizeT index)
 {
     AssertValidIndex(index);
@@ -731,8 +741,15 @@ template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void
 Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    [[maybe_unused]] SizeT index = static_cast<SizeT>(iter.m_Ptr - m_Buffer.Data());
-    ASSERT(index < m_Size, "invalid range");
+    ASSERT(IsValidIterator(iter), "invalid iterator");
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+inline constexpr void
+Array<T, AllocT>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                   [[maybe_unused]] ConstIterator end) const noexcept
+{
+    ASSERT(IsValidRange(begin, end), "invalid range");
 }
 
 export template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>

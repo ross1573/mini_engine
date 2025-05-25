@@ -180,6 +180,7 @@ public:
     constexpr bool IsEmpty() const noexcept;
     constexpr bool IsValidIndex(SizeT) const noexcept;
     constexpr bool IsValidIterator(ConstIterator) const noexcept;
+    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -239,6 +240,7 @@ private:
 
     constexpr void AssertValidIndex(SizeT) const noexcept;
     constexpr void AssertValidIterator(ConstIterator) const noexcept;
+    constexpr void AssertValidRange(ConstIterator, ConstIterator) const noexcept;
 };
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -828,11 +830,10 @@ inline constexpr void BasicString<T, AllocT>::RemoveRange(ConstIterator iter, Si
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::RemoveRange(ConstIterator begin, ConstIterator end)
 {
-    AssertValidIterator(begin);
-    AssertValidIterator(end - 1);
-
+    AssertValidRange(begin, end);
     Ptr buffer = Data();
     SizeT oldSize = Size();
+
     SizeT count = static_cast<SizeT>(end - begin);
     if (count == 0) [[unlikely]] {
         return;
@@ -1062,6 +1063,17 @@ inline constexpr bool BasicString<T, AllocT>::IsValidIterator(ConstIterator iter
 {
     SizeT index = static_cast<SizeT>(iter.Address() - Data());
     return index < Size();
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr bool BasicString<T, AllocT>::IsValidRange(ConstIterator begin,
+                                                           ConstIterator end) const noexcept
+{
+    ConstPtr buffer = Data();
+    SizeT size = Size();
+    SizeT beginIdx = static_cast<SizeT>(begin.Address() - buffer);
+    SizeT endIdx = static_cast<SizeT>(end.Address() - buffer);
+    return (beginIdx < size) && (endIdx < size + 1);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1635,8 +1647,15 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void
 BasicString<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    [[maybe_unused]] SizeT index = static_cast<SizeT>(iter.m_Ptr - Data());
-    ASSERT(index < Size(), "invalid range");
+    ASSERT(IsValidIterator(iter), "invalid iterator");
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr void
+BasicString<T, AllocT>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                         [[maybe_unused]] ConstIterator end) const noexcept
+{
+    ASSERT(IsValidRange(begin, end), "invalid range");
 }
 
 export template <CharT T, AllocatorT<T> AllocT>

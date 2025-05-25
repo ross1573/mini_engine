@@ -94,6 +94,7 @@ public:
     constexpr bool IsFull() const noexcept;
     constexpr bool IsValidIndex(SizeT) const noexcept;
     constexpr bool IsValidIterator(ConstIterator) const noexcept;
+    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -105,6 +106,7 @@ private:
     constexpr void AssertValidCapacity(SizeT) const noexcept;
     constexpr void AssertValidIndex(SizeT) const noexcept;
     constexpr void AssertValidIterator(ConstIterator) const noexcept;
+    constexpr void AssertValidRange(ConstIterator, ConstIterator) const noexcept;
 };
 
 template <MovableT T, SizeT N>
@@ -335,7 +337,7 @@ template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveRange(SizeT first, SizeT last)
 {
     Iterator begin = Begin();
-    RemoveRange(begin + (OffsetT)first, begin + (OffsetT)last);
+    RemoveRange(begin + first, begin + last);
 }
 
 template <MovableT T, SizeT N>
@@ -349,9 +351,7 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
         default: break;
     }
 
-    AssertValidIterator(first);
-    AssertValidIterator(last - 1);
-
+    AssertValidRange(first, last);
     Iterator iterBegin = Begin();
     Ptr begin = m_Buffer.Data();
     Ptr end = begin + m_Size;
@@ -507,8 +507,18 @@ inline constexpr bool StaticArray<T, N>::IsValidIndex(SizeT index) const noexcep
 template <MovableT T, SizeT N>
 inline constexpr bool StaticArray<T, N>::IsValidIterator(ConstIterator iter) const noexcept
 {
-    OffsetT diff = iter.m_Ptr - m_Buffer.Data();
-    return diff >= 0 && diff < static_cast<OffsetT>(m_Size);
+    SizeT index = static_cast<SizeT>(iter.m_Ptr - m_Buffer.Data());
+    return index < m_Size;
+}
+
+template <MovableT T, SizeT N>
+inline constexpr bool StaticArray<T, N>::IsValidRange(ConstIterator begin,
+                                                      ConstIterator end) const noexcept
+{
+    ConstPtr buffer = m_Buffer.Data();
+    SizeT beginIdx = static_cast<SizeT>(begin.m_Ptr - buffer);
+    SizeT endIdx = static_cast<SizeT>(end.m_Ptr - buffer);
+    return (beginIdx < m_Size) && (endIdx < m_Size + 1);
 }
 
 template <MovableT T, SizeT N>
@@ -566,7 +576,15 @@ template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(IsValidIterator(iter), "invalid range");
+    ASSERT(IsValidIterator(iter), "invalid iterator");
+}
+
+template <MovableT T, SizeT N>
+inline constexpr void
+StaticArray<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                    [[maybe_unused]] ConstIterator end) const noexcept
+{
+    ASSERT(IsValidRange(begin, end), "invalid range");
 }
 
 export template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>
