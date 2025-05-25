@@ -415,25 +415,25 @@ inline constexpr StaticArray<T, N>::ConstPtr StaticArray<T, N>::Data() const noe
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>::Iterator StaticArray<T, N>::Begin() noexcept
 {
-    return Iterator(m_Buffer.Data(), 0, this);
+    return Iterator(m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>::ConstIterator StaticArray<T, N>::Begin() const noexcept
 {
-    return ConstIterator(m_Buffer.Data(), 0, this);
+    return ConstIterator(m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>::Iterator StaticArray<T, N>::End() noexcept
 {
-    return Iterator(m_Buffer.Data() + m_Size, 0, this);
+    return Iterator(m_Buffer.Data() + m_Size, this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>::ConstIterator StaticArray<T, N>::End() const noexcept
 {
-    return ConstIterator(m_Buffer.Data() + m_Size, 0, this);
+    return ConstIterator(m_Buffer.Data() + m_Size, this);
 }
 
 template <MovableT T, SizeT N>

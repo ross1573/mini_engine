@@ -6,7 +6,6 @@ export module mini.core:circular_iterator;
 
 import :type;
 import :iterator;
-import :iterator_version;
 
 namespace mini {
 
@@ -16,8 +15,6 @@ private:
     template <typename U, typename C>
     friend class CircularIterator;
     friend CircularT;
-
-    using VersionT = IteratorVersion<CircularT>;
 
 public:
     typedef T Value;
@@ -29,7 +26,6 @@ protected:
     SizeT m_Capacity;
     Ptr m_Begin;
     CircularT* m_Circular;
-    [[no_unique_address]] VersionT m_Version;
 
 public:
     constexpr CircularIterator() noexcept;
@@ -66,7 +62,7 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
 protected:
-    constexpr CircularIterator(SizeT, SizeT, Ptr, SizeT, CircularT*) noexcept;
+    constexpr CircularIterator(SizeT, SizeT, Ptr, CircularT*) noexcept;
 
     template <typename U, typename CircularU>
     constexpr bool CheckSource(CircularIterator<U, CircularU> const&) const noexcept;
@@ -94,19 +90,16 @@ inline constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
     , m_Capacity(0)
     , m_Begin(nullptr)
     , m_Circular(nullptr)
-    , m_Version(0)
 {
 }
 
 template <typename T, typename CircularT>
 inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, SizeT cap, Ptr begin,
-                                                                  SizeT ver,
                                                                   CircularT* base) noexcept
     : m_Offset(idx)
     , m_Capacity(cap)
     , m_Begin(begin)
     , m_Circular(base)
-    , m_Version(ver)
 {
 }
 
@@ -119,7 +112,6 @@ inline constexpr CircularIterator<T, CircularT>::
     , m_Capacity(o.m_Capacity)
     , m_Begin(o.m_Begin)
     , m_Circular(o.m_Circular)
-    , m_Version(o.m_Version)
 {
 }
 
@@ -133,7 +125,6 @@ CircularIterator<T, CircularT>::operator=(CircularIterator<U, CircularU> const& 
     m_Capacity = o.m_Capacity;
     m_Begin = o.m_Begin;
     m_Circular = o.m_Circular;
-    m_Version = o.m_Version;
     return *this;
 }
 
@@ -142,7 +133,7 @@ template <typename U, typename CircularU>
 inline constexpr bool CircularIterator<T, CircularT>::
     CheckSource(CircularIterator<U, CircularU> const& iter) const noexcept
 {
-    return m_Circular && m_Circular == iter.m_Circular && m_Version == iter.m_Version;
+    return m_Circular && m_Circular == iter.m_Circular;
 }
 
 template <typename T, typename CircularT>
@@ -182,7 +173,6 @@ inline constexpr bool CircularIterator<T, CircularT>::Reset() noexcept
     CircularIterator begin = m_Circular->Begin();
     m_Begin = begin.m_Begin;
     m_Offset = begin.m_Offset;
-    m_Version = begin.m_Version;
     return true;
 }
 
@@ -196,7 +186,6 @@ inline constexpr bool CircularIterator<T, CircularT>::Finish() noexcept
     CircularIterator end = m_Circular->End();
     m_Begin = end.m_Begin;
     m_Offset = end.m_Offset;
-    m_Version = end.m_Version;
     return true;
 }
 

@@ -309,37 +309,35 @@ inline constexpr StaticQueue<T, N>::ConstPtr StaticQueue<T, N>::Data() const noe
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::Iterator StaticQueue<T, N>::Begin() noexcept
 {
-    return Iterator((SizeT)m_Begin, m_Buffer.Capacity(), m_Buffer.Data(), 0, this);
+    return Iterator((SizeT)m_Begin, m_Buffer.Capacity(), m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::ConstIterator StaticQueue<T, N>::Begin() const noexcept
 {
-    return ConstIterator((SizeT)m_Begin, m_Buffer.Capacity(), m_Buffer.Data(), 0, this);
+    return ConstIterator((SizeT)m_Begin, m_Buffer.Capacity(), m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::Iterator StaticQueue<T, N>::End() noexcept
 {
     SizeT cap = m_Buffer.Capacity();
-    if (m_Begin == m_End) {
-        return Iterator(m_Begin + m_Size, cap, m_Buffer.Data(), 0, this);
-    }
+    SizeT endIdx = m_Begin == m_End  ? m_Begin + m_Size
+                    : m_Begin < m_End ? (SizeT)m_End
+                                      : (SizeT)m_End + cap;
 
-    SizeT endIdx = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + cap;
-    return Iterator(endIdx, cap, m_Buffer.Data(), 0, this);
+    return Iterator(endIdx, cap, m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::ConstIterator StaticQueue<T, N>::End() const noexcept
 {
     SizeT cap = m_Buffer.Capacity();
-    if (m_Begin == m_End) {
-        return ConstIterator(m_Begin + m_Size, cap, m_Buffer.Data(), 0, this);
-    }
+    SizeT endIdx = m_Begin == m_End  ? m_Begin + m_Size
+                    : m_Begin < m_End ? (SizeT)m_End
+                                      : (SizeT)m_End + cap;
 
-    SizeT endIdx = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + cap;
-    return ConstIterator(endIdx, cap, m_Buffer.Data(), 0, this);
+    return ConstIterator(endIdx, cap, m_Buffer.Data(), this);
 }
 
 template <MovableT T, SizeT N>

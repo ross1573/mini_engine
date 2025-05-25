@@ -35,7 +35,7 @@ FACTORY(FooArgF);
     TEST_RANGE_BASED_FOR_SUPPORT(Array<Foo>);
 
     static_assert(SameAsT<ArrayIterator<Foo, Array<Foo>>, Array<Foo>::Iterator>);
-    static_assert(sizeof(Array<Foo>::Iterator) == alignof(void*) * 3);
+    static_assert(sizeof(Array<Foo>::Iterator) == alignof(void*) * 2);
 }
 
 template <typename T, typename AllocT, typename StdAllocT>

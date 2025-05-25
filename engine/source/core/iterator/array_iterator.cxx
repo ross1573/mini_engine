@@ -6,7 +6,6 @@ export module mini.core:array_iterator;
 
 import :type;
 import :iterator;
-import :iterator_version;
 
 namespace mini {
 
@@ -17,8 +16,6 @@ private:
     friend class ArrayIterator;
     friend ArrayT;
 
-    using VersionT = IteratorVersion<ArrayT>;
-
 public:
     typedef T Value;
     typedef T* Ptr;
@@ -27,7 +24,6 @@ public:
 protected:
     Ptr m_Ptr;
     ArrayT* m_Array;
-    [[no_unique_address]] VersionT m_Version;
 
 public:
     constexpr ArrayIterator() noexcept;
@@ -64,7 +60,7 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
 protected:
-    constexpr ArrayIterator(Ptr, SizeT, ArrayT*) noexcept;
+    constexpr ArrayIterator(Ptr, ArrayT*) noexcept;
 
     constexpr bool CheckSource(ArrayIterator const&) const noexcept;
     constexpr bool CheckIterator(ArrayIterator const&) const noexcept;
@@ -74,15 +70,13 @@ template <typename T, typename ArrayT>
 inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator() noexcept
     : m_Ptr(nullptr)
     , m_Array(nullptr)
-    , m_Version(0)
 {
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, SizeT ver, ArrayT* base) noexcept
+inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, ArrayT* base) noexcept
     : m_Ptr(ptr)
     , m_Array(base)
-    , m_Version(ver)
 {
 }
 
@@ -92,7 +86,6 @@ inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(ArrayIterator<U, ArrayU
     requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
     : m_Ptr(static_cast<T*>(o.m_Ptr))
     , m_Array(o.m_Array)
-    , m_Version(o.m_Version)
 {
 }
 
@@ -104,7 +97,6 @@ ArrayIterator<T, ArrayT>::operator=(ArrayIterator<U, ArrayU> const& o) noexcept
 {
     m_Ptr = static_cast<T*>(o.m_Ptr);
     m_Array = o.m_Array;
-    m_Version = o.m_Version;
     return *this;
 }
 
@@ -112,7 +104,7 @@ template <typename T, typename ArrayT>
 inline constexpr bool
 ArrayIterator<T, ArrayT>::CheckSource(ArrayIterator const& iter) const noexcept
 {
-    return m_Array && m_Array == iter.m_Array && m_Version == iter.m_Version;
+    return m_Array && m_Array == iter.m_Array;
 }
 
 template <typename T, typename ArrayT>
@@ -149,7 +141,6 @@ inline constexpr bool ArrayIterator<T, ArrayT>::Reset() noexcept
 
     auto begin = m_Array->Begin();
     m_Ptr = begin.m_Ptr;
-    m_Version = begin.m_Version;
     return true;
 }
 
@@ -162,7 +153,6 @@ inline constexpr bool ArrayIterator<T, ArrayT>::Finish() noexcept
 
     auto end = m_Array->End();
     m_Ptr = end.m_Ptr;
-    m_Version = end.m_Version;
     return true;
 }
 

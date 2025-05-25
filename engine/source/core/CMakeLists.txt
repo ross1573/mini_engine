@@ -24,7 +24,6 @@ PUBLIC
         iterator/array_iterator.cxx
         iterator/circular_iterator.cxx
         iterator/iterator.cxx
-        iterator/iterator_version.cxx
         iterator/move_iterator.cxx
         iterator/ptr_iterator.cxx
 

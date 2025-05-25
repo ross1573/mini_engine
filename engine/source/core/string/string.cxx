@@ -208,7 +208,6 @@ private:
     void Insert(SizeT, NullptrT, SizeT) = delete;
     BasicString& operator=(NullptrT) = delete;
 
-    constexpr SizeT GetVersion() const noexcept;
     constexpr void SetSizeWithNullTerminator(SizeT) noexcept;
     constexpr void DestroyBuffer();
     constexpr void ResizeWithAlloc(SizeT, Value, SizeT);
@@ -951,39 +950,31 @@ inline constexpr void BasicString<T, AllocT>::Swap(BasicString& other)
     }
 
     mini::Swap(m_Storage.raw, other.m_Storage.raw);
-
-    if (m_Storage.l.layout == 1) {
-        m_Storage.l.buffer.IncrementVersion();
-    }
-
-    if (other.m_Storage.l.layout == 1) {
-        other.m_Storage.l.buffer.IncrementVersion();
-    }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Iterator BasicString<T, AllocT>::Begin() noexcept
 {
-    return Iterator(Data(), GetVersion(), this);
+    return Iterator(Data(), this);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::ConstIterator
 BasicString<T, AllocT>::Begin() const noexcept
 {
-    return ConstIterator(Data(), GetVersion(), this);
+    return ConstIterator(Data(), this);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Iterator BasicString<T, AllocT>::End() noexcept
 {
-    return Iterator(Data() + Size(), GetVersion(), this);
+    return Iterator(Data() + Size(), this);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::ConstIterator BasicString<T, AllocT>::End() const noexcept
 {
-    return ConstIterator(Data() + Size(), GetVersion(), this);
+    return ConstIterator(Data() + Size(), this);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1031,12 +1022,6 @@ inline constexpr BasicString<T, AllocT>::ConstRef BasicString<T, AllocT>::At(Siz
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr SizeT BasicString<T, AllocT>::GetVersion() const noexcept
-{
-    return m_Storage.l.layout == 0 ? 0 : m_Storage.l.buffer.Version();
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::Data() noexcept
 {
     return m_Storage.l.layout == 0 ? m_Storage.s.buffer.Data() : m_Storage.l.buffer.Data();
@@ -1075,12 +1060,8 @@ inline constexpr bool BasicString<T, AllocT>::IsValidIndex(SizeT index) const no
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool BasicString<T, AllocT>::IsValidIterator(ConstIterator iter) const noexcept
 {
-    if (iter.m_Version != GetVersion()) {
-        return false;
-    }
-
-    OffsetT dist = iter.Address() - Data();
-    return dist >= 0 && dist < static_cast<OffsetT>(Size());
+    SizeT index = static_cast<SizeT>(iter.Address() - Data());
+    return index < Size();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1335,9 +1316,6 @@ inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other
     }
 
     mini::Swap(m_Storage.raw, other.m_Storage.raw);
-    if (m_Storage.l.layout == 1) {
-        m_Storage.l.buffer.IncrementVersion();
-    }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1657,9 +1635,8 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void
 BasicString<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    [[maybe_unused]] OffsetT dist = iter.m_Ptr - Data();
-    ASSERT(iter.m_Version == GetVersion(), "invalid version");
-    ASSERT(dist >= 0 && dist < static_cast<OffsetT>(Size()), "invalid range");
+    [[maybe_unused]] SizeT index = static_cast<SizeT>(iter.m_Ptr - Data());
+    ASSERT(index < Size(), "invalid range");
 }
 
 export template <CharT T, AllocatorT<T> AllocT>

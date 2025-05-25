@@ -580,25 +580,25 @@ inline constexpr Array<T, AllocT>::ConstPtr Array<T, AllocT>::Data() const noexc
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Iterator Array<T, AllocT>::Begin() noexcept
 {
-    return Iterator(m_Buffer.Data(), m_Buffer.Version(), this);
+    return Iterator(m_Buffer.Data(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::ConstIterator Array<T, AllocT>::Begin() const noexcept
 {
-    return ConstIterator(m_Buffer.Data(), m_Buffer.Version(), this);
+    return ConstIterator(m_Buffer.Data(), this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::Iterator Array<T, AllocT>::End() noexcept
 {
-    return Iterator(m_Buffer.Data() + m_Size, m_Buffer.Version(), this);
+    return Iterator(m_Buffer.Data() + m_Size, this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr Array<T, AllocT>::ConstIterator Array<T, AllocT>::End() const noexcept
 {
-    return ConstIterator(m_Buffer.Data() + m_Size, m_Buffer.Version(), this);
+    return ConstIterator(m_Buffer.Data() + m_Size, this);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -670,12 +670,8 @@ inline constexpr bool Array<T, AllocT>::IsValidIndex(SizeT index) const noexcept
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr bool Array<T, AllocT>::IsValidIterator(ConstIterator iter) const noexcept
 {
-    if (iter.m_Version != m_Buffer.Version()) {
-        return false;
-    }
-
-    OffsetT dist = iter.m_Ptr - m_Buffer.Data();
-    return dist >= 0 && dist < static_cast<OffsetT>(m_Size);
+    SizeT index = static_cast<SizeT>(iter.m_Ptr - m_Buffer.Data());
+    return index < m_Size;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -735,9 +731,8 @@ template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void
 Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    [[maybe_unused]] OffsetT dist = iter.m_Ptr - m_Buffer.Data();
-    ASSERT(iter.m_Version == m_Buffer.Version(), "invalid version");
-    ASSERT(dist >= 0 && dist < static_cast<OffsetT>(m_Size), "invalid range");
+    [[maybe_unused]] SizeT index = static_cast<SizeT>(iter.m_Ptr - m_Buffer.Data());
+    ASSERT(index < m_Size, "invalid range");
 }
 
 export template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>
