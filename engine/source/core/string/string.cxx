@@ -110,14 +110,14 @@ public:
     constexpr BasicString(BasicString const&, AllocT const&);
     constexpr BasicString(BasicString&&);
     constexpr BasicString(BasicString&&, AllocT const&);
-    constexpr BasicString(AllocT const&) noexcept;
-    constexpr BasicString(AllocT&&) noexcept;
+    explicit constexpr BasicString(AllocT const&) noexcept;
+    explicit constexpr BasicString(AllocT&&) noexcept;
     constexpr BasicString(SizeT, AllocT const& = AllocT());
     constexpr BasicString(Value, SizeT, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, SizeT, AllocT const& = AllocT());
     template <ForwardIteratableByT<T> Iter>
-    explicit constexpr BasicString(Iter, Iter, AllocT const& = AllocT());
+    constexpr BasicString(Iter, Iter, AllocT const& = AllocT());
 
     constexpr void Assign(ConstPtr);
     constexpr void Assign(ConstPtr, SizeT);
@@ -199,6 +199,8 @@ public:
     explicit constexpr operator std::basic_string<T>() const;
 
 private:
+    template <typename U>
+    BasicString(U, SizeT, AllocT const& = AllocT()) = delete;
     BasicString(NullptrT) = delete;
     BasicString(NullptrT, SizeT) = delete;
     void Assign(NullptrT) = delete;
