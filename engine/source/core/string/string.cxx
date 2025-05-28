@@ -60,7 +60,7 @@ private:
 
     struct LargeStorage {
         PACKED_STRUCT_BEGIN(1)
-        struct {
+        struct alignas(1) {
             byte padding : 7;
             byte layout  : 1;
         };
@@ -78,7 +78,7 @@ private:
     static constexpr SizeT SmallCapacity = AllocatedSize > 2 ? AllocatedSize : 2;
     static_assert(SmallCapacity < 128, "small capacity should not excced 127");
 
-    typedef StaticBuffer<T, SmallCapacity> SmallBuffer;
+    typedef StaticBuffer<T, SmallCapacity + 1> SmallBuffer;
     typedef StaticBuffer<byte, sizeof(LargeStorage)> RawBuffer;
 
     struct SmallStorage {

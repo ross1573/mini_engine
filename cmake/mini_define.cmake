@@ -12,10 +12,16 @@ add_compile_definitions(
     PLATFORM_LINUX=$<PLATFORM_ID:Linux>
 )
 
-if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+if (WIN32)
+    # msvc shit needs to be applied ethier vs or clang
     add_compile_definitions(
         _ALLOW_KEYWORD_MACROS
         "no_unique_address=msvc::no_unique_address"
+    )
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    add_compile_definitions(
         "force_inline=msvc::forceinline"
         "no_inline=msvc::noinline"
     )
