@@ -42,7 +42,7 @@ template <typename AllocT>
 struct IsDefaultAlloc : FalseT {};
 
 template <typename T>
-struct IsDefaultAlloc<mini::Allocator<T>> : TrueT {};
+struct IsDefaultAlloc<Allocator<T>> : TrueT {};
 
 export template <typename T>
 concept UnbindedAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename T::Ptr loc) {

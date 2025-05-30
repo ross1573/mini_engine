@@ -1330,6 +1330,8 @@ inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other
     }
 
     mini::Swap(m_Storage.raw, other.m_Storage.raw);
+    other.m_Storage.s.layout = 0;
+    other.SetSizeWithNullTerminator(0);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
