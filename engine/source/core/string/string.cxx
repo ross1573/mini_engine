@@ -113,9 +113,11 @@ public:
     explicit constexpr BasicString(AllocT const&) noexcept;
     explicit constexpr BasicString(AllocT&&) noexcept;
     constexpr BasicString(SizeT, AllocT const& = AllocT());
-    constexpr BasicString(Value, SizeT, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, AllocT const& = AllocT());
     constexpr BasicString(ConstPtr, SizeT, AllocT const& = AllocT());
+    template <typename U>
+    constexpr BasicString(U, SizeT, AllocT const& = AllocT())
+        requires AnyOfT<U, Value, ConstValue>;
     template <ForwardIteratableByT<T> Iter>
     constexpr BasicString(Iter, Iter, AllocT const& = AllocT());
 
@@ -199,8 +201,6 @@ public:
     explicit constexpr operator std::basic_string<T>() const;
 
 private:
-    template <typename U>
-    BasicString(U, SizeT, AllocT const& = AllocT()) = delete;
     BasicString(NullptrT) = delete;
     BasicString(NullptrT, SizeT) = delete;
     void Assign(NullptrT) = delete;
@@ -337,7 +337,9 @@ inline constexpr BasicString<T, AllocT>::BasicString(SizeT capacity, AllocT cons
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::BasicString(Value ch, SizeT size, AllocT const& alloc)
+template <typename U>
+inline constexpr BasicString<T, AllocT>::BasicString(U ch, SizeT size, AllocT const& alloc)
+    requires AnyOfT<U, Value, ConstValue>
     : m_Alloc(alloc)
 {
     Ptr loc = InitWithSize(size);
