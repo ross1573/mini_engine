@@ -927,7 +927,7 @@ inline constexpr void BasicString<T, AllocT>::Shrink()
     SizeT size = m_Storage.l.size;
     if (!IsConstantEvaluated() && size <= SmallCapacity) {
         Ptr buffer = m_Storage.l.buffer.Data();
-        memory::StringCopy(m_Storage.s.buffer.Data(), buffer, size);
+        memory::StringCopy(m_Storage.s.buffer.Data(), buffer, size + 1);
         m_Storage.s.layout = 0;
         m_Storage.s.size = static_cast<byte>(size);
         m_Alloc.Deallocate(buffer, size);
