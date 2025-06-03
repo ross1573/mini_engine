@@ -216,10 +216,20 @@ inline constexpr T* StringMove(T* dst, T const* src, SizeT len) noexcept
         return static_cast<T*>(ptr);
     }
 
-    T* tmp = new T[len];
-    StringCopy(tmp, src, len);
-    StringCopy(dst, tmp, len);
-    delete[] tmp;
+    if (static_cast<T const*>(dst) < src) {
+        for (T* d = dst; len != 0; --len) {
+            *d++ = *src++;
+        }
+    }
+    else {
+        T const* s = src + len;
+        T* d = dst + len;
+
+        for (; len != 0; --len) {
+            *(--d) = *(--s);
+        }
+    }
+
     return dst;
 }
 
