@@ -131,9 +131,7 @@ inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexc
 {
     if (!IsConstantEvaluated()) {
         if constexpr (AnyOfT<T, char, char8>) {
-            char val = 0;
-            BUILTIN_MEMCPY(&value, &val, sizeof(char));
-            return BUILTIN_MEMCHR(str, value, count);
+            return BUILTIN_MEMCHR(str, reinterpret_cast<char>(value), count);
         }
         else if constexpr (SameAsT<T, wchar>) {
             return BUILTIN_WMEMCHR(str, value, count);
@@ -173,12 +171,11 @@ inline constexpr SizeT StringLength(T const* str, SizeT count) noexcept
     if (!IsConstantEvaluated()) {
         if constexpr (AnyOfT<T, char, char8>) {
             void* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
-            T const* loc = static_cast<T const*>(ptr);
-            return static_cast<SizeT>(loc - str);
+            return ptr == nullptr ? 0 : static_cast<SizeT>(static_cast<T const*>(ptr) - str);
         }
         else if constexpr (SameAsT<T, wchar>) {
             wchar const* end = BUILTIN_WMEMCHR(str, wchar(0), count);
-            return static_cast<SizeT>(end - str);
+            return end == nullptr ? 0 : static_cast<SizeT>(end - str);
         }
     }
 
@@ -191,14 +188,9 @@ export template <CharT T>
 inline constexpr T* StringCopy(T* dst, T const* src, SizeT len) noexcept
 {
     if (!IsConstantEvaluated()) {
-        if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMCPY(static_cast<void*>(dst), static_cast<void const*>(src),
-                                       static_cast<size_t>(len));
-            return static_cast<T*>(ptr);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
-            return BUILTIN_WMEMCPY(dst, src, static_cast<size_t>(len));
-        }
+        void* ptr = BUILTIN_MEMCPY(static_cast<void*>(dst), static_cast<void const*>(src),
+                                   static_cast<size_t>(len) * sizeof(T));
+        return static_cast<T*>(ptr);
     }
 
     for (T* d = dst; len != 0; --len) {
@@ -218,37 +210,16 @@ inline constexpr T* StringCopy(T* dst, T const* src) noexcept
 export template <CharT T>
 inline constexpr T* StringMove(T* dst, T const* src, SizeT len) noexcept
 {
-    if (IsConstantEvaluated()) {
-        T* tmp = new T[len];
-        StringCopy(tmp, src, len);
-        StringCopy(dst, tmp, len);
-        delete[] tmp;
-        return dst;
-    }
-
-    if constexpr (AnyOfT<T, char, char8>) {
+    if (!IsConstantEvaluated()) {
         void* ptr = BUILTIN_MEMMOVE(static_cast<void*>(dst), static_cast<void const*>(src),
-                                    static_cast<size_t>(len));
+                                    static_cast<size_t>(len) * sizeof(T));
         return static_cast<T*>(ptr);
     }
-    else if constexpr (SameAsT<T, wchar>) {
-        return BUILTIN_WMEMMOVE(dst, src, static_cast<size_t>(len));
-    }
 
-    if (dst < src) {
-        for (T* d = dst; len != 0; --len) {
-            *d++ = *src++;
-        }
-    }
-    else {
-        T const* s = src + len;
-        T* d = dst + len;
-
-        for (; len != 0; --len) {
-            *(--d) = *(--s);
-        }
-    }
-
+    T* tmp = new T[len];
+    StringCopy(tmp, src, len);
+    StringCopy(dst, tmp, len);
+    delete[] tmp;
     return dst;
 }
 
