@@ -68,22 +68,13 @@ PRIVATE
     $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cpp>
 )
 
-target_link_libraries(mini.core 
-PRIVATE
-    convert_utf
-)
+target_include_directories(mini.core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/impl)
+target_link_libraries(mini.core PRIVATE convert_utf)
 
 if (APPLE)
-    target_link_libraries(mini.core
-    PRIVATE
-        "-framework Foundation"
-    )
+    target_link_libraries(mini.core PRIVATE "-framework Foundation")
 endif()
 
 if (MSVC)
-    target_compile_options(mini.core
-    PRIVATE 
-        /wd4582)
-    # set_source_files_properties(memory/shared_ptr.cxx PROPERTIES COMPILE_FLAGS /wd4582)
-    # set_source_files_properties(math/rect.cxx PROPERTIES COMPILE_FLAGS /wd4582)
+    target_compile_options(mini.core PRIVATE /wd4582)
 endif()

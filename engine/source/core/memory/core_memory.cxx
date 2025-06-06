@@ -3,6 +3,7 @@ module;
 #include <memory>
 
 #include "assertion.h"
+#include "builtin.h"
 
 // TODO: constexpr placement new operator is coming soon!
 #define CONSTEXPR_CONSTRUCT_AT std::construct_at
@@ -83,6 +84,42 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
     }
 
     ptr->~T();
+}
+
+export template <TrivialT T>
+inline constexpr void MemCopy(T* dst, T const* src, SizeT len) noexcept
+{
+    if (!IsConstantEvaluated()) {
+        BUILTIN_MEMCPY(dst, src, len * sizeof(T));
+        return;
+    }
+
+    for (; len; --len) {
+        *dst++ = *src++;
+    }
+}
+
+export template <TrivialT T>
+inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
+{
+    if (!IsConstantEvaluated()) {
+        BUILTIN_MEMMOVE(dst, src, len * sizeof(T));
+        return;
+    }
+
+    if (static_cast<T const*>(dst) < src) {
+        for (; len; --len) {
+            *dst++ = *src++;
+        }
+    }
+    else {
+        T const* s = src + len;
+        T* d = dst + len;
+
+        for (; len != 0; --len) {
+            *(--d) = *(--s);
+        }
+    }
 }
 
 export template <typename T, typename... Args>

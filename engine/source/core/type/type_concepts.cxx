@@ -136,6 +136,9 @@ export template <typename T>
 concept ArithmeticT = std::is_arithmetic_v<T>;
 
 export template <typename T>
+concept UnsignedT = std::is_unsigned_v<T>;
+
+export template <typename T>
 concept CharT = AnyOfT<RemoveConstVolatileT<T>, char, wchar_t, char8_t, char16_t, char32_t>;
 
 } // namespace mini

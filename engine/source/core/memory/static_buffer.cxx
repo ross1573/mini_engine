@@ -1,31 +1,33 @@
 module;
 
-#include <limits>
+#include "builtin.h"
 
 export module mini.core:static_buffer;
 
 import :type;
+import :memory;
 
 namespace mini {
 
-template <typename T, SizeT CapacityN>
+template <UnsignedT T, SizeT CapacityN>
 consteval auto IsSizeLimited()
 {
-    return CapacityN > uint64(std::numeric_limits<T>::max() - 1);
+    return CapacityN > static_cast<SizeT>(static_cast<T>(-1));
 }
 
 template <SizeT CapacityN>
 consteval auto SizeTypeSelector() -> decltype(auto)
 {
-    if constexpr (IsSizeLimited<uint16, CapacityN>()) {
+    if constexpr (IsSizeLimited<uint64, CapacityN>())
+        return void(0);
+    else if constexpr (IsSizeLimited<uint32, CapacityN>())
+        return uint64(0);
+    else if constexpr (IsSizeLimited<uint16, CapacityN>())
         return uint32(0);
-    }
-    else if constexpr (IsSizeLimited<uint8, CapacityN>()) {
+    else if constexpr (IsSizeLimited<uint8, CapacityN>())
         return uint16(0);
-    }
-    else {
+    else
         return uint8(0);
-    }
 }
 
 export template <typename T, SizeT CapacityN, SizeT AlignN = alignof(T)>
@@ -34,10 +36,8 @@ protected:
     alignas(AlignN) byte m_Buffer[sizeof(T) * CapacityN];
 
 public:
-    inline constexpr StaticBuffer() noexcept = default;
-    inline constexpr ~StaticBuffer() noexcept = default;
-    StaticBuffer(StaticBuffer const&) = delete;
-    StaticBuffer(StaticBuffer&&) = delete;
+    constexpr StaticBuffer() = default;
+    constexpr ~StaticBuffer() = default;
 
     inline T* Data() noexcept { return Address(); }
     inline T const* Data() const noexcept { return Address(); }
@@ -51,6 +51,8 @@ private:
         return reinterpret_cast<T*>(const_cast<byte*>(&m_Buffer[0]));
     }
 
+    StaticBuffer(StaticBuffer const&) = delete;
+    StaticBuffer(StaticBuffer&&) = delete;
     StaticBuffer& operator=(StaticBuffer const&) = delete;
     StaticBuffer& operator=(StaticBuffer&&) = delete;
 };
