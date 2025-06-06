@@ -263,7 +263,7 @@ static constexpr int TestModify()
 int main()
 {
     static const int dummy = 0;
-    using IntPtrF = decltype([](int _) { return const_cast<int*>(&dummy); });
+    using IntPtrF = decltype([](int) { return const_cast<int*>(&dummy); });
 
     TEST_ARRAY(TestCtor, int*, IntPtrF);
     TEST_ARRAY(TestCtor, std::unique_ptr<ConstexprFoo>, StdUniquePtrF);
