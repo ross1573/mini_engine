@@ -311,7 +311,7 @@ inline constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveAt(SizeT index)
 {
-    RemoveAt(Begin() + (OffsetT)index);
+    RemoveAt(Begin() + static_cast<OffsetT>(index));
 }
 
 template <MovableT T, SizeT N>
@@ -337,7 +337,7 @@ template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveRange(SizeT first, SizeT last)
 {
     Iterator begin = Begin();
-    RemoveRange(begin + first, begin + last);
+    RemoveRange(begin + static_cast<OffsetT>(first), begin + static_cast<OffsetT>(last));
 }
 
 template <MovableT T, SizeT N>

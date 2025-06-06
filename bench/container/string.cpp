@@ -3,8 +3,10 @@
 
 #if CLANG
 constexpr char const* shortStr = "Hello from string!";
+constexpr int shortSize = sizeof(void*) * 3 - 2;
 #else
 constexpr char const* shortStr = "Hello world!";
+constexpr int shortSize = sizeof(void*) * 2 - 2;
 #endif
 
 constexpr char const* longStr = "Hello world from long string!";
@@ -39,7 +41,7 @@ static void CtorEmpty_std(benchmark::State& state)
 static void CtorCh(benchmark::State& state)
 {
     for (auto _ : state) {
-        String str('c', 22);
+        String str(char(42), shortSize);
         benchmark::DoNotOptimize(str);
     }
 }
@@ -47,7 +49,7 @@ static void CtorCh(benchmark::State& state)
 static void CtorCh_std(benchmark::State& state)
 {
     for (auto _ : state) {
-        std::string str(22, 'c');
+        std::string str(shortSize, char(42));
         benchmark::DoNotOptimize(str);
     }
 }
@@ -316,7 +318,7 @@ BENCHMARK(AppendLong_std);
 static void InsertShort(benchmark::State& state)
 {
     for (auto _ : state) {
-        String str('c', 3);
+        String str(char(42), 3);
         str.Insert(0, shortStr);
         benchmark::DoNotOptimize(str);
     }
@@ -325,7 +327,7 @@ static void InsertShort(benchmark::State& state)
 static void InsertShort_std(benchmark::State& state)
 {
     for (auto _ : state) {
-        std::string str(3, 'c');
+        std::string str(3, char(42));
         str.insert(0, shortStr);
         benchmark::DoNotOptimize(str);
     }

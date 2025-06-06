@@ -60,13 +60,11 @@ private:
 
     struct LargeStorage {
         PACKED_STRUCT_BEGIN(1)
-        struct alignas(1) {
-            byte padding : 7;
-            byte layout  : 1;
+        struct {
+            SizeT layout : 1;
+            SizeT size : (sizeof(SizeT) * 8 - 1);
         };
         PACKED_STRUCT_END
-        byte _[3];
-        SizeT size;
         LargeBuffer buffer;
 
         constexpr LargeStorage() = default;
@@ -76,7 +74,6 @@ private:
 
     static constexpr SizeT AllocatedSize = (sizeof(LargeStorage) / sizeof(T)) - 2;
     static constexpr SizeT SmallCapacity = AllocatedSize > 2 ? AllocatedSize : 2;
-    static_assert(SmallCapacity < 128, "small capacity should not excced 127");
 
     typedef StaticBuffer<T, SmallCapacity + 1> SmallBuffer;
     typedef StaticBuffer<byte, sizeof(LargeStorage)> RawBuffer;
@@ -84,8 +81,8 @@ private:
     struct SmallStorage {
         PACKED_STRUCT_BEGIN(1)
         struct {
-            byte size   : 7;
             byte layout : 1;
+            byte size   : 7;
         };
         PACKED_STRUCT_END
         SmallBuffer buffer;
@@ -102,6 +99,10 @@ private:
 
     [[no_unique_address]] AllocT m_Alloc;
     Storage m_Storage;
+
+    static_assert(SmallCapacity < 128, "small capacity should not excced 127");
+    static_assert(sizeof(LargeStorage) == sizeof(SmallStorage));
+    static_assert(sizeof(LargeStorage) == sizeof(RawBuffer));
 
 public:
     constexpr BasicString() noexcept;
@@ -217,10 +218,10 @@ private:
     constexpr void SwitchToLarge(LargeBuffer&&, SizeT);
     constexpr LargeBuffer SwitchToSmall(Ptr, SizeT);
 
-    constexpr Ptr InitWithSize(SizeT);
     constexpr void InitEmpty();
     constexpr void InitWithCopy(BasicString const&);
     constexpr void InitWithMove(BasicString&&) noexcept;
+    constexpr Ptr InitWithSize(SizeT);
 
     constexpr void AssignWithAlloc(ConstPtr, SizeT);
     constexpr void AssignWithSource(ConstPtr, SizeT);
@@ -949,8 +950,10 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Swap(BasicString& other)
 {
     if (IsConstantEvaluated()) {
+        SizeT size = m_Storage.l.size;
         m_Storage.l.buffer.Swap(other.m_Storage.l.buffer);
-        mini::Swap(m_Storage.l.size, other.m_Storage.l.size);
+        m_Storage.l.size = other.m_Storage.l.size;
+        other.m_Storage.l.size = size;
         return;
     }
 
@@ -1244,28 +1247,6 @@ BasicString<T, AllocT>::SwitchToSmall(Ptr ptr, SizeT size)
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::InitWithSize(SizeT size)
-{
-    if (IsConstantEvaluated()) {
-        memory::ConstructAt(&m_Storage.l);
-    }
-
-    if (IsConstantEvaluated() || size > SmallCapacity) {
-        memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
-        m_Storage.l.buffer.Data()[size] = T(0);
-        m_Storage.l.layout = 1;
-        m_Storage.l.size = size;
-        return m_Storage.l.buffer.Data();
-    }
-    else {
-        m_Storage.s.buffer.Data()[size] = T(0);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = static_cast<byte>(size);
-        return m_Storage.s.buffer.Data();
-    }
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitEmpty()
 {
     if (IsConstantEvaluated()) {
@@ -1318,6 +1299,28 @@ inline constexpr void BasicString<T, AllocT>::InitWithMove(BasicString&& other) 
         m_Storage.raw = other.m_Storage.raw;
         other.m_Storage.s.layout = 0;
         other.SetSizeWithNullTerminator(0);
+    }
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::InitWithSize(SizeT size)
+{
+    if (IsConstantEvaluated()) {
+        memory::ConstructAt(&m_Storage.l);
+    }
+
+    if (IsConstantEvaluated() || size > SmallCapacity) {
+        memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
+        m_Storage.l.buffer.Data()[size] = T(0);
+        m_Storage.l.layout = 1;
+        m_Storage.l.size = size;
+        return m_Storage.l.buffer.Data();
+    }
+    else {
+        m_Storage.s.buffer.Data()[size] = T(0);
+        m_Storage.s.layout = 0;
+        m_Storage.s.size = static_cast<byte>(size);
+        return m_Storage.s.buffer.Data();
     }
 }
 

@@ -36,7 +36,7 @@ export using uint64 = std::uint64_t;
 export using float32 = float;
 export using float64 = double;
 
-export using SizeT = uint32;
+export using SizeT = std::size_t;
 export using OffsetT = std::ptrdiff_t;
 
 export using TrueT = IntegralConstant<bool, true>;
