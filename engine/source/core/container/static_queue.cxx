@@ -486,12 +486,13 @@ StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexce
 {
     ASSERT(m_Size != 0, "invalid access on empty queue");
 
-    [[maybe_unused]] SizeT beginIdx = (SizeT)m_Begin;
-    [[maybe_unused]] SizeT endIdx = m_Begin == m_End  ? m_Begin + m_Size
-                                    : m_Begin < m_End ? (SizeT)m_End
-                                                      : (SizeT)m_End + m_Buffer.Capacity();
-
-    ASSERT(offset >= beginIdx && offset < endIdx, "invalid offset");
+    if (m_Begin < m_End) {
+        ASSERT(offset >= m_Begin && offset < m_End, "invalid offset");
+    }
+    else {
+        ASSERT(offset < m_End || offset >= m_Begin && offset < m_Buffer.Capacity(),
+               "invalid offset");
+    }
 }
 
 template <MovableT T, SizeT N>
