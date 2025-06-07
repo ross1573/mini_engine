@@ -106,25 +106,17 @@ static void CtorCopy_std(benchmark::State& state)
 
 static void CtorMove(benchmark::State& state)
 {
-    String str(longStr);
     for (auto _ : state) {
-        String str2(MoveArg(str));
-        memory::DestructAt(&str);
-        memory::ConstructAt(&str, MoveArg(str2));
+        String str(String{shortStr});
         benchmark::DoNotOptimize(str);
-        benchmark::DoNotOptimize(str2);
     }
 }
 
 static void CtorMove_std(benchmark::State& state)
 {
-    std::string str(longStr);
     for (auto _ : state) {
-        std::string str2(MoveArg(str));
-        memory::DestructAt(&str);
-        memory::ConstructAt(&str, MoveArg(str2));
+        std::string str(std::string{shortStr});
         benchmark::DoNotOptimize(str);
-        benchmark::DoNotOptimize(str2);
     }
 }
 
