@@ -168,6 +168,7 @@ static void AssignOther(benchmark::State& state)
     for (auto _ : state) {
         String str3;
         str3 = str;
+        benchmark::DoNotOptimize(str3);
         str3 = str2;
         benchmark::DoNotOptimize(str3);
     }
@@ -180,6 +181,7 @@ static void AssignOther_std(benchmark::State& state)
     for (auto _ : state) {
         std::string str3;
         str3 = str;
+        benchmark::DoNotOptimize(str3);
         str3 = str2;
         benchmark::DoNotOptimize(str3);
     }
@@ -189,7 +191,8 @@ static void AssignCopy(benchmark::State& state)
 {
     String str(shortStr);
     for (auto _ : state) {
-        String str2(str);
+        String str2;
+        str2 = str;
         benchmark::DoNotOptimize(str2);
     }
 }
@@ -198,7 +201,8 @@ static void AssignCopy_std(benchmark::State& state)
 {
     std::string str(shortStr);
     for (auto _ : state) {
-        std::string str2(str);
+        std::string str2;
+        str2 = str;
         benchmark::DoNotOptimize(str2);
     }
 }
@@ -209,8 +213,8 @@ static void AssignMove(benchmark::State& state)
     for (auto _ : state) {
         String str2;
         str2 = MoveArg(str);
-        str = MoveArg(str2);
         benchmark::DoNotOptimize(str2);
+        str = MoveArg(str2);
     }
 }
 
@@ -220,8 +224,8 @@ static void AssignMove_std(benchmark::State& state)
     for (auto _ : state) {
         std::string str2;
         str2 = MoveArg(str);
-        str = MoveArg(str2);
         benchmark::DoNotOptimize(str2);
+        str = MoveArg(str2);
     }
 }
 
