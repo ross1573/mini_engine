@@ -205,7 +205,7 @@ int TestRandom()
 int main()
 {
     static const int dummy = 0;
-    using IntPtrF = decltype([](int _) { return const_cast<int*>(&dummy); });
+    using IntPtrF = decltype([](int) { return const_cast<int*>(&dummy); });
     using IntF = decltype([](int c) { return c; });
     using VecF = decltype([](int c) { return Vector2Int(c, c); });
 

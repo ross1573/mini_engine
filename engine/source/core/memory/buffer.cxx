@@ -245,7 +245,6 @@ public:
     }
 
     constexpr TrivialBuffer& operator=(TrivialBuffer const&) = default;
-    TrivialBuffer& operator=(TrivialBuffer&& other) noexcept = delete;
 };
 
 } // namespace mini

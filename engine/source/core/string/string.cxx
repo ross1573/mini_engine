@@ -7,24 +7,15 @@ module;
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
-#  define DECLARE_DEFAULT_FUNCTIONS(x)
 #elif MSVC
-// TODO: msvc bugs..?
+// TODO: msvc bug..?
 // #  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
 // #  define PACKED_STRUCT_END      __pragma(pack(pop))
 #  define PACKED_STRUCT_BEGIN(x)
 #  define PACKED_STRUCT_END
-#  define DECLARE_DEFAULT_FUNCTIONS(x)            \
-      constexpr x() = default;                    \
-      constexpr ~x() = default;                   \
-      constexpr x(x const&) = default;            \
-      constexpr x(x&&) = default;                 \
-      constexpr x& operator=(x const&) = default; \
-      constexpr x& operator=(x&&) = default;
 #else
 #  define PACKED_STRUCT_BEGIN(x)
 #  define PACKED_STRUCT_END
-#  define DECLARE_DEFAULT_FUNCTIONS(x)
 #endif
 
 export module mini.core:string;
@@ -77,8 +68,6 @@ private:
         };
         PACKED_STRUCT_END
         LargeBuffer buffer;
-
-        DECLARE_DEFAULT_FUNCTIONS(LargeStorage)
     };
 
     static constexpr SizeT AllocatedSize = (sizeof(LargeStorage) / sizeof(T)) - 2;
@@ -93,8 +82,6 @@ private:
         };
         PACKED_STRUCT_END
         SmallBuffer buffer;
-
-        DECLARE_DEFAULT_FUNCTIONS(SmallStorage)
     };
 
     union Storage {
