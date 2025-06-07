@@ -7,16 +7,24 @@ module;
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
-
-// TODO: might be a bug when using with c++20 modules
-//  windows standalone will mostly pack bit-fields, so it may not be necessary..?
-// #elif MSVC
+#  define DECLARE_DEFAULT_FUNCTIONS(x)
+#elif MSVC
+// TODO: msvc bugs..?
 // #  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
 // #  define PACKED_STRUCT_END      __pragma(pack(pop))
-
+#  define PACKED_STRUCT_BEGIN(x)
+#  define PACKED_STRUCT_END
+#  define DECLARE_DEFAULT_FUNCTIONS(x)            \
+      constexpr x() = default;                    \
+      constexpr ~x() = default;                   \
+      constexpr x(x const&) = default;            \
+      constexpr x(x&&) = default;                 \
+      constexpr x& operator=(x const&) = default; \
+      constexpr x& operator=(x&&) = default;
 #else
 #  define PACKED_STRUCT_BEGIN(x)
 #  define PACKED_STRUCT_END
+#  define DECLARE_DEFAULT_FUNCTIONS(x)
 #endif
 
 export module mini.core:string;
@@ -70,16 +78,12 @@ private:
         PACKED_STRUCT_END
         LargeBuffer buffer;
 
-        constexpr LargeStorage() = default;
-        constexpr LargeStorage(LargeStorage&&) = default;
-        constexpr ~LargeStorage() = default;
+        DECLARE_DEFAULT_FUNCTIONS(LargeStorage)
     };
 
     static constexpr SizeT AllocatedSize = (sizeof(LargeStorage) / sizeof(T)) - 2;
     static constexpr SizeT SmallCapacity = AllocatedSize > 2 ? AllocatedSize : 2;
-
     typedef StaticBuffer<T, SmallCapacity + 1> SmallBuffer;
-    typedef StaticBuffer<byte, sizeof(LargeStorage)> RawBuffer;
 
     struct SmallStorage {
         PACKED_STRUCT_BEGIN(1)
@@ -90,14 +94,12 @@ private:
         PACKED_STRUCT_END
         SmallBuffer buffer;
 
-        constexpr SmallStorage() = default;
-        constexpr ~SmallStorage() = default;
+        DECLARE_DEFAULT_FUNCTIONS(SmallStorage)
     };
 
     union Storage {
         SmallStorage s;
         LargeStorage l;
-        RawBuffer raw;
     };
 
     [[no_unique_address]] AllocT m_Alloc;
@@ -105,7 +107,6 @@ private:
 
     static_assert(SmallCapacity < 128, "small capacity should not excced 127");
     static_assert(sizeof(LargeStorage) == sizeof(SmallStorage));
-    static_assert(sizeof(LargeStorage) == sizeof(RawBuffer));
 
 public:
     constexpr BasicString() noexcept;
@@ -428,7 +429,7 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Assign(BasicString const& other)
 {
     if (!IsLarge() && !other.IsLarge()) {
-        m_Storage.raw = other.m_Storage.raw;
+        m_Storage = other.m_Storage;
         return;
     }
 
@@ -958,7 +959,7 @@ inline constexpr void BasicString<T, AllocT>::Swap(BasicString& other)
         return;
     }
 
-    mini::Swap(m_Storage.raw, other.m_Storage.raw);
+    mini::Swap(m_Storage, other.m_Storage);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1242,7 +1243,7 @@ inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& ot
         m_Storage.l.size = size;
     }
     else {
-        m_Storage.raw = other.m_Storage.raw;
+        m_Storage = other.m_Storage;
     }
 }
 
@@ -1257,7 +1258,7 @@ inline constexpr void BasicString<T, AllocT>::InitWithMove(BasicString&& other) 
         other.DestroyBuffer();
     }
     else {
-        m_Storage.raw = other.m_Storage.raw;
+        m_Storage = other.m_Storage;
         other.InitEmpty();
     }
 }
@@ -1294,7 +1295,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other
         return;
     }
 
-    mini::Swap(m_Storage.raw, other.m_Storage.raw);
+    mini::Swap(m_Storage, other.m_Storage);
 }
 
 template <CharT T, AllocatorT<T> AllocT>

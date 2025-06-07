@@ -162,6 +162,7 @@ private:
 public:
     constexpr TrivialBuffer() = default;
     constexpr ~TrivialBuffer() = default;
+    constexpr TrivialBuffer(TrivialBuffer const&) = default;
 
     inline constexpr TrivialBuffer(TrivialBuffer&& other) noexcept
         : m_Capacity(mini::Exchange(other.m_Capacity, 0))
@@ -243,8 +244,7 @@ public:
         return m_Buffer == other.m_Buffer;
     }
 
-    TrivialBuffer(TrivialBuffer const&) = delete;
-    TrivialBuffer& operator=(TrivialBuffer const&) = delete;
+    constexpr TrivialBuffer& operator=(TrivialBuffer const&) = default;
     TrivialBuffer& operator=(TrivialBuffer&& other) noexcept = delete;
 };
 
