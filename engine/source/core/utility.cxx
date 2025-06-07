@@ -1,7 +1,3 @@
-module;
-
-#include <type_traits>
-
 export module mini.core:utility;
 
 import :type;
@@ -41,11 +37,6 @@ inline constexpr T Exchange(T& v, U&& n)
     T old = MoveArg(v);
     v = static_cast<T>(ForwardArg<U>(n));
     return old;
-}
-
-export constexpr bool IsConstantEvaluated()
-{
-    return std::is_constant_evaluated();
 }
 
 } // namespace mini

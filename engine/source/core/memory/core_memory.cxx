@@ -46,7 +46,7 @@ inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
 template <PtrT T, PtrT U>
 inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         return false;
     }
 
@@ -56,7 +56,7 @@ inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 template <PtrT T, PtrT U>
 inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         return false;
     }
 
@@ -67,7 +67,7 @@ export template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args)
     noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         CONSTEXPR_CONSTRUCT_AT(ptr, ForwardArg<Args>(args)...);
         return;
     }
@@ -78,7 +78,7 @@ inline constexpr void ConstructAt(T* ptr, Args&&... args)
 export template <NonArrT T>
 inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         CONSTEXPR_DESTRUCT_AT(ptr);
         return;
     }
@@ -89,7 +89,7 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 export template <TrivialT T>
 inline constexpr void MemCopy(T* dst, T const* src, SizeT len) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         BUILTIN_MEMCPY(dst, src, len * sizeof(T));
         return;
     }
@@ -102,7 +102,7 @@ inline constexpr void MemCopy(T* dst, T const* src, SizeT len) noexcept
 export template <TrivialT T>
 inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         BUILTIN_MEMMOVE(dst, src, len * sizeof(T));
         return;
     }

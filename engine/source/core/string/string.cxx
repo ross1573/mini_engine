@@ -310,11 +310,15 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(SizeT capacity, AllocT const& alloc)
     : m_Alloc(alloc)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         memory::ConstructAt(&m_Storage.l);
+        m_Storage.l.buffer.Allocate(capacity + 1, m_Alloc);
+        m_Storage.l.layout = 1;
+        SetSizeWithNullTerminator(0);
+        return;
     }
 
-    if (IsConstantEvaluated() || capacity > SmallCapacity) {
+    if (capacity > SmallCapacity) {
         memory::ConstructAt(&m_Storage.l.buffer, capacity + 1, m_Alloc);
         m_Storage.l.buffer.Data()[0] = Value(0);
         m_Storage.l.layout = 1;
@@ -910,12 +914,19 @@ inline constexpr void BasicString<T, AllocT>::Reserve(SizeT size)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Shrink()
 {
+    if consteval {
+        LargeBuffer newBuffer = m_Storage.l.buffer.Resize(Size() + 1, m_Alloc);
+        memory::MemCopy(newBuffer.Data(), Data(), Size() + 1);
+        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
+        return;
+    }
+
     if (!IsLarge()) [[unlikely]] {
         return;
     }
 
     SizeT size = m_Storage.l.size;
-    if (!IsConstantEvaluated() && size <= SmallCapacity) {
+    if (size <= SmallCapacity) {
         Ptr buffer = m_Storage.l.buffer.Data();
         memory::MemCopy(m_Storage.s.buffer.Data(), buffer, size + 1);
         m_Storage.s.layout = 0;
@@ -938,7 +949,7 @@ inline constexpr void BasicString<T, AllocT>::Clear()
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Swap(BasicString& other)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         SizeT size = m_Storage.l.size;
         m_Storage.l.buffer.Swap(other.m_Storage.l.buffer);
         m_Storage.l.size = other.m_Storage.l.size;
@@ -1133,7 +1144,7 @@ inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(Valu
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool BasicString<T, AllocT>::IsLarge() const noexcept
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         return m_Storage.l.layout == 1;
     }
 
@@ -1165,10 +1176,9 @@ inline constexpr void BasicString<T, AllocT>::DestroyBuffer()
 
     m_Storage.l.buffer.Deallocate(m_Alloc);
 
-    if (IsConstantEvaluated()) {
+    if consteval {
         m_Storage.l.buffer.Allocate(1, m_Alloc);
-        m_Storage.l.buffer.Data()[0] = Value(0);
-        m_Storage.l.size = 0;
+        SetSizeWithNullTerminator(0);
     }
     else {
         m_Storage.s.buffer.Data()[0] = Value(0);
@@ -1201,12 +1211,11 @@ BasicString<T, AllocT>::SwitchToSmall(Ptr ptr, SizeT size)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitEmpty()
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         memory::ConstructAt(&m_Storage.l);
         m_Storage.l.buffer.Allocate(1, m_Alloc);
-        m_Storage.l.buffer.Data()[0] = Value(0);
         m_Storage.l.layout = 1;
-        m_Storage.l.size = 0;
+        SetSizeWithNullTerminator(0);
     }
     else {
         m_Storage.s.buffer.Data()[0] = Value(0);
@@ -1218,7 +1227,7 @@ inline constexpr void BasicString<T, AllocT>::InitEmpty()
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& other)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         memory::ConstructAt(&m_Storage.l);
     }
 
@@ -1237,27 +1246,31 @@ inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& ot
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitWithMove(BasicString&& other) noexcept
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         memory::ConstructAt(&m_Storage.l);
         m_Storage.l.buffer.Assign(MoveArg(other.m_Storage.l.buffer), m_Alloc);
         m_Storage.l.layout = 1;
         m_Storage.l.size = other.m_Storage.l.size;
         other.DestroyBuffer();
+        return;
     }
-    else {
-        m_Storage = other.m_Storage;
-        other.InitEmpty();
-    }
+
+    m_Storage = other.m_Storage;
+    other.InitEmpty();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::InitWithSize(SizeT size)
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         memory::ConstructAt(&m_Storage.l);
+        m_Storage.l.buffer.Allocate(size + 1, m_Alloc);
+        m_Storage.l.layout = 1;
+        SetSizeWithNullTerminator(size);
+        return m_Storage.l.buffer.Data();
     }
 
-    if (IsConstantEvaluated() || size > SmallCapacity) {
+    if (size > SmallCapacity) {
         memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
         m_Storage.l.buffer.Data()[size] = Value(0);
         m_Storage.l.layout = 1;
@@ -1275,7 +1288,7 @@ inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::InitWithSiz
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other) noexcept
 {
-    if (IsConstantEvaluated()) {
+    if consteval {
         m_Storage.l.buffer.Assign(MoveArg(other.m_Storage.l.buffer), m_Alloc);
         m_Storage.l.size = other.m_Storage.l.size;
         other.DestroyBuffer();
@@ -1288,7 +1301,12 @@ inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPtr ptr, SizeT len)
 {
-    if (IsConstantEvaluated() || len > SmallCapacity) {
+    if consteval {
+        AssignWithAlloc(ptr, len);
+        return;
+    }
+
+    if (len > SmallCapacity) {
         AssignWithAlloc(ptr, len);
         return;
     }
@@ -1355,10 +1373,15 @@ inline constexpr void BasicString<T, AllocT>::AppendWithRange(Iter begin, Iter e
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AppendWithSource(ConstPtr ptr, SizeT len)
 {
+    if consteval {
+        AppendWithAlloc(ptr, len, Size());
+        return;
+    }
+
     SizeT oldSize = Size();
     SizeT newSize = oldSize + len;
 
-    if (IsConstantEvaluated() || newSize > Capacity()) {
+    if (newSize > Capacity()) {
         AppendWithAlloc(ptr, len, oldSize);
         return;
     }

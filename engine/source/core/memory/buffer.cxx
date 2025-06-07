@@ -154,7 +154,7 @@ private:
         : m_Capacity(capacity)
         , m_Buffer(ptr)
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             memory::ConstructRangeArgs(ptr, ptr + capacity);
         }
     }
@@ -192,7 +192,7 @@ public:
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
 
-        if (IsConstantEvaluated()) {
+        if consteval {
             memory::ConstructRangeArgs(m_Buffer, m_Buffer + m_Capacity);
         }
     }
@@ -200,7 +200,7 @@ public:
     template <AllocatorT<T> AllocT>
     inline constexpr void Deallocate(AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             memory::DestructRange(m_Buffer, m_Buffer + m_Capacity);
         }
 

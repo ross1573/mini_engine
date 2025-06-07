@@ -15,7 +15,7 @@ namespace mini::memory {
 export template <CharT T>
 inline constexpr T const* StringSearch(T const* str, T value) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             return BUILTIN_STRCHR(reinterpret_cast<char const*>(str), char(value));
         }
@@ -31,7 +31,7 @@ inline constexpr T const* StringSearch(T const* str, T value) noexcept
 export template <CharT T>
 inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             return BUILTIN_MEMCHR(str, reinterpret_cast<char>(value), count);
         }
@@ -52,7 +52,7 @@ inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexc
 export template <CharT T>
 inline constexpr SizeT StringLength(T const* str) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             auto len = BUILTIN_STRLEN(reinterpret_cast<char const*>(str));
             return static_cast<SizeT>(len);
@@ -70,7 +70,7 @@ inline constexpr SizeT StringLength(T const* str) noexcept
 export template <CharT T>
 inline constexpr SizeT StringLength(T const* str, SizeT count) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             void* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
             return ptr == nullptr ? 0 : static_cast<SizeT>(static_cast<T const*>(ptr) - str);
@@ -89,7 +89,7 @@ inline constexpr SizeT StringLength(T const* str, SizeT count) noexcept
 export template <CharT T>
 inline constexpr T* StringFill(T* dst, T value, SizeT count) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int>(value),
                                        static_cast<size_t>(count));
@@ -110,7 +110,7 @@ inline constexpr T* StringFill(T* dst, T value, SizeT count) noexcept
 export template <CharT T>
 inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             char const* l = reinterpret_cast<char const*>(s1);
             char const* r = reinterpret_cast<char const*>(s2);
@@ -139,7 +139,7 @@ inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
 export template <CharT T>
 inline constexpr int32 StringCompare(T const* s1, T const* s2, SizeT count) noexcept
 {
-    if (!IsConstantEvaluated()) {
+    if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             char const* l = reinterpret_cast<char const*>(s1);
             char const* r = reinterpret_cast<char const*>(s2);

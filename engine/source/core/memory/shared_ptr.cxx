@@ -27,7 +27,7 @@ public:
 
     inline constexpr AtomicUnion(T val) noexcept
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             value = val;
         }
         else {
@@ -37,14 +37,14 @@ public:
 
     inline constexpr ~AtomicUnion() noexcept
     {
-        if (!IsConstantEvaluated()) {
+        if !consteval {
             mini::memory::DestructAt(&atomic);
         }
     }
 
     inline constexpr void Store(T val, MemoryOrder order) noexcept
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             value = val;
         }
         else {
@@ -54,7 +54,7 @@ public:
 
     inline constexpr T Load(MemoryOrder order) const noexcept
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             return value;
         }
         else {
@@ -64,7 +64,7 @@ public:
 
     inline constexpr T FetchAdd(T val, MemoryOrder order) noexcept
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             T tmp = value;
             value += val;
             return tmp;
@@ -76,7 +76,7 @@ public:
 
     inline constexpr T FetchSub(T val, MemoryOrder order) noexcept
     {
-        if (IsConstantEvaluated()) {
+        if consteval {
             T tmp = value;
             value -= val;
             return tmp;
@@ -88,7 +88,7 @@ public:
 
     inline constexpr void ThreadFence(MemoryOrder order) const noexcept
     {
-        if (!IsConstantEvaluated()) {
+        if !consteval {
             std::atomic_thread_fence(order);
         }
     }
