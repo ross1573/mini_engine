@@ -8,7 +8,7 @@ module;
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
 #elif MSVC
-// TODO: msvc bug..?
+// TODO: might be an msvc bug while using with c++20 modules
 // #  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
 // #  define PACKED_STRUCT_END      __pragma(pack(pop))
 #  define PACKED_STRUCT_BEGIN(x)

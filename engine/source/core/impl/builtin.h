@@ -28,6 +28,42 @@
 #  define BUILTIN_MEMSET memset
 #endif
 
+#if __has_builtin(__builtin_memcmp)
+#  define BUILTIN_MEMCMP __builtin_memcmp
+#else
+#  define BUILTIN_MEMCMP memcmp
+#endif
+
+#if __has_builtin(__builtin_wmemchr)
+#  define BUILTIN_WMEMCHR __builtin_wmemchr
+#else
+#  define BUILTIN_WMEMCHR wmemchr
+#endif
+
+#if __has_builtin(__builtin_wmemcpy)
+#  define BUILTIN_WMEMCPY __builtin_wmemcpy
+#else
+#  define BUILTIN_WMEMCPY wmemcpy
+#endif
+
+#if __has_builtin(__builtin_wmemmove)
+#  define BUILTIN_WMEMMOVE __builtin_wmemmove
+#else
+#  define BUILTIN_WMEMMOVE wmemmove
+#endif
+
+#if __has_builtin(__builtin_wmemset)
+#  define BUILTIN_WMEMSET __builtin_wmemset
+#else
+#  define BUILTIN_WMEMSET wmemset
+#endif
+
+#if __has_builtin(__builtin_wmemcmp)
+#  define BUILTIN_WMEMCMP __builtin_wmemcmp
+#else
+#  define BUILTIN_WMEMCMP wmemcmp
+#endif
+
 #if __has_builtin(__builtin_strchr)
 #  define BUILTIN_STRCHR __builtin_strchr
 #else
@@ -74,28 +110,4 @@
 #  define BUILTIN_WCSNCMP __builtin_wcsncmp
 #else
 #  define BUILTIN_WCSNCMP wcsncmp
-#endif
-
-#if __has_builtin(__builtin_wmemchr)
-#  define BUILTIN_WMEMCHR __builtin_wmemchr
-#else
-#  define BUILTIN_WMEMCHR wmemchr
-#endif
-
-#if __has_builtin(__builtin_wmemcpy)
-#  define BUILTIN_WMEMCPY __builtin_wmemcpy
-#else
-#  define BUILTIN_WMEMCPY wmemcpy
-#endif
-
-#if __has_builtin(__builtin_wmemmove)
-#  define BUILTIN_WMEMMOVE __builtin_wmemmove
-#else
-#  define BUILTIN_WMEMMOVE wmemmove
-#endif
-
-#if __has_builtin(__builtin_wmemset)
-#  define BUILTIN_WMEMSET __builtin_wmemset
-#else
-#  define BUILTIN_WMEMSET wmemset
 #endif

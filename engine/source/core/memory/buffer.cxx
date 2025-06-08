@@ -154,9 +154,7 @@ private:
         : m_Capacity(capacity)
         , m_Buffer(ptr)
     {
-        if consteval {
-            memory::ConstructRangeArgs(ptr, ptr + capacity);
-        }
+        memory::BeginLifetime(ptr, ptr + capacity);
     }
 
 public:
@@ -191,19 +189,13 @@ public:
         AllocResult<T> buffer = alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
-
-        if consteval {
-            memory::ConstructRangeArgs(m_Buffer, m_Buffer + m_Capacity);
-        }
+        memory::BeginLifetime(m_Buffer, m_Buffer + m_Capacity);
     }
 
     template <AllocatorT<T> AllocT>
     inline constexpr void Deallocate(AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        if consteval {
-            memory::DestructRange(m_Buffer, m_Buffer + m_Capacity);
-        }
-
+        memory::EndLifetime(m_Buffer, m_Buffer + m_Capacity);
         alloc.Deallocate(m_Buffer, m_Capacity);
         m_Buffer = nullptr;
         m_Capacity = 0;

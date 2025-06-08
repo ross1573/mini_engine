@@ -39,7 +39,8 @@ FACTORY(FooArgF);
 }
 
 template <typename T, typename AllocT, typename StdAllocT>
-static constexpr int TestArray(Array<T, AllocT> const& arr, std::vector<T, StdAllocT> const& vec)
+[[no_inline]] constexpr int TestArray(Array<T, AllocT> const& arr,
+                                             std::vector<T, StdAllocT> const& vec)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
         if constexpr (memory::DereferencableT<T>) {
@@ -65,7 +66,7 @@ static constexpr int TestArray(Array<T, AllocT> const& arr, std::vector<T, StdAl
 }
 
 template <typename T, typename FactoryT>
-static constexpr int TestCtor()
+[[no_inline]] constexpr int TestCtor()
 {
     constexpr auto alloc = Allocator<T>{};
 
@@ -98,7 +99,7 @@ static constexpr int TestCtor()
 }
 
 template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
-static constexpr int TestPush()
+[[no_inline]] constexpr int TestPush()
 {
     Array<T> arr;
     std::vector<T> vec;
@@ -123,7 +124,7 @@ static constexpr int TestPush()
 }
 
 template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
-static constexpr int TestInsert()
+[[no_inline]] constexpr int TestInsert()
 {
     Array<T> arr;
     std::vector<T> vec;
@@ -175,7 +176,7 @@ static constexpr int TestInsert()
 }
 
 template <typename T, typename FactoryT>
-static constexpr int TestRemove()
+[[no_inline]] constexpr int TestRemove()
 {
     Array<T> arr(32);
     std::vector<T> vec;
@@ -216,7 +217,7 @@ static constexpr int TestRemove()
 }
 
 template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
-static constexpr int TestModify()
+[[no_inline]] constexpr int TestModify()
 {
     Array<T> arr(8);
     std::vector<T> vec;

@@ -115,7 +115,7 @@ struct Allocator {
             return;
         }
 
-        ::operator delete(MakeVoidPtr(loc) NOTHROW_T);
+        ::operator delete(memory::MakeVoidPtr(loc) NOTHROW_T);
     }
 };
 
