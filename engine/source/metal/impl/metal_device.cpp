@@ -2,8 +2,6 @@ module;
 
 #include <Metal/MTLDevice.hpp>
 
-#include "assertion.h"
-
 module mini.metal;
 
 import mini.graphics;

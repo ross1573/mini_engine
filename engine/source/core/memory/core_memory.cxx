@@ -2,7 +2,6 @@ module;
 
 #include <memory>
 
-#include "assertion.h"
 #include "builtin.h"
 
 // TODO: constexpr placement new operator is coming soon!

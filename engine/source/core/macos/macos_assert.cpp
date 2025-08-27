@@ -1,7 +1,5 @@
 #include <cstring>
 
-#include "assertion.h"
-
 import mini.core;
 
 constexpr int bufSize = DEBUG * 1023 + 1;

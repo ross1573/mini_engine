@@ -2,8 +2,6 @@ module;
 
 #include <memory>
 
-#include "assertion.h"
-
 // TODO: MSVC throws an error when compiling with nothrow tag
 #if MSVC // clang-format off
 #  define NOTHROW_T

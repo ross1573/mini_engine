@@ -2,8 +2,6 @@ module;
 
 #include <string_view>
 
-#include "assertion.h"
-
 export module mini.core:string_convert;
 
 import convert_utf;

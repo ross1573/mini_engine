@@ -1,7 +1,3 @@
-module;
-
-#include "assertion.h"
-
 module mini.platform;
 
 import mini.core;

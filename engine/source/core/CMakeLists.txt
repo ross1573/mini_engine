@@ -6,10 +6,6 @@ endif()
 
 module_sources(mini.core
 PUBLIC
-    public/assertion.h
-    public/option.h
-
-PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
         core.cxx
@@ -66,6 +62,12 @@ PRIVATE
     $<$<PLATFORM_ID:Darwin>:macos/macos_log.mm>
     $<$<PLATFORM_ID:Darwin>:macos/macos_log.cpp>
     $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cpp>
+)
+
+target_precompile_headers(mini.core 
+PUBLIC
+    public/assertion.h
+    public/option.h
 )
 
 target_include_directories(mini.core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/impl)

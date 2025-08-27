@@ -1,8 +1,3 @@
-module;
-
-#include "assertion.h"
-#include "option.h"
-
 module mini.d3d12;
 
 import mini.core;

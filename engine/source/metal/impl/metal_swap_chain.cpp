@@ -3,8 +3,6 @@ module;
 #include <Metal/MTLDevice.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
-#include "assertion.h"
-
 module mini.metal;
 
 import mini.core;

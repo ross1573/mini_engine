@@ -2,8 +2,6 @@
 #include <format>
 #include <source_location>
 
-#include "assertion.h"
-
 import mini.core;
 import convert_utf;
 

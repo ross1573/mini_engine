@@ -7,8 +7,6 @@ module;
 #include <Metal/MTLTexture.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
-#include "assertion.h"
-
 module mini.metal;
 
 import mini.core;

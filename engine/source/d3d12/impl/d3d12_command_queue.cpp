@@ -1,7 +1,3 @@
-module;
-
-#include "assertion.h"
-
 module mini.d3d12;
 
 import :command_queue;

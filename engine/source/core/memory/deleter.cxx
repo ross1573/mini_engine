@@ -1,7 +1,3 @@
-module;
-
-#include "assertion.h"
-
 export module mini.core:deleter;
 
 import :type;

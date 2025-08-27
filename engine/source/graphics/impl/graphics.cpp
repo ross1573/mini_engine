@@ -1,7 +1,3 @@
-module;
-
-#include "assertion.h"
-
 module mini.graphics;
 
 import mini.core;

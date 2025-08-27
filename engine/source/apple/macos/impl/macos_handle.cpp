@@ -2,7 +2,6 @@ module;
 
 #include <dlfcn.h>
 
-#include "assertion.h"
 #include "cocoa_application.h"
 
 module mini.macos;

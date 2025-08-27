@@ -1,7 +1,3 @@
-module;
-
-#include "assertion.h"
-
 export module mini.windows:shared_ptr;
 
 import mini.core;

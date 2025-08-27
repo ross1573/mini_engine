@@ -2,8 +2,6 @@ module;
 
 #include <string>
 
-#include "assertion.h"
-
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
@@ -64,7 +62,7 @@ private:
         PACKED_STRUCT_BEGIN(1)
         struct {
             SizeT layout : 1;
-            SizeT size : (sizeof(SizeT) * 8 - 1);
+            SizeT size   : (sizeof(SizeT) * 8 - 1);
         };
         PACKED_STRUCT_END
         LargeBuffer buffer;
