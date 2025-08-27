@@ -1,7 +1,3 @@
-module;
-
-#include "cocoa_application.h"
-
 export module mini.macos:handle;
 
 import mini.core;

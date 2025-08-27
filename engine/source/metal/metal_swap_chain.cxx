@@ -1,9 +1,3 @@
-module;
-
-#include <Metal/MTLDevice.hpp>
-#include <QuartzCore/CAMetalDrawable.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
-
 export module mini.metal:swap_chain;
 
 import mini.core;

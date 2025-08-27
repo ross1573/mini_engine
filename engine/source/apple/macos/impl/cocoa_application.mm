@@ -1,5 +1,4 @@
 #import "cocoa_delegate.h"
-#include "option.h"
 
 #if DEBUG
 #  include <Foundation/NSDebug.h>

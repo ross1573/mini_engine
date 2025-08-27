@@ -1,12 +1,3 @@
-module;
-
-#include <Foundation/NSAutoreleasePool.hpp>
-#include <Metal/MTLCommandBuffer.hpp>
-#include <Metal/MTLRenderCommandEncoder.hpp>
-#include <Metal/MTLRenderPass.hpp>
-#include <Metal/MTLTexture.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
-
 module mini.metal;
 
 import mini.core;

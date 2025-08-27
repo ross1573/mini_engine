@@ -1,8 +1,3 @@
-module;
-
-#include <Metal/MTLDevice.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
-
 module mini.metal;
 
 import mini.core;
