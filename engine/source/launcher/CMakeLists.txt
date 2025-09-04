@@ -11,7 +11,7 @@ elseif (APPLE)
         MACOSX_BUNDLE_GUI_IDENTIFIER ${ENGINE_MACOS_IDENTIFIER}
     )
 else()
-    message(FATAL_ERROR "unable to build on unknown platform")
+    message(FATAL_ERROR "unable to build on unknown platform: " ${CMAKE_SYSTEM_NAME})
 endif()
 
 target_sources(mini.launcher

@@ -4,6 +4,8 @@ elseif (BUILD_TARGET_ARCH MATCHES "[Aa][Mm][Dd]64|[Ii][Aa]64")
     set(D3D12_ARCH_DIR "x64")
 elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86")
     set(D3D12_ARCH_DIR "win32")
+else()
+    message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
 endif()
 
 get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)

@@ -31,5 +31,5 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         "no_inline=clang::noinline"
     )
 else()
-    message(FATAL_ERROR "unsupproted compiler")
+    message(FATAL_ERROR "unsupproted compiler: " ${CMAKE_CXX_COMPILER_ID})
 endif()
