@@ -15,6 +15,14 @@ PRIVATE
     impl/metal_render_context.cpp
 )
 
+target_precompile_headers(mini.metal
+PRIVATE
+    <Metal/Metal.hpp>
+    <MetalFX/MetalFX.hpp>
+    <Foundation/Foundation.hpp>
+    <QuartzCore/QuartzCore.hpp>
+)
+
 target_link_libraries(mini.metal
 PUBLIC
     mini.graphics

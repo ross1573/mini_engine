@@ -1,8 +1,3 @@
-module;
-
-#include "cocoa_application.h"
-#include "cocoa_window.h"
-
 module mini.macos;
 
 import mini.core;

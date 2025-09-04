@@ -1,7 +1,3 @@
-module;
-
-#include <Metal/MTLDevice.hpp>
-
 module mini.metal;
 
 import mini.graphics;

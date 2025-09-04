@@ -1,7 +1,6 @@
 #import <QuartzCore/CAMetalLayer.h>
 
 #import "cocoa_delegate.h"
-#include "option.h"
 
 @interface CocoaWindow : NSWindow
 @end

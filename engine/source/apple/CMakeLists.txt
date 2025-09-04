@@ -9,6 +9,12 @@ PUBLIC
         apple_shared_ptr.cxx
 )
 
+target_precompile_headers(mini.apple
+PUBLIC
+    public/appkit.h
+    public/foundation.h
+)
+
 target_link_libraries(mini.apple
 PUBLIC
     mini.core

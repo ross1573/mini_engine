@@ -1,7 +1,3 @@
-module;
-
-#include <Metal/MTLDevice.hpp>
-
 export module mini.metal:device;
 
 import mini.core;
