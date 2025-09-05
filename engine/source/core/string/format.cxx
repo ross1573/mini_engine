@@ -19,7 +19,7 @@ auto Format(StringView msg, Args&&... args)
 
 } // namespace mini
 
-namespace std {
+namespace fmt {
 
 // temporary formatter
 export template <mini::CharT T>
@@ -31,4 +31,4 @@ public:
     }
 };
 
-} // namespace std
+} // namespace fmt
