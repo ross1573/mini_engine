@@ -1,10 +1,10 @@
-if (MSVC)
-    add_module(mini.core STATIC)
-else()
-    add_module(mini.core SHARED)
-endif()
+add_module(mini.core SHARED)
 
 module_sources(mini.core
+PUBLIC
+    public/assertion.h
+    public/option.h
+
 PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
@@ -70,8 +70,16 @@ PUBLIC
     public/option.h
 )
 
-target_include_directories(mini.core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/impl)
-target_link_libraries(mini.core PRIVATE convert_utf)
+target_include_directories(mini.core 
+PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/impl
+)
+
+target_link_libraries(mini.core 
+PUBLIC
+    convert_utf
+    fmt::fmt
+)
 
 if (APPLE)
     target_link_libraries(mini.core PRIVATE "-framework Foundation")

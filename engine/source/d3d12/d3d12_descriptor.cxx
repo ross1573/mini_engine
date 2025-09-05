@@ -20,8 +20,8 @@ public:
 private:
     SharedPtr<ID3D12DescriptorHeap> m_Heap;
     CPUOffsetT m_CpuHeapStart;
-    SizeT m_IncrementSize;
-    SizeT m_CurrentIndex;
+    uint32 m_IncrementSize;
+    uint32 m_CurrentIndex;
 
 public:
     DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&&, uint32);

@@ -8,13 +8,14 @@ export module mini.core:format;
 import :type;
 import :string;
 import :string_view;
+import fmt;
 
 namespace mini {
 
 export template <typename... Args>
 auto Format(StringView msg, Args&&... args)
 {
-    return std::vformat(msg, std::make_format_args(args...));
+    return fmt::vformat(msg, fmt::make_format_args(args...));
 }
 
 } // namespace mini

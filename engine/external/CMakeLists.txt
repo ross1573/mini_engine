@@ -17,7 +17,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 endif()
 
 set(FMT_INSTALL OFF)
-set(FMT_MODULE OFF)
+set(FMT_MODULE ON)
 add_subdirectory(fmt)
 set_external(fmt)
 

@@ -32,12 +32,12 @@ public:
 
     constexpr bool operator==(Color const&) const noexcept;
 
-    static const Color white;
-    static const Color black;
-    static const Color clear;
-    static const Color red;
-    static const Color green;
-    static const Color blue;
+    CORE_API static const Color white;
+    CORE_API static const Color black;
+    CORE_API static const Color clear;
+    CORE_API static const Color red;
+    CORE_API static const Color green;
+    CORE_API static const Color blue;
 };
 
 export constexpr Color operator+(Color const&, Color const&) noexcept;

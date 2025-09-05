@@ -15,7 +15,7 @@
 #if MSVC
 #  define BUILTIN_UNREACHABLE __assume(false)
 #else
-#  if defined(__has_builtin) && __has_builtin(__builtin_unreachable)
+#  if defined(__has_builtin) && __has_builtin(__builtin_unreachable) && !defined(CLANG)
 #    define BUILTIN_UNREACHABLE __builtin_unreachable()
 #  else
 #    define BUILTIN_UNREACHABLE

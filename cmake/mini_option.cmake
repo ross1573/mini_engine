@@ -31,6 +31,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd5045 # spectre stuff
         /wd5222 # unrecognized attribute
         /wd5267 # implicit deprecation of special member functions
+
+        /wd4273 # inconsistent dll linkage - TODO: should be fixed, not suppressed
     )
 
     add_link_options(
