@@ -1,6 +1,5 @@
 module;
 
-#include <format>
 #include <string>
 
 export module mini.core:format;
