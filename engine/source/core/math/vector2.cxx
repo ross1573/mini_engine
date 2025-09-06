@@ -48,10 +48,10 @@ public:
 
     constexpr bool operator==(Vector2 const&) const noexcept;
 
-    static const Vector2 zero;
-    static const Vector2 one;
-    static const Vector2 unitX;
-    static const Vector2 unitY;
+    CORE_API static const Vector2 zero;
+    CORE_API static const Vector2 one;
+    CORE_API static const Vector2 unitX;
+    CORE_API static const Vector2 unitY;
 };
 
 export constexpr Vector2 operator+(Vector2 const&, Vector2 const&) noexcept;

@@ -35,7 +35,7 @@ public:
 
     constexpr bool operator==(RectInt const&) const noexcept;
 
-    static const RectInt zero;
+    CORE_API static const RectInt zero;
 };
 
 inline RectInt const RectInt::zero = RectInt();

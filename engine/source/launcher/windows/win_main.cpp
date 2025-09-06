@@ -2,8 +2,6 @@
 
 #if DEBUG
 #  include <crtdbg.h>
-
-#  include "assertion.h"
 #endif
 
 import mini.launcher;

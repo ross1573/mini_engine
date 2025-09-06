@@ -43,10 +43,10 @@ public:
 
     explicit constexpr operator Vector2() const noexcept;
 
-    static const Vector2Int zero;
-    static const Vector2Int one;
-    static const Vector2Int unitX;
-    static const Vector2Int unitY;
+    CORE_API static const Vector2Int zero;
+    CORE_API static const Vector2Int one;
+    CORE_API static const Vector2Int unitX;
+    CORE_API static const Vector2Int unitY;
 };
 
 export constexpr Vector2Int operator+(Vector2Int const&, Vector2Int const&) noexcept;

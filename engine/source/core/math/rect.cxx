@@ -36,7 +36,7 @@ public:
 
     constexpr bool operator==(Rect const&) const noexcept;
 
-    static const Rect zero;
+    CORE_API static const Rect zero;
 };
 
 inline Rect const Rect::zero = Rect();

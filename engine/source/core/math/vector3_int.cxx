@@ -48,17 +48,17 @@ public:
     constexpr explicit operator Vector2() const noexcept;
     constexpr explicit operator Vector3() const noexcept;
 
-    static const Vector3Int zero;
-    static const Vector3Int one;
-    static const Vector3Int unitX;
-    static const Vector3Int unitY;
-    static const Vector3Int unitZ;
-    static const Vector3Int up;
-    static const Vector3Int down;
-    static const Vector3Int left;
-    static const Vector3Int right;
-    static const Vector3Int forward;
-    static const Vector3Int backward;
+    CORE_API static const Vector3Int zero;
+    CORE_API static const Vector3Int one;
+    CORE_API static const Vector3Int unitX;
+    CORE_API static const Vector3Int unitY;
+    CORE_API static const Vector3Int unitZ;
+    CORE_API static const Vector3Int up;
+    CORE_API static const Vector3Int down;
+    CORE_API static const Vector3Int left;
+    CORE_API static const Vector3Int right;
+    CORE_API static const Vector3Int forward;
+    CORE_API static const Vector3Int backward;
 };
 
 export constexpr Vector3Int operator+(Vector3Int const&, Vector3Int const&) noexcept;

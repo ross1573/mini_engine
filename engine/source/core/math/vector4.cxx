@@ -53,12 +53,12 @@ public:
 
     constexpr explicit operator Vector3() const noexcept;
 
-    static const Vector4 zero;
-    static const Vector4 one;
-    static const Vector4 unitX;
-    static const Vector4 unitY;
-    static const Vector4 unitZ;
-    static const Vector4 unitW;
+    CORE_API static const Vector4 zero;
+    CORE_API static const Vector4 one;
+    CORE_API static const Vector4 unitX;
+    CORE_API static const Vector4 unitY;
+    CORE_API static const Vector4 unitZ;
+    CORE_API static const Vector4 unitW;
 };
 
 export constexpr Vector4 operator+(Vector4 const&, Vector4 const&) noexcept;

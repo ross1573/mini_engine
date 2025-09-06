@@ -52,17 +52,17 @@ public:
 
     explicit constexpr operator Vector2() const noexcept;
 
-    static const Vector3 zero;
-    static const Vector3 one;
-    static const Vector3 unitX;
-    static const Vector3 unitY;
-    static const Vector3 unitZ;
-    static const Vector3 up;
-    static const Vector3 down;
-    static const Vector3 left;
-    static const Vector3 right;
-    static const Vector3 forward;
-    static const Vector3 backward;
+    CORE_API static const Vector3 zero;
+    CORE_API static const Vector3 one;
+    CORE_API static const Vector3 unitX;
+    CORE_API static const Vector3 unitY;
+    CORE_API static const Vector3 unitZ;
+    CORE_API static const Vector3 up;
+    CORE_API static const Vector3 down;
+    CORE_API static const Vector3 left;
+    CORE_API static const Vector3 right;
+    CORE_API static const Vector3 forward;
+    CORE_API static const Vector3 backward;
 };
 
 export constexpr Vector3 operator+(Vector3 const&, Vector3 const&) noexcept;
