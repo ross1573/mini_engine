@@ -96,7 +96,7 @@ private:
     AtomicUnion& operator=(AtomicUnion const&) = delete;
 };
 
-class CORE_API SharedCounter {
+class SharedCounter {
 private:
     typedef AtomicUnion<int32> Counter;
 

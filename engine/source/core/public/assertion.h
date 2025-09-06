@@ -99,14 +99,14 @@ struct FalseArgs {
 };
 
 [[noinline]]
-CORE_API PLATFOM_CHAR_T* AssertMsg(char const*, char const* = nullptr);
+PLATFOM_CHAR_T* AssertMsg(char const*, char const* = nullptr);
 
 [[noinline]]
-CORE_API PLATFOM_CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
+PLATFOM_CHAR_T* AssertLoc(std::source_location const& = std::source_location::current());
 
 [[noinline]]
-CORE_API void EnsureHelper(char const*, char const* = nullptr,
-                           std::source_location const& = std::source_location::current());
+void EnsureHelper(char const*, char const* = nullptr,
+                  std::source_location const& = std::source_location::current());
 
 inline constexpr bool TestExpr(bool arg) noexcept
 {
@@ -142,8 +142,8 @@ inline constexpr bool TestExpr(HRESULT result) noexcept
 #if PLATFORM_WINDOWS && defined(__d3dcommon_h__)
 
 [[noinline]]
-CORE_API void EnsureHelper(char const*, ID3DBlob*,
-                           std::source_location const& = std::source_location::current());
+void EnsureHelper(char const*, ID3DBlob*,
+                  std::source_location const& = std::source_location::current());
 
 #endif
 

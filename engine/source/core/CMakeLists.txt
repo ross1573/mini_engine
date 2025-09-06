@@ -1,3 +1,7 @@
+# core module mostly contains the fundamentals and relies heavily on templates
+# so instead of selectively exporting the symbols, everything will be exported
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_module(mini.core SHARED)
 
 module_sources(mini.core

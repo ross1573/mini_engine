@@ -1,6 +1,6 @@
 module;
 
-CORE_API void DarwinLog(char const* msg);
+void DarwinLog(char const* msg);
 
 module mini.core;
 
