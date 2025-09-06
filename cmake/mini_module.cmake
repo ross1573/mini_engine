@@ -23,7 +23,7 @@ function (add_module name type)
     )
 
     target_precompile_headers(${name}
-    PUBLIC
+    PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/${header}
     )
 
