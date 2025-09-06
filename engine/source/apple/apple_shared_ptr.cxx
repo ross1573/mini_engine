@@ -1,7 +1,3 @@
-module;
-
-#include <Foundation/NSObject.hpp>
-
 export module mini.apple:shared_ptr;
 
 import mini.core;

@@ -1,5 +1,4 @@
 #include <d3dcommon.h>
-#include <format>
 #include <source_location>
 
 import mini.core;

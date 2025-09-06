@@ -1,7 +1,3 @@
-module;
-
-#include "builtin.h"
-
 export module mini.core:static_buffer;
 
 import :type;

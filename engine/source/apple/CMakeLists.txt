@@ -13,6 +13,8 @@ target_precompile_headers(mini.apple
 PUBLIC
     public/appkit.h
     public/foundation.h
+    <Foundation/Foundation.hpp>
+    <QuartzCore/QuartzCore.hpp>
 )
 
 target_link_libraries(mini.apple

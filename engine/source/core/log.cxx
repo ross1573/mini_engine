@@ -1,8 +1,3 @@
-module;
-
-#include <format>
-#include <source_location>
-
 export module mini.core:log;
 
 import :type;

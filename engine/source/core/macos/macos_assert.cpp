@@ -1,5 +1,3 @@
-#include <cstring>
-
 import mini.core;
 
 constexpr int bufSize = DEBUG * 1023 + 1;
@@ -23,7 +21,7 @@ char* AssertMsg(char const* expr, char const* msg)
 char* AssertLoc(std::source_location const& loc)
 {
     int len = SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
-    memcpy(funcInfo + len, "\n\0", 3);
+    memory::MemCopy(funcInfo + len, "\n\0", 3);
     return funcInfo;
 }
 
@@ -32,7 +30,7 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
     char locBuffer[512];
     int len = SourceLocationToString(locBuffer, sizeof(locBuffer) - 2, loc);
 
-    memcpy(locBuffer + len, "\n\n\0", 3);
+    memory::MemCopy(locBuffer + len, "\n\n\0", 3);
     LogMessage(Format("\nEnsure failed!\n"
                       "  Expression: {0}\n"
                       "  Message: {1}\n"

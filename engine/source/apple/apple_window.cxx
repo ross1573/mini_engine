@@ -1,7 +1,3 @@
-module;
-
-#include <QuartzCore/CAMetalLayer.hpp>
-
 export module mini.apple:window;
 
 import mini.platform;
