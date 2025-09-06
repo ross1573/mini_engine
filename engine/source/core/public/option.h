@@ -16,7 +16,13 @@ inline constexpr bool resizableWindow = true;
 inline constexpr unsigned char vsync = 0;
 inline constexpr unsigned char bufferCount = 2;
 
+#if PLATFORM_WINDOWDS
 inline constexpr char const* graphicsAPI = "D3D12";
+#elif PLATFORM_MACOS
+inline constexpr char const* graphicsAPI = "Metal";
+#else
+inline constexpr char const* graphicsAPI = nullptr;
+#endif
 
 inline constexpr bool debugLayer = true;
 inline constexpr bool gpuValidation = false;
