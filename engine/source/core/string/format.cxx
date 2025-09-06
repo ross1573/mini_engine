@@ -1,7 +1,3 @@
-module;
-
-#include <string>
-
 export module mini.core:format;
 
 import :type;
@@ -21,14 +17,10 @@ auto Format(StringView msg, Args&&... args)
 
 namespace fmt {
 
-// temporary formatter
-export template <mini::CharT T>
-struct formatter<mini::BasicString<T>> : formatter<std::string> {
-public:
-    auto format(mini::BasicString<T> const& str, format_context& ctx) const
-    {
-        return formatter<std::string>::format(str.Data(), ctx);
-    }
-};
+export template <mini::CharT T, mini::AllocatorT<T> AllocT>
+auto format_as(mini::BasicString<T, AllocT> const& str)
+{
+    return fmt::basic_string_view<T>(str.Data(), str.Size());
+}
 
 } // namespace fmt
