@@ -26,6 +26,7 @@ import :allocator;
 import :buffer;
 import :static_buffer;
 import :string_utility;
+import :string_view;
 import :array_iterator;
 
 namespace mini {
@@ -185,10 +186,12 @@ public:
     constexpr BasicString& operator+=(ConstPtr);
     constexpr BasicString& operator+=(Value);
 
-    template <ConvertibleToT<T> U, typename TraitsU, typename AllocU>
-    constexpr BasicString(std::basic_string<U, TraitsU, AllocU> const&, AllocT const& = AllocT());
+    template <typename TraitsT, typename StdAllocT>
+    constexpr BasicString(std::basic_string<T, TraitsT, StdAllocT> const&,
+                          AllocT const& = AllocT());
 
     explicit constexpr operator std::basic_string<T>() const;
+    constexpr operator BasicStringView<T>() const noexcept;
 
 private:
     BasicString(NullptrT) = delete;
@@ -1587,9 +1590,9 @@ inline constexpr void BasicString<T, AllocT>::InsertWithRange(SizeT index, Iter 
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <ConvertibleToT<T> U, typename TraitsU, typename AllocU>
+template <typename TraitsT, typename StdAllocT>
 inline constexpr BasicString<T, AllocT>::
-    BasicString(std::basic_string<U, TraitsU, AllocU> const& other, AllocT const& alloc)
+    BasicString(std::basic_string<T, TraitsT, StdAllocT> const& other, AllocT const& alloc)
     : m_Alloc(alloc)
 {
     SizeT size = static_cast<SizeT>(other.size());
@@ -1603,20 +1606,26 @@ inline constexpr BasicString<T, AllocT>::operator std::basic_string<T>() const
     return std::basic_string<T>(Data(), Size());
 }
 
-export template <CharT T, AllocatorT<T> AllocT, ConvertibleToT<T> U = T,
-                 typename TraitsU = std::char_traits<U>, typename AllocU = std::allocator<U>>
-inline constexpr BasicString<T, AllocT> ToString(std::basic_string<U, TraitsU, AllocU> const& other,
-                                                 AllocT const& alloc = AllocT())
+export template <CharT T, typename TraitsT, typename StdAllocT,
+                 AllocatorT<T> AllocT = mini::Allocator<T>>
+inline constexpr BasicString<T, AllocT>
+ToString(std::basic_string<T, TraitsT, StdAllocT> const& other, AllocT const& alloc = AllocT())
 {
     return BasicString<T, AllocT>(other.data(), other.size(), alloc);
 }
 
-export template <CharT T, AllocatorT<T> AllocT, ConvertibleToT<T> U = T,
-                 typename TraitsU = std::char_traits<U>, typename AllocU = std::allocator<U>>
-inline constexpr std::basic_string<U, TraitsU, AllocU>
-ToStdString(BasicString<T, AllocT> const& other, AllocU const& alloc = AllocU())
+export template <CharT T, AllocatorT<T> AllocT, typename TraitsT = std::char_traits<T>,
+                 typename StdAllocT = std::allocator<T>>
+inline constexpr std::basic_string<T, TraitsT, StdAllocT>
+ToStdString(BasicString<T, AllocT> const& other, StdAllocT const& alloc = StdAllocT())
 {
-    return std::basic_string<U, TraitsU, AllocU>(other.Data(), other.Size(), alloc);
+    return std::basic_string<T, TraitsT, StdAllocT>(other.Data(), other.Size(), alloc);
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>::operator BasicStringView<T>() const noexcept
+{
+    return BasicStringView(Data(), Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>

@@ -1,12 +1,9 @@
-module;
-
-#include <string_view>
-
 export module mini.core:string_convert;
 
 import convert_utf;
 import :type;
 import :string;
+import :string_view;
 import :allocator;
 
 namespace mini {
@@ -14,13 +11,13 @@ namespace mini {
 export template <CharT T, AllocatorT<T> AllocT = mini::Allocator<T>>
 class StringConvert {
 public:
-    typedef T ValueT;
-    typedef T* PtrT;
-    typedef T& RefT;
-    typedef T const* ConstPtrT;
+    typedef T Value;
+    typedef T* Ptr;
+    typedef T& Ref;
+    typedef T const* ConstPtr;
 
 private:
-    PtrT m_Data;
+    Ptr m_Data;
     SizeT m_Size;
     [[no_unique_address]] AllocT m_Alloc;
 
@@ -37,10 +34,10 @@ public:
 
     template <CharT U>
         requires(not SameAsT<T, U>)
-    constexpr StringConvert(std::basic_string_view<U> str);
+    constexpr StringConvert(BasicStringView<U> str);
 
     constexpr SizeT Size() const noexcept;
-    constexpr ConstPtrT Data() const noexcept;
+    constexpr ConstPtr Data() const noexcept;
 
     constexpr StringConvert& operator=(StringConvert&& other);
     StringConvert(StringConvert const&) = delete;
@@ -49,12 +46,12 @@ public:
 private:
     template <CharT U>
         requires(not SameAsT<T, U>)
-    constexpr void Initialize(std::basic_string_view<U> const& str);
+    constexpr void Initialize(BasicStringView<U> const& str);
 };
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr StringConvert<T, AllocT>::StringConvert(NullptrT) noexcept
-    : m_Data(const_cast<PtrT>(m_EmptyStr))
+    : m_Data(const_cast<Ptr>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -80,7 +77,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr StringConvert<T, AllocT>::StringConvert(U* ptr)
-    : m_Data(const_cast<PtrT>(m_EmptyStr))
+    : m_Data(const_cast<Ptr>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -94,8 +91,8 @@ inline constexpr StringConvert<T, AllocT>::StringConvert(U* ptr)
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
-inline constexpr StringConvert<T, AllocT>::StringConvert(std::basic_string_view<U> str)
-    : m_Data(const_cast<PtrT>(m_EmptyStr))
+inline constexpr StringConvert<T, AllocT>::StringConvert(BasicStringView<U> str)
+    : m_Data(const_cast<Ptr>(m_EmptyStr))
     , m_Size(0)
     , m_Alloc{}
 {
@@ -109,7 +106,7 @@ inline constexpr SizeT StringConvert<T, AllocT>::Size() const noexcept
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr StringConvert<T, AllocT>::ConstPtrT StringConvert<T, AllocT>::Data() const noexcept
+inline constexpr StringConvert<T, AllocT>::ConstPtr StringConvert<T, AllocT>::Data() const noexcept
 {
     return m_Data;
 }
@@ -130,25 +127,25 @@ StringConvert<T, AllocT>::operator=(StringConvert&& other)
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
-inline constexpr void StringConvert<T, AllocT>::Initialize(std::basic_string_view<U> const& str)
+inline constexpr void StringConvert<T, AllocT>::Initialize(BasicStringView<U> const& str)
 {
-    if (str.size() == 0) {
-        m_Data = const_cast<PtrT>(m_EmptyStr);
+    if (str.Size() == 0) {
+        m_Data = const_cast<Ptr>(m_EmptyStr);
         return;
     }
 
-    U const* begin = str.data();
-    U const* end = str.data() + str.length();
-    byte isNullTerminated = str.back() == '\0' ? 0 : 1;
+    U const* begin = str.Data();
+    U const* end = str.Data() + str.Size();
+    byte isNullTerminated = str.Last() == '\0' ? 0 : 1;
 
-    m_Size = (SizeT)ConvertLength(begin, end, ValueT(0));
+    m_Size = (SizeT)ConvertLength(begin, end, Value(0));
     m_Data = m_Alloc.Allocate(m_Size + isNullTerminated).pointer;
 
     ASSERT(m_Data && m_Size != 0, "failed to allocate convert buffer");
     Convert(begin, end, m_Data, m_Data + m_Size);
 
     if (isNullTerminated) {
-        m_Data[m_Size] = ValueT(0);
+        m_Data[m_Size] = Value(0);
         ++m_Size;
     }
 }

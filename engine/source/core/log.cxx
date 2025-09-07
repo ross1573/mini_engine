@@ -12,7 +12,7 @@ namespace mini::log {
 export template <typename... Args>
 void Info(StringView msg, Args&&... args)
 {
-    String str(static_cast<SizeT>(8 + msg.size()));
+    String str(static_cast<SizeT>(8 + msg.Size()));
     str.Append("[Info] ");
     str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
     str.Push('\n');
@@ -22,7 +22,7 @@ void Info(StringView msg, Args&&... args)
 export template <typename... Args>
 void Warning(StringView msg, Args&&... args)
 {
-    String str(static_cast<SizeT>(11 + msg.size()));
+    String str(static_cast<SizeT>(11 + msg.Size()));
     str.Append("[Warning] ");
     str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
     str.Push('\n');
@@ -32,7 +32,7 @@ void Warning(StringView msg, Args&&... args)
 export template <typename... Args>
 void Error(StringView msg, Args&&... args)
 {
-    String str(static_cast<SizeT>(9 + msg.size()));
+    String str(static_cast<SizeT>(9 + msg.Size()));
     str.Append("[Error] ");
     str.Append(Format(msg, ForwardArg<Args>(args)...).c_str());
     str.Push('\n');
