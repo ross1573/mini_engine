@@ -59,6 +59,9 @@ protected:
     alignas(AlignN) T m_Buffer[CapacityN];
 
 public:
+    constexpr StaticBuffer() = default;
+    constexpr ~StaticBuffer() = default;
+
     inline constexpr T* Data() noexcept { return const_cast<T*>(Address()); }
     inline constexpr T const* Data() const noexcept { return Address(); }
 
@@ -77,10 +80,7 @@ public:
 public:
     SizeType size;
 
-    inline constexpr StaticSize() noexcept
-        : size(0)
-    {
-    }
+    constexpr StaticSize() noexcept = default;
 
     inline constexpr StaticSize(SizeT s) noexcept
         : size(static_cast<SizeType>(s))

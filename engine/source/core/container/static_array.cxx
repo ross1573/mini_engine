@@ -140,6 +140,7 @@ inline constexpr StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr StaticArray<T, N>::StaticArray(Iter first, Iter last)
+    : m_Size(0)
 {
     Append(first, last);
 }
