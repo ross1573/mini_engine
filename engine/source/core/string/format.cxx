@@ -59,16 +59,3 @@ auto format_as(mini::BasicStringView<T> const& str)
 }
 
 } // namespace mini
-
-namespace std {
-
-template <mini::CharT T, mini::AllocatorT<T> AllocT>
-struct iterator_traits<mini::StringAppender<T, AllocT>> {
-    typedef std::output_iterator_tag iterator_category;
-    typedef typename mini::BasicString<T, AllocT>::Value value_type;
-    typedef typename mini::BasicString<T, AllocT>::Ptr pointer;
-    typedef typename mini::BasicString<T, AllocT>::Ref reference;
-    typedef mini::OffsetT difference_type;
-};
-
-} // namespace std
