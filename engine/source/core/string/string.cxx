@@ -40,6 +40,10 @@ export using U8String = BasicString<char8>;
 export using U16String = BasicString<char16>;
 export using U32String = BasicString<char32>;
 
+template <typename T, typename U, typename AllocU>
+concept StringViewLikeT = StringLikeT<T, U> && AllocatorT<AllocU, U> &&
+                          !SameAsT<RemoveConstVolatileRefT<T>, BasicString<U, AllocU>>;
+
 template <CharT T, AllocatorT<T> AllocT>
 class BasicString {
 private:
@@ -104,33 +108,41 @@ public:
     explicit constexpr BasicString(AllocT const&) noexcept;
     explicit constexpr BasicString(AllocT&&) noexcept;
     constexpr BasicString(SizeT, AllocT const& = AllocT());
-    constexpr BasicString(ConstPtr, AllocT const& = AllocT());
-    constexpr BasicString(ConstPtr, SizeT, AllocT const& = AllocT());
     template <typename U>
     constexpr BasicString(U, SizeT, AllocT const& = AllocT())
         requires AnyOfT<U, Value, ConstValue>;
+    template <StringViewLikeT<T, AllocT> U>
+    constexpr BasicString(U const&, AllocT const& = AllocT());
+    template <StringViewLikeT<T, AllocT> U>
+    constexpr BasicString(U const&, SizeT, AllocT const& = AllocT());
     template <ForwardIteratableByT<T> Iter>
     constexpr BasicString(Iter, Iter, AllocT const& = AllocT());
 
-    constexpr void Assign(ConstPtr);
-    constexpr void Assign(ConstPtr, SizeT);
-    constexpr void Assign(BasicString const&);
     constexpr void Assign(BasicString&&);
+    template <StringLikeT<T> U>
+    constexpr void Assign(U const&);
+    template <StringLikeT<T> U>
+    constexpr void Assign(U const&, SizeT);
+
     constexpr void Push(Value);
     constexpr void Push(Value, SizeT);
-    constexpr void Append(ConstPtr);
-    constexpr void Append(ConstPtr, SizeT);
-    constexpr void Append(BasicString const&);
+    template <StringLikeT<T> U>
+    constexpr void Append(U const&);
+    template <StringLikeT<T> U>
+    constexpr void Append(U const&, SizeT);
+
     constexpr void Insert(SizeT, Value);
     constexpr void Insert(SizeT, Value, SizeT);
-    constexpr void Insert(SizeT, ConstPtr);
-    constexpr void Insert(SizeT, ConstPtr, SizeT);
-    constexpr void Insert(SizeT, BasicString const&);
+    template <StringLikeT<T> U>
+    constexpr void Insert(SizeT, U const&);
+    template <StringLikeT<T> U>
+    constexpr void Insert(SizeT, U const&, SizeT);
     constexpr void Insert(ConstIterator, Value);
     constexpr void Insert(ConstIterator, Value, SizeT);
-    constexpr void Insert(ConstIterator, ConstPtr);
-    constexpr void Insert(ConstIterator, ConstPtr, SizeT);
-    constexpr void Insert(ConstIterator, BasicString const&);
+    template <StringLikeT<T> U>
+    constexpr void Insert(ConstIterator, U const&);
+    template <StringLikeT<T> U>
+    constexpr void Insert(ConstIterator, U const&, SizeT);
 
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
@@ -180,18 +192,19 @@ public:
 
     constexpr BasicString& operator=(BasicString const&);
     constexpr BasicString& operator=(BasicString&&);
-    constexpr BasicString& operator=(ConstPtr);
+    template <StringViewLikeT<T, AllocT> U>
+    constexpr BasicString& operator=(U const&);
 
-    constexpr BasicString& operator+=(BasicString const&);
-    constexpr BasicString& operator+=(ConstPtr);
     constexpr BasicString& operator+=(Value);
+    template <StringLikeT<T> U>
+    constexpr BasicString& operator+=(U const&);
+
+    constexpr operator BasicStringView<T>() const noexcept;
+    explicit constexpr operator std::basic_string<T>() const;
 
     template <typename TraitsT, typename StdAllocT>
     constexpr BasicString(std::basic_string<T, TraitsT, StdAllocT> const&,
                           AllocT const& = AllocT());
-
-    explicit constexpr operator std::basic_string<T>() const;
-    constexpr operator BasicStringView<T>() const noexcept;
 
 private:
     BasicString(NullptrT) = delete;
@@ -210,6 +223,8 @@ private:
     constexpr void ResizeWithAlloc(SizeT, Value, SizeT);
     constexpr void SwitchToLarge(LargeBuffer&&, SizeT);
     constexpr LargeBuffer SwitchToSmall(Ptr, SizeT);
+    template <StringLikeT<T> U>
+    constexpr ConstPtr GetViewData(U const&, SizeT);
 
     constexpr void InitEmpty();
     constexpr void InitWithCopy(BasicString const&);
@@ -343,35 +358,23 @@ inline constexpr BasicString<T, AllocT>::BasicString(U ch, SizeT size, AllocT co
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::BasicString(ConstPtr ptr, AllocT const& alloc)
+template <StringViewLikeT<T, AllocT> U>
+inline constexpr BasicString<T, AllocT>::BasicString(U const& src, AllocT const& alloc)
     : m_Alloc(alloc)
 {
-    if (ptr == nullptr) [[unlikely]] {
-        InitEmpty();
-        return;
-    }
-
-    SizeT size = memory::StringLength(ptr);
-    if (size == 0) [[unlikely]] {
-        InitEmpty();
-        return;
-    }
-
-    Ptr loc = InitWithSize(size);
-    memory::MemCopy(loc, ptr, size);
+    BasicStringView<T> view = src;
+    Ptr loc = InitWithSize(view.Size());
+    memory::MemCopy(loc, view.Data(), view.Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::BasicString(ConstPtr ptr, SizeT size, AllocT const& alloc)
+template <StringViewLikeT<T, AllocT> U>
+inline constexpr BasicString<T, AllocT>::BasicString(U const& src, SizeT size, AllocT const& alloc)
     : m_Alloc(alloc)
 {
-    if (ptr == nullptr || size == 0) [[unlikely]] {
-        InitEmpty();
-        return;
-    }
-
+    ConstPtr data = GetViewData(src, size);
     Ptr loc = InitWithSize(size);
-    memory::MemCopy(loc, ptr, size);
+    memory::MemCopy(loc, data, size);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -390,48 +393,19 @@ inline constexpr BasicString<T, AllocT>::BasicString(Iter begin, Iter end, Alloc
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Assign(ConstPtr ptr)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Assign(U const& src)
 {
-    if (ptr == nullptr) [[unlikely]] {
-        Clear();
-        return;
-    }
-
-    SizeT len = memory::StringLength(ptr);
-    if (len == 0) [[unlikely]] {
-        Clear();
-        return;
-    }
-
-    AssignWithSource(ptr, len);
+    BasicStringView<T> view = src;
+    AssignWithSource(view.Data(), view.Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Assign(ConstPtr ptr, SizeT size)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Assign(U const& src, SizeT size)
 {
-    if (ptr == nullptr || size == 0) [[unlikely]] {
-        Clear();
-        return;
-    }
-
-    AssignWithSource(ptr, size);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Assign(BasicString const& other)
-{
-    if (!IsLarge() && !other.IsLarge()) {
-        m_Storage = other.m_Storage;
-        return;
-    }
-
-    SizeT otherSize = other.m_Storage.l.size;
-    if (otherSize == 0) [[unlikely]] {
-        Clear();
-        return;
-    }
-
-    AssignWithSource(other.m_Storage.l.buffer.Data(), otherSize);
+    ConstPtr data = GetViewData(src, size);
+    AssignWithSource(data, size);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -476,39 +450,19 @@ inline constexpr void BasicString<T, AllocT>::Push(Value ch, SizeT count)
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Append(ConstPtr ptr)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Append(U const& src)
 {
-    if (ptr == nullptr) [[unlikely]] {
-        return;
-    }
-
-    SizeT size = memory::StringLength(ptr);
-    if (size == 0) [[unlikely]] {
-        return;
-    }
-
-    AppendWithSource(ptr, size);
+    BasicStringView<T> view = src;
+    AppendWithSource(view.Data(), view.Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Append(ConstPtr ptr, SizeT size)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Append(U const& src, SizeT size)
 {
-    if (ptr == nullptr || size == 0) [[unlikely]] {
-        return;
-    }
-
-    AppendWithSource(ptr, size);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Append(BasicString const& other)
-{
-    SizeT otherSize = other.Size();
-    if (otherSize == 0) [[unlikely]] {
-        return;
-    }
-
-    AppendWithSource(other.Data(), otherSize);
+    ConstPtr data = GetViewData(src, size);
+    AppendWithSource(data, size);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -554,57 +508,33 @@ inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, Value ch, Size
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, ConstPtr ptr)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, U const& src)
 {
     if (index == Size()) {
-        Append(ptr);
+        Append(src);
         return;
     }
 
-    if (ptr == nullptr) [[unlikely]] {
-        return;
-    }
-
-    SizeT len = memory::StringLength(ptr);
-    if (len == 0) [[unlikely]] {
-        return;
-    }
+    BasicStringView<T> view = src;
 
     AssertValidIndex(index);
-    InsertWithSource(index, ptr, len);
+    InsertWithSource(index, view.Data(), view.Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, ConstPtr ptr, SizeT len)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, U const& src, SizeT len)
 {
     if (index == Size()) {
-        Append(ptr, len);
+        Append(src, len);
         return;
     }
 
-    if (ptr == nullptr || len == 0) [[unlikely]] {
-        return;
-    }
+    ConstPtr data = GetViewData(src, len);
 
     AssertValidIndex(index);
-    InsertWithSource(index, ptr, len);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, BasicString const& other)
-{
-    if (index == Size()) {
-        Append(other);
-        return;
-    }
-
-    SizeT otherSize = other.Size();
-    if (otherSize == 0) [[unlikely]] {
-        return;
-    }
-
-    AssertValidIndex(index);
-    InsertWithSource(index, other.Data(), otherSize);
+    InsertWithSource(index, data, len);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -640,60 +570,35 @@ inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, Value c
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, ConstPtr ptr)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, U const& src)
 {
     SizeT index = static_cast<SizeT>(iter.Address() - Data());
     if (index == Size()) {
-        Append(ptr);
+        Append(src);
         return;
     }
 
-    if (ptr == nullptr) [[unlikely]] {
-        return;
-    }
-
-    SizeT len = memory::StringLength(ptr);
-    if (len == 0) [[unlikely]] {
-        return;
-    }
+    BasicStringView<T> view = src;
 
     AssertValidIterator(iter);
-    InsertWithSource(index, ptr, len);
+    InsertWithSource(index, view.Data(), view.Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, ConstPtr ptr, SizeT len)
+template <StringLikeT<T> U>
+inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, U const& src, SizeT len)
 {
     SizeT index = static_cast<SizeT>(iter.Address() - Data());
     if (index == Size()) {
-        Append(ptr, len);
+        Append(src, len);
         return;
     }
 
-    if (ptr == nullptr || len == 0) [[unlikely]] {
-        return;
-    }
+    ConstPtr data = GetViewData(src, len);
 
     AssertValidIterator(iter);
-    InsertWithSource(index, ptr, len);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, BasicString const& other)
-{
-    SizeT index = static_cast<SizeT>(iter.Address() - Data());
-    if (index == Size()) {
-        Append(other);
-        return;
-    }
-
-    SizeT otherSize = other.Size();
-    if (otherSize == 0) [[unlikely]] {
-        return;
-    }
-
-    AssertValidIterator(iter);
-    InsertWithSource(index, other.Data(), otherSize);
+    InsertWithSource(index, data, len);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1107,31 +1012,25 @@ inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(Basic
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(BasicString&& other)
+inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(BasicString&& other)
 {
     Assign(MoveArg(other));
     return *this;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(ConstPtr ptr)
+template <StringViewLikeT<T, AllocT> U>
+inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(U const& src)
 {
-    Assign(ptr);
+    Assign(src);
     return *this;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>&
-BasicString<T, AllocT>::operator+=(BasicString const& other)
+template <StringLikeT<T> U>
+inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(U const& src)
 {
-    Append(other);
-    return *this;
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(ConstPtr ptr)
-{
-    Append(ptr);
+    Append(src);
     return *this;
 }
 
@@ -1207,6 +1106,22 @@ BasicString<T, AllocT>::SwitchToSmall(Ptr ptr, SizeT size)
     m_Storage.s.layout = 0;
     m_Storage.s.size = static_cast<byte>(size);
     return tmpBuffer;
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+template <StringLikeT<T> U>
+constexpr BasicString<T, AllocT>::ConstPtr BasicString<T, AllocT>::GetViewData(U const& src,
+                                                                               SizeT size)
+{
+    if constexpr (ExplicitlyConvertibleToT<U, T const*>) {
+        BasicStringView<T> view(static_cast<T const*>(src), size);
+        return view.Data();
+    }
+    else {
+        BasicStringView<T> view = src;
+        BasicStringView<T> subView = view.SubFirst(size);
+        return subView.Data();
+    }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1719,25 +1634,22 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 
-export template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool operator==(BasicString<T, AllocT> const& s, T const* p) noexcept
+export template <CharT T, AllocatorT<T> AllocT, StringViewLikeT<T, AllocT> ViewU>
+inline constexpr bool operator==(BasicString<T, AllocT> const& s, ViewU const& v) noexcept
 {
-    if (p == nullptr) [[unlikely]] {
-        return false;
-    }
+    BasicStringView<T> l = s;
+    BasicStringView<T> r = v;
+    return l == r;
+}
 
-    SizeT len = memory::StringLength(p);
-    SizeT size = s.Size();
-    if (size != len) {
-        return false;
-    }
-
-    typename BasicString<T, AllocT>::ConstPtr buffer = s.Data();
-    if (buffer == p) [[unlikely]] {
-        return true;
-    }
-
-    return memory::StringCompare(buffer, p, size) == 0;
+export template <CharT T, AllocatorT<T> AllocT, CharT U, AllocatorT<U> AllocU,
+                 StringViewLikeT<U, AllocU> ViewU>
+inline constexpr bool operator==(BasicString<T, AllocT> const& s, ViewU const& v) noexcept
+    requires EqualityComparableWithT<T, U>
+{
+    BasicStringView<T> l = s;
+    BasicStringView<U> r = v;
+    return l == r;
 }
 
 export template <CharT T, AllocatorT<T> AllocT>

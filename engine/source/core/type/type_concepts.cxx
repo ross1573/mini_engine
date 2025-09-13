@@ -54,7 +54,13 @@ export template <typename T, typename... Args>
 concept AnyOfT = AnyOfImpl<T, Args...>::value;
 
 export template <typename From, typename To>
-concept ConvertibleToT = std::convertible_to<From, To>;
+concept ImplicitlyConvertibleToT = std::is_convertible_v<From, To>;
+
+export template <typename From, typename To>
+concept ExplicitlyConvertibleToT = requires { static_cast<To>(std::declval<From>()); };
+
+export template <typename From, typename To>
+concept ConvertibleToT = ImplicitlyConvertibleToT<From, To> && ExplicitlyConvertibleToT<From, To>;
 
 export template <typename From, typename To>
 concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*, To*>;

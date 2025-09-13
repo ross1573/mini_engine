@@ -1,5 +1,3 @@
-#include "test_macro.h"
-
 import mini.test;
 import convert_utf;
 

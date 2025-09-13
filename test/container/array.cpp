@@ -2,8 +2,6 @@
 #include <string>
 #include <vector>
 
-#include "test_macro.h"
-
 import mini.test;
 
 using namespace mini;
@@ -40,7 +38,7 @@ FACTORY(FooArgF);
 
 template <typename T, typename AllocT, typename StdAllocT>
 [[no_inline]] constexpr int TestArray(Array<T, AllocT> const& arr,
-                                             std::vector<T, StdAllocT> const& vec)
+                                      std::vector<T, StdAllocT> const& vec)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
         if constexpr (memory::DereferencableT<T>) {

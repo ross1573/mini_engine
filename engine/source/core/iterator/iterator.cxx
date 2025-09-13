@@ -11,6 +11,7 @@ namespace mini {
 
 export template <typename T>
 concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
+                           !ConvertibleToT<SizeT, T> &&              //
                            requires(T i, T const j, SizeT const n)   //
 {
     requires !RefT<typename T::Value>;

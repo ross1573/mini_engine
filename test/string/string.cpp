@@ -1,46 +1,10 @@
 #include <string>
 
-#include "test_macro.h"
+#include "string_define.h"
 
 import mini.test;
 
 using namespace mini;
-
-template <CharT T>
-struct CStr_inline;
-
-template <CharT T>
-struct CStr_constexpr;
-
-#define CSTR(type, prefix, ...)                                                          \
-    template <>                                                                          \
-    struct CStr_##prefix<type> {                                                         \
-        static prefix type ch = __VA_ARGS__##'a';                                        \
-        static prefix type const* e = __VA_ARGS__##"";                                   \
-        static prefix type const* s = __VA_ARGS__##"Hello world!";                       \
-        static prefix type const* l = __VA_ARGS__##"Hello world! This is a long string"; \
-        static prefix type const* s_10 = __VA_ARGS__##"Hello worl";                      \
-        static prefix type const* l_30 = __VA_ARGS__##"Hello world! This is a long st";  \
-    }
-
-CSTR(char, inline);
-CSTR(wchar, inline, L);
-CSTR(char8, inline, u8);
-CSTR(char16, inline, u);
-CSTR(char32, inline, U);
-
-CSTR(char, constexpr);
-CSTR(wchar, constexpr, L);
-CSTR(char8, constexpr, u8);
-CSTR(char16, constexpr, u);
-CSTR(char32, constexpr, U);
-
-#define TEST_STRING(func, type)                             \
-    static_assert(func<type, CStr_constexpr<type>>() == 0); \
-    TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
-
-/* Debuging */
-// #define TEST_STRING(func, type) TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
 
 [[maybe_unused]] static constexpr void StringConstraints()
 {
@@ -346,7 +310,7 @@ static constexpr int TestOperator()
     BasicString<T> str;
 
     str = CStr::e;
-    TEST_ENSURE(str != static_cast<T const*>(nullptr));
+    TEST_ENSURE(str == static_cast<T const*>(nullptr));
     TEST_ENSURE((str == CStr::e && CStr::e == str));
 
     str = CStr::s;

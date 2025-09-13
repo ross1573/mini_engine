@@ -31,6 +31,7 @@ FILES
 )
 
 target_include_directories(mini.test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_precompile_headers(mini.test PUBLIC test_macro.h)
 target_link_libraries(mini.test PUBLIC mini.core)
 
 set_target_properties(mini.test PROPERTIES 
@@ -41,4 +42,5 @@ set_target_properties(mini.test PROPERTIES
 build_source_tree(mini.test)
 
 add_subdirectory(container)
+add_subdirectory(string)
 add_subdirectory(memory)

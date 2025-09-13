@@ -20,6 +20,9 @@ export using U8StringView = BasicStringView<char8>;
 export using U16StringView = BasicStringView<char16>;
 export using U32StringView = BasicStringView<char32>;
 
+export template <typename T, typename U>
+concept StringLikeT = ConvertibleToT<T, BasicStringView<U>>;
+
 template <CharT T>
 class BasicStringView {
 public:
@@ -35,6 +38,8 @@ private:
     ConstPtr m_Data;
     SizeT m_Size;
 
+    static constexpr T m_Empty[1] = { '\0' };
+
 public:
     constexpr BasicStringView() noexcept;
     constexpr ~BasicStringView() = default;
@@ -43,12 +48,10 @@ public:
     constexpr BasicStringView(ConstPtr, SizeT) noexcept;
 
     constexpr void Copy(Ptr, SizeT, SizeT) const noexcept;
-    constexpr void Copy(Ptr, ConstIterator, SizeT) const noexcept;
     constexpr void Copy(Ptr, ConstIterator, ConstIterator) const noexcept;
     constexpr BasicStringView SubFirst(SizeT) const noexcept;
     constexpr BasicStringView SubLast(SizeT) const noexcept;
     constexpr BasicStringView SubString(SizeT, SizeT) const noexcept;
-    constexpr BasicStringView SubString(ConstIterator, SizeT) const noexcept;
     constexpr BasicStringView SubString(ConstIterator, ConstIterator) const noexcept;
 
     constexpr void RemoveFirst();
@@ -74,9 +77,9 @@ public:
     constexpr BasicStringView& operator=(BasicStringView const&) noexcept;
     constexpr BasicStringView& operator=(ConstPtr) noexcept;
 
-    constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
-
     explicit constexpr operator std::basic_string_view<T>() const noexcept;
+
+    constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
 
 private:
     BasicStringView(NullptrT) = delete;
@@ -90,7 +93,7 @@ private:
 
 template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView() noexcept
-    : m_Data(nullptr)
+    : m_Data(m_Empty)
     , m_Size(0)
 {
 }
@@ -106,31 +109,26 @@ template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = nullptr;
+        m_Data = m_Empty;
         m_Size = 0;
         return;
     }
 
-    m_Size = memory::StringLength(ptr);
-    if (m_Size == 0) [[unlikely]] {
-        m_Data = nullptr;
-        return;
-    }
-
     m_Data = ptr;
+    m_Size = memory::StringLength(ptr);
 }
 
 template <CharT T>
-inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr, SizeT size) noexcept
+inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr, SizeT len) noexcept
 {
-    if (ptr == nullptr || size == 0) [[unlikely]] {
-        m_Data = nullptr;
+    if (ptr == nullptr) [[unlikely]] {
+        m_Data = m_Empty;
         m_Size = 0;
         return;
     }
 
     m_Data = ptr;
-    m_Size = size;
+    m_Size = len;
 }
 
 template <CharT T>
@@ -148,21 +146,6 @@ inline constexpr void BasicStringView<T>::Copy(Ptr dest, SizeT start, SizeT coun
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::Copy(Ptr dest, ConstIterator begin,
-                                               SizeT count) const noexcept
-{
-    if (dest == nullptr) [[unlikely]] {
-        return;
-    }
-
-    AssertValidIterator(begin);
-    ConstPtr loc = begin.Address();
-    SizeT end = m_Size - (loc - m_Data);
-    SizeT len = end < count ? end : count;
-    memory::MemCopy(dest, loc, len);
-}
-
-template <CharT T>
-inline constexpr void BasicStringView<T>::Copy(Ptr dest, ConstIterator begin,
                                                ConstIterator end) const noexcept
 {
     if (dest == nullptr) [[unlikely]] {
@@ -170,7 +153,7 @@ inline constexpr void BasicStringView<T>::Copy(Ptr dest, ConstIterator begin,
     }
 
     AssertValidRange(begin, end);
-    memory::MemCopy(dest, begin.Address(), end - begin);
+    memory::MemCopy(dest, begin.Address(), static_cast<SizeT>(end - begin));
 }
 
 template <CharT T>
@@ -199,21 +182,10 @@ inline constexpr BasicStringView<T> BasicStringView<T>::SubString(SizeT start,
 
 template <CharT T>
 inline constexpr BasicStringView<T> BasicStringView<T>::SubString(ConstIterator begin,
-                                                                  SizeT count) const noexcept
-{
-    AssertValidIterator(begin);
-    ConstPtr loc = begin.Address();
-    SizeT end = m_Size - (loc - m_Data);
-    SizeT len = end < count ? end : count;
-    return BasicStringView(loc, len);
-}
-
-template <CharT T>
-inline constexpr BasicStringView<T> BasicStringView<T>::SubString(ConstIterator begin,
                                                                   ConstIterator end) const noexcept
 {
     AssertValidRange(begin, end);
-    return BasicStringView(begin.Address(), end - begin);
+    return BasicStringView(begin.Address(), static_cast<SizeT>(end - begin));
 }
 
 template <CharT T>
@@ -221,6 +193,7 @@ inline constexpr void BasicStringView<T>::RemoveFirst()
 {
     if (m_Size != 0) [[likely]] {
         ++m_Data;
+        --m_Size;
     }
 }
 
@@ -247,9 +220,7 @@ template <CharT T>
 inline constexpr void BasicStringView<T>::RemoveLast(SizeT count)
 {
     if (m_Size < count) [[unlikely]] {
-        m_Data = nullptr;
-        m_Size = 0;
-        return;
+        count = m_Size;
     }
 
     m_Size -= count;
@@ -348,18 +319,14 @@ template <CharT T>
 inline constexpr BasicStringView<T>& BasicStringView<T>::operator=(ConstPtr ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = nullptr;
+        m_Data = m_Empty;
         m_Size = 0;
-        return;
-    }
-
-    m_Size = memory::StringLength(ptr);
-    if (m_Size == 0) [[unlikely]] {
-        m_Data = nullptr;
-        return;
+        return *this;
     }
 
     m_Data = ptr;
+    m_Size = memory::StringLength(ptr);
+    return *this;
 }
 
 template <CharT T>
@@ -389,20 +356,23 @@ inline constexpr std::basic_string_view<T> ToStdStringView(BasicStringView<T> co
 }
 
 template <CharT T>
-inline constexpr void BasicStringView<T>::AssertValidIndex(SizeT index) const noexcept
+inline constexpr void
+BasicStringView<T>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
     ASSERT(IsValidIndex(index));
 }
 
 template <CharT T>
-inline constexpr void BasicStringView<T>::AssertValidIterator(ConstIterator iter) const noexcept
+inline constexpr void
+BasicStringView<T>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     ASSERT(IsValidIterator(iter));
 }
 
 template <CharT T>
-inline constexpr void BasicStringView<T>::AssertValidRange(ConstIterator begin,
-                                                           ConstIterator end) const noexcept
+inline constexpr void
+BasicStringView<T>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                     [[maybe_unused]] ConstIterator end) const noexcept
 {
     ASSERT(IsValidRange(begin, end));
 }
@@ -415,9 +385,9 @@ inline constexpr bool operator==(BasicStringView<T> const& l, BasicStringView<T>
         return false;
     }
 
-    using Ptr = BasicStringView<T>::ConstPtr;
-    Ptr lbuf = l.Data();
-    Ptr rbuf = r.Data();
+    using ConstPtr = BasicStringView<T>::ConstPtr;
+    ConstPtr lbuf = l.Data();
+    ConstPtr rbuf = r.Data();
 
     if (lbuf == rbuf) [[unlikely]] {
         return true;
@@ -474,43 +444,41 @@ inline constexpr bool operator==(BasicStringView<T> const& l,
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 
-export template <CharT T>
-inline constexpr bool operator==(BasicStringView<T> const& s, T const* p) noexcept
+export template <CharT T, StringLikeT<T> U>
+inline constexpr bool operator==(BasicStringView<T> const& s, U const& src) noexcept
 {
-    if (p == nullptr) [[unlikely]] {
-        return false;
-    }
-
-    SizeT len = memory::StringLength(p);
+    BasicStringView<T> view = src;
     SizeT size = s.Size();
-    if (size != len) {
+
+    if (size != view.Size()) {
         return false;
     }
 
-    typename BasicStringView<T>::ConstPtr buf = s.Data();
-    if (buf == p) [[unlikely]] {
+    using ConstPtr = typename BasicStringView<T>::ConstPtr;
+    ConstPtr lbuf = s.Data();
+    ConstPtr rbuf = view.Data();
+
+    if (lbuf == rbuf) [[unlikely]] {
         return true;
     }
 
-    return memory::StringCompare(buf, p, size) == 0;
+    return memory::StringCompare(lbuf, rbuf, size) == 0;
 }
 
-export template <CharT T, CharT U>
-inline constexpr bool operator==(BasicStringView<T> const& s, U const* p) noexcept
+export template <CharT T, CharT U, StringLikeT<U> ViewU>
+inline constexpr bool operator==(BasicStringView<T> const& s, ViewU const& src) noexcept
     requires EqualityComparableWithT<T, U>
 {
-    if (p == nullptr) [[unlikely]] {
-        return false;
-    }
-
-    SizeT len = memory::StringLength(p);
+    BasicStringView<U> view = src;
     SizeT size = s.Size();
-    if (size != len) {
+
+    if (size != view.Size()) {
         return false;
     }
 
-    typename BasicStringView<T>::ConstPtr buf = s.Data();
-    return memory::EqualRange(buf, p, p + size);
+    typename BasicStringView<T>::ConstPtr lbuf = s.Data();
+    typename BasicStringView<U>::ConstPtr rbuf = view.Data();
+    return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 
 export template <CharT T>
