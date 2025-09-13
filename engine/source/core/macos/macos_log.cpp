@@ -4,7 +4,7 @@ void DarwinLog(char const* msg);
 
 module mini.core;
 
-void LogMessage(char const* msg)
+void PlatformLog(char const* msg)
 {
     DarwinLog(msg);
 }

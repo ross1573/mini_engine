@@ -142,9 +142,9 @@ int TestRandom()
     {
         static_assert(q.Capacity() == 8);
 
-        q.Enqueue(Format("hello world! {}", 0).data());
-        q.Enqueue(Format("hello world! {}", 1).data());
-        q.Enqueue(Format("hello world! {}", 2).data());
+        q.Enqueue(Format("hello world! {}", 0));
+        q.Enqueue(Format("hello world! {}", 1));
+        q.Enqueue(Format("hello world! {}", 2));
 
         decltype(q) q2 = q;
         decltype(q) q3 = MoveArg(q2);

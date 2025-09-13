@@ -1,16 +1,49 @@
+module;
+
+#include <iterator>
+
 export module mini.core:format;
 
 import :type;
+import :allocator;
 import :string;
 import :string_view;
 import fmt;
 
 namespace mini {
 
+template <CharT T, AllocatorT<T> AllocT>
+class StringAppender {
+private:
+    BasicString<T, AllocT>& m_Str;
+
+public:
+    constexpr StringAppender(BasicString<T, AllocT>& buf)
+        : m_Str(buf)
+    {
+    }
+
+    constexpr StringAppender& operator=(T c)
+    {
+        m_Str.Push(c);
+        return *this;
+    }
+
+    constexpr StringAppender& operator*() noexcept { return *this; }
+    constexpr StringAppender& operator++() noexcept { return *this; }
+    constexpr StringAppender operator++(int) const noexcept { return *this; }
+};
+
 export template <typename... Args>
-auto Format(StringView msg, Args&&... args)
+String Format(StringView msg, Args&&... args)
 {
-    return fmt::vformat(msg.Data(), fmt::make_format_args(args...));
+    constexpr SizeT msgDefaultSize = 1 << 6;
+
+    SizeT len = (msg.Size() + msgDefaultSize) & ~SizeT(msgDefaultSize); // round up to default size
+    String string(len);
+
+    fmt::vformat_to(StringAppender(string), msg.Data(), fmt::make_format_args(args...));
+    return string;
 }
 
 export template <mini::CharT T, mini::AllocatorT<T> AllocT>
@@ -26,3 +59,16 @@ auto format_as(mini::BasicStringView<T> const& str)
 }
 
 } // namespace mini
+
+namespace std {
+
+template <mini::CharT T, mini::AllocatorT<T> AllocT>
+struct iterator_traits<mini::StringAppender<T, AllocT>> {
+    typedef std::output_iterator_tag iterator_category;
+    typedef typename mini::BasicString<T, AllocT>::Value value_type;
+    typedef typename mini::BasicString<T, AllocT>::Ptr pointer;
+    typedef typename mini::BasicString<T, AllocT>::Ref reference;
+    typedef mini::OffsetT difference_type;
+};
+
+} // namespace std

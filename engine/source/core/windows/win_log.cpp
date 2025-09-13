@@ -4,7 +4,7 @@ module;
 
 module mini.core;
 
-void LogMessage(char const* msg)
+void PlatformLog(char const* msg)
 {
     OutputDebugStringA(msg);
 }
