@@ -13,10 +13,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE inst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    mini::LaunchEngine(new mini::windows::Handle(inst));
+    mini::platform::Handle* handle = mini::windows::Handle(inst);
+    mini::LaunchEngine(handle);
 
 #if DEBUG
     ASSERT(_CrtCheckMemory());
 #endif
-    return TRUE;
+    return 0;
 }
