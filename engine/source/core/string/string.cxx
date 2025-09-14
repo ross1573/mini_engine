@@ -1656,6 +1656,38 @@ export template <CharT T, AllocatorT<T> AllocT>
 bool operator==(BasicString<T, AllocT> const&, NullptrT) = delete;
 
 export template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT> operator+(BasicString<T, AllocT> const& l,
+                                                  typename BasicString<T, AllocT>::Value r)
+{
+    BasicString<T, AllocT> s = l;
+    s.Push(r);
+    return s;
+}
+
+export template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT> operator+(BasicString<T, AllocT>&& l,
+                                                  typename BasicString<T, AllocT>::Value r)
+{
+    l.Push(r);
+    return MoveArg(l);
+}
+
+export template <CharT T, AllocatorT<T> AllocT, StringLikeT<T> ViewT>
+inline constexpr BasicString<T, AllocT> operator+(BasicString<T, AllocT> const& l, ViewT const& r)
+{
+    BasicString<T, AllocT> s = l;
+    l.Append(r);
+    return s;
+}
+
+export template <CharT T, AllocatorT<T> AllocT, StringLikeT<T> ViewT>
+inline constexpr BasicString<T, AllocT> operator+(BasicString<T, AllocT>&& l, ViewT const& r)
+{
+    l.Append(r);
+    return MoveArg(l);
+}
+
+export template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void Swap(BasicString<T, AllocT> const& l,
                            BasicString<T, AllocT> const& r) noexcept
 {

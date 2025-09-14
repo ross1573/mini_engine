@@ -1,7 +1,3 @@
-module;
-
-#include <iterator>
-
 export module mini.core:format;
 
 import :type;
@@ -18,7 +14,7 @@ private:
     BasicString<T, AllocT>& m_Str;
 
 public:
-    constexpr StringAppender(BasicString<T, AllocT>& buf)
+    constexpr StringAppender(BasicString<T, AllocT>& buf) noexcept
         : m_Str(buf)
     {
     }
@@ -35,14 +31,20 @@ public:
 };
 
 export template <typename... Args>
+void FormatTo(String& to, StringView msg, Args&&... args)
+{
+    fmt::vformat_to(StringAppender(to), msg.Data(), fmt::make_format_args(args...));
+}
+
+export template <typename... Args>
 String Format(StringView msg, Args&&... args)
 {
     constexpr SizeT msgDefaultSize = 1 << 6;
+    SizeT len = (msg.Size() + msgDefaultSize - 1) &
+                ~static_cast<SizeT>(msgDefaultSize - 1); // round up to default size
 
-    SizeT len = (msg.Size() + msgDefaultSize) & ~SizeT(msgDefaultSize); // round up to default size
     String string(len);
-
-    fmt::vformat_to(StringAppender(string), msg.Data(), fmt::make_format_args(args...));
+    FormatTo(string, msg, ForwardArg<Args>(args)...);
     return string;
 }
 

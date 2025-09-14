@@ -57,22 +57,22 @@ inline void InitializeCounter()
 
 inline void PrintCounter(StringView msg, SizeT time = 0)
 {
-    log::Message(Format("\tContainer: {} / {}", msg, time).Data());
-    log::Message(Format("\t\tConstructor: {}", ctor).Data());
-    log::Message(Format("\t\tCopy Constructor: {}", copyCtor).Data());
-    log::Message(Format("\t\tMove Constructor: {}", moveCtor).Data());
-    log::Message(Format("\t\tCopy Assign: {}", copyAssign).Data());
-    log::Message(Format("\t\tMove Assign: {}", moveAssign).Data());
-    log::Message(Format("\t\tDestructor: {}", dtor).Data());
+    log::Message("", "\tContainer: {} / {}", msg, time);
+    log::Message("", "\t\tConstructor: {}", ctor);
+    log::Message("", "\t\tCopy Constructor: {}", copyCtor);
+    log::Message("", "\t\tMove Constructor: {}", moveCtor);
+    log::Message("", "\t\tCopy Assign: {}", copyAssign);
+    log::Message("", "\t\tMove Assign: {}", moveAssign);
+    log::Message("", "\t\tDestructor: {}", dtor);
 }
 
 struct Debug {
-    Debug() { log::Message("[ DEBUG ] constructor"); }
-    ~Debug() { log::Message("[ DEBUG ] destructor"); }
-    Debug(Debug const&) { log::Message("[ DEBUG ] copy constructor"); }
-    Debug(Debug&&) noexcept { log::Message("[ DEBUG ] move constructor"); }
-    void operator=(Debug const&) { log::Message("[ DEBUG ] copy assgin"); }
-    void operator=(Debug&&) noexcept { log::Message("[ DEBUG ] move assign"); }
+    Debug() { log::Message("DEBUG", "constructor"); }
+    ~Debug() { log::Message("DEBUG", "destructor"); }
+    Debug(Debug const&) { log::Message("DEBUG", "copy constructor"); }
+    Debug(Debug&&) noexcept { log::Message("DEBUG", "move constructor"); }
+    void operator=(Debug const&) { log::Message("DEBUG", "copy assgin"); }
+    void operator=(Debug&&) noexcept { log::Message("DEBUG", "move assign"); }
 };
 
 template <typename T>

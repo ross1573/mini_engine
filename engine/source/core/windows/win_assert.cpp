@@ -48,11 +48,12 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
     int len = SourceLocationToString(locBuffer, sizeof(locBuffer), loc);
     locBuffer[len - 1] = '\0';
 
-    log::Message(Format("\nEnsure failed!\n"
-                        "  Expression: {0}\n"
-                        "  Message: {1}\n"
-                        "  Function: {2}\n\n",
-                        expr, (msg == nullptr ? "" : msg), locBuffer));
+    log::Message(StringView{},
+                 "\nEnsure failed!\n"
+                 "  Expression: {0}\n"
+                 "  Message: {1}\n"
+                 "  Function: {2}\n\n",
+                 expr, msg, locBuffer);
 }
 
 void EnsureHelper(char const* expr, ID3DBlob* error, std::source_location const& loc)
