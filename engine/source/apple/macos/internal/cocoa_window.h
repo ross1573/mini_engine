@@ -13,7 +13,6 @@ protected:
 
 public:
     Window(Application*);
-    ~Window();
 
     void AlertError(char const*);
 

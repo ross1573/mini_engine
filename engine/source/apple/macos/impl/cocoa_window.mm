@@ -87,12 +87,6 @@ Window::Window(mini::cocoa::Application* application)
     SetFullScreen(fullScreen);
 }
 
-Window::~Window()
-{
-    [m_View release];
-    [m_Window release];
-}
-
 void Window::AlertError(char const* msg)
 {
     @autoreleasepool {
