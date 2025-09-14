@@ -57,6 +57,8 @@ module;
 
 export module convert_utf;
 
+namespace utf {
+
 constexpr int halfShift     = 10; /* used for shifting by 10 bits */
 constexpr char32_t halfBase = 0x0010000UL;
 constexpr char32_t halfMask = 0x3FFUL;
@@ -72,8 +74,6 @@ constexpr char32_t UNI_SUR_HIGH_START = (char32_t)0xD800;
 constexpr char32_t UNI_SUR_HIGH_END   = (char32_t)0xDBFF;
 constexpr char32_t UNI_SUR_LOW_START  = (char32_t)0xDC00;
 constexpr char32_t UNI_SUR_LOW_END    = (char32_t)0xDFFF;
-
-export using size_t = size_t;
 
 export enum class ConversionResult
 {
@@ -448,7 +448,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 
     while (source < srcEnd) {
         char32_t ch = static_cast<char32_t>(*source++);
-        unsigned short bytesToWrite = 0;
+        unsigned short bytesToWrite = 0; 
         const char32_t byteMask     = 0xBF;
         const char32_t byteMark     = 0x80;
 
@@ -949,3 +949,5 @@ inline constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* ds
     In UTF-8 writing code, the switches on "bytesToWrite" are
     similarly unrolled loops.
    --------------------------------------------------------------------- */
+
+} // namespace utf

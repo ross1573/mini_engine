@@ -27,14 +27,26 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
 {
     char locBuffer[512];
     int len = SourceLocationToString(locBuffer, sizeof(locBuffer) - 2, loc);
-
     memory::MemCopy(locBuffer + len, "\n\n\0", 3);
-    log::Message(StringView{},
-                 "\nEnsure failed!\n"
-                 "  Expression: {0}\n"
-                 "  Message: {1}\n"
-                 "  Function: {2}",
-                 expr, msg, locBuffer);
+
+    StringView exprView = expr;
+    StringView msgView = msg;
+
+    if (msgView.IsEmpty()) {
+        log::Message(StringView{},
+                     "\nEnsure failed!\n"
+                     "  Expression: {0}\n"
+                     "  Function: {2}",
+                     exprView, locBuffer);
+    }
+    else {
+        log::Message(StringView{},
+                     "\nEnsure failed!\n"
+                     "  Expression: {0}\n"
+                     "  Message: {1}\n"
+                     "  Function: {2}",
+                     exprView, msgView, locBuffer);
+    }
 }
 
 } // namespace mini::detail

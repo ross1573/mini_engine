@@ -31,13 +31,13 @@ public:
 };
 
 export template <typename... Args>
-void FormatTo(String& to, StringView msg, Args&&... args)
+inline constexpr void FormatTo(String& to, StringView msg, Args&&... args)
 {
     fmt::vformat_to(StringAppender(to), msg.Data(), fmt::make_format_args(args...));
 }
 
 export template <typename... Args>
-String Format(StringView msg, Args&&... args)
+inline constexpr String Format(StringView msg, Args&&... args)
 {
     constexpr SizeT msgDefaultSize = 1 << 6;
     SizeT len = (msg.Size() + msgDefaultSize - 1) &
@@ -48,14 +48,14 @@ String Format(StringView msg, Args&&... args)
     return string;
 }
 
-export template <mini::CharT T, mini::AllocatorT<T> AllocT>
-auto format_as(mini::BasicString<T, AllocT> const& str)
+export template <CharT T, AllocatorT<T> AllocT>
+inline constexpr auto format_as(BasicString<T, AllocT> const& str)
 {
     return fmt::basic_string_view<T>(str.Data(), str.Size());
 }
 
-export template <mini::CharT T>
-auto format_as(mini::BasicStringView<T> const& str)
+export template <CharT T>
+inline constexpr auto format_as(BasicStringView<T> const& str)
 {
     return fmt::basic_string_view<T>(str.Data(), str.Size());
 }

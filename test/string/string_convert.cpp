@@ -5,6 +5,10 @@ import convert_utf;
     static_assert(TestConvertUTF(from, to)); \
     TEST_ENSURE(TestConvertUTF(from, to));
 
+#define TEST_STRING_CONVERT(from, to)           \
+    static_assert(TestStringConvert(from, to)); \
+    TEST_ENSURE(TestStringConvert(from, to));
+
 using namespace mini;
 
 constexpr char const* str = "hello world! 안녕하세요! おげんきですか";
@@ -19,12 +23,24 @@ constexpr bool TestConvertUTF(T const* from, U const* to)
     BasicString<T> src(from);
     BasicString<U> target(to);
 
-    size_t len = ConvertLength(src.Data(), src.Data() + src.Size(), U(0));
+    size_t len = utf::ConvertLength(src.Data(), src.Data() + src.Size(), U(0));
     BasicString<U> dst(U(0), static_cast<SizeT>(len));
 
-    auto result = Convert(src.Data(), src.Data() + src.Size(), dst.Data(), dst.Data() + dst.Size(),
-                          ConversionFlags::strictConversion);
-    return result == ConversionResult::conversionOK && dst == target;
+    auto result = utf::Convert(src.Data(), src.Data() + src.Size(), dst.Data(),
+                               dst.Data() + dst.Size(), utf::ConversionFlags::strictConversion);
+    return result == utf::ConversionResult::conversionOK && dst == target;
+}
+
+template <typename T, typename U>
+constexpr bool TestStringConvert(T const* from, U const* to)
+{
+    BasicString<U> c = BasicStringConvert<U>(BasicString<T>(from)).ToString();
+    if (c != to) {
+        return false;
+    }
+
+    BasicStringConvert<U> convert(from);
+    return static_cast<BasicStringView<U>>(convert) == to;
 }
 
 int main()
@@ -58,6 +74,31 @@ int main()
     TEST_CONVERT_UTF(str32, str8);
     TEST_CONVERT_UTF(str32, str16);
     TEST_CONVERT_UTF(str32, str32);
+
+    TEST_STRING_CONVERT(str, wstr);
+    TEST_STRING_CONVERT(str, str8);
+    TEST_STRING_CONVERT(str, str16);
+    TEST_STRING_CONVERT(str, str32);
+
+    TEST_STRING_CONVERT(wstr, str);
+    TEST_STRING_CONVERT(wstr, str8);
+    TEST_STRING_CONVERT(wstr, str16);
+    TEST_STRING_CONVERT(wstr, str32);
+
+    TEST_STRING_CONVERT(str8, str);
+    TEST_STRING_CONVERT(str8, wstr);
+    TEST_STRING_CONVERT(str8, str16);
+    TEST_STRING_CONVERT(str8, str32);
+
+    TEST_STRING_CONVERT(str16, str);
+    TEST_STRING_CONVERT(str16, wstr);
+    TEST_STRING_CONVERT(str16, str8);
+    TEST_STRING_CONVERT(str16, str32);
+
+    TEST_STRING_CONVERT(str32, str);
+    TEST_STRING_CONVERT(str32, wstr);
+    TEST_STRING_CONVERT(str32, str8);
+    TEST_STRING_CONVERT(str32, str16);
 
     return 0;
 }

@@ -113,7 +113,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         return;
     }
 
-    String selectedLevelStr{};
+    StringView selectedLevelStr{};
     switch (selectedLevel) {
         case D3D_FEATURE_LEVEL_12_2: selectedLevelStr = "D3D_FEATURE_LEVEL_12_2"; break;
         case D3D_FEATURE_LEVEL_12_1: selectedLevelStr = "D3D_FEATURE_LEVEL_12_1"; break;
@@ -126,12 +126,12 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     DXGI_ADAPTER_DESC adapterDesc{};
     m_Adapter->GetDesc(&adapterDesc);
 
-    const auto desc = StringConvert<char>(adapterDesc.Description);
+    const auto desc = StringConvert(adapterDesc.Description);
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 
-    log::Info("selected device: {} ({})", desc.Data(), adapterDesc.DeviceId);
-    log::Info("D3D feature level: {}", selectedLevelStr.Data());
+    log::Info("selected device: {} ({})", desc, adapterDesc.DeviceId);
+    log::Info("D3D feature level: {}", selectedLevelStr);
     log::Info("gpu memory: {} ({:4.2f} GB)", gpumem, (float)gpumem / (float)(1 << 30));
     log::Info("system Memory: {} ({:4.2f} GB)", sysmem, (float)sysmem / (float)(1 << 30));
 }
