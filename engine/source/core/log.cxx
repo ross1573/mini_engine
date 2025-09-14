@@ -31,6 +31,7 @@ void Message(StringView cat, StringView msg, Args&&... args)
         FormatTo(str, msg, ForwardArg<Args>(args)...);
     }
 
+    str.Push('\n');
     PlatformLog(str.Data());
 }
 
