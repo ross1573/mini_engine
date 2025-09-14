@@ -60,7 +60,7 @@ PUBLIC
         type/type_traits.cxx
 
 PRIVATE
-    impl/assert.cpp
+    impl/assert_util.cpp
 
     $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>

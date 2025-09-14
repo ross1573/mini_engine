@@ -1,5 +1,6 @@
 #include <d3dcommon.h>
-#include <source_location>
+
+#include "assert_util.h"
 
 import mini.core;
 import convert_utf;
@@ -12,10 +13,6 @@ wchar_t wassertMsg[bufSize];
 wchar_t wfuncInfo[bufSize];
 
 namespace mini::detail {
-
-int ConcatStrings(char* dest, int destLen, char const** src, int srcCount);
-int IntegerToASCII(char* dest, int destLen, int src);
-int SourceLocationToString(char* dest, int destLen, std::source_location const& loc);
 
 wchar_t* AssertMsg(char const* expr, char const* msg)
 {

@@ -1,3 +1,5 @@
+#include "assert_util.h"
+
 import mini.core;
 
 constexpr int bufSize = DEBUG * 1023 + 1;
@@ -6,10 +8,6 @@ char assertMsg[bufSize] = { 0 };
 char funcInfo[bufSize] = { 0 };
 
 namespace mini::detail {
-
-int ConcatStrings(char* dest, int destLen, char const** src, int srcCount);
-int IntegerToASCII(char* dest, int destLen, int src);
-int SourceLocationToString(char* dest, int destLen, std::source_location const& loc);
 
 char* AssertMsg(char const* expr, char const* msg)
 {
