@@ -19,10 +19,10 @@ wchar_t* AssertMsg(char const* expr, char const* msg)
     char const* str[3] = { expr, msg == nullptr ? nullptr : "\nMessage: ", msg };
 
     int len = (int)ConcatStrings(assertMsg, bufSize, str, 3);
-    int cvtLen = (int)ConvertLength(assertMsg, assertMsg + len, (wchar_t)0);
+    int cvtLen = (int)utf::ConvertLength(assertMsg, assertMsg + len, (wchar_t)0);
     int wlen = cvtLen < bufSize ? cvtLen : bufSize;
 
-    Convert(assertMsg, assertMsg + len, wassertMsg, wassertMsg + wlen);
+    utf::Convert(assertMsg, assertMsg + len, wassertMsg, wassertMsg + wlen);
     wassertMsg[wlen - 1] = '\0';
 
     return wassertMsg;
@@ -31,10 +31,10 @@ wchar_t* AssertMsg(char const* expr, char const* msg)
 wchar_t* AssertLoc(std::source_location const& loc)
 {
     int len = (int)SourceLocationToString(funcInfo, bufSize, loc);
-    int cvtLen = (int)ConvertLength(funcInfo, funcInfo + len, (wchar_t)0);
+    int cvtLen = (int)utf::ConvertLength(funcInfo, funcInfo + len, (wchar_t)0);
     int wlen = cvtLen < bufSize ? cvtLen : bufSize;
 
-    Convert(funcInfo, funcInfo + len, wfuncInfo, wfuncInfo + wlen);
+    utf::Convert(funcInfo, funcInfo + len, wfuncInfo, wfuncInfo + wlen);
     wfuncInfo[wlen - 1] = '\0';
     return wfuncInfo;
 }

@@ -48,11 +48,15 @@ public:
     constexpr ConstPtr Data() const noexcept;
 
     constexpr BasicString<T, AllocT> ToString() const;
-    constexpr BasicString<T, AllocT> ToString() && noexcept;
-
     constexpr operator BasicString<T, AllocT>() const;
-    constexpr operator BasicString<T, AllocT>() && noexcept;
     constexpr operator BasicStringView<T>() const noexcept;
+
+// https://stackoverflow.com/questions/78347691/overloading-ref-qualified-member-function-without-ref-qualifier
+// seem like it has been valid recently, and msvc hasn't updated it yet.
+#if !(MSVC)
+    constexpr BasicString<T, AllocT> ToString() && noexcept;
+    constexpr operator BasicString<T, AllocT>() && noexcept;
+#endif
 
     constexpr BasicStringConvert& operator=(BasicStringConvert&&) noexcept = default;
 
@@ -116,21 +120,9 @@ inline constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString(
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() && noexcept
-{
-    return MoveArg(m_Data);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() const
 {
     return m_Data;
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() && noexcept
-{
-    return MoveArg(m_Data);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -138,6 +130,20 @@ inline constexpr BasicStringConvert<T, AllocT>::operator BasicStringView<T>() co
 {
     return static_cast<BasicStringView<T>>(m_Data);
 }
+
+#if !(MSVC)
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() && noexcept
+{
+    return MoveArg(m_Data);
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() && noexcept
+{
+    return MoveArg(m_Data);
+}
+#endif
 
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>

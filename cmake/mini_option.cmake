@@ -18,6 +18,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd4514 # unreferenced inline function has been removed
         /wd4582 # union constructor is not implicitly called
         /wd4583 # union destructor is not implicitly called
+        /wd4623 # default constructor was implicitly defined as deleted
         /wd4625 # copy constructor implicitly deleted
         /wd4626 # operator implicitly deleted
         /wd4686 # a class template specialization wasn't defined before it was used in a return type
