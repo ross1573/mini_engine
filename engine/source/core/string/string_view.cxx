@@ -77,7 +77,7 @@ public:
     constexpr BasicStringView& operator=(BasicStringView const&) noexcept;
     constexpr BasicStringView& operator=(ConstPtr) noexcept;
 
-    explicit constexpr operator std::basic_string_view<T>() const noexcept;
+    constexpr operator std::basic_string_view<T>() const noexcept;
 
     constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
 

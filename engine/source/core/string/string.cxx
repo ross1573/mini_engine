@@ -1,6 +1,7 @@
 module;
 
 #include <string>
+#include <string_view>
 
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
@@ -198,7 +199,8 @@ public:
     constexpr BasicString& operator+=(U const&);
 
     constexpr operator BasicStringView<T>() const noexcept;
-    explicit constexpr operator std::basic_string<T>() const;
+    constexpr operator std::basic_string<T>() const;
+    constexpr operator std::basic_string_view<T>() const noexcept;
 
     template <typename TraitsT, typename StdAllocT>
     constexpr BasicString(std::basic_string<T, TraitsT, StdAllocT> const&,
@@ -1517,6 +1519,12 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::operator std::basic_string<T>() const
 {
     return std::basic_string<T>(Data(), Size());
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr BasicString<T, AllocT>::operator std::basic_string_view<T>() const noexcept
+{
+    return std::basic_string_view<T>(Data(), Size());
 }
 
 export template <CharT T, typename TraitsT, typename StdAllocT,

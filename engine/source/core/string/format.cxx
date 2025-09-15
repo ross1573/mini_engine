@@ -8,44 +8,55 @@ import fmt;
 
 namespace mini {
 
-template <CharT T, AllocatorT<T> AllocT>
-class StringAppender {
-private:
-    BasicString<T, AllocT>& m_Str;
+inline constexpr auto WriteFormatError(String& to, StringView const& msg,
+                                       fmt::format_error const& error)
+{
+    StringView errorMsg = error.what();
+    StringView pre = errorMsg.IsEmpty() ? "format failed" : "format failed with error: ";
+    SizeT totalLen = to.Size() + msg.Size() + pre.Size() + errorMsg.Size() + 3;
 
-public:
-    constexpr StringAppender(BasicString<T, AllocT>& buf) noexcept
-        : m_Str(buf)
-    {
-    }
-
-    constexpr StringAppender& operator=(T c)
-    {
-        m_Str.Push(c);
-        return *this;
-    }
-
-    constexpr StringAppender& operator*() noexcept { return *this; }
-    constexpr StringAppender& operator++() noexcept { return *this; }
-    constexpr StringAppender operator++(int) const noexcept { return *this; }
-};
+    to.Reserve(totalLen);
+    to.Append(msg);
+    to.Append(" (", 2);
+    to.Append(pre);
+    to.Append(errorMsg);
+    to.Push(')');
+    return to;
+}
 
 export template <typename... Args>
 inline constexpr void FormatTo(String& to, StringView msg, Args&&... args)
 {
-    fmt::vformat_to(StringAppender(to), msg.Data(), fmt::make_format_args(args...));
+    auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
+    auto buf = fmt::memory_buffer();
+
+    try {
+        fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
+    }
+    catch (fmt::format_error const& error) {
+        WriteFormatError(to, msg, error);
+        return;
+    }
+
+    return to.Append(buf.data(), buf.size());
 }
 
 export template <typename... Args>
 inline constexpr String Format(StringView msg, Args&&... args)
 {
-    constexpr SizeT msgDefaultSize = 1 << 6;
-    SizeT len = (msg.Size() + msgDefaultSize - 1) &
-                ~static_cast<SizeT>(msgDefaultSize - 1); // round up to default size
+    auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
+    auto buf = fmt::memory_buffer();
 
-    String string(len);
-    FormatTo(string, msg, ForwardArg<Args>(args)...);
-    return string;
+    try {
+        fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
+    }
+    catch (fmt::format_error const& error) {
+        String result;
+        WriteFormatError(result, msg, error);
+        return result;
+    }
+
+    return { buf.data(), buf.size() };
 }
 
 export template <CharT T, AllocatorT<T> AllocT>

@@ -12,16 +12,14 @@ namespace mini::log {
 export template <typename... Args>
 void Message(StringView cat, StringView msg, Args&&... args)
 {
-    constexpr SizeT msgDefaultSize = 1 << 6;
-    SizeT len = (cat.Size() + msg.Size() + msgDefaultSize + 2) &
-                ~static_cast<SizeT>(msgDefaultSize - 1); // round up to default size
+    String str;
+    SizeT catSize = cat.Size();
 
-    String str(len);
-
-    if (cat.Size() != 0) {
+    if (catSize != 0) {
+        str.Reserve(3 + catSize);
         str.Push('[');
         str.Append(cat);
-        str.Append("] ");
+        str.Append("] ", 2);
     }
 
     if constexpr (sizeof...(args) == 0) {
