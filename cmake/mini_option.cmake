@@ -25,6 +25,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd4702 # unreachable code (from if constexpr)
         /wd4710 # function not inlined
         /wd4711 # selected for automatic inline
+        /wd4746 # volatile
         /wd4820 # implicit padding
         /wd5026 # implicitly deleted move constructor
         /wd5027 # implicitly deleted move assign operator
