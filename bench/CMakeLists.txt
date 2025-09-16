@@ -25,7 +25,7 @@ function (no_arg_benchmark name)
     build_source_tree(benchmark.${name})
 endfunction()
 
-add_module(mini.benchmark)
+add_module(mini.benchmark SHARED)
 
 module_sources(mini.benchmark
 PUBLIC

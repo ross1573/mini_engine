@@ -1,15 +1,17 @@
 include(build_source_tree)
 
 macro (include_static name)
+    set(prev_build_type ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS FALSE)
     include(${name})
-    set(BUILD_SHARED_LIBS TRUE)
+    set(BUILD_SHARED_LIBS ${prev_build_type})
 endmacro()
 
 macro (include_shared name)
+    set(prev_build_type ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS TRUE)
     include(${name})
-    set(BUILD_SHARED_LIBS FALSE)
+    set(BUILD_SHARED_LIBS ${prev_build_type})
 endmacro()
 
 function (module_sources name)
