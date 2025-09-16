@@ -8,24 +8,24 @@ export import mini.core;
 
 export namespace mini { // clang-format off
 
-inline SizeT ctor = 0;
-inline SizeT dtor = 0;
-inline SizeT copyCtor = 0;
-inline SizeT moveCtor = 0;
-inline SizeT copyAssign = 0;
-inline SizeT moveAssign = 0;
-inline SizeT debugAllocCnt = 0;
+TEST_API inline SizeT ctor = 0;
+TEST_API inline SizeT dtor = 0;
+TEST_API inline SizeT copyCtor = 0;
+TEST_API inline SizeT moveCtor = 0;
+TEST_API inline SizeT copyAssign = 0;
+TEST_API inline SizeT moveAssign = 0;
+TEST_API inline SizeT debugAllocCnt = 0;
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::milliseconds MilliSecT;
 typedef std::chrono::microseconds MicroSecT;
 typedef Clock::time_point Time;
 
-inline auto microSecondsCast = [](auto diff) -> SizeT {
+TEST_API inline auto microSecondsCast = [](auto diff) -> SizeT {
     return (SizeT)std::chrono::duration_cast<MicroSecT>(diff).count();
 };
 
-inline auto millisecondsCast = [](auto diff) -> SizeT {
+TEST_API inline auto millisecondsCast = [](auto diff) -> SizeT {
     return (SizeT)std::chrono::duration_cast<MilliSecT>(diff).count();
 };
 
@@ -41,7 +41,7 @@ inline constexpr RemoveRefT<T>&& MakeRRef(T&& value)
     return static_cast<RemoveRefT<T>&&>(value);
 }
 
-inline void InitializeCounter()
+TEST_API inline void InitializeCounter()
 {
     auto _ = Clock::now();
     _ = Clock::now();
@@ -55,7 +55,7 @@ inline void InitializeCounter()
     dtor = 0;
 }
 
-inline void PrintCounter(StringView msg, SizeT time = 0)
+TEST_API inline void PrintCounter(StringView msg, SizeT time = 0)
 {
     log::Message("", "\tContainer: {} / {}", msg, time);
     log::Message("", "\t\tConstructor: {}", ctor);
@@ -66,7 +66,7 @@ inline void PrintCounter(StringView msg, SizeT time = 0)
     log::Message("", "\t\tDestructor: {}", dtor);
 }
 
-struct Debug {
+struct TEST_API Debug {
     Debug() { log::Message("DEBUG", "constructor"); }
     ~Debug() { log::Message("DEBUG", "destructor"); }
     Debug(Debug const&) { log::Message("DEBUG", "copy constructor"); }
@@ -85,7 +85,7 @@ struct DebugAlloc : public Allocator<T> {
     DebugAlloc& operator=(DebugAlloc&&) noexcept = default;
 };
 
-struct Foo {
+struct TEST_API Foo {
     BasicString<char> str;
     uint64 a[16];
 
@@ -116,7 +116,7 @@ struct Foo {
     bool operator==(Foo const& o) const noexcept { return str == o.str; }
 };
 
-struct ConstexprFoo {
+struct TEST_API ConstexprFoo {
     BasicString<char> str;
 
     constexpr ConstexprFoo() = default;
@@ -126,7 +126,7 @@ struct ConstexprFoo {
     constexpr bool operator==(ConstexprFoo const& o) const noexcept { return str == o.str; }
 };
 
-struct FooAlloc {
+struct TEST_API FooAlloc {
     typedef Foo Value;
     typedef Foo* Ptr;
 
@@ -142,7 +142,7 @@ struct FooAlloc {
     void Deallocate(Ptr ptr, SizeT s) { Allocator<Foo>{}.Deallocate(ptr, s); }
 };
 
-struct FooDel {
+struct TEST_API FooDel {
     void operator()(Foo* ptr) { delete ptr; }
 };
 

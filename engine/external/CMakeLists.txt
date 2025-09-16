@@ -1,6 +1,6 @@
-# silence messages from external source
-set(CMAKE_MESSAGE_LOG_LEVEL WARNING)
-set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
+set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
+set(CMAKE_CXX_SCAN_FOR_MODULES FALSE) # most external libraries aren't compatible with c++ modules yet
+set(BUILD_SHARED_LIBS FALSE) # build external as static library
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")

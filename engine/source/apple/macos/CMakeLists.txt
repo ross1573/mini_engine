@@ -1,4 +1,4 @@
-add_module(mini.macos SHARED)
+add_module(mini.macos)
 
 module_sources(mini.macos
 PUBLIC

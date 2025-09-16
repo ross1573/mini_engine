@@ -1,4 +1,4 @@
-add_module(mini.windows SHARED)
+add_module(mini.windows)
 
 include(windows_header_define)
 

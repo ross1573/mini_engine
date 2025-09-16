@@ -1,4 +1,4 @@
-add_module(mini.engine SHARED)
+add_module(mini.engine)
 
 module_sources(mini.engine
 PUBLIC

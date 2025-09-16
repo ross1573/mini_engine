@@ -1,4 +1,4 @@
-add_module(mini.graphics SHARED)
+add_module(mini.graphics)
 
 module_sources(mini.graphics
 PUBLIC

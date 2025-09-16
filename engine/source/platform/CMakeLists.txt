@@ -1,4 +1,4 @@
-add_module(mini.platform SHARED)
+add_module(mini.platform)
 
 module_sources(mini.platform
 PUBLIC

@@ -1,6 +1,6 @@
 include(mini_define)
 include(mini_option)
-include(build_source_tree)
+include(mini_module)
 
 function (no_arg_test name)
     add_executable(test.${name} ${name}.cpp)
@@ -18,28 +18,24 @@ function (no_arg_test name)
     build_source_tree(test.${name})
 endfunction()
 
-add_library(mini.test STATIC)
+add_module(mini.test SHARED)
 
-target_sources(mini.test
+module_sources(mini.test
 PUBLIC
     test_macro.h
 
 PUBLIC
-FILE_SET test TYPE CXX_MODULES
-FILES
-    test.cxx
+    FILE_SET test TYPE CXX_MODULES
+    FILES
+        test.cxx
 )
 
-target_include_directories(mini.test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_precompile_headers(mini.test PUBLIC test_macro.h)
+target_precompile_headers(mini.test 
+PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_macro.h
+)
+
 target_link_libraries(mini.test PUBLIC mini.core)
-
-set_target_properties(mini.test PROPERTIES 
-    FOLDER module
-    OUTPUT_NAME $<IF:$<CONFIG:Debug>,minid,mini>.test
-)
-
-build_source_tree(mini.test)
 
 add_subdirectory(container)
 add_subdirectory(string)

@@ -4,7 +4,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN FALSE)
 
-add_module(mini.core SHARED)
+add_module(mini.core)
 
 module_sources(mini.core
 PUBLIC

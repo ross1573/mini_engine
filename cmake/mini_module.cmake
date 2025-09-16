@@ -1,19 +1,41 @@
 include(build_source_tree)
 
+macro (include_static name)
+    set(BUILD_SHARED_LIBS FALSE)
+    include(${name})
+    set(BUILD_SHARED_LIBS TRUE)
+endmacro()
+
+macro (include_shared name)
+    set(BUILD_SHARED_LIBS TRUE)
+    include(${name})
+    set(BUILD_SHARED_LIBS FALSE)
+endmacro()
+
 function (module_sources name)
     target_sources(${ARGV})
     build_source_tree(${name})
 endfunction()
 
-function (add_module name type)
+function (add_module name)
     string(REGEX REPLACE "mini[._]" "" api ${name})
     string(REPLACE "." "_" api ${api})
     string(REPLACE "." "_" header ${name})
 
-    set(out_name ${ENGINE_MODULE_PREFIX}.${api})
+    set(out_name ${BUILD_MODULE_PREFIX}.${api})
     set(api ${api}_API)
     set(header "${header}.generated.h")
     string(TOUPPER ${api} api)
+    
+    if (${ARGC} GREATER 1)
+        list(GET ARGN 0 first_arg)
+        string(TOUPPER ${first_arg} type)
+    endif()
+
+    if (type MATCHES "STATIC|SHARED")
+        list(POP_FRONT ARGN)
+        math(EXPR ${ARGC} "${ARGC}-1")
+    endif()
 
     add_library(${name} ${type})
 
@@ -40,7 +62,7 @@ function (add_module name type)
         OUTPUT_NAME ${out_name}
     )
 
-    if (${ARGC} GREATER 2)
+    if (${ARGC} GREATER 1)
         module_sources(${name} ${ARGN})
     endif()
 endfunction()

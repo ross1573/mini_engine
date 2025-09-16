@@ -1,6 +1,5 @@
 #include <string_view>
 
-#define DEBUG_TEST_STRING
 #include "string_define.h"
 
 import mini.test;

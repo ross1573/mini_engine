@@ -1,7 +1,7 @@
 include(mini_define)
 include(mini_option)
-include(build_source_tree)
-include(GoogleBenchmark)
+include(mini_module)
+include_static(GoogleBenchmark)
 
 function (no_arg_benchmark name)
     add_executable(benchmark.${name} ${name}.cpp)
@@ -25,13 +25,13 @@ function (no_arg_benchmark name)
     build_source_tree(benchmark.${name})
 endfunction()
 
-add_library(mini.benchmark STATIC)
+add_module(mini.benchmark)
 
-target_sources(mini.benchmark
+module_sources(mini.benchmark
 PUBLIC
-FILE_SET benchmark TYPE CXX_MODULES
-FILES
-    benchmark.cxx
+    FILE_SET benchmark TYPE CXX_MODULES
+    FILES
+        benchmark.cxx
 )
 
 target_link_libraries(mini.benchmark 
@@ -39,13 +39,5 @@ PUBLIC
     mini.core
     benchmark::benchmark
 )
-
-set_target_properties(mini.benchmark
-PROPERTIES
-    FOLDER module
-    OUTPUT_NAME $<IF:$<CONFIG:Debug>,minid,mini>.benchmark
-)
-
-build_source_tree(mini.benchmark)
 
 add_subdirectory(container)
