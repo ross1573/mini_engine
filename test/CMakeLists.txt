@@ -7,13 +7,18 @@ function (no_arg_test name)
     add_test(NAME ${name} COMMAND $<TARGET_FILE:test.${name}>)
 
     target_link_libraries(test.${name} PRIVATE mini.test)
-    set_target_properties(test.${name} PROPERTIES 
+    set_target_properties(test.${name} PROPERTIES
         FOLDER test
         OUTPUT_NAME $<IF:$<CONFIG:Debug>,testd,test>.${name}
-        ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/test
-        LIBRARY_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/test
-        RUNTIME_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/bin/test
     )
+
+    if (NOT WIN32)
+        set_target_properties(test.${name} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/test
+            LIBRARY_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/test
+            RUNTIME_OUTPUT_DIRECTORY ${ENGINE_RUNTIME_DIR}/test
+        )
+    endif()
 
     build_source_tree(test.${name})
 endfunction()

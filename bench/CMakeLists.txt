@@ -10,10 +10,15 @@ function (no_arg_benchmark name)
     set_target_properties(benchmark.${name} PROPERTIES
         FOLDER bench
         OUTPUT_NAME $<IF:$<CONFIG:Debug>,benchd,bench>.${name}
-        ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/bench
-        LIBRARY_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/lib/bench
-        RUNTIME_OUTPUT_DIRECTORY ${ENGINE_PROJECT_DIR}/bin/bench
     )
+
+    if (NOT WIN32)
+        set_target_properties(benchmark.${name} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/bench
+            LIBRARY_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/bench
+            RUNTIME_OUTPUT_DIRECTORY ${ENGINE_RUNTIME_DIR}/bench
+        )
+    endif()
 
     set(OPT_RESULT_PATH ${ENGINE_PROJECT_DIR}/bin/bench/benchmark.${name}.yaml)
     target_compile_options(benchmark.${name}
@@ -25,7 +30,7 @@ function (no_arg_benchmark name)
     build_source_tree(benchmark.${name})
 endfunction()
 
-add_module(mini.benchmark SHARED)
+add_module(mini.benchmark STATIC)
 
 module_sources(mini.benchmark
 PUBLIC
