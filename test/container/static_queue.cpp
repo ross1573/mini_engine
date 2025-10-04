@@ -71,11 +71,21 @@ static constexpr int TestCtor()
 
     if constexpr (CopyableT<T>) {
         StaticQueue<T, 20> arr;
-        for (int i = 0; i < 20; ++i) arr.Enqueue(FactoryT{}(i));
+        int count = 0;
+        for (int i = 0; i < 20; ++i) arr.Enqueue(FactoryT{}(++count));
 
         TEST_ENSURE((StaticQueue<T, 20>(arr) == arr));
         TEST_ENSURE((StaticQueue<T, 20>(StaticQueue<T, 20>(arr)) == arr));
         TEST_ENSURE((StaticQueue<T, 20>(arr.Begin(), arr.End()) == arr));
+
+        InitializerList list = {
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+        };
+
+        TEST_ENSURE(TestQueue(StaticQueue<T, 4>(list), Array<T>(list)) == 0);
     }
 
     return 0;
@@ -109,6 +119,20 @@ static constexpr int TestModify()
         TEST_ENSURE(que == que2);
 
         que.EnqueueRange(que2.Begin(), que2.End());
+
+        InitializerList list = {
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+        };
+
+        que.EnqueueRange(list);
+        arr.Append(list);
+        TEST_ENSURE(TestQueue(que, arr) == 0);
+
+        que2.Assign(list);
+        TEST_ENSURE(TestQueue(que2, Array<T>(list)) == 0);
     }
     else {
         que.Enqueue(ArgFactoryT{}(++arrcount));

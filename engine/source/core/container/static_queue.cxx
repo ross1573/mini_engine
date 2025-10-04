@@ -39,6 +39,7 @@ public:
     constexpr ~StaticQueue();
     constexpr StaticQueue(StaticQueue const&);
     constexpr StaticQueue(StaticQueue&&) noexcept;
+    constexpr StaticQueue(InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr StaticQueue(Iter, Iter);
 
@@ -47,8 +48,10 @@ public:
         requires ConstructibleFromT<T, Args...>;
     template <ForwardIteratableByT<T> Iter>
     constexpr void EnqueueRange(Iter, Iter);
+    constexpr void EnqueueRange(InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
+    constexpr void Assign(InitializerList<T>);
     constexpr T Dequeue();
     constexpr void RemoveFirst();
     constexpr void RemoveFirst(SizeT);
@@ -80,8 +83,14 @@ public:
 
     constexpr StaticQueue& operator=(StaticQueue const&);
     constexpr StaticQueue& operator=(StaticQueue&&) noexcept;
+    constexpr StaticQueue& operator=(InitializerList<T>);
 
 private:
+    template <typename U>
+    constexpr void EnqueueRangeWithSize(U, U, SizeT);
+    template <typename U>
+    constexpr void AssignRangeWithSize(U, U, SizeT);
+
     constexpr void AssertValidCapacity(SizeT) const noexcept;
     constexpr void AssertValidOffset(SizeT) const noexcept;
     constexpr void AssertValidIterator(ConstIterator) const noexcept;
@@ -105,10 +114,7 @@ inline constexpr StaticQueue<T, N>::~StaticQueue()
 
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
-    : m_Begin(0)
-    , m_End(0)
-    , m_Size(0)
-    , m_Buffer()
+    : m_Buffer()
 {
     memory::ConstructRange(m_Buffer.Data(), other.Begin(), other.End());
     m_Begin = 0;
@@ -118,10 +124,7 @@ inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue const& other)
 
 template <MovableT T, SizeT N>
 inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
-    : m_Begin(0)
-    , m_End(0)
-    , m_Size(0)
-    , m_Buffer()
+    : m_Buffer()
 {
     Iterator otherBegin = other.Begin();
     Iterator otherEnd = other.End();
@@ -134,6 +137,17 @@ inline constexpr StaticQueue<T, N>::StaticQueue(StaticQueue&& other) noexcept
     other.m_Begin = 0;
     other.m_End = 0;
     other.m_Size = 0;
+}
+
+template <MovableT T, SizeT N>
+inline constexpr StaticQueue<T, N>::StaticQueue(InitializerList<T> init)
+    : m_Buffer()
+{
+    AssertValidCapacity(init.size());
+    memory::ConstructRange(m_Buffer.Data(), init.begin(), init.end());
+    m_Begin = 0;
+    m_End = init.size();
+    m_Size = init.size();
 }
 
 template <MovableT T, SizeT N>
@@ -160,7 +174,7 @@ inline constexpr void StaticQueue<T, N>::Enqueue(Args&&... args)
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
+inline constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     switch (distance) {
@@ -170,29 +184,18 @@ constexpr void StaticQueue<T, N>::EnqueueRange(Iter first, Iter last)
         default: break;
     }
 
-    AssertValidCapacity(m_Size + distance);
+    EnqueueRangeWithSize(first, last, distance);
+}
 
-    Ptr end = m_Buffer.Data() + m_End;
-    SizeT backCap = m_Buffer.Capacity() - m_End;
-    if (backCap >= distance) {
-        memory::ConstructRange(end, first, last);
-        m_End += distance;
-    }
-    else {
-        SizeT frontInsertCnt = distance - backCap;
-        Ptr begin = m_Buffer.Data();
-
-        memory::ConstructRange(end, first, first + (OffsetT)backCap);
-        memory::ConstructRange(begin, first + (OffsetT)backCap, last);
-        m_End = frontInsertCnt;
-    }
-
-    m_Size += distance;
+template <MovableT T, SizeT N>
+inline constexpr void StaticQueue<T, N>::EnqueueRange(InitializerList<T> init)
+{
+    EnqueueRangeWithSize(init.begin(), init.end(), init.size());
 }
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
+inline constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
     if (distance == 0) [[unlikely]] {
@@ -200,21 +203,19 @@ constexpr void StaticQueue<T, N>::Assign(Iter first, Iter last)
         return;
     }
 
-    AssertValidCapacity(distance);
-    OffsetT size = (OffsetT)m_Size;
-    Iterator begin = Begin();
+    AssignRangeWithSize(first, last, distance);
+}
 
-    if (distance > m_Size) {
-        memory::CopyRange(begin, first, first + size);
-        memory::ConstructRange(begin + size, first + size, last);
-    }
-    else {
-        memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + (OffsetT)distance, End());
+template <MovableT T, SizeT N>
+inline constexpr void StaticQueue<T, N>::Assign(InitializerList<T> init)
+{
+    SizeT size = init.size();
+    if (size == 0) [[unlikely]] {
+        Clear();
+        return;
     }
 
-    m_End = (m_Begin + distance) % m_Buffer.Capacity();
-    m_Size = distance;
+    AssignRangeWithSize(init.begin(), init.end(), size);
 }
 
 template <MovableT T, SizeT N>
@@ -467,6 +468,58 @@ inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(StaticQueue&& o
     Assign(MoveIterator(other.Begin()), MoveIterator(other.End()));
     other.Clear();
     return *this;
+}
+
+template <MovableT T, SizeT N>
+inline constexpr StaticQueue<T, N>& StaticQueue<T, N>::operator=(InitializerList<T> init)
+{
+    Assign(init);
+    return *this;
+}
+
+template <MovableT T, SizeT N>
+template <typename U>
+inline constexpr void StaticQueue<T, N>::EnqueueRangeWithSize(U first, U last, SizeT len)
+{
+    AssertValidCapacity(m_Size + len);
+    Ptr end = m_Buffer.Data() + m_End;
+    SizeT backCap = m_Buffer.Capacity() - m_End;
+
+    if (backCap >= len) {
+        memory::ConstructRange(end, first, last);
+        m_End += len;
+    }
+    else {
+        SizeT frontInsertCnt = len - backCap;
+        Ptr begin = m_Buffer.Data();
+
+        memory::ConstructRange(end, first, first + (OffsetT)backCap);
+        memory::ConstructRange(begin, first + (OffsetT)backCap, last);
+        m_End = frontInsertCnt;
+    }
+
+    m_Size += len;
+}
+
+template <MovableT T, SizeT N>
+template <typename U>
+inline constexpr void StaticQueue<T, N>::AssignRangeWithSize(U first, U last, SizeT len)
+{
+    AssertValidCapacity(len);
+    OffsetT size = (OffsetT)m_Size;
+    Iterator begin = Begin();
+
+    if (len > m_Size) {
+        memory::CopyRange(begin, first, first + size);
+        memory::ConstructRange(begin + size, first + size, last);
+    }
+    else {
+        memory::CopyRange(begin, first, last);
+        memory::DestructRange(begin + (OffsetT)len, End());
+    }
+
+    m_End = (m_Begin + len) % m_Buffer.Capacity();
+    m_Size = len;
 }
 
 template <MovableT T, SizeT N>

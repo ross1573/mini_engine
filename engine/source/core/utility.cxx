@@ -1,8 +1,15 @@
+module;
+
+#include <initializer_list>
+
 export module mini.core:utility;
 
 import :type;
 
 namespace mini {
+
+export template <typename T>
+using InitializerList = std::initializer_list<T>;
 
 export template <typename T>
 inline constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept

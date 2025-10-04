@@ -37,6 +37,7 @@ public:
     constexpr ~StaticArray();
     constexpr StaticArray(StaticArray const&);
     constexpr StaticArray(StaticArray&&) noexcept;
+    constexpr StaticArray(InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr StaticArray(Iter, Iter);
 
@@ -52,12 +53,16 @@ public:
 
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter, Iter);
+    constexpr void Assign(InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     constexpr void Append(Iter, Iter);
+    constexpr void Append(InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(SizeT, Iter, Iter);
+    constexpr void InsertRange(SizeT, InitializerList<T>);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(ConstIterator, Iter, Iter);
+    constexpr void InsertRange(ConstIterator, InitializerList<T>);
 
     constexpr void RemoveLast();
     constexpr void RemoveLast(SizeT);
@@ -97,8 +102,16 @@ public:
 
     constexpr StaticArray& operator=(StaticArray const&);
     constexpr StaticArray& operator=(StaticArray&&) noexcept;
+    constexpr StaticArray& operator=(InitializerList<T>);
 
 private:
+    template <typename U>
+    constexpr void AssignRangeWithSize(U, U, SizeT);
+    template <typename U>
+    constexpr void AppendRangeWithSize(U, U, SizeT);
+    template <typename U>
+    constexpr void InsertRangeWithSize(SizeT, U, U, SizeT);
+
     constexpr void AssertValidCapacity(SizeT) const noexcept;
     constexpr void AssertValidIndex(SizeT) const noexcept;
     constexpr void AssertValidIterator(ConstIterator) const noexcept;
@@ -135,6 +148,14 @@ inline constexpr StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept
     memory::DestructRange(otherBegin, otherEnd);
     m_Size = other.m_Size;
     other.m_Size = 0;
+}
+
+template <MovableT T, SizeT N>
+inline constexpr StaticArray<T, N>::StaticArray(InitializerList<T> init)
+{
+    AssertValidCapacity(init.size());
+    memory::ConstructRange(m_Buffer.Data(), init.begin(), init.end());
+    m_Size = init.size();
 }
 
 template <MovableT T, SizeT N>
@@ -200,20 +221,19 @@ inline constexpr void StaticArray<T, N>::Assign(Iter first, Iter last)
         return;
     }
 
-    AssertValidCapacity(distance);
-    OffsetT size = (OffsetT)m_Size;
-    Ptr begin = m_Buffer.Data();
+    AssignRangeWithSize(first, last, distance);
+}
 
-    if (m_Size < distance) {
-        memory::CopyRange(begin, first, first + size);
-        memory::ConstructRange(begin + size, first + size, last);
-    }
-    else {
-        memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + distance, begin + size);
+template <MovableT T, SizeT N>
+inline constexpr void StaticArray<T, N>::Assign(InitializerList<T> init)
+{
+    SizeT size = init.size();
+    if (size == 0) [[unlikely]] {
+        Clear();
+        return;
     }
 
-    m_Size = distance;
+    AssignRangeWithSize(init.begin(), init.end(), size);
 }
 
 template <MovableT T, SizeT N>
@@ -221,32 +241,52 @@ template <ForwardIteratableByT<T> Iter>
 constexpr void StaticArray<T, N>::Append(Iter first, Iter last)
 {
     SizeT distance = Distance(first, last);
-    switch (distance) {
-        [[unlikely]] case 0:
-            return;
-        case 1:  Push(ForwardArg<typename Iter::Value>(*first)); return;
-        default: break;
-    }
+    AppendRangeWithSize(first, last, distance);
+}
 
-    SizeT newSize = m_Size + distance;
-    AssertValidCapacity(newSize);
-    memory::ConstructRange(m_Buffer.Data() + m_Size, first, last);
-    m_Size += distance;
+template <MovableT T, SizeT N>
+inline constexpr void StaticArray<T, N>::Append(InitializerList<T> init)
+{
+    AppendRangeWithSize(init.begin(), init.end(), init.size());
 }
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr void StaticArray<T, N>::InsertRange(SizeT index, Iter first, Iter last)
 {
-    InsertRange(Begin() + (OffsetT)index, first, last);
+    if (index == m_Size) {
+        Append(first, last);
+        return;
+    }
+
+    SizeT distance = Distance(first, last);
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:  Insert(index, ForwardArg<typename Iter::Value>(*first)); return;
+        default: break;
+    }
+
+    InsertRangeWithSize(index, first, last, distance);
+}
+
+template <MovableT T, SizeT N>
+inline constexpr void StaticArray<T, N>::InsertRange(SizeT index, InitializerList<T> init)
+{
+    if (index == m_Size) {
+        Append(init);
+        return;
+    }
+
+    InsertRangeWithSize(index, init.begin(), init.end(), init.size());
 }
 
 template <MovableT T, SizeT N>
 template <ForwardIteratableByT<T> Iter>
 constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, Iter last)
 {
-    OffsetT locDiff = iter - Begin();
-    if (locDiff == (OffsetT)m_Size) {
+    SizeT locDiff = static_cast<SizeT>(iter - Begin());
+    if (locDiff == m_Size) {
         Append(first, last);
         return;
     }
@@ -259,25 +299,19 @@ constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Iter first, It
         default: break;
     }
 
-    SizeT newSize = m_Size + distance;
-    AssertValidCapacity(newSize);
+    InsertRangeWithSize(locDiff, first, last, distance);
+}
 
-    Ptr begin = m_Buffer.Data();
-    Ptr loc = begin + locDiff;
-    Ptr end = begin + (OffsetT)m_Size;
-
-    if (static_cast<SizeT>(end - loc) > distance) {
-        memory::MoveConstructBackward(end + distance, end - distance, end);
-        memory::MoveBackward(end, loc, end - distance);
-        memory::DestructRange(loc, loc + distance);
-    }
-    else {
-        memory::MoveConstructBackward(end + distance, loc, end);
-        memory::DestructRange(loc, end);
+template <MovableT T, SizeT N>
+inline constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, InitializerList<T> init)
+{
+    SizeT locDiff = static_cast<SizeT>(iter - Begin());
+    if (locDiff == m_Size) {
+        Append(init);
+        return;
     }
 
-    m_Size += distance;
-    memory::ConstructRange(loc, first, last);
+    InsertRangeWithSize(locDiff, init.begin(), init.end(), init.size());
 }
 
 template <MovableT T, SizeT N>
@@ -553,6 +587,71 @@ inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(StaticArray&& o
     Assign(MoveIterator(other.Begin()), MoveIterator(other.End()));
     other.Clear();
     return *this;
+}
+
+template <MovableT T, SizeT N>
+inline constexpr StaticArray<T, N>& StaticArray<T, N>::operator=(InitializerList<T> init)
+{
+    Assign(init);
+    return *this;
+}
+
+template <MovableT T, SizeT N>
+template <typename U>
+inline constexpr void StaticArray<T, N>::AssignRangeWithSize(U first, U last, SizeT len)
+{
+    AssertValidCapacity(len);
+
+    OffsetT size = (OffsetT)m_Size;
+    Ptr begin = m_Buffer.Data();
+
+    if (m_Size < len) {
+        memory::CopyRange(begin, first, first + size);
+        memory::ConstructRange(begin + size, first + size, last);
+    }
+    else {
+        memory::CopyRange(begin, first, last);
+        memory::DestructRange(begin + len, begin + size);
+    }
+
+    m_Size = len;
+}
+
+template <MovableT T, SizeT N>
+template <typename U>
+inline constexpr void StaticArray<T, N>::AppendRangeWithSize(U first, U last, SizeT len)
+{
+    SizeT newSize = m_Size + len;
+    AssertValidCapacity(newSize);
+    memory::ConstructRange(m_Buffer.Data() + m_Size, first, last);
+    m_Size = newSize;
+}
+
+template <MovableT T, SizeT N>
+template <typename U>
+inline constexpr void StaticArray<T, N>::InsertRangeWithSize(SizeT index, U first, U last,
+                                                             SizeT len)
+{
+    SizeT newSize = m_Size + len;
+    AssertValidCapacity(newSize);
+    AssertValidIndex(index);
+
+    Ptr begin = m_Buffer.Data();
+    Ptr loc = begin + index;
+    Ptr end = begin + (OffsetT)m_Size;
+
+    if (static_cast<SizeT>(end - loc) > len) {
+        memory::MoveConstructBackward(end + len, end - len, end);
+        memory::MoveBackward(end, loc, end - len);
+        memory::DestructRange(loc, loc + len);
+    }
+    else {
+        memory::MoveConstructBackward(end + len, loc, end);
+        memory::DestructRange(loc, end);
+    }
+
+    m_Size = newSize;
+    memory::ConstructRange(loc, first, last);
 }
 
 template <MovableT T, SizeT N>

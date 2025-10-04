@@ -71,20 +71,24 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));
+    return memory::EqualRange(begin1, end1, begin2, end2);
+}
 
-    if constexpr (RandomAccessIteratorT<T> && RandomAccessIteratorT<U>) {
-        OffsetT diff1 = end1 - begin1;
-        OffsetT diff2 = end2 - begin2;
-        ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value");
+export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
+inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+{
+    ASSERT(CheckRange(begin1, end1));
+    ASSERT(CheckRange(begin2, end2));
 
-        if (diff1 != diff2) {
-            return false;
-        }
+    OffsetT diff1 = end1 - begin1;
+    OffsetT diff2 = end2 - begin2;
+    ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value");
 
-        return memory::EqualRange(begin1, begin2, end2);
+    if (diff1 != diff2) {
+        return false;
     }
 
-    return memory::EqualRange(begin1, end1, begin2, end2);
+    return memory::EqualRange(begin1, begin2, end2);
 }
 
 export template <ForwardIteratorT T, typename U>
@@ -97,21 +101,22 @@ inline constexpr void FillRange(T begin, T end, U const& value)
 export template <ForwardIteratorT T>
 inline constexpr SizeT Distance(T first, T last)
 {
-    if (first == last) {
-        return 0;
-    }
-
     ASSERT(CheckRange(first, last));
-
-    if constexpr (RandomAccessIteratorT<T>) {
-        OffsetT diff = last - first;
-        ASSERT(diff >= 0, "distance cannot be negative value");
-        return static_cast<SizeT>(diff);
-    }
 
     SizeT count = 0;
     for (; first != last; ++count);
     return count;
+}
+
+export template <RandomAccessIteratorT T>
+inline constexpr SizeT Distance(T first, T last)
+{
+    OffsetT diff = last - first;
+
+    ASSERT(CheckRange(first, last));
+    ASSERT(diff >= 0, "distance cannot be negative value");
+
+    return static_cast<SizeT>(diff);
 }
 
 } // namespace mini

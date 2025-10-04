@@ -72,11 +72,21 @@ static constexpr int TestCtor()
 
     if constexpr (CopyableT<T>) {
         StaticArray<T, 20> arr;
-        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{}(i));
+        int count = 0;
+        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{}(++count));
 
         TEST_ENSURE((StaticArray<T, 20>(arr) == arr));
         TEST_ENSURE((StaticArray<T, 20>(StaticArray<T, 20>(arr)) == arr));
         TEST_ENSURE((StaticArray<T, 20>(arr.Begin(), arr.End()) == arr));
+
+        InitializerList list = {
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+        };
+
+        TEST_ENSURE(TestArray(StaticArray<T, 20>(list), std::vector<T>(list)) == 0);
     }
 
     return 0;
@@ -101,6 +111,17 @@ static constexpr int TestPush()
     if constexpr (CopyableT<T>) {
         arr.Append(arr.Begin(), arr.End());
         vec.insert(vec.end(), vec.begin(), vec.end());
+        TEST_ENSURE(TestArray(arr, vec) == 0);
+
+        InitializerList list = {
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+        };
+
+        arr.Append(list);
+        vec.append_range(list);
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 
@@ -152,6 +173,17 @@ static constexpr int TestInsert()
 
         arr.InsertRange(1, arr2.Begin(), arr2.Begin() + 2);
         vec.insert(vec.begin() + 1, arr2.Begin(), arr2.Begin() + 2);
+        TEST_ENSURE(TestArray(arr, vec) == 0);
+
+        InitializerList list = {
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+        };
+
+        arr.InsertRange(2, list);
+        vec.insert(vec.begin() + 2, list);
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 

@@ -83,7 +83,8 @@ template <typename T, typename FactoryT>
 
     if constexpr (CopyableT<T>) {
         Array<T> arr;
-        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{}(i));
+        int count = 0;
+        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{}(++count));
 
         TEST_ENSURE(Array<T>(arr) == arr);
         TEST_ENSURE(Array<T>(arr, alloc) == arr);
@@ -91,6 +92,15 @@ template <typename T, typename FactoryT>
         TEST_ENSURE(Array<T>(Array<T>(arr), alloc) == arr);
         TEST_ENSURE(Array<T>(arr.Begin(), arr.End()) == arr);
         TEST_ENSURE(Array<T>(arr.Begin(), arr.End(), alloc) == arr);
+
+        InitializerList list = {
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+        };
+
+        TEST_ENSURE(TestArray(Array<T>(list), std::vector<T>(list)) == 0);
     }
 
     return 0;
@@ -115,6 +125,17 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
     if constexpr (CopyableT<T>) {
         arr.Append(arr.Begin(), arr.End());
         vec.insert(vec.end(), vec.begin(), vec.end());
+        TEST_ENSURE(TestArray(arr, vec) == 0);
+
+        InitializerList list = {
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+        };
+
+        arr.Append(list);
+        vec.append_range(list);
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 
@@ -167,6 +188,17 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
 
         arr.InsertRange(1, arr2.Begin(), arr2.Begin() + 2);
         vec.insert(vec.begin() + 1, arr2.Begin(), arr2.Begin() + 2);
+        TEST_ENSURE(TestArray(arr, vec) == 0);
+
+        InitializerList list = {
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+        };
+
+        arr.InsertRange(2, list);
+        vec.insert(vec.begin() + 2, list);
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 
