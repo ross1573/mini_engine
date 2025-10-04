@@ -7,6 +7,7 @@ PUBLIC
         platform.cxx
         handle.cxx
         window.cxx
+        module.cxx
 
 PRIVATE
     impl/platform.cpp

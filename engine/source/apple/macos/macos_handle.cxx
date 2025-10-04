@@ -9,11 +9,16 @@ namespace mini::macos {
 export class MACOS_API Handle final
     : public platform::Handle
     , private cocoa::Application {
+private:
+    UniquePtr<platform::Module> m_GraphicsModule;
+
 public:
     Handle();
 
     bool Initialize() final;
     void PollEvents() final { cocoa::Application::PollEvents(); }
+
+    platform::Module* LoadModule(StringView) final;
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;

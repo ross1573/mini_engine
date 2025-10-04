@@ -8,9 +8,9 @@ export class PLATFORM_API Window {
 public:
     virtual ~Window() = default;
 
-    virtual void DialogCritical(String const& msg) = 0;
+    virtual void DialogCritical(String const&) = 0;
 
-    virtual void Resize(RectInt const& windowSize) = 0;
+    virtual void Resize(RectInt const&) = 0;
     virtual void Minimize() = 0;
     virtual void Maximize() = 0;
     virtual void Show() = 0;

@@ -3,6 +3,7 @@ export module mini.platform;
 import mini.core;
 export import :window;
 export import :handle;
+export import :modules;
 
 namespace mini {
 

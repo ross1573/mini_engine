@@ -8,6 +8,7 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 import mini.engine;
+import :modules;
 
 namespace mini::macos {
 
@@ -26,6 +27,11 @@ bool Handle::Initialize()
     return true;
 }
 
+platform::Module* Handle::LoadModule(StringView name)
+{
+    return new Module(name);
+}
+
 platform::Window* Handle::CreatePlatformWindow()
 {
     return new Window(static_cast<cocoa::Application*>(this));
@@ -33,31 +39,26 @@ platform::Window* Handle::CreatePlatformWindow()
 
 graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 {
-    char const* graphicModulePath = "lib" LIB_PREFIX ".metal.dylib";
-    void* graphicModule = nullptr;
-    void* createDeviceAddr = nullptr;
+    platform::Module* moduleHandle = nullptr;
+    graphics::Device* (*funcHandle)() = nullptr;
 
     switch (api) {
-        case graphics::API::Metal:
-            graphicModule = dlopen(graphicModulePath, RTLD_NOW | RTLD_LOCAL);
-            break;
+        case graphics::API::Metal: moduleHandle = LoadModule("metal"); break;
 
         default: break;
     }
 
-    ENSURE(graphicModule) {
-        log::Error("failed to load module {}", graphicModulePath);
+    ENSURE(moduleHandle, "failed to load graphics module") {
+        return nullptr;
+    }
+    m_GraphicsModule = UniquePtr(moduleHandle);
+
+    funcHandle = m_GraphicsModule->GetFunction<graphics::Device*>("CreateGraphicDevice");
+    if (funcHandle == nullptr) {
         return nullptr;
     }
 
-    createDeviceAddr = dlsym(graphicModule, "CreateGraphicDevice");
-    ENSURE(createDeviceAddr, "unable to find graphics module init function") {
-        return nullptr;
-    }
-
-    typedef graphics::Device* (*CreateDeviceFuncT)();
-    CreateDeviceFuncT createDeviceFunc = reinterpret_cast<CreateDeviceFuncT>(createDeviceAddr);
-    return createDeviceFunc();
+    return funcHandle();
 }
 
 void Handle::OnKeyDown(uint keyCode)
