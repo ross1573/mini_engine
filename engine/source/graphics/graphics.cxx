@@ -20,11 +20,15 @@ public:
     typedef graphics::SwapChain SwapChain;
     typedef graphics::RenderContext RenderContext;
 
-public:
-    Graphics() = default;
+    typedef void (*CallbackFunc)();
 
+private:
+    Array<CallbackFunc> m_ExitCallback;
+
+public:
     static bool Initialize(Device*);
     static void Shutdown();
+    static void AtExit(CallbackFunc);
 
     static void BeginFrame();
     static void EndFrame();
@@ -37,5 +41,7 @@ public:
     inline static SwapChain* GetSwapChain() noexcept { return g_SwapChain.Get(); }
     inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
 };
+
+GRAPHICS_API UniquePtr<Graphics> g_Graphics;
 
 } // namespace mini

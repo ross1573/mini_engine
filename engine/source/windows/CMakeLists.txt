@@ -13,13 +13,15 @@ PUBLIC
     FILE_SET windows TYPE CXX_MODULES
     FILES
         windows.cxx
-        win_handle.cxx
         win_shared_ptr.cxx
+        win_handle.cxx
         win_window.cxx
+        win_module.cxx
 
 PRIVATE
     impl/win_handle.cpp
-    impl/win_window.cpp        
+    impl/win_window.cpp
+    impl/win_module.cpp        
 )
 
 target_link_libraries(mini.windows 

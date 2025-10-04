@@ -8,6 +8,7 @@ bool Graphics::Initialize(Device* device)
 {
     ASSERT(g_Device == nullptr && device != nullptr);
 
+    g_Graphics = MakeUnique<Graphics>();
     g_Device = UniquePtr(device);
     g_CurrAPI = g_Device->GetAPI();
 
@@ -38,6 +39,17 @@ void Graphics::Shutdown()
     g_SwapChain.Reset();
     g_Device.Reset();
     g_CurrAPI = API::Null;
+
+    for (auto& func : g_Graphics->m_ExitCallback) {
+        func();
+    }
+
+    g_Graphics.Reset();
+}
+
+void Graphics::AtExit(CallbackFunc func)
+{
+    g_Graphics->m_ExitCallback.Push(func);
 }
 
 void Graphics::BeginFrame()

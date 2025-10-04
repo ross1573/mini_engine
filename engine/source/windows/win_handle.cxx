@@ -9,14 +9,16 @@ namespace mini::windows {
 export class WINDOWS_API Handle final : public platform::Handle {
 private:
     HINSTANCE m_Instance;
+    UniquePtr<platform::Module> m_GraphicsModule;
 
 public:
     Handle(HINSTANCE);
     ~Handle() final;
 
     bool Initialize() final;
-
     void PollEvents() final;
+
+    platform::Module* LoadModule(StringView) final;
 
     platform::Window* CreatePlatformWindow() final;
     graphics::Device* CreateGraphicDevice(graphics::API) final;
