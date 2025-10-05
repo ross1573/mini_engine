@@ -34,11 +34,11 @@ public:
     typedef T const& ConstRef;
     using ConstIterator = ArrayIterator<ConstValue, BasicStringView const>;
 
+    static constexpr T Empty[1] = { '\0' };
+
 private:
     ConstPtr m_Data;
     SizeT m_Size;
-
-    static constexpr T m_Empty[1] = { '\0' };
 
 public:
     constexpr BasicStringView() noexcept;
@@ -93,7 +93,7 @@ private:
 
 template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView() noexcept
-    : m_Data(m_Empty)
+    : m_Data(Empty)
     , m_Size(0)
 {
 }
@@ -109,7 +109,7 @@ template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = m_Empty;
+        m_Data = Empty;
         m_Size = 0;
         return;
     }
@@ -122,7 +122,7 @@ template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr, SizeT len) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = m_Empty;
+        m_Data = Empty;
         m_Size = 0;
         return;
     }
@@ -319,7 +319,7 @@ template <CharT T>
 inline constexpr BasicStringView<T>& BasicStringView<T>::operator=(ConstPtr ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = m_Empty;
+        m_Data = Empty;
         m_Size = 0;
         return *this;
     }

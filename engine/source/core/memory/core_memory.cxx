@@ -99,7 +99,7 @@ inline constexpr void BeginLifetime(T* begin, T* end) noexcept
 
     if consteval {
         for (; begin != end; ++begin) {
-            ConstructAt(AddressOf(begin));
+            ConstructAt(begin);
         }
     }
 }
@@ -107,10 +107,8 @@ inline constexpr void BeginLifetime(T* begin, T* end) noexcept
 template <TrivialT T>
 inline constexpr void BeginLifetime(T* loc) noexcept
 {
-    ASSERT(loc, "invalid location for object");
-
     if consteval {
-        ConstructAt(AddressOf(loc));
+        ConstructAt(loc);
     }
 }
 
@@ -134,7 +132,7 @@ inline constexpr void EndLifetime(T* begin, T* end) noexcept
 
     if consteval {
         for (; begin != end; ++begin) {
-            DestructAt(AddressOf(begin));
+            DestructAt(begin);
         }
     }
 }
@@ -142,10 +140,8 @@ inline constexpr void EndLifetime(T* begin, T* end) noexcept
 template <TrivialT T>
 inline constexpr void EndLifetime(T* loc) noexcept
 {
-    ASSERT(loc, "invalid location for object");
-
     if consteval {
-        DestructAt(AddressOf(loc));
+        DestructAt(loc);
     }
 }
 

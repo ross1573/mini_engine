@@ -18,6 +18,7 @@ PUBLIC
         algorithm.cxx
         log.cxx
         utility.cxx
+        module.cxx
 
         container/array.cxx
         container/static_array.cxx
@@ -58,6 +59,8 @@ PUBLIC
         type/type_concepts.cxx
         type/type_define.cxx
         type/type_traits.cxx
+
+        $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
 
 PRIVATE
     impl/assert_util.cpp

@@ -7,12 +7,10 @@ PUBLIC
         macos.cxx
         macos_handle.cxx
         macos_window.cxx
-        macos_module.cxx
 
 PRIVATE
     impl/macos_handle.cpp
     impl/macos_window.cpp
-    impl/macos_module.cpp
     impl/cocoa_application.mm
     impl/cocoa_window.mm
     impl/cocoa_view.mm

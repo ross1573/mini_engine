@@ -8,7 +8,6 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 import mini.engine;
-import :modules;
 
 namespace mini::macos {
 
@@ -27,11 +26,6 @@ bool Handle::Initialize()
     return true;
 }
 
-platform::Module* Handle::LoadModule(StringView name)
-{
-    return new Module(name);
-}
-
 platform::Window* Handle::CreatePlatformWindow()
 {
     return new Window(static_cast<cocoa::Application*>(this));
@@ -39,26 +33,24 @@ platform::Window* Handle::CreatePlatformWindow()
 
 graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 {
-    platform::Module* moduleHandle = nullptr;
-    graphics::Device* (*funcHandle)() = nullptr;
+    SharedPtr<Module> moduleHandle;
 
     switch (api) {
-        case graphics::API::Metal: moduleHandle = LoadModule("metal"); break;
+        case graphics::API::Metal: moduleHandle = Platform::LoadModule("metal"); break;
 
         default: break;
     }
 
-    ENSURE(moduleHandle, "failed to load graphics module") {
-        return nullptr;
-    }
-    m_GraphicsModule = UniquePtr(moduleHandle);
-
-    funcHandle = m_GraphicsModule->GetFunction<graphics::Device*>("CreateGraphicDevice");
-    if (funcHandle == nullptr) {
+    ENSURE(moduleHandle.IsValid(), "failed to load graphics module") {
         return nullptr;
     }
 
-    return funcHandle();
+    auto result = moduleHandle->CallFunction<graphics::Device*>("CreateGraphicDevice");
+    ENSURE(result.HasValue(), "failed to call function CreateGraphicDevice from graphic module") {
+        return nullptr;
+    }
+
+    return *(result.GetValue());
 }
 
 void Handle::OnKeyDown(uint keyCode)

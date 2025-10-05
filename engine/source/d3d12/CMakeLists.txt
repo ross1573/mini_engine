@@ -1,4 +1,4 @@
-add_module(mini.d3d12)
+add_module(mini.d3d12 SHARED)
 
 include(windows_header_define)
 include(${ENGINE_EXTERNAL_DIR}/d3d12/d3d12.cmake)

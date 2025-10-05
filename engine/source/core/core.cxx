@@ -4,6 +4,7 @@ export import :type;
 export import :utility;
 export import :algorithm;
 export import :log;
+export import :modules;
 
 export import :math;
 export import :color;
