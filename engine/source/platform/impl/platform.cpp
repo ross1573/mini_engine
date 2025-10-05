@@ -33,6 +33,7 @@ void Platform::Shutdown()
 {
     g_Window.Reset();
     g_Handle.Reset();
+    g_ModuleLoader.Reset();
 }
 
 } // namespace mini

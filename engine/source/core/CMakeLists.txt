@@ -61,6 +61,7 @@ PUBLIC
         type/type_traits.cxx
 
         $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
+        $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
 
 PRIVATE
     impl/assert_util.cpp

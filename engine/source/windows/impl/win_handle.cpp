@@ -8,7 +8,6 @@ import mini.core;
 import mini.engine;
 import mini.graphics;
 import mini.platform;
-import :modules;
 
 namespace mini::windows {
 
@@ -47,11 +46,6 @@ bool Handle::Initialize()
     return true;
 }
 
-platform::Module* Handle::LoadModule(StringView name)
-{
-    return new windows::Module(name);
-}
-
 platform::Window* Handle::CreatePlatformWindow()
 {
     return new windows::Window();
@@ -59,26 +53,24 @@ platform::Window* Handle::CreatePlatformWindow()
 
 graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
 {
-    platform::Module* graphicModule;
-    graphics::Device* (*createDeviceFunc)();
+    mini::SharedPtr<Module> graphicModule;
 
     switch (api) {
-        case graphics::API::D3D12: graphicModule = LoadModule("d3d12"); break;
+        case graphics::API::D3D12: graphicModule = Platform::LoadModule("d3d12"); break;
 
         default: break;
     }
 
-    ENSURE(graphicModule, "unable to find graphics module") {
-        return nullptr;
-    }
-    m_GraphicsModule = UniquePtr(graphicModule);
-
-    createDeviceFunc = graphicModule->GetFunction<graphics::Device*>("CreateGraphicDevice");
-    ENSURE(createDeviceFunc, "unable to find graphics module init function") {
+    ENSURE(graphicModule.IsValid(), "unable to find graphics module") {
         return nullptr;
     }
 
-    return createDeviceFunc();
+    auto result = graphicModule->CallFunction<graphics::Device*>("CreateGraphicDevice");
+    ENSURE(result.HasValue(), "unable to find graphics module init function") {
+        return nullptr;
+    }
+
+    return *(result.GetValue());
 }
 
 void Handle::PollEvents()

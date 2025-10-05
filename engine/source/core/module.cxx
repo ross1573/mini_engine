@@ -104,7 +104,7 @@ template <typename T>
 concept ModuleHandleT = ConstructibleFromT<StringView> && requires(T handle) {
     { handle.IsValid() } -> ConvertibleToT<bool>;
     { handle.GetName() } -> ConvertibleToT<String>;
-    { handle.LoadFunc(StringView::Empty) } -> SameAsT<void*>;
+    { handle.LoadFunc(StringView::empty) } -> SameAsT<void*>;
 };
 
 template <ModuleHandleT T>

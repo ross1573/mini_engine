@@ -39,7 +39,7 @@ DarwinModuleHandle::DarwinModuleHandle(StringView name)
     fullPath.Append(postfix);
 
     m_Handle = dlopen(fullPath.Data(), RTLD_NOW | RTLD_LOCAL);
-    m_Name = m_Handle == nullptr ? StringView::Empty : name;
+    m_Name = m_Handle == nullptr ? StringView::empty : name;
 }
 
 DarwinModuleHandle::DarwinModuleHandle(DarwinModuleHandle&& other) noexcept
