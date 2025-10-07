@@ -21,9 +21,10 @@ bool Graphics::LoadAPI(StringView api)
 
     using GraphicsInterface = mini::graphics::ModuleInterface;
     GraphicsInterface* interface = graphicsModule.GetInterface<GraphicsInterface>();
-    ENSURE(interface, Format("{0} graphics has not implemented mini::graphics::ModuleInterface",
-                             mini::options::graphicsAPI)
-                          .Data()) {
+    ENSURE(interface,
+           Format("{0} graphics has not been implemented mini::graphics::ModuleInterface",
+                  mini::options::graphicsAPI)
+               .Data()) {
         return false;
     }
 

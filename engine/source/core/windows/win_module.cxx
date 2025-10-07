@@ -22,15 +22,16 @@ public:
     DynamicModuleHandle(DynamicModuleHandle&&) noexcept;
     ~DynamicModuleHandle() final;
 
-    bool IsValid() final const noexcept;
-    void* GetNativeHandle() final const;
-    ModuleInterface* GetInterface() final noexcept;
+    bool IsValid() const noexcept final;
+    void* GetNativeHandle() noexcept final;
+    ModuleInterface* GetInterface() noexcept final;
 
 private:
     void* LoadFunction(StringView);
 };
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
+    : m_Interface(nullptr)
 {
     StringView prefix = LIB_PREFIX ".";
     StringView postfix = ".dll";
@@ -41,19 +42,18 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name)
     modulePath.Append(postfix);
 
     m_Handle = LoadLibraryA(modulePath.Data());
-    if (m_Handle.IsValid() == false) {
+    if (m_Handle == nullptr) {
         return;
     }
 
-    using StartFuncT = (SharedPtr<ModuleInterface>)(*)();
+    using StartFuncT = ModuleInterface* (*)();
     StartFuncT startFunc = (StartFuncT)LoadFunction("__start_module");
     if (startFunc != nullptr) {
         m_Interface = startFunc();
     }
 }
-}
 
-DynamicModuleHandle::DynamicModuleHandle(WinModuleHandle&& other) noexcept
+DynamicModuleHandle::DynamicModuleHandle(DynamicModuleHandle&& other) noexcept
     : m_Handle(Exchange(other.m_Handle, nullptr))
     , m_Interface(Exchange(other.m_Interface, nullptr))
 {
@@ -77,7 +77,7 @@ bool DynamicModuleHandle::IsValid() const noexcept
     return m_Handle != nullptr;
 }
 
-void* DynamicModuleHandle::GetNativeHandle() const
+void* DynamicModuleHandle::GetNativeHandle() noexcept
 {
     return static_cast<void*>(m_Handle);
 }

@@ -6,7 +6,11 @@ export import :swap_chain;
 
 extern "C" __declspec(dllexport) const char* D3D12SDKPath = "./";
 
-extern "C" __declspec(dllexport) mini::graphics::Device* CreateGraphicDevice()
-{
-    return new mini::d3d12::Device();
-}
+namespace mini::d3d12 {
+
+export class D3D12_API ModuleInterface : public mini::graphics::ModuleInterface {
+public:
+    mini::graphics::Device* CreateGraphicDevice() final { return new Device(); }
+};
+
+} // namespace mini::d3d12

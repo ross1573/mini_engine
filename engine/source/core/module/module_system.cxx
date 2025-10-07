@@ -7,7 +7,7 @@ import :shared_ptr;
 
 namespace mini {
 
-export class ModuleInterface {
+export class CORE_API ModuleInterface {
 public:
     virtual ~ModuleInterface() noexcept = default;
 
@@ -30,7 +30,7 @@ protected:
     ModuleHandle() = default;
 };
 
-export class Module {
+export class CORE_API Module {
 private:
     SharedPtr<ModuleHandle> m_Handle;
     ModuleInterface* m_Interface;

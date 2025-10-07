@@ -44,3 +44,4 @@ PRIVATE
 )
 
 copy_d3d12(mini.d3d12)
+generate_module_entry(mini.d3d12)
