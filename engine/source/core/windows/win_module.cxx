@@ -4,7 +4,7 @@ module;
 
 export module mini.core:module_dynamic;
 
-import :type;
+import :deleter;
 import :string_view;
 import :string;
 import :shared_ptr;
@@ -67,6 +67,7 @@ DynamicModuleHandle::~DynamicModuleHandle()
 
     if (m_Interface != nullptr) [[likely]] {
         m_Interface->Shutdown();
+        DefaultDeleter<ModuleInterface>{}(m_Interface);
     }
 
     FreeLibrary(m_Handle);
