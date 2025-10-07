@@ -29,11 +29,10 @@ public:
     }
 
 private:
-    SharedPtr<Module> GetModule(StringView name, T* unit)
+    Module GetModule(StringView name, T* unit)
     {
         SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, unit);
-        Module mod(name, StaticCast<ModuleHandle>(MoveArg(handle)));
-        return MakeShared<Module>(MoveArg(mod));
+        return Module(name, StaticCast<ModuleHandle>(MoveArg(handle)));
     }
 };
 

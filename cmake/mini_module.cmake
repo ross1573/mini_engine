@@ -27,7 +27,6 @@ function (add_module name)
         EXPORT_MACRO_NAME "${api_upper}_API"
         NO_EXPORT_MACRO_NAME "${api_upper}_HIDDEN"
         DEPRECATED_MACRO_NAME "${api_upper}_DEPRECATED"
-        STATIC_DEFINE "${api_upper}_STATIC"
     )
 
     set(export_header "${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h")

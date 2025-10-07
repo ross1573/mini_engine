@@ -58,7 +58,7 @@ Module ModuleLoader::Load(StringView name)
     }
 
     SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
-    if (dynHandle.IsValid() == false) {
+    if (dynHandle->IsValid() == false) {
         return Module();
     }
 

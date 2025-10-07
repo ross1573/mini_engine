@@ -21,8 +21,8 @@ FILES
     launcher.cxx
 )
 
-target_link_libraries(mini.launcher
-PRIVATE 
+get_property(smod DIRECTORY ${ENGINE_SOURCE_DIR} PROPERTY static_modules)
+set(modules
     mini.core
     mini.engine
     mini.platform
@@ -30,6 +30,15 @@ PRIVATE
     $<$<PLATFORM_ID:Windows>:mini.windows>
     $<$<PLATFORM_ID:Darwin>:mini.macos>
 )
+
+list(LENGTH smod smod_count)
+if (smod_count GREATER 0)
+    list(APPEND modules ${smod})
+    generate_init_file(mini.launcher ${smod})
+endif()
+
+list(REMOVE_DUPLICATES modules)
+target_link_libraries(mini.launcher PRIVATE ${modules})
 
 set_target_properties(mini.launcher
 PROPERTIES

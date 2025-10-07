@@ -1,4 +1,4 @@
-add_module(mini.metal SHARED)
+add_module(mini.metal)
 
 module_sources(mini.metal
 PUBLIC

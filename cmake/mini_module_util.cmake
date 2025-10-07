@@ -9,6 +9,7 @@ function (generate_module_entry name)
     snake_to_camel_case(${api})
     
     string(CONCAT class "mini::" ${api} "::ModuleInterface")
+    string(CONCAT namespace "mini::" ${api})
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.cpp")
 
     set(args API CLASS FILE_PATH CUSTOM_UNIT_GENERATOR)
@@ -32,7 +33,41 @@ function (generate_module_entry name)
         NEWLINE_STYLE LF
     )
 
+    get_target_property(target_type ${name} TYPE)
+    if (target_type STREQUAL "STATIC_LIBRARY")
+        target_compile_definitions(${name} PRIVATE ${api_upper}_STATIC=1)
+        set_property(DIRECTORY ${ENGINE_SOURCE_DIR} APPEND PROPERTY static_modules ${name})
+    elseif (target_type STREQUAL "SHARED_LIBRARY")
+        target_compile_definitions(${name} PRIVATE ${api_upper}_STATIC=0)
+    else()
+        message(FATAL_ERROR "unsupported build type: " ${target_type})
+    endif()
+
     target_sources(${name} PRIVATE ${file_path})
+endfunction()
+
+function (generate_init_file target module_list)
+    foreach (module ${module_list})
+        generate_api_name(${module})
+        snake_to_camel_case(${api})
+        list(APPEND helper_list ${camel_case}ModuleInitializeHelper)
+        list(APPEND contents "import ${module}\;\n")
+    endforeach()
+    list(APPEND contents "\n")
+
+    foreach (helper ${helper_list})
+        list(APPEND contents "void ${helper}()\;\n")
+    endforeach()
+
+    list(APPEND contents "\nvoid InvokeStaticModuleInitializeHelpers()\n{\n")
+    foreach (helper ${helper_list})
+        list(APPEND contents "    ${helper}()\;")
+    endforeach()
+    list(APPEND contents "\n}\n")
+
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/init.generated.cpp")
+    file(WRITE ${file_path} ${contents})
+    target_sources(${target} PRIVATE ${file_path})
 endfunction()
 
 function (build_source_tree name)
@@ -75,8 +110,10 @@ function (build_source_tree name)
 
     list(REMOVE_ITEM files ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.cpp)
     list(REMOVE_ITEM files ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h)
+    list(REMOVE_ITEM files ${CMAKE_CURRENT_BINARY_DIR}/init.generated.cpp)
     list(APPEND generated ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.cpp)
     list(APPEND generated ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h)
+    list(APPEND generated ${CMAKE_CURRENT_BINARY_DIR}/init.generated.cpp)
 
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/impl PREFIX "Implementation Files" FILES ${implementations})
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})

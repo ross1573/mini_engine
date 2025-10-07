@@ -4,9 +4,9 @@ import mini.core;
 import mini.platform;
 import mini.engine;
 
-export namespace mini {
+namespace mini {
 
-void LaunchEngine(platform::Handle* handle)
+export void LaunchEngine(platform::Handle* handle)
 {
     log::Info("launching engine...");
 
