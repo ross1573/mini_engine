@@ -18,7 +18,6 @@ public:
     void PollEvents() final;
 
     platform::Window* CreatePlatformWindow() final;
-    graphics::Device* CreateGraphicDevice(graphics::API) final;
 
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 

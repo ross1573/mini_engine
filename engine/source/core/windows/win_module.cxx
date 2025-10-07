@@ -2,33 +2,35 @@ module;
 
 #include <windows.h>
 
-export module mini.core:modules;
+export module mini.core:module_dynamic;
 
+import :type;
 import :string_view;
 import :string;
-import :module_base;
+import :shared_ptr;
+import :module_system;
 
 namespace mini {
 
-export class CORE_API WinModuleHandle {
+class DynamicModuleHandle final : public ModuleHandle {
 private:
     HMODULE m_Handle;
-    String m_Name;
+    ModuleInterface* m_Interface;
 
 public:
-    WinModuleHandle(StringView);
-    WinModuleHandle(WinModuleHandle&&) noexcept;
-    ~WinModuleHandle();
+    DynamicModuleHandle(StringView);
+    DynamicModuleHandle(DynamicModuleHandle&&) noexcept;
+    ~DynamicModuleHandle() final;
 
-    bool IsValid() const noexcept;
-    void* LoadFunc(StringView);
-    String GetName() const;
-    HMODULE GetNativeHandle() const;
+    bool IsValid() final const noexcept;
+    void* GetNativeHandle() final const;
+    ModuleInterface* GetInterface() final noexcept;
+
+private:
+    void* LoadFunction(StringView);
 };
 
-export using Module = BasicModule<WinModuleHandle>;
-
-WinModuleHandle::WinModuleHandle(StringView name)
+DynamicModuleHandle::DynamicModuleHandle(StringView name)
 {
     StringView prefix = LIB_PREFIX ".";
     StringView postfix = ".dll";
@@ -39,28 +41,53 @@ WinModuleHandle::WinModuleHandle(StringView name)
     modulePath.Append(postfix);
 
     m_Handle = LoadLibraryA(modulePath.Data());
-    m_Name = m_Handle == nullptr ? StringView::empty : name;
-}
+    if (m_Handle.IsValid() == false) {
+        return;
+    }
 
-WinModuleHandle::WinModuleHandle(WinModuleHandle&& other) noexcept
-    : m_Handle(Exchange(other.m_Handle, nullptr))
-    , m_Name(Exchange(other.m_Name, {}))
-{
-}
-
-WinModuleHandle::~WinModuleHandle()
-{
-    if (m_Handle != nullptr) {
-        FreeLibrary(m_Handle);
+    using StartFuncT = (SharedPtr<ModuleInterface>)(*)();
+    StartFuncT startFunc = (StartFuncT)LoadFunction("__start_module");
+    if (startFunc != nullptr) {
+        m_Interface = startFunc();
     }
 }
+}
 
-bool WinModuleHandle::IsValid() const noexcept
+DynamicModuleHandle::DynamicModuleHandle(WinModuleHandle&& other) noexcept
+    : m_Handle(Exchange(other.m_Handle, nullptr))
+    , m_Interface(Exchange(other.m_Interface, nullptr))
+{
+}
+
+DynamicModuleHandle::~DynamicModuleHandle()
+{
+    if (m_Handle == nullptr) [[unlikely]] {
+        return;
+    }
+
+    if (m_Interface != nullptr) [[likely]] {
+        m_Interface->Shutdown();
+    }
+
+    FreeLibrary(m_Handle);
+}
+
+bool DynamicModuleHandle::IsValid() const noexcept
 {
     return m_Handle != nullptr;
 }
 
-void* WinModuleHandle::LoadFunc(StringView name)
+void* DynamicModuleHandle::GetNativeHandle() const
+{
+    return static_cast<void*>(m_Handle);
+}
+
+ModuleInterface* DynamicModuleHandle::GetInterface() noexcept
+{
+    return m_Interface;
+}
+
+void* DynamicModuleHandle::LoadFunction(StringView name)
 {
     ENSURE(m_Handle, "module not loaded") {
         return nullptr;
@@ -68,16 +95,6 @@ void* WinModuleHandle::LoadFunc(StringView name)
 
     void* func = GetProcAddress(m_Handle, name.Data());
     return func;
-}
-
-String WinModuleHandle::GetName() const
-{
-    return m_Name;
-}
-
-HMODULE WinModuleHandle::GetNativeHandle() const
-{
-    return m_Handle;
 }
 
 } // namespace mini

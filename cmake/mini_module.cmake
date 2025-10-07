@@ -1,18 +1,5 @@
 include(build_source_tree)
-
-macro (include_static name)
-    set(prev_build_type ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS FALSE)
-    include(${name})
-    set(BUILD_SHARED_LIBS ${prev_build_type})
-endmacro()
-
-macro (include_shared name)
-    set(prev_build_type ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS TRUE)
-    include(${name})
-    set(BUILD_SHARED_LIBS ${prev_build_type})
-endmacro()
+include(mini_module_util)
 
 function (module_sources name)
     target_sources(${ARGV})
@@ -20,14 +7,7 @@ function (module_sources name)
 endfunction()
 
 function (add_module name)
-    string(REGEX REPLACE "mini[._]" "" api ${name})
-    string(REPLACE "." "_" api ${api})
-    string(REPLACE "." "_" header ${name})
-
-    set(out_name ${BUILD_MODULE_PREFIX}.${api})
-    set(api ${api}_API)
-    set(header "${header}.generated.h")
-    string(TOUPPER ${api} api)
+    generate_api_name(${name})
     
     if (${ARGC} GREATER 1)
         list(GET ARGN 0 first_arg)
@@ -42,26 +22,26 @@ function (add_module name)
     add_library(${name} ${type})
 
     generate_export_header(${name}
-        EXPORT_MACRO_NAME ${api}
-        EXPORT_FILE_NAME ${header}
+        BASE_NAME "${api_upper}"
+        EXPORT_FILE_NAME "${api}.generated.h"
+        EXPORT_MACRO_NAME "${api_upper}_API"
+        NO_EXPORT_MACRO_NAME "${api_upper}_HIDDEN"
+        DEPRECATED_MACRO_NAME "${api_upper}_DEPRECATED"
+        STATIC_DEFINE "${api_upper}_STATIC"
     )
 
     target_precompile_headers(${name}
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}/${header}
+        PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h"
     )
 
     target_include_directories(${name}
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/public
-
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/internal
+        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/internal"
     )
 
     set_target_properties(${name} PROPERTIES 
         FOLDER module
-        OUTPUT_NAME ${out_name}
+        OUTPUT_NAME "${BUILD_MODULE_PREFIX}.${api}"
     )
 
     if (${ARGC} GREATER 1)

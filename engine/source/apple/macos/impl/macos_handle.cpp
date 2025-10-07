@@ -31,28 +31,6 @@ platform::Window* Handle::CreatePlatformWindow()
     return new Window(static_cast<cocoa::Application*>(this));
 }
 
-graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
-{
-    SharedPtr<Module> moduleHandle;
-
-    switch (api) {
-        case graphics::API::Metal: moduleHandle = Platform::LoadModule("metal"); break;
-
-        default: break;
-    }
-
-    ENSURE(moduleHandle.IsValid(), "failed to load graphics module") {
-        return nullptr;
-    }
-
-    auto result = moduleHandle->CallFunction<graphics::Device*>("CreateGraphicDevice");
-    ENSURE(result.HasValue(), "failed to call function CreateGraphicDevice from graphic module") {
-        return nullptr;
-    }
-
-    return *(result.GetValue());
-}
-
 void Handle::OnKeyDown(uint keyCode)
 {
     switch (keyCode) {

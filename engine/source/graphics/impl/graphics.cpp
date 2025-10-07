@@ -4,11 +4,38 @@ import mini.core;
 
 namespace mini {
 
-bool Graphics::Initialize(Device* device)
+bool Graphics::Initialize()
 {
-    ASSERT(g_Device == nullptr && device != nullptr);
+    ASSERT(g_Device == nullptr);
+
+    return LoadAPI(mini::options::graphicsAPI);
+}
+
+bool Graphics::LoadAPI(StringView api)
+{
+    Module graphicsModule = Module(api);
+    ENSURE(graphicsModule.IsValid(), "failed to load graphics module") {
+        return false;
+    }
+    log::Info("{0} module loaded", api);
+
+    using GraphicsInterface = mini::graphics::ModuleInterface;
+    GraphicsInterface* interface = graphicsModule.GetInterface<GraphicsInterface>();
+    ENSURE(interface, Format("{0} graphics has not implemented mini::graphics::ModuleInterface",
+                             mini::options::graphicsAPI)
+                          .Data()) {
+        return false;
+    }
+
+    using GraphicsDevice = mini::graphics::Device;
+    GraphicsDevice* device = interface->CreateGraphicDevice();
+    ENSURE(device, "failed to create graphic device") {
+        return false;
+    }
+    log::Info("{0} device created", api);
 
     g_Graphics = MakeUnique<Graphics>();
+    g_Graphics->m_Module = MoveArg(graphicsModule);
     g_Device = UniquePtr(device);
     g_CurrAPI = g_Device->GetAPI();
 
@@ -16,7 +43,7 @@ bool Graphics::Initialize(Device* device)
     ENSURE(g_Device->Initialize(), "failed to initialize graphics device") {
         return false;
     }
-    log::Info("graphic device initialized");
+    log::Info("{0} device initialized", api);
 
     g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
     ENSURE(g_RenderContext && g_RenderContext->Initialize(), "Failed to create render context") {

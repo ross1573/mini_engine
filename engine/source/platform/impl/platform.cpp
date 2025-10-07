@@ -4,15 +4,6 @@ import mini.core;
 
 namespace mini {
 
-SharedPtr<Module> Platform::LoadModule(StringView name)
-{
-    if (g_ModuleLoader == nullptr) {
-        g_ModuleLoader = MakeUnique<platform::ModuleLoader>();
-    }
-
-    return g_ModuleLoader->LoadModule(name);
-}
-
 bool Platform::Initialize(Handle* handle)
 {
     ASSERT(handle);
@@ -33,7 +24,6 @@ void Platform::Shutdown()
 {
     g_Window.Reset();
     g_Handle.Reset();
-    g_ModuleLoader.Reset();
 }
 
 } // namespace mini

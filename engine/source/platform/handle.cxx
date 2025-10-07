@@ -14,7 +14,6 @@ public:
     virtual void PollEvents() = 0;
 
     virtual platform::Window* CreatePlatformWindow() = 0;
-    virtual graphics::Device* CreateGraphicDevice(graphics::API) = 0;
 
 protected:
     Handle() = default;

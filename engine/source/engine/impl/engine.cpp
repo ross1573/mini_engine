@@ -24,13 +24,7 @@ Engine::~Engine()
 
 bool Engine::Initialize()
 {
-    graphics::API api = graphics::ParseAPI(options::graphicsAPI);
-
-    Platform::Handle* platformHandle = Platform::GetHandle();
-    Graphics::Device* device = platformHandle->CreateGraphicDevice(api);
-
-    ENSURE(device, "failed to create graphic device") return false;
-    ENSURE(Graphics::Initialize(device), "failed to initialize graphics") return false;
+    ENSURE(Graphics::Initialize(), "failed to initialize graphics") return false;
 
     m_Running = true;
     return true;

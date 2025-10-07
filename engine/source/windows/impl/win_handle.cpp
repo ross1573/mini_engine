@@ -51,28 +51,6 @@ platform::Window* Handle::CreatePlatformWindow()
     return new windows::Window();
 }
 
-graphics::Device* Handle::CreateGraphicDevice(graphics::API api)
-{
-    mini::SharedPtr<Module> graphicModule;
-
-    switch (api) {
-        case graphics::API::D3D12: graphicModule = Platform::LoadModule("d3d12"); break;
-
-        default: break;
-    }
-
-    ENSURE(graphicModule.IsValid(), "unable to find graphics module") {
-        return nullptr;
-    }
-
-    auto result = graphicModule->CallFunction<graphics::Device*>("CreateGraphicDevice");
-    ENSURE(result.HasValue(), "unable to find graphics module init function") {
-        return nullptr;
-    }
-
-    return *(result.GetValue());
-}
-
 void Handle::PollEvents()
 {
     MSG msg{};

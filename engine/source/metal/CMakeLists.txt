@@ -34,3 +34,5 @@ PRIVATE
     "-framework Foundation"
     "-framework QuartzCore"
 )
+
+generate_module_entry(mini.metal)

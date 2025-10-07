@@ -16,7 +16,6 @@ public:
     void PollEvents() final { cocoa::Application::PollEvents(); }
 
     platform::Window* CreatePlatformWindow() final;
-    graphics::Device* CreateGraphicDevice(graphics::API) final;
 
     inline NSApplication* GetNSApplication() { return m_Application; }
 

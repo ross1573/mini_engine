@@ -18,7 +18,6 @@ PUBLIC
         algorithm.cxx
         log.cxx
         utility.cxx
-        module.cxx
 
         container/array.cxx
         container/static_array.cxx
@@ -60,11 +59,14 @@ PUBLIC
         type/type_define.cxx
         type/type_traits.cxx
 
+        module/module_system.cxx
+        module/module_static.cxx
         $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
 
 PRIVATE
     impl/assert_util.cpp
+    impl/module_system.cpp
 
     $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>

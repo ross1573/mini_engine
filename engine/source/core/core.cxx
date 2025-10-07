@@ -4,7 +4,6 @@ export import :type;
 export import :utility;
 export import :algorithm;
 export import :log;
-export import :modules;
 
 export import :math;
 export import :color;
@@ -36,3 +35,7 @@ export import :string_convert;
 export import :string_view;
 export import :string;
 export import :format;
+
+export import :module_system;
+export import :module_static;
+export import :module_dynamic;

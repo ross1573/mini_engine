@@ -1,4 +1,6 @@
 function (build_source_tree name)
+    generate_api_name(${name})
+    
     get_target_property(sources ${name} SOURCES)
     get_target_property(headers ${name} HEADERS)
 
@@ -15,7 +17,7 @@ function (build_source_tree name)
     endforeach()
 
     foreach (file IN LISTS sources headers modules)
-        string(REGEX REPLACE "\\$<.*:(.*)>" "\\1" generator_removed ${file})
+        string(GENEX_STRIP ${file} generator_removed)
         if (${generator_removed} MATCHES "impl/.*")
             list(APPEND implementations ${generator_removed})
         else()
@@ -23,15 +25,21 @@ function (build_source_tree name)
         endif()
     endforeach()
 
+    get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    set(cmake_gen_path ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${name}.dir)
+    list(APPEND generated ${cmake_gen_path}/cmake_pch.cxx)
+    if (is_multi_config)
+        foreach(config_type ${CMAKE_CONFIGURATION_TYPES})
+            list(APPEND generated ${cmake_gen_path}/${config_type}/cmake_pch.hxx)
+        endforeach()
+    else()
+        list(APPEND generated ${cmake_gen_path}/cmake_pch.hxx)
+    endif()
+
+    list(REMOVE_ITEM files ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.cpp)
+    list(APPEND generated ${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.cpp)
+
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/impl PREFIX "Implementation Files" FILES ${implementations})
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
-
-    if (MSVC)
-        set(cmake_gen_path ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${name}.dir)
-
-        source_group("Generated Files" FILES ${cmake_gen_path}/cmake_pch.cxx)
-        foreach(config_type ${CMAKE_CONFIGURATION_TYPES})
-            source_group("Generated Files" FILES ${cmake_gen_path}/${config_type}/cmake_pch.hxx)
-        endforeach()
-    endif()
+    source_group("Generated Files" FILES ${generated})
 endfunction()

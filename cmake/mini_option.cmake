@@ -60,7 +60,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         )
     else()
         add_link_options(
-            $<$<CONFIG:Debug>:-fsanitize=address>
+            # $<$<CONFIG:Debug>:-fsanitize=address>
         )
     endif()
 else()

@@ -6,6 +6,15 @@ export import :device;
 export import :render_context;
 export import :swap_chain;
 
+namespace mini::graphics {
+
+export class GRAPHICS_API ModuleInterface : public mini::ModuleInterface {
+public:
+    virtual mini::graphics::Device* CreateGraphicDevice() = 0;
+};
+
+} // namespace mini::graphics
+
 namespace mini {
 
 GRAPHICS_API graphics::API g_CurrAPI = graphics::API::Null;
@@ -23,10 +32,11 @@ public:
     typedef void (*CallbackFunc)();
 
 private:
+    Module m_Module;
     Array<CallbackFunc> m_ExitCallback;
 
 public:
-    static bool Initialize(Device*);
+    static bool Initialize();
     static void Shutdown();
     static void AtExit(CallbackFunc);
 
@@ -40,6 +50,9 @@ public:
     inline static Device* GetDevice() noexcept { return g_Device.Get(); }
     inline static SwapChain* GetSwapChain() noexcept { return g_SwapChain.Get(); }
     inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
+
+private:
+    static bool LoadAPI(StringView);
 };
 
 GRAPHICS_API UniquePtr<Graphics> g_Graphics;
