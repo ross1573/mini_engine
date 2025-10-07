@@ -1,5 +1,5 @@
-include(build_source_tree)
 include(mini_module_util)
+include(GenerateExportHeader)
 
 function (module_sources name)
     target_sources(${ARGV})
@@ -30,9 +30,9 @@ function (add_module name)
         STATIC_DEFINE "${api_upper}_STATIC"
     )
 
-    target_precompile_headers(${name}
-        PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h"
-    )
+    set(export_header "${CMAKE_CURRENT_BINARY_DIR}/${api}.generated.h")
+    target_sources(${name} PRIVATE ${export_header})
+    target_precompile_headers(${name} PRIVATE ${export_header})
 
     target_include_directories(${name}
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public"
