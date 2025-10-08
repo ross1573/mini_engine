@@ -1,13 +1,15 @@
 export module mini.core:module_static;
 
 import :type;
+import :unique_ptr;
 import :module_system;
 
 namespace mini {
 
+template <DeleterT<ModuleInterface> DelT>
 class StaticModuleHandle : public ModuleHandle {
 private:
-    ModuleInterface* m_Interface;
+    UniquePtr<ModuleInterface, DelT> m_Interface;
 
 public:
     StaticModuleHandle(StringView) noexcept {}
@@ -16,13 +18,16 @@ public:
     {
     }
 
+    virtual ~StaticModuleHandle() noexcept = default;
+
     bool IsValid() const noexcept final { return true; }
     void* GetNativeHandle() noexcept final { return nullptr; }
-    ModuleInterface* GetInterface() noexcept final { return m_Interface; }
+    ModuleInterface* GetInterface() noexcept final { return m_Interface.Get(); }
 };
 
 export template <DerivedFromT<ModuleInterface> T,
-                 CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); })>
+                 CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); }),
+                 DeleterT<ModuleInterface> DelT = DefaultDeleter<ModuleInterface>>
 class StaticModuleInitializer {
 public:
     static void Register(StringView name)
@@ -33,7 +38,8 @@ public:
 private:
     static SharedPtr<ModuleHandle> GetHandle(StringView name)
     {
-        SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, FactoryT{}());
+        using HandleT = StaticModuleHandle<DelT>;
+        SharedPtr<HandleT> handle = MakeShared<HandleT>(name, FactoryT{}());
         return StaticCast<ModuleHandle>(MoveArg(handle));
     }
 };

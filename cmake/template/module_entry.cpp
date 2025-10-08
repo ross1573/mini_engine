@@ -11,12 +11,8 @@ import @target@;
 void __@api_full@_init_module()
 {
     using FactoryT = decltype([]() { return __get_@api_full@_interface(); });
-    mini::StaticModuleInitializer<@class@, FactoryT>::Register("@api@");
-}
-
-void __@api_full@_cleanup_module()
-{
-    mini::DefaultDeleter<@class@>{}(__get_@api_full@_interface());
+    using DelT = mini::DefaultDeleter<mini::ModuleInterface>;
+    mini::StaticModuleInitializer<@class@, FactoryT, DelT>::Register("@api@");
 }
 #else
 extern "C" @api_upper@_API @class@* __start_module()

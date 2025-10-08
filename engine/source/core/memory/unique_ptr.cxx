@@ -24,7 +24,7 @@ private:
 
 public:
     constexpr UniquePtr() noexcept;
-    constexpr ~UniquePtr();
+    constexpr ~UniquePtr() noexcept;
     constexpr UniquePtr(UniquePtr&&) noexcept;
     explicit constexpr UniquePtr(Ptr) noexcept;
     constexpr UniquePtr(Ptr, DelT const&) noexcept;
@@ -75,7 +75,7 @@ inline constexpr UniquePtr<T, DelT>::UniquePtr() noexcept
 }
 
 template <NonRefT T, DeleterT<T> DelT>
-inline constexpr UniquePtr<T, DelT>::~UniquePtr()
+inline constexpr UniquePtr<T, DelT>::~UniquePtr() noexcept
 {
     m_Deleter(m_Ptr);
     m_Ptr = nullptr;

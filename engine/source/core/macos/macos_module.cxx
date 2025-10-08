@@ -7,7 +7,7 @@ export module mini.core:module_dynamic;
 import :deleter;
 import :string_view;
 import :string;
-import :shared_ptr;
+import :unique_ptr;
 import :module_system;
 
 namespace mini {
@@ -15,7 +15,7 @@ namespace mini {
 class DynamicModuleHandle final : public ModuleHandle {
 private:
     void* m_Handle;
-    ModuleInterface* m_Interface;
+    UniquePtr<ModuleInterface> m_Interface;
 
 public:
     DynamicModuleHandle(StringView);
@@ -31,7 +31,6 @@ private:
 };
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
-    : m_Interface(nullptr)
 {
     StringView prefix = "lib" LIB_PREFIX ".";
     StringView postfix = ".dylib";
@@ -49,7 +48,7 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name)
     using StartFuncT = ModuleInterface* (*)();
     StartFuncT startFunc = (StartFuncT)LoadFunction("__start_module");
     if (startFunc != nullptr) {
-        m_Interface = startFunc();
+        m_Interface = UniquePtr<ModuleInterface>(startFunc());
     }
 }
 
@@ -67,7 +66,7 @@ DynamicModuleHandle::~DynamicModuleHandle()
 
     if (m_Interface != nullptr) [[likely]] {
         m_Interface->Shutdown();
-        DefaultDeleter<ModuleInterface>{}(m_Interface);
+        m_Interface.Reset();
     }
 
     dlclose(m_Handle);
@@ -85,7 +84,7 @@ void* DynamicModuleHandle::GetNativeHandle() noexcept
 
 ModuleInterface* DynamicModuleHandle::GetInterface() noexcept
 {
-    return m_Interface;
+    return m_Interface.Get();
 }
 
 void* DynamicModuleHandle::LoadFunction(StringView name)

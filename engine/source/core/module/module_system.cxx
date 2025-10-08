@@ -36,7 +36,8 @@ private:
     ModuleInterface* m_Interface;
     String m_Name;
 
-    template <DerivedFromT<ModuleInterface> T, CallableWithReturnT<T*> FactoryT>
+    template <DerivedFromT<ModuleInterface> T, CallableWithReturnT<T*> FactoryT,
+              DeleterT<ModuleInterface>>
     friend class StaticModuleInitializer;
     friend class ModuleLoader;
 
