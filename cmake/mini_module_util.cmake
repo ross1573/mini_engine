@@ -8,10 +8,12 @@ macro (generate_api_name target)
         set(prefix ${arg_PREFIX})
         string(REGEX REPLACE "^${prefix}[._]" "" api ${target})
     else()
+        # if prefix is not provided, use first comma seperated string
         string(REGEX MATCH "^(.*)[.]" match ${target})
         string(REPLACE "${match}" "" api ${target})
         if (NOT DEFINED api OR api STREQUAL "")
-            set(api ${target}) # don't modify
+            # when target does not contain any commas, set prefix empty
+            set(api ${target})
             set(prefix "")
         else()
             set(prefix ${CMAKE_MATCH_1})
@@ -57,6 +59,8 @@ function (generate_module_entry target)
         NEWLINE_STYLE LF
     )
 
+    # cache build type specific initializers
+    # these initializers will be used on code generated
     get_target_property(target_type ${target} TYPE)
     if (target_type STREQUAL "STATIC_LIBRARY")
         target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=1)
@@ -78,6 +82,7 @@ function (generate_static_init target)
     get_property(static_init GLOBAL PROPERTY STATIC_INIT)
     get_property(static_cleanup GLOBAL PROPERTY STATIC_CLEANUP)
 
+    # define static init list
     if (NOT DEFINED static_init)
         set(static_init "")
     endif()
@@ -85,6 +90,7 @@ function (generate_static_init target)
         set(static_cleanup "")
     endif()
 
+    # global module section where declarations are written
     list(APPEND contents "module\;\n\n")
     foreach (init ${static_init})
         list(APPEND contents "void ${init}()\;\n")
@@ -94,16 +100,19 @@ function (generate_static_init target)
     endforeach()
     list(APPEND contents "\n")
 
+    # start module and namespace
     string(REPLACE "." "::" namespace ${target})
     list(APPEND contents "export module ${target}:static_init\;\n\n")
     list(APPEND contents "namespace ${namespace} {\n\n")
     
+    # write static initializer function
     list(APPEND contents "void StaticInitialize()\n{\n")
     foreach (init ${static_init})
         list(APPEND contents "    ${init}()\;\n")
     endforeach()
     list(APPEND contents "}\n\n")
 
+    # write static cleanup function
     list(APPEND contents "void StaticCleanup()\n{\n")
     foreach (cleanup ${static_cleanup})
         list(APPEND contents "    ${cleanup}()\;\n")
@@ -131,6 +140,7 @@ function (gnerate_api_header target)
         generate_api_name(${target})
     endif()
 
+    # override file path if specified
     if (DEFINED arg_FILE_PATH)
         set(api_header ${arg_FILE_PATH})
     else()
@@ -163,6 +173,8 @@ function (build_source_tree target)
     get_target_property(sources ${target} SOURCES)
     get_target_property(headers ${target} HEADERS)
 
+    # search for HEADER_SETS
+    # if its named "generated", it will be treated as generated file set
     get_target_property(header_sets ${target} HEADER_SETS)
     foreach (header_set IN LISTS header_sets)
         get_target_property(header_files ${target} HEADER_SET_${header_set})
@@ -173,6 +185,8 @@ function (build_source_tree target)
         endif()
     endforeach()
 
+    # search for CXX_MODULE_SETS
+    # if its named "generated", it will be treated as generated file set
     get_target_property(module_sets ${target} CXX_MODULE_SETS)
     foreach (module_set IN LISTS module_sets)
         get_target_property(module_files ${target} CXX_MODULE_SET_${module_set})
@@ -183,9 +197,14 @@ function (build_source_tree target)
         endif()
     endforeach()
 
+    # filter out generator expression 
+    # this will combine all files into a single list
     foreach (file IN LISTS sources headers modules)
         string(REGEX MATCHALL "\\$<.*:(.*)>" generator_removed ${file})
+
+        # without generator expression
         if (${CMAKE_MATCH_COUNT} EQUAL 0)
+            # pass HEADER_SETS empty case
             if (file STREQUAL headers-NOTFOUND)
                 continue()
             endif()
@@ -194,19 +213,23 @@ function (build_source_tree target)
             continue()
         endif()
 
+        # store all match cases
         foreach (loopVar RANGE 1 ${CMAKE_MATCH_COUNT})
             set(matchVar "CMAKE_MATCH_${loopVar}")
-            list(APPEND filtered_list ${${matchVar}})
+            string(REPLACE "," ";" condition_list ${${matchVar}})
+            list(APPEND filtered_list ${condition_list})
         endforeach()
     endforeach()
 
     foreach (file ${filtered_list})
+        # filter generated source file
         get_source_file_property(generated ${file} GENERATED)
         if (generated)
             list(APPEND generated_files ${file})
             continue()
         endif()
 
+        # filter implementation files
         if (${file} MATCHES "impl/.*")
             list(APPEND implementations ${file})
         else()
@@ -214,6 +237,8 @@ function (build_source_tree target)
         endif()
     endforeach()
 
+    # filter PCH files
+    # these files will always have the same name and path, so just hard coded it
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
         set(cmake_gen_path "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir")
@@ -226,6 +251,7 @@ function (build_source_tree target)
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.hxx")
     endif()
 
+    # build source tree
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/impl PREFIX "Implementation Files" FILES ${implementations})
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
     source_group("Generated Files" FILES ${generated_files})
