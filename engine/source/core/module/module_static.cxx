@@ -21,8 +21,8 @@ public:
     ModuleInterface* GetInterface() noexcept final { return m_Interface; }
 };
 
-template <DerivedFromT<ModuleInterface> T,
-          CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); })>
+export template <DerivedFromT<ModuleInterface> T,
+                 CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); })>
 class StaticModuleInitializer {
 public:
     static void Register(StringView name)
