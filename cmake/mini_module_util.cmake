@@ -114,7 +114,7 @@ function (generate_static_init target)
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/init.generated.cxx")
     file(WRITE ${file_path} ${contents})
 
-    target_sources(${target} PRIVATE
+    target_sources(${target} PUBLIC
         FILE_SET generated TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
         FILES ${file_path}
     )
