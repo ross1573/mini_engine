@@ -1,10 +1,11 @@
 export module mini.core:module_static;
 
+import :type;
 import :module_system;
 
 namespace mini {
 
-export class StaticModuleHandle : public ModuleHandle {
+class StaticModuleHandle : public ModuleHandle {
 private:
     ModuleInterface* m_Interface;
 
@@ -20,19 +21,20 @@ public:
     ModuleInterface* GetInterface() noexcept final { return m_Interface; }
 };
 
-export template <DerivedFromT<ModuleInterface> T>
+template <DerivedFromT<ModuleInterface> T,
+          CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); })>
 class StaticModuleInitializer {
 public:
-    StaticModuleInitializer(StringView name, T* unit)
+    static void Register(StringView name)
     {
-        g_ModuleLoader.Register(GetModule(name, unit));
+        g_ModuleLoader.Register(Module(name, GetHandle(name)));
     }
 
 private:
-    Module GetModule(StringView name, T* unit)
+    static SharedPtr<ModuleHandle> GetHandle(StringView name)
     {
-        SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, unit);
-        return Module(name, StaticCast<ModuleHandle>(MoveArg(handle)));
+        SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, FactoryT{}());
+        return StaticCast<ModuleHandle>(MoveArg(handle));
     }
 };
 

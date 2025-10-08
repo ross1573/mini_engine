@@ -5,6 +5,10 @@ project(MiniEngine
     VERSION 0.1.0
 )
 
+option(BUILD_SHARED_LIBS "build modules in shared libraries" ON)
+option(INCLUDE_TEST "include testing executables" OFF)
+option(INCLUDE_BENCHMARK "include benchmarking executables" OFF)
+
 set(ENGINE_PROJECT_AHTHOR "ross1573")
 set(ENGINE_MACOS_IDENTIFIER "com.ross1573.MiniEngine")
 

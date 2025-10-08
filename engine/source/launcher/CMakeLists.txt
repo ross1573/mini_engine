@@ -21,7 +21,9 @@ FILES
     launcher.cxx
 )
 
-get_property(smod DIRECTORY ${ENGINE_SOURCE_DIR} PROPERTY static_modules)
+generate_static_init(mini.launcher)
+
+get_property(static_modules GLOBAL PROPERTY STATIC_MODULE)
 set(modules
     mini.core
     mini.engine
@@ -31,12 +33,7 @@ set(modules
     $<$<PLATFORM_ID:Darwin>:mini.macos>
 )
 
-list(LENGTH smod smod_count)
-if (smod_count GREATER 0)
-    list(APPEND modules ${smod})
-    generate_init_file(mini.launcher ${smod})
-endif()
-
+list(APPEND modules ${static_modules})
 list(REMOVE_DUPLICATES modules)
 target_link_libraries(mini.launcher PRIVATE ${modules})
 

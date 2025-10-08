@@ -107,6 +107,9 @@ concept TrivialT = std::is_nothrow_default_constructible_v<T> && std::is_trivial
 export template <typename T, typename... Args>
 concept CallableT = std::is_invocable_v<T, Args...>;
 
+export template <typename T, typename Ret, typename... Args>
+concept CallableWithReturnT = std::is_invocable_r_v<Ret, T, Args...>;
+
 export template <typename T, typename... Args>
 concept NoThrowCallableT = std::is_nothrow_invocable_v<T, Args...>;
 
