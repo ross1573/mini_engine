@@ -2,7 +2,7 @@
 
 import mini.core;
 
-constexpr int32 bufSize = DEBUG * 1023 + 1;
+constexpr int bufSize = DEBUG * 1023 + 1;
 
 char assertMsg[bufSize] = { 0 };
 char funcInfo[bufSize] = { 0 };

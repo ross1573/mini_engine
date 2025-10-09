@@ -5,7 +5,7 @@
 import mini.core;
 import convert_utf;
 
-constexpr int32 bufSize = DEBUG * 1023 + 1;
+constexpr int bufSize = DEBUG * 1023 + 1;
 
 char assertMsg[bufSize];
 char funcInfo[bufSize];
