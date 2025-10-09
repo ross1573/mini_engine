@@ -48,8 +48,8 @@ public:
     constexpr CircularIterator& operator--() noexcept;
     constexpr CircularIterator& operator+=(OffsetT) noexcept;
     constexpr CircularIterator& operator-=(OffsetT) noexcept;
-    constexpr CircularIterator operator++(int) noexcept;
-    constexpr CircularIterator operator--(int) noexcept;
+    constexpr CircularIterator operator++(int32) noexcept;
+    constexpr CircularIterator operator--(int32) noexcept;
     constexpr CircularIterator operator+(OffsetT) const noexcept;
     constexpr CircularIterator operator-(OffsetT) const noexcept;
 
@@ -263,7 +263,7 @@ CircularIterator<T, CircularT>::operator-=(OffsetT d) noexcept
 
 template <typename T, typename CircularT>
 inline constexpr CircularIterator<T, CircularT>
-CircularIterator<T, CircularT>::operator++(int) noexcept
+CircularIterator<T, CircularT>::operator++(int32) noexcept
 {
     CircularIterator t(*this);
     ++(*this);
@@ -272,7 +272,7 @@ CircularIterator<T, CircularT>::operator++(int) noexcept
 
 template <typename T, typename CircularT>
 inline constexpr CircularIterator<T, CircularT>
-CircularIterator<T, CircularT>::operator--(int) noexcept
+CircularIterator<T, CircularT>::operator--(int32) noexcept
 {
     CircularIterator t(*this);
     --(*this);

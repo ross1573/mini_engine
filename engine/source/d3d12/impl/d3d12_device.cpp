@@ -73,8 +73,8 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
                                           D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
                                           D3D_FEATURE_LEVEL_11_0 };
 
-    int levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
-    int levelIdx = 0;
+    int32 levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
+    int32 levelIdx = 0;
 
     for (; levelIdx < levelCount && m_Device == nullptr; ++levelIdx) {
         selectedLevel = featureLevels[levelIdx];
@@ -87,7 +87,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
-        for (uint idx = 0;; ++idx, adapter.Reset(), device.Reset()) {
+        for (uint32 idx = 0;; ++idx, adapter.Reset(), device.Reset()) {
             if (FAILED(m_Factory->EnumAdapters(idx, &adapter))) {
                 break;
             }
@@ -132,8 +132,8 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 
     log::Info("selected device: {} ({})", desc, adapterDesc.DeviceId);
     log::Info("D3D feature level: {}", selectedLevelStr);
-    log::Info("gpu memory: {} ({:4.2f} GB)", gpumem, (float)gpumem / (float)(1 << 30));
-    log::Info("system Memory: {} ({:4.2f} GB)", sysmem, (float)sysmem / (float)(1 << 30));
+    log::Info("gpu memory: {} ({:4.2f} GB)", gpumem, (float32)gpumem / (float32)(1 << 30));
+    log::Info("system Memory: {} ({:4.2f} GB)", sysmem, (float32)sysmem / (float32)(1 << 30));
 }
 
 void Device::EnableDebugLayer()

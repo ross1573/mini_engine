@@ -31,7 +31,7 @@ platform::Window* Handle::CreatePlatformWindow()
     return new Window(static_cast<cocoa::Application*>(this));
 }
 
-void Handle::OnKeyDown(uint keyCode)
+void Handle::OnKeyDown(uint32 keyCode)
 {
     switch (keyCode) {
         case 0x0C: Engine::Quit(); break;

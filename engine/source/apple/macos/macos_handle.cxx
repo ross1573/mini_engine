@@ -23,7 +23,7 @@ private:
     void ApplicationWillFinishLaunching(NS::Notification*) final {}
     void ApplicationDidFinishLaunching(NS::Notification*) final {}
 
-    void OnKeyDown(uint) final;
+    void OnKeyDown(uint32) final;
 };
 
 } // namespace mini::macos

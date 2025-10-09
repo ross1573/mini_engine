@@ -27,7 +27,7 @@ public:
     void WaitForIdle() final;
     void Execute() final;
 
-    void SetViewport(Rect const&, float, float) final;
+    void SetViewport(Rect const&, float32, float32) final;
     void SetScissorRect(RectInt const&) final;
 
     inline CommandQueue* GetCommandQueue() const { return m_CommandQueue.Get(); }

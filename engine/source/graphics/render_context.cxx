@@ -15,7 +15,7 @@ public:
     virtual void WaitForIdle() = 0;
     virtual void Execute() = 0;
 
-    virtual void SetViewport(Rect const&, float, float) = 0;
+    virtual void SetViewport(Rect const&, float32, float32) = 0;
     virtual void SetScissorRect(RectInt const&) = 0;
 
 protected:

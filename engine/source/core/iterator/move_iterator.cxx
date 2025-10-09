@@ -41,10 +41,10 @@ public:
         requires RandomAccessIteratorT<T>;
 
     constexpr MoveIterator& operator++();
-    constexpr MoveIterator operator++(int);
+    constexpr MoveIterator operator++(int32);
     constexpr MoveIterator& operator--()
         requires BidrectionalIteratorT<T>;
-    constexpr MoveIterator operator--(int)
+    constexpr MoveIterator operator--(int32)
         requires BidrectionalIteratorT<T>;
     constexpr MoveIterator& operator+=(OffsetT)
         requires RandomAccessIteratorT<T>;
@@ -164,7 +164,7 @@ inline constexpr MoveIterator<T>& MoveIterator<T>::operator++()
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator++(int)
+inline constexpr MoveIterator<T> MoveIterator<T>::operator++(int32)
 {
     MoveIterator<T> t(*this);
     ++(*this);
@@ -180,7 +180,7 @@ inline constexpr MoveIterator<T>& MoveIterator<T>::operator--()
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator--(int)
+inline constexpr MoveIterator<T> MoveIterator<T>::operator--(int32)
     requires BidrectionalIteratorT<T>
 {
     MoveIterator<T> t(*this);

@@ -115,14 +115,14 @@ public:
         return *this;
     }
 
-    inline constexpr StaticSize operator++(int) noexcept
+    inline constexpr StaticSize operator++(int32) noexcept
     {
         StaticSize s = *this;
         ++size;
         return s;
     }
 
-    inline constexpr StaticSize operator--(int) noexcept
+    inline constexpr StaticSize operator--(int32) noexcept
     {
         StaticSize s = *this;
         --size;

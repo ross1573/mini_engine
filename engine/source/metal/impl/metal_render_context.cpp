@@ -74,7 +74,7 @@ void RenderContext::Execute()
     m_AutoReleasePool.Reset();
 }
 
-void RenderContext::SetViewport(Rect const&, float, float)
+void RenderContext::SetViewport(Rect const&, float32, float32)
 {
 }
 

@@ -77,7 +77,7 @@ void RenderContext::EndRender()
     m_CommandList->ResourceBarrier(1, &barrier);
 }
 
-void RenderContext::SetViewport(Rect const& rect, float minZ, float maxZ)
+void RenderContext::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
 {
     D3D12_VIEWPORT d3dViewport{};
     d3dViewport.TopLeftX = rect.x;

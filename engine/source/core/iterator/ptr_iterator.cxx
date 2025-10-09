@@ -39,8 +39,8 @@ public:
     constexpr PtrIterator& operator--() noexcept;
     constexpr PtrIterator& operator+=(OffsetT) noexcept;
     constexpr PtrIterator& operator-=(OffsetT) noexcept;
-    constexpr PtrIterator operator++(int) noexcept;
-    constexpr PtrIterator operator--(int) noexcept;
+    constexpr PtrIterator operator++(int32) noexcept;
+    constexpr PtrIterator operator--(int32) noexcept;
     constexpr PtrIterator operator+(OffsetT) const noexcept;
     constexpr PtrIterator operator-(OffsetT) const noexcept;
 
@@ -168,7 +168,7 @@ inline constexpr PtrIterator<T>& PtrIterator<T>::operator-=(OffsetT d) noexcept
 }
 
 template <PtrT T>
-inline constexpr PtrIterator<T> PtrIterator<T>::operator++(int) noexcept
+inline constexpr PtrIterator<T> PtrIterator<T>::operator++(int32) noexcept
 {
     PtrIterator t(*this);
     ++(*this);
@@ -176,7 +176,7 @@ inline constexpr PtrIterator<T> PtrIterator<T>::operator++(int) noexcept
 }
 
 template <PtrT T>
-inline constexpr PtrIterator<T> PtrIterator<T>::operator--(int) noexcept
+inline constexpr PtrIterator<T> PtrIterator<T>::operator--(int32) noexcept
 {
     PtrIterator t(*this);
     --(*this);

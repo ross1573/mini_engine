@@ -46,8 +46,8 @@ public:
     constexpr ArrayIterator& operator--() noexcept;
     constexpr ArrayIterator& operator+=(OffsetT) noexcept;
     constexpr ArrayIterator& operator-=(OffsetT) noexcept;
-    constexpr ArrayIterator operator++(int) noexcept;
-    constexpr ArrayIterator operator--(int) noexcept;
+    constexpr ArrayIterator operator++(int32) noexcept;
+    constexpr ArrayIterator operator--(int32) noexcept;
     constexpr ArrayIterator operator+(OffsetT) const noexcept;
     constexpr ArrayIterator operator-(OffsetT) const noexcept;
 
@@ -226,7 +226,7 @@ inline constexpr ArrayIterator<T, ArrayT>& ArrayIterator<T, ArrayT>::operator-=(
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator++(int) noexcept
+inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator++(int32) noexcept
 {
     ArrayIterator t(*this);
     ++t.m_Ptr;
@@ -234,7 +234,7 @@ inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator++(i
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator--(int) noexcept
+inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator--(int32) noexcept
 {
     ArrayIterator t(*this);
     --t.m_Ptr;

@@ -148,7 +148,7 @@ void SwapChain::CreateBuffers(uint8 count)
     DXGI_FORMAT formatFlag = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     m_SwapChain->SetFullscreenState(!m_FullscreenDesc.Windowed, nullptr);
-    VERIFY(m_SwapChain->ResizeBuffers((uint)count, m_Width, m_Height, formatFlag, swapChainFlags),
+    VERIFY(m_SwapChain->ResizeBuffers((uint32)count, m_Width, m_Height, formatFlag, swapChainFlags),
            "failed to create swap chain buffers");
 
     for (uint32 i = 0; i < count; ++i) {

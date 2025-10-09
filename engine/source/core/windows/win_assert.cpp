@@ -5,7 +5,7 @@
 import mini.core;
 import convert_utf;
 
-constexpr int bufSize = DEBUG * 1023 + 1;
+constexpr int32 bufSize = DEBUG * 1023 + 1;
 
 char assertMsg[bufSize];
 char funcInfo[bufSize];
@@ -18,9 +18,9 @@ wchar_t* AssertMsg(char const* expr, char const* msg)
 {
     char const* str[3] = { expr, msg == nullptr ? nullptr : "\nMessage: ", msg };
 
-    int len = (int)ConcatStrings(assertMsg, bufSize, str, 3);
-    int cvtLen = (int)utf::ConvertLength(assertMsg, assertMsg + len, (wchar_t)0);
-    int wlen = cvtLen < bufSize ? cvtLen : bufSize;
+    int32 len = (int32)ConcatStrings(assertMsg, bufSize, str, 3);
+    int32 cvtLen = (int32)utf::ConvertLength(assertMsg, assertMsg + len, (wchar_t)0);
+    int32 wlen = cvtLen < bufSize ? cvtLen : bufSize;
 
     utf::Convert(assertMsg, assertMsg + len, wassertMsg, wassertMsg + wlen);
     wassertMsg[wlen - 1] = '\0';
@@ -30,9 +30,9 @@ wchar_t* AssertMsg(char const* expr, char const* msg)
 
 wchar_t* AssertLoc(std::source_location const& loc)
 {
-    int len = (int)SourceLocationToString(funcInfo, bufSize, loc);
-    int cvtLen = (int)utf::ConvertLength(funcInfo, funcInfo + len, (wchar_t)0);
-    int wlen = cvtLen < bufSize ? cvtLen : bufSize;
+    int32 len = (int32)SourceLocationToString(funcInfo, bufSize, loc);
+    int32 cvtLen = (int32)utf::ConvertLength(funcInfo, funcInfo + len, (wchar_t)0);
+    int32 wlen = cvtLen < bufSize ? cvtLen : bufSize;
 
     utf::Convert(funcInfo, funcInfo + len, wfuncInfo, wfuncInfo + wlen);
     wfuncInfo[wlen - 1] = '\0';
@@ -42,7 +42,7 @@ wchar_t* AssertLoc(std::source_location const& loc)
 void EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
 {
     char locBuffer[512];
-    int len = SourceLocationToString(locBuffer, sizeof(locBuffer), loc);
+    int32 len = SourceLocationToString(locBuffer, sizeof(locBuffer), loc);
     locBuffer[len - 1] = '\0';
 
     StringView exprView = expr;

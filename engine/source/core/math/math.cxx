@@ -40,9 +40,9 @@ template <typename T>
 concept Float64ConvertibleT = ConvertibleToT<T, float64>;
 
 export template <FloatT T>
-inline constexpr float Pow(T base, ConvertibleToT<T> auto exp)
+inline /*constexpr*/ T Pow(T base, ConvertibleToT<T> auto exp)
 {
-    return std::pow(base, static_cast<float32>(exp));
+    return static_cast<T>(std::pow(base, static_cast<T>(exp)));
 }
 
 export template <IntT T>
@@ -69,7 +69,7 @@ inline constexpr OffsetT Pow(T base, T exp)
 }
 
 export template <FloatT T>
-/*constexpr*/ inline T Sqrt(T value)
+inline /*constexpr*/ T Sqrt(T value)
 {
     return std::sqrt(value);
 }

@@ -2,7 +2,7 @@
 
 import mini.core;
 
-constexpr int bufSize = DEBUG * 1023 + 1;
+constexpr int32 bufSize = DEBUG * 1023 + 1;
 
 char assertMsg[bufSize] = { 0 };
 char funcInfo[bufSize] = { 0 };
@@ -18,7 +18,7 @@ char* AssertMsg(char const* expr, char const* msg)
 
 char* AssertLoc(std::source_location const& loc)
 {
-    int len = SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
+    int32 len = SourceLocationToString(funcInfo, sizeof(funcInfo), loc);
     memory::MemCopy(funcInfo + len, "\n\0", 3);
     return funcInfo;
 }
@@ -26,7 +26,7 @@ char* AssertLoc(std::source_location const& loc)
 void EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
 {
     char locBuffer[512];
-    int len = SourceLocationToString(locBuffer, sizeof(locBuffer) - 2, loc);
+    int32 len = SourceLocationToString(locBuffer, sizeof(locBuffer) - 2, loc);
     memory::MemCopy(locBuffer + len, "\n\n\0", 3);
 
     StringView exprView = expr;

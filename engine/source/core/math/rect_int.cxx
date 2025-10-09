@@ -66,8 +66,8 @@ inline constexpr RectInt::RectInt(Vector2Int const& position, Vector2Int const& 
 
 inline constexpr Vector2 RectInt::Center() const noexcept
 {
-    return Vector2(static_cast<float>(x) + (static_cast<float>(width) / 2.f),
-                   static_cast<float>(y) + (static_cast<float>(height) / 2.f));
+    return Vector2(static_cast<float32>(x) + (static_cast<float32>(width) / 2.f),
+                   static_cast<float32>(y) + (static_cast<float32>(height) / 2.f));
 }
 
 inline constexpr Vector2Int RectInt::Position() const noexcept

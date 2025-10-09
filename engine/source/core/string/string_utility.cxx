@@ -91,7 +91,7 @@ inline constexpr T* StringFill(T* dst, T value, SizeT count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int>(value),
+            void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int32>(value),
                                        static_cast<size_t>(count));
             return static_cast<T*>(ptr);
         }
