@@ -75,7 +75,7 @@ inline void Logger::Message(Level level, MessageContext context, Args&&... args)
 }
 
 template <typename... Args>
-inline void Logger::Debug(MessageContext context, Args&&... args)
+inline void Logger::Debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
 #if DEBUG
     Message(Level(0), context, ForwardArg<Args>(args)...);
