@@ -78,9 +78,9 @@ PRIVATE
     impl/assert_util.cpp
     impl/module_system.cpp
 
-    $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
-    $<$<PLATFORM_ID:Windows>:windows/win_logger.cpp>
-    $<$<PLATFORM_ID:Windows>:windows/win_module.cpp>
+    $<$<PLATFORM_ID:Windows>:impl/windows/win_assert.cpp>
+    $<$<PLATFORM_ID:Windows>:impl/windows/win_logger.cpp>
+    $<$<PLATFORM_ID:Windows>:impl/windows/win_module.cpp>
 
     $<$<PLATFORM_ID:Darwin>:impl/macos/macos_assert.cpp>
     $<$<PLATFORM_ID:Darwin>:impl/macos/macos_logger.cpp>
