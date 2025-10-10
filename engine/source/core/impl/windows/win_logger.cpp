@@ -18,11 +18,12 @@ LoggerBase::LoggerBase(StringView category)
 
 void LoggerBase::PrintMessage(byte, StringView msg)
 {
-    String log(3 + m_Category.Size() + msg.Size());
+    String log(4 + m_Category.Size() + msg.Size());
     log.Push('[');
     log.Append(m_Category);
     log.Append("] ", 2);
     log.Append(msg);
+    log.Push('\n');
 
     OutputDebugStringA(log.Data());
 }
