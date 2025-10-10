@@ -1,3 +1,4 @@
+include(mini_define)
 include(mini_option)
 include(mini_module)
 
@@ -7,6 +8,8 @@ function (no_arg_test name)
     add_executable(test.${name} ${name}.cpp)
     add_test(NAME ${name} COMMAND $<TARGET_FILE:test.${name}>)
 
+    generate_define_header(test.${name})
+    
     target_link_libraries(test.${name} PRIVATE mini.test)
     set_target_properties(test.${name} PROPERTIES
         FOLDER test

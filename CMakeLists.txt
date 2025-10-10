@@ -39,8 +39,6 @@ if (APPLE)
     enable_language(OBJCXX)
 endif()
 
-include(engine_define)
-
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
 

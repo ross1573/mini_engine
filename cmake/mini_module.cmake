@@ -1,6 +1,12 @@
+include(mini_util)
 include(mini_module_util)
 
-function (add_module name)    
+function (module_sources name)
+    target_sources(${ARGV})
+    build_source_tree(${name})
+endfunction()
+
+function (add_module name)
     if (${ARGC} GREATER 1)
         list(GET ARGN 0 first_arg)
         string(TOUPPER ${first_arg} type)
@@ -20,6 +26,14 @@ function (add_module name)
     if (NOT NO_API_LOG)
         generate_api_log(${name})
     endif()
+    if (NOT NO_DEFINE_HEADER)
+        generate_define_header(${name}
+            MODULE_NAME="${name}"
+            MODULE_PREFIX="${prefix}"
+            MODULE_API="${api}"
+            MODULE_OUTPUT="$<TARGET_FILE_NAME:${name}>"
+        )
+    endif()
 
     set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
     if (EXISTS ${include_dir})
@@ -30,9 +44,6 @@ function (add_module name)
         FOLDER module
         OUTPUT_NAME "${BUILD_MODULE_PREFIX}.${api}"
     )
-
-    get_property(engine_define_header GLOBAL PROPERTY ENGINE_DEFINE_HEADER)
-    target_precompile_headers(${name} PRIVATE ${engine_define_header})
 
     if (${ARGC} GREATER 1)
         module_sources(${name} ${ARGN})

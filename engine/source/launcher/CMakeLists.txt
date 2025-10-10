@@ -22,6 +22,7 @@ FILES
 )
 
 generate_static_init(mini.launcher)
+generate_define_header(mini.launcher)
 
 get_property(static_modules GLOBAL PROPERTY STATIC_MODULE)
 set(modules

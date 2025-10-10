@@ -78,6 +78,58 @@ function (generate_module_entry target)
     set_source_files_properties(${file_path} PROPERTIES GENERATED ON)
 endfunction()
 
+function (generate_define_header target)
+    list(APPEND COMPILE_DEFINITIONS ${ARGN})
+    foreach (definition ${COMPILE_DEFINITIONS})
+        # special case on new line
+        if (definition STREQUAL "\n")
+            string(APPEND parsed_list "\n")
+            continue()
+        endif()
+
+        # parse string by assign operator
+        string(FIND ${definition} "=" index)
+        if (index GREATER 0)
+            math(EXPR val_start "${index} + 1")
+            math(EXPR padding_len "41 - ${index}")
+
+            # add some padding
+            if (padding_len LESS 0)
+                set(padding_len 0)
+            endif()
+            string(REPEAT " " ${padding_len} padding)
+        else()
+            set(padding "")
+        endif()
+
+        string(REPLACE "=" "${padding}" definition ${definition})
+        string(APPEND parsed_list "#define " ${definition} "\n")
+    endforeach()
+
+    set(define_header "define.generated.h")
+    get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if (is_multi_config)
+        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/define/$<CONFIG>")
+    else()
+        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/define")
+    endif()
+
+    file(GENERATE
+        OUTPUT "${define_path}/${define_header}"
+        CONTENT "${parsed_list}"
+        TARGET "${target}"
+        FILE_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+        NEWLINE_STYLE LF
+    )
+
+    target_include_directories(${target} PRIVATE ${define_path})
+    target_precompile_headers(${target} PRIVATE "${define_path}/${define_header}")
+    target_sources(${target} PRIVATE
+        FILE_SET generated_define TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+        FILES "${define_path}/${define_header}"
+    )
+endfunction()
+
 function (generate_static_init target)
     get_property(static_init GLOBAL PROPERTY STATIC_INIT)
     get_property(static_cleanup GLOBAL PROPERTY STATIC_CLEANUP)
@@ -200,11 +252,6 @@ function (generate_api_log target)
     )
 endfunction()
 
-function (module_sources target)
-    target_sources(${ARGV})
-    build_source_tree(${target})
-endfunction()
-
 function (build_source_tree target)
     generate_api_name(${target})
     
@@ -277,17 +324,26 @@ function (build_source_tree target)
         endif()
     endforeach()
 
-    # filter PCH files
-    # these files will always have the same name and path, so just hard coded it
+    # make a list of generated files
+    set(cmake_gen_path "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir")
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
-        set(cmake_gen_path "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir")
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.cxx")
+        list(APPEND generated_files "${cmake_gen_path}/$<CONFIG>/cmake_pch.hxx")
 
-        foreach(config_type ${CMAKE_CONFIGURATION_TYPES})
-            list(APPEND generated_files "${cmake_gen_path}/${config_type}/cmake_pch.hxx")
+        # convert config generator into a real configuration
+        foreach (gen_file ${generated_files})
+            if (NOT gen_file MATCHES ".*\\$\<CONFIG\>.*")
+                continue()
+            endif()
+
+            foreach(config_type ${CMAKE_CONFIGURATION_TYPES})
+                string(REPLACE "$<CONFIG>" "${config_type}" configured_file ${gen_file})
+                list(APPEND generated_files ${configured_file})
+            endforeach()
         endforeach()
     else()
+        list(APPEND generated_files "${cmake_gen_path}/cmake_pch.cxx")
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.hxx")
     endif()
 
