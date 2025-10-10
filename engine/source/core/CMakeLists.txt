@@ -11,8 +11,8 @@ add_module(mini.core)
 
 module_sources(mini.core
 PUBLIC
-    public/assertion.h
-    public/option.h
+    include/assertion.h
+    include/option.h
 
 PUBLIC
     FILE_SET core TYPE CXX_MODULES
@@ -89,8 +89,8 @@ PRIVATE
 
 target_precompile_headers(mini.core 
 PUBLIC
-    public/assertion.h
-    public/option.h
+    include/assertion.h
+    include/option.h
 )
 
 target_include_directories(mini.core 

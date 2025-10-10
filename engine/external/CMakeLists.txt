@@ -1,11 +1,10 @@
 set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE) # most external libraries aren't compatible with c++ modules yet
-set(CMAKE_BUILD_TYPE Release) # external library should be linked as release
 set(BUILD_SHARED_LIBS FALSE) # build external as static library
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/external")
+include(mini_util)
+
+set_output_directory(external)
 
 macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)

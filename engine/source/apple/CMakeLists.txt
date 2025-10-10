@@ -2,6 +2,10 @@ add_module(mini.apple STATIC)
 
 module_sources(mini.apple
 PUBLIC
+    include/appkit.h
+    include/foundation.h
+
+PUBLIC
     FILE_SET apple TYPE CXX_MODULES
     FILES
         apple.cxx
@@ -11,8 +15,8 @@ PUBLIC
 
 target_precompile_headers(mini.apple
 PUBLIC
-    public/appkit.h
-    public/foundation.h
+    include/appkit.h
+    include/foundation.h
     <Foundation/Foundation.hpp>
     <QuartzCore/QuartzCore.hpp>
 )

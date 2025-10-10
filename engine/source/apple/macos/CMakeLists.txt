@@ -30,3 +30,8 @@ PRIVATE
     "-framework Foundation"
     "-framework AppKit"
 )
+
+target_include_directories(mini.macos
+PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/internal
+)

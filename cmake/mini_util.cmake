@@ -12,6 +12,12 @@ macro (include_shared name)
     set(BUILD_SHARED_LIBS ${prev_build_type})
 endmacro()
 
+macro (set_output_directory dir)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_LIBRARY_DIR}/${dir}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_LIBRARY_DIR}/${dir}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_RUNTIME_DIR}/${dir}")
+endmacro()
+
 macro (snake_to_camel_case name)
     string(REPLACE "_" ";" list ${name})
     foreach (split ${list})

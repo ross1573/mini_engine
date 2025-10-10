@@ -21,15 +21,18 @@ function (add_module name)
         generate_api_log(${name})
     endif()
 
-    target_include_directories(${name}
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/internal"
-    )
+    set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    if (EXISTS ${include_dir})
+        target_include_directories(${name} PUBLIC ${include_dir})
+    endif()
 
     set_target_properties(${name} PROPERTIES 
         FOLDER module
         OUTPUT_NAME "${BUILD_MODULE_PREFIX}.${api}"
     )
+
+    get_property(engine_define_header GLOBAL PROPERTY ENGINE_DEFINE_HEADER)
+    target_precompile_headers(${name} PRIVATE ${engine_define_header})
 
     if (${ARGC} GREATER 1)
         module_sources(${name} ${ARGN})

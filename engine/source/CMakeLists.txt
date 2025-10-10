@@ -3,8 +3,9 @@ set(CMAKE_MESSAGE_LOG_LEVEL STATUS)
 
 include(mini_util)
 include(mini_module)
-include(mini_define)
 include(mini_option)
+
+set_output_directory(${BUILD_TARGET_ARCH})
 
 add_subdirectory(core)
 add_subdirectory(platform)
