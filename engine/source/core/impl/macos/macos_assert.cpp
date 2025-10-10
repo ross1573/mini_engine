@@ -25,6 +25,8 @@ char* AssertLoc(std::source_location const& loc)
 
 void EnsureHelper(char const* expr, char const* msg, std::source_location const& loc)
 {
+    static Logger assertLogger = Logger("Assert");
+
     char locBuffer[512];
     int32 len = SourceLocationToString(locBuffer, sizeof(locBuffer) - 2, loc);
     memory::MemCopy(locBuffer + len, "\n\n\0", 3);
@@ -33,19 +35,17 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
     StringView msgView = msg;
 
     if (msgView.IsEmpty()) {
-        log::Message(StringView{},
-                     "\nEnsure failed!\n"
-                     "  Expression: {0}\n"
-                     "  Function: {2}",
-                     exprView, locBuffer);
+        assertLogger.Fatal("\n\nEnsure failed!\n"
+                           "  Expression: {0}\n"
+                           "  Function: {2}",
+                           exprView, locBuffer);
     }
     else {
-        log::Message(StringView{},
-                     "\nEnsure failed!\n"
-                     "  Expression: {0}\n"
-                     "  Message: {1}\n"
-                     "  Function: {2}",
-                     exprView, msgView, locBuffer);
+        assertLogger.Fatal("\n\nEnsure failed!\n"
+                           "  Expression: {0}\n"
+                           "  Message: {1}\n"
+                           "  Function: {2}",
+                           exprView, msgView, locBuffer);
     }
 }
 

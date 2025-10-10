@@ -3,6 +3,7 @@ module mini.d3d12;
 import mini.core;
 import mini.platform;
 import mini.windows;
+import :log;
 import :device;
 import :descriptor;
 import :swap_chain;
@@ -90,7 +91,7 @@ void SwapChain::Present()
 void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 {
     if (width * height <= 0) {
-        log::Error("Cannot resize to {} x {}", width, height);
+        LogError("Cannot resize to {} x {}", width, height);
         return;
     }
 
@@ -123,7 +124,7 @@ void SwapChain::SetFullScreen(bool fullscreen)
     Graphics::GetRenderContext()->WaitForIdle();
 
     if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr))) {
-        log::Error("Failed to set fullscreen state");
+        LogError("Failed to set fullscreen state");
     }
     else {
         m_FullscreenDesc.Windowed = !fullscreen;

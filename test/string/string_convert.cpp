@@ -10,6 +10,7 @@ import convert_utf;
     TEST_ENSURE(TestStringConvert(from, to));
 
 using namespace mini;
+using namespace mini::test;
 
 constexpr char const* str = "hello world! 안녕하세요! おげんきですか";
 constexpr wchar const* wstr = L"hello world! 안녕하세요! おげんきですか";

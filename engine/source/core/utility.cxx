@@ -11,6 +11,8 @@ namespace mini {
 export template <typename T>
 using InitializerList = std::initializer_list<T>;
 
+export using SourceLocation = std::source_location;
+
 export template <typename T>
 inline constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept
 {

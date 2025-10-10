@@ -5,8 +5,9 @@ module;
 export module mini.test;
 
 export import mini.core;
+export import :log;
 
-export namespace mini { // clang-format off
+export namespace mini::test {
 
 TEST_API inline SizeT ctor = 0;
 TEST_API inline SizeT dtor = 0;
@@ -57,22 +58,22 @@ TEST_API inline void InitializeCounter()
 
 TEST_API inline void PrintCounter(StringView msg, SizeT time = 0)
 {
-    log::Message("", "\tContainer: {} / {}", msg, time);
-    log::Message("", "\t\tConstructor: {}", ctor);
-    log::Message("", "\t\tCopy Constructor: {}", copyCtor);
-    log::Message("", "\t\tMove Constructor: {}", moveCtor);
-    log::Message("", "\t\tCopy Assign: {}", copyAssign);
-    log::Message("", "\t\tMove Assign: {}", moveAssign);
-    log::Message("", "\t\tDestructor: {}", dtor);
+    Log("", "\tContainer: {} / {}", msg, time);
+    Log("", "\t\tConstructor: {}", ctor);
+    Log("", "\t\tCopy Constructor: {}", copyCtor);
+    Log("", "\t\tMove Constructor: {}", moveCtor);
+    Log("", "\t\tCopy Assign: {}", copyAssign);
+    Log("", "\t\tMove Assign: {}", moveAssign);
+    Log("", "\t\tDestructor: {}", dtor);
 }
 
 struct TEST_API Debug {
-    Debug() { log::Message("DEBUG", "constructor"); }
-    ~Debug() { log::Message("DEBUG", "destructor"); }
-    Debug(Debug const&) { log::Message("DEBUG", "copy constructor"); }
-    Debug(Debug&&) noexcept { log::Message("DEBUG", "move constructor"); }
-    void operator=(Debug const&) { log::Message("DEBUG", "copy assgin"); }
-    void operator=(Debug&&) noexcept { log::Message("DEBUG", "move assign"); }
+    Debug() { Log("DEBUG", "constructor"); }
+    ~Debug() { Log("DEBUG", "destructor"); }
+    Debug(Debug const&) { Log("DEBUG", "copy constructor"); }
+    Debug(Debug&&) noexcept { Log("DEBUG", "move constructor"); }
+    void operator=(Debug const&) { Log("DEBUG", "copy assgin"); }
+    void operator=(Debug&&) noexcept { Log("DEBUG", "move assign"); }
 };
 
 template <typename T>
@@ -84,6 +85,8 @@ struct DebugAlloc : public Allocator<T> {
     DebugAlloc& operator=(DebugAlloc const&) = default;
     DebugAlloc& operator=(DebugAlloc&&) noexcept = default;
 };
+
+// clang-format off
 
 struct TEST_API Foo {
     BasicString<char> str;
@@ -146,4 +149,6 @@ struct TEST_API FooDel {
     void operator()(Foo* ptr) { delete ptr; }
 };
 
-} // namespace, clang-format on
+// clang-format on
+
+} // namespace mini::test

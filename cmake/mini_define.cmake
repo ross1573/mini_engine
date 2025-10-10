@@ -1,6 +1,7 @@
 add_compile_definitions(
     DEBUG=$<CONFIG:Debug>
     LIB_PREFIX="${BUILD_MODULE_PREFIX}"
+    ENGINE_PROJECT_NAME="${ENGINE_PROJECT_NAME}"
 
     CLANG=$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>
     GNUC=$<CXX_COMPILER_ID:GNU>

@@ -5,6 +5,7 @@
 import mini.test;
 
 using namespace mini;
+using namespace mini::test;
 
 [[maybe_unused]] static constexpr void StringConstraints()
 {

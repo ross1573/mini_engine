@@ -132,22 +132,3 @@ export template <typename T, typename U>
 concept ThreeWayComparableWithT = std::three_way_comparable_with<T, U>;
 
 } // namespace mini
-
-namespace mini {
-
-export template <typename T>
-concept IntT = std::integral<T>;
-
-export template <typename T>
-concept FloatT = std::floating_point<T>;
-
-export template <typename T>
-concept ArithmeticT = std::is_arithmetic_v<T>;
-
-export template <typename T>
-concept UnsignedT = std::is_unsigned_v<T>;
-
-export template <typename T>
-concept CharT = AnyOfT<RemoveConstVolatileT<T>, char, wchar_t, char8_t, char16_t, char32_t>;
-
-} // namespace mini

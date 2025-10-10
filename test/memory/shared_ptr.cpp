@@ -1,6 +1,7 @@
 import mini.test;
 
 using namespace mini;
+using namespace mini::test;
 
 static constexpr bool ConstexprSharedPtr()
 {

@@ -5,6 +5,7 @@
 import mini.test;
 
 using namespace mini;
+using namespace mini::test;
 
 #define TEST_ARRAY(func, type, ...)                              \
     static_assert(func<type __VA_OPT__(, ) __VA_ARGS__>() == 0); \

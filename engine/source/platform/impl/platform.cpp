@@ -1,6 +1,7 @@
 module mini.platform;
 
 import mini.core;
+import :log;
 
 namespace mini {
 
@@ -12,10 +13,10 @@ bool Platform::Initialize(Handle* handle)
     ENSURE(g_Handle->Initialize(), "Failed to initialize platform handle") {
         return false;
     }
-    log::Info("platform handle initialized");
+    platform::Log("platform handle initialized");
 
     g_Window = UniquePtr(g_Handle->CreatePlatformWindow());
-    log::Info("platform window initialized");
+    platform::Log("platform window initialized");
 
     return true;
 }

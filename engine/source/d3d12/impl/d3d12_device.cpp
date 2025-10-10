@@ -3,6 +3,7 @@ module mini.d3d12;
 import mini.core;
 import mini.windows;
 import mini.engine;
+import :log;
 import :swap_chain;
 import :command_queue;
 import :render_context;
@@ -79,7 +80,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     for (; levelIdx < levelCount && m_Device == nullptr; ++levelIdx) {
         selectedLevel = featureLevels[levelIdx];
         if (selectedLevel < minimum) {
-            log::Error("unable to find DirectX12 supported hardware");
+            LogError("unable to find DirectX12 supported hardware");
             return;
         }
 
@@ -109,7 +110,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     }
 
     if (m_Device == nullptr) {
-        log::Error("failed creating D3D12 device");
+        LogError("failed creating D3D12 device");
         return;
     }
 
@@ -130,10 +131,10 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 
-    log::Info("selected device: {} ({})", desc, adapterDesc.DeviceId);
-    log::Info("D3D feature level: {}", selectedLevelStr);
-    log::Info("gpu memory: {} ({:4.2f} GB)", gpumem, (float32)gpumem / (float32)(1 << 30));
-    log::Info("system Memory: {} ({:4.2f} GB)", sysmem, (float32)sysmem / (float32)(1 << 30));
+    Log("selected device: {} ({})", desc, adapterDesc.DeviceId);
+    Log("D3D feature level: {}", selectedLevelStr);
+    Log("gpu memory: {} ({:4.2f} GB)", gpumem, (float32)gpumem / (float32)(1 << 30));
+    Log("system Memory: {} ({:4.2f} GB)", sysmem, (float32)sysmem / (float32)(1 << 30));
 }
 
 void Device::EnableDebugLayer()

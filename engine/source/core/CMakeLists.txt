@@ -4,6 +4,9 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN FALSE)
 
+# logging depeneds on core module, so core module has to do it manually
+set(NO_API_LOG ON)
+
 add_module(mini.core)
 
 module_sources(mini.core
@@ -16,7 +19,7 @@ PUBLIC
     FILES
         core.cxx
         algorithm.cxx
-        log.cxx
+        logger.cxx
         utility.cxx
 
         container/array.cxx
@@ -57,23 +60,31 @@ PUBLIC
         type/core_type.cxx
         type/type_concepts.cxx
         type/type_define.cxx
+        type/type_numeric.cxx
         type/type_traits.cxx
 
         module/module_system.cxx
         module/module_static.cxx
-        $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
+
+        $<$<PLATFORM_ID:Windows>:windows/win_logger.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
 
+        $<$<PLATFORM_ID:Darwin>:macos/macos_logger.cxx>
+        $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
+
 PRIVATE
+    impl/builtin.h
+    impl/assert_util.h
     impl/assert_util.cpp
     impl/module_system.cpp
 
-    $<$<PLATFORM_ID:Windows>:windows/win_log.cpp>
     $<$<PLATFORM_ID:Windows>:windows/win_assert.cpp>
+    $<$<PLATFORM_ID:Windows>:windows/win_logger.cpp>
+    $<$<PLATFORM_ID:Windows>:windows/win_module.cpp>
 
-    $<$<PLATFORM_ID:Darwin>:macos/macos_log.mm>
-    $<$<PLATFORM_ID:Darwin>:macos/macos_log.cpp>
-    $<$<PLATFORM_ID:Darwin>:macos/macos_assert.cpp>
+    $<$<PLATFORM_ID:Darwin>:impl/macos/macos_assert.cpp>
+    $<$<PLATFORM_ID:Darwin>:impl/macos/macos_logger.cpp>
+    $<$<PLATFORM_ID:Darwin>:impl/macos/macos_module.cpp>
 )
 
 target_precompile_headers(mini.core 

@@ -3,7 +3,7 @@ export module mini.core;
 export import :type;
 export import :utility;
 export import :algorithm;
-export import :log;
+export import :logger;
 
 export import :math;
 export import :color;

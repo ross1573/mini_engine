@@ -9,8 +9,9 @@ option(BUILD_SHARED_LIBS "build modules in shared libraries" ON)
 option(INCLUDE_TEST "include testing executables" OFF)
 option(INCLUDE_BENCHMARK "include benchmarking executables" OFF)
 
-set(ENGINE_PROJECT_AHTHOR "ross1573")
-set(ENGINE_MACOS_IDENTIFIER "com.ross1573.MiniEngine")
+set(ENGINE_PROJECT_NAME ${CMAKE_PROJECT_NAME})
+set(ENGINE_PROJECT_VERSION ${CMAKE_PROJECT_VERSION})
+set(ENGINE_PROJECT_AUTHOR "ross1573")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)

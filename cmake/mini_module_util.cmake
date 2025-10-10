@@ -123,12 +123,12 @@ function (generate_static_init target)
     file(WRITE ${file_path} ${contents})
 
     target_sources(${target} PUBLIC
-        FILE_SET generated TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+        FILE_SET generated_init TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
         FILES ${file_path}
     )
 endfunction()
 
-function (gnerate_api_header target)
+function (generate_api_header target)
     set(args PREFIX FILE_PATH)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
@@ -157,8 +157,46 @@ function (gnerate_api_header target)
 
     target_precompile_headers(${target} PRIVATE ${api_header})
     target_sources(${target} PRIVATE
-        FILE_SET generated TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+        FILE_SET generated_api TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
         FILES ${api_header}
+    )
+endfunction()
+
+function (generate_api_log target)
+    set(args PREFIX API)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
+
+    if (DEFINED arg_PREFIX)
+        set(prefix ${arg_PREFIX})
+        generate_api_name(${target} PREFIX ${arg_PREFIX})
+    else()
+        set(prefix "")
+        generate_api_name(${target})
+    endif()
+
+    # override api if specified
+    if (DEFINED arg_API)
+        set(api ${arg_API})
+        string(TOUPPER ${api} api_upper)
+    endif()
+
+    if (NOT ${target} EQUAL "mini.core")
+        set(core_import "import mini.core;")
+    endif()
+    
+    snake_to_camel_case(${api})
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.log.generated.cxx")
+
+    configure_file(
+        ${ENGINE_PROJECT_DIR}/cmake/template/logger.cxx
+        ${file_path}
+        @ONLY
+        NEWLINE_STYLE LF
+    )
+
+    target_sources(${target} PUBLIC
+        FILE_SET generated_log TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+        FILES ${file_path}
     )
 endfunction()
 
@@ -178,7 +216,8 @@ function (build_source_tree target)
     get_target_property(header_sets ${target} HEADER_SETS)
     foreach (header_set IN LISTS header_sets)
         get_target_property(header_files ${target} HEADER_SET_${header_set})
-        if (${header_set} STREQUAL generated)
+        string(TOUPPER ${header_set} header_set_upper)
+        if (header_set_upper MATCHES "^GENERATED")
             list(APPEND generated_files ${header_files})
         else()
             list(APPEND headers ${header_files})
@@ -190,7 +229,8 @@ function (build_source_tree target)
     get_target_property(module_sets ${target} CXX_MODULE_SETS)
     foreach (module_set IN LISTS module_sets)
         get_target_property(module_files ${target} CXX_MODULE_SET_${module_set})
-        if (${module_set} STREQUAL generated)
+        string(TOUPPER ${module_set} module_set_upper)
+        if (module_set_upper MATCHES "^GENERATED")
             list(APPEND generated_files ${module_files})
         else()
             list(APPEND modules ${module_files})

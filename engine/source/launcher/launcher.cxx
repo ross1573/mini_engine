@@ -5,19 +5,26 @@ import mini.platform;
 import mini.engine;
 import :static_init;
 
+namespace mini::launcher {
+
+Logger logger("Launcher");
+
+} // namespace mini::launcher
+
 namespace mini {
 
 export void LaunchEngine(platform::Handle* handle)
 {
-    launcher::StaticInitialize();
+    launcher::logger.Log("launching engine");
 
-    log::Info("launching engine...");
+    launcher::StaticInitialize();
+    launcher::logger.Log("static initialized");
 
     ENSURE(handle, "unsupported platform") return;
     ENSURE(Platform::Initialize(handle), "failed to initialize platform") {
         return;
     }
-    log::Info("platform initialized");
+    launcher::logger.Log("platform initialized");
 
     Engine::Launch();
 

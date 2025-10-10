@@ -1,6 +1,7 @@
 module mini.graphics;
 
 import mini.core;
+import :log;
 
 namespace mini {
 
@@ -17,7 +18,7 @@ bool Graphics::LoadAPI(StringView api)
     ENSURE(graphicsModule.IsValid(), "failed to load graphics module") {
         return false;
     }
-    log::Info("{0} module loaded", api);
+    graphics::Log("{0} module loaded", api);
 
     using GraphicsInterface = mini::graphics::ModuleInterface;
     GraphicsInterface* interface = graphicsModule.GetInterface<GraphicsInterface>();
@@ -33,7 +34,7 @@ bool Graphics::LoadAPI(StringView api)
     ENSURE(device, "failed to create graphic device") {
         return false;
     }
-    log::Info("{0} device created", api);
+    graphics::Log("{0} device created", api);
 
     g_Graphics = MakeUnique<Graphics>();
     g_Graphics->m_Module = MoveArg(graphicsModule);
@@ -44,19 +45,19 @@ bool Graphics::LoadAPI(StringView api)
     ENSURE(g_Device->Initialize(), "failed to initialize graphics device") {
         return false;
     }
-    log::Info("{0} device initialized", api);
+    graphics::Log("{0} device initialized", api);
 
     g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
     ENSURE(g_RenderContext && g_RenderContext->Initialize(), "Failed to create render context") {
         return false;
     }
-    log::Info("render context initialized");
+    graphics::Log("render context initialized");
 
     g_SwapChain = UniquePtr(g_Device->CreateSwapChain());
     ENSURE(g_SwapChain && g_SwapChain->Initialize(), "Failed to create swap chain") {
         return false;
     }
-    log::Info("swap chain initialized");
+    graphics::Log("swap chain initialized");
 
     return true;
 }
@@ -96,7 +97,7 @@ void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
 {
     SwapChain* swapChain = GetSwapChain();
     if (swapChain == nullptr) [[unlikely]] {
-        log::Error("failed to change resolution. SwapChain is not initialized");
+        graphics::LogError("failed to change resolution. SwapChain is not initialized");
         return;
     }
 

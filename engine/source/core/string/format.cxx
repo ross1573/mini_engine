@@ -59,6 +59,12 @@ inline constexpr String Format(StringView msg, Args&&... args)
     return { buf.data(), buf.size() };
 }
 
+export template <typename T>
+inline constexpr String ToString(T const& val, StringView fmt = "{}")
+{
+    Format(fmt, val);
+}
+
 export template <CharT T, AllocatorT<T> AllocT>
 inline constexpr auto format_as(BasicString<T, AllocT> const& str)
 {
