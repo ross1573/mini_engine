@@ -1,32 +1,29 @@
 include(FetchContent)
 
 # save output on external folder
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/external")
+set_output_directory(external)
 
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_EXCEPTIONS OFF)
+set(BENCHMARK_ENABLE_LTO OFF)
 set(BENCHMARK_ENABLE_WERROR OFF)
-set(BENCHMARK_ENABLE_TESTING OFF) 
+set(BENCHMARK_ENABLE_INSTALL OFF)
+set(BENCHMARK_ENABLE_DOXYGEN OFF)
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+
+set(BENCHMARK_INSTALL_DOCS OFF)
+
+set(BENCHMARK_USE_BUNDLED_GTEST OFF)
 
 FetchContent_Declare(
     googlebenchmark
     GIT_REPOSITORY https://github.com/google/benchmark.git
-    GIT_TAG v1.9.3
+    GIT_TAG v1.9.4
 )
 FetchContent_MakeAvailable(googlebenchmark)
 
-set_target_properties(benchmark 
-PROPERTIES
-    FOLDER external
-)
-
-set_target_properties(benchmark_main
-PROPERTIES
-    FOLDER external
-)
+set_target_properties(benchmark PROPERTIES FOLDER external)
+set_target_properties(benchmark_main PROPERTIES FOLDER external)
 
 # restore output folder
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/${BUILD_TARGET_ARCH}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/${BUILD_TARGET_ARCH}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/bin/${BUILD_TARGET_ARCH}")
+set_output_directory(${BUILD_TARGET_ARCH})
