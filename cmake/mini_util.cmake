@@ -34,8 +34,9 @@ macro (configure_end name)
 
     math(EXPR ${ts_name}_sec "${${ts_name}_end_sec} - ${${ts_name}_start_sec}")
     math(EXPR ${ts_name}_mic "${${ts_name}_end_mic} - ${${ts_name}_start_mic}")
-    math(EXPR ${ts_name}_mic_remain "${${ts_name}_mic} % 100")
+    math(EXPR ${ts_name}_mic_remain "${${ts_name}_mic} % 1000")
     math(EXPR ${ts_name}_mic "${${ts_name}_mic} / 1000")
+    
     if (${ts_name}_mic_remain GREATER_EQUAL 999)
         math(EXPR ${ts_name}_sec "${${ts_name}_sec} + 1")
         set(${ts_name}_mic 0)
