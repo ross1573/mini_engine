@@ -1,5 +1,6 @@
 set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE) # most external libraries aren't compatible with c++ modules yet
+set(CMAKE_BUILD_TYPE Release) # external library should be linked as release
 set(BUILD_SHARED_LIBS FALSE) # build external as static library
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ENGINE_PROJECT_DIR}/lib/external")
@@ -16,10 +17,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(-Wno-everything)
 endif()
 
-set(FMT_INSTALL OFF)
-set(FMT_MODULE ON)
-add_subdirectory(fmt)
-set_external(fmt)
+include(Fmt)
 
 add_subdirectory(convert_utf)
 set_external(convert_utf)
