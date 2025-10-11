@@ -109,9 +109,9 @@ function (generate_define_header target)
     set(define_header "define.generated.h")
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
-        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/define/$<CONFIG>")
+        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.define/$<CONFIG>")
     else()
-        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/define")
+        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.define")
     endif()
 
     file(GENERATE
