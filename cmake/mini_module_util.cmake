@@ -68,14 +68,9 @@ function (generate_module_entry target)
     # these initializers will be used on code generated
     get_target_property(target_type ${target} TYPE)
     if (target_type STREQUAL "STATIC_LIBRARY")
-        target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=1)
         set_property(GLOBAL APPEND PROPERTY STATIC_MODULE ${target})
         set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__${api_full}_start_module")
-    elseif (target_type STREQUAL "SHARED_LIBRARY")
-        target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=0)
-    elseif (target type STREQUAL "MODULE_LIBRARY")
-        target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=0)
-    else()
+    elseif (NOT target_type STREQUAL "SHARED_LIBRARY")
         message(FATAL_ERROR "unsupported build type: " ${target_type})
     endif()
 
@@ -86,7 +81,7 @@ endfunction()
 function (generate_define_header target)
     string(APPEND parsed_list "#pragma once\n\n")
     list(APPEND COMPILE_DEFINITIONS ${ARGN})
-    
+
     foreach (definition ${COMPILE_DEFINITIONS})
         # special case on new line
         if (definition STREQUAL "\n")

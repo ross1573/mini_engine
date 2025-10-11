@@ -14,13 +14,13 @@ namespace mini {
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
 {
-    StringView prefix = MODULE_PREFIX ".";
-    StringView postfix = ".dll";
+    StringView prefix = MODULE_OUTPUT_PREFIX ".";
+    StringView suffix = MODULE_OUTPUT_SUFFIX;
 
-    String modulePath(prefix.Size() + name.Size() + postfix.Size());
+    String modulePath(prefix.Size() + name.Size() + suffix.Size());
     modulePath.Append(prefix);
     modulePath.Append(name);
-    modulePath.Append(postfix);
+    modulePath.Append(suffix);
 
     m_Handle = LoadLibraryA(modulePath.Data());
     if (m_Handle == nullptr) {

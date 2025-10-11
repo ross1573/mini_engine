@@ -38,9 +38,13 @@ function (add_module name)
     if (NOT arg_NO_DEFINE_HEADER)
         generate_define_header(${name}
             MODULE_NAME="${name}"
-            MODULE_PREFIX="${prefix}${BUILD_PREFIX}"
+            MODULE_PREFIX="${prefix}"
             MODULE_API="${api}"
             MODULE_OUTPUT="$<TARGET_FILE_NAME:${name}>"
+            MODULE_OUTPUT_PREFIX="$<TARGET_FILE_PREFIX:${name}>${prefix}${BUILD_PREFIX}"
+            MODULE_OUTPUT_SUFFIX="$<TARGET_FILE_SUFFIX:${name}>"
+            "\n"
+            ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
         )
     endif()
 

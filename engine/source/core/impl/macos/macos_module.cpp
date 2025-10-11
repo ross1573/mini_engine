@@ -14,13 +14,13 @@ namespace mini {
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
 {
-    StringView prefix = "lib" MODULE_PREFIX ".";
-    StringView postfix = ".dylib";
+    StringView prefix = MODULE_OUTPUT_PREFIX ".";
+    StringView suffix = MODULE_OUTPUT_SUFFIX;
 
-    String fullPath(prefix.Size() + name.Size() + postfix.Size());
+    String fullPath(prefix.Size() + name.Size() + suffix.Size());
     fullPath.Append(prefix);
     fullPath.Append(name);
-    fullPath.Append(postfix);
+    fullPath.Append(suffix);
 
     m_Handle = dlopen(fullPath.Data(), RTLD_NOW | RTLD_LOCAL);
     if (m_Handle == nullptr) {
