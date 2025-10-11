@@ -72,6 +72,12 @@ export template <typename T, typename... Args>
 concept NoThrowConstructibleFromT = std::is_nothrow_constructible_v<T, Args...>;
 
 export template <typename T>
+concept DefaultConstructibleT = std::is_default_constructible_v<T>;
+
+export template <typename T>
+concept NoThrowDefaultConstructibleT = std::is_nothrow_default_constructible_v<T>;
+
+export template <typename T>
 concept MoveConstructibleT = std::move_constructible<T>;
 
 export template <typename T>
@@ -101,7 +107,7 @@ concept NoThrowCopyableT = NoThrowMovableT<T> && std::is_nothrow_copy_constructi
                            std::is_nothrow_copy_assignable_v<T>;
 
 export template <typename T>
-concept TrivialT = std::is_nothrow_default_constructible_v<T> && std::is_trivially_copyable_v<T> &&
+concept TrivialT = std::is_trivially_copyable_v<T> && NoThrowDefaultConstructibleT<T> &&
                    NoThrowCopyableT<T>;
 
 export template <typename T, typename... Args>

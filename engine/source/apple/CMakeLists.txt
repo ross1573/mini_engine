@@ -1,4 +1,4 @@
-add_module(mini.apple STATIC)
+add_module(mini.apple STATIC NO_MODULE_INTERFACE)
 
 module_sources(mini.apple
 PUBLIC

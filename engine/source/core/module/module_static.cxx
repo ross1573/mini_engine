@@ -6,10 +6,9 @@ import :module_system;
 
 namespace mini {
 
-template <DeleterT<ModuleInterface> DelT>
 class StaticModuleHandle : public ModuleHandle {
 private:
-    UniquePtr<ModuleInterface, DelT> m_Interface;
+    UniquePtr<ModuleInterface> m_Interface;
 
 public:
     StaticModuleHandle(StringView) noexcept {}
@@ -25,22 +24,22 @@ public:
     ModuleInterface* GetInterface() noexcept final { return m_Interface.Get(); }
 };
 
-export template <DerivedFromT<ModuleInterface> T,
-                 CallableWithReturnT<T*> FactoryT = decltype([]() { return new T(); }),
-                 DeleterT<ModuleInterface> DelT = DefaultDeleter<ModuleInterface>>
+export template <CallableWithReturnT<ModuleInterface*> FactoryT>
 class StaticModuleInitializer {
+private:
+    static_assert(NoThrowDefaultConstructibleT<FactoryT>,
+                  "factory must be nothrow default constructible");
+
 public:
-    static void Register(StringView name)
-    {
-        g_ModuleLoader.Register(Module(name, GetHandle(name)));
-    }
+    static void Register(StringView name) { g_ModuleLoader.Register(GetModule(name)); }
 
 private:
-    static SharedPtr<ModuleHandle> GetHandle(StringView name)
+    static Module GetModule(StringView name)
     {
-        using HandleT = StaticModuleHandle<DelT>;
-        SharedPtr<HandleT> handle = MakeShared<HandleT>(name, FactoryT{}());
-        return StaticCast<ModuleHandle>(MoveArg(handle));
+        SharedPtr<StaticModuleHandle> targetHandle =
+            MakeShared<StaticModuleHandle>(name, FactoryT{}());
+
+        return Module(name, StaticCast<ModuleHandle>(MoveArg(targetHandle)));
     }
 };
 

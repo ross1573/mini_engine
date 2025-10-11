@@ -1,9 +1,10 @@
 export module mini.metal;
 
-import mini.graphics;
 export import :device;
 export import :swap_chain;
 export import :render_context;
+
+import mini.graphics;
 
 namespace mini::metal {
 

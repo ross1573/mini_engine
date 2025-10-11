@@ -14,7 +14,7 @@ namespace mini {
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
 {
-    StringView prefix = LIB_PREFIX ".";
+    StringView prefix = MODULE_PREFIX ".";
     StringView postfix = ".dll";
 
     String modulePath(prefix.Size() + name.Size() + postfix.Size());
@@ -32,6 +32,15 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name)
     if (startFunc != nullptr) {
         m_Interface = UniquePtr<ModuleInterface>(startFunc());
     }
+
+    if (m_Interface != nullptr) {
+        bool result = ModuleLoader::ConstructModule(m_Interface.Get());
+        if (result == false) {
+            FreeLibrary(m_Handle);
+            m_Handle = nullptr;
+            m_Interface.Reset();
+        }
+    }
 }
 
 DynamicModuleHandle::DynamicModuleHandle(DynamicModuleHandle&& other) noexcept
@@ -47,7 +56,7 @@ DynamicModuleHandle::~DynamicModuleHandle()
     }
 
     if (m_Interface != nullptr) [[likely]] {
-        m_Interface->Shutdown();
+        ModuleLoader::DestructModule(m_Interface.Get());
         m_Interface.Reset();
     }
 

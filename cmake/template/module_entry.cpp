@@ -1,22 +1,37 @@
 import mini.core;
 import @target@;
 
-@api_upper@_HIDDEN @class@* __get_@api_full@_interface()
-{
-    static @class@* __module_interface = new @class@();
-    return __module_interface;
-}
+namespace {
+
+struct InterfaceFactory {
+private:
+    typedef @class@ Interface;
+
+    static_assert(mini::DerivedFromT<Interface, mini::ModuleInterface>,
+                  "module interface must inherit from mini::ModuleInterface class.");
+
+    static_assert(mini::DefaultConstructibleT<Interface>,
+                  "non default constructible module inteface must be generated manually. "
+                  "consider passing NO_MODULE_ENTRY when adding the module.");
+
+public:
+    mini::ModuleInterface* operator()() 
+    { 
+        if constexpr (@null_interface@) return nullptr;
+        return new Interface(); 
+    }
+};
+
+} // namespace
 
 #if @api_upper@_STATIC
-void __@api_full@_init_module()
+void __@api_full@_start_module()
 {
-    using FactoryT = decltype([]() { return __get_@api_full@_interface(); });
-    using DelT = mini::DefaultDeleter<mini::ModuleInterface>;
-    mini::StaticModuleInitializer<@class@, FactoryT, DelT>::Register("@api@");
+    mini::StaticModuleInitializer<InterfaceFactory>::Register("@api@");
 }
 #else
-extern "C" @api_upper@_API @class@* __start_module()
+extern "C" @api_upper@_API mini::ModuleInterface* __start_module()
 {
-    return __get_@api_full@_interface();
+    return InterfaceFactory{}();
 }
 #endif // @api_upper@_STATIC

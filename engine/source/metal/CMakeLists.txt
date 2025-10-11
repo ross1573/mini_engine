@@ -1,7 +1,5 @@
 add_module(mini.metal)
 
-generate_module_entry(mini.metal)
-
 module_sources(mini.metal
 PUBLIC
     FILE_SET metal TYPE CXX_MODULES

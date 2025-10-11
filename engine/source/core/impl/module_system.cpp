@@ -51,7 +51,11 @@ Module ModuleLoader::Load(StringView name)
 
     for (Module const& uninitialized : m_Uninitialized) {
         if (uninitialized.GetName() == name) {
-            uninitialized.GetInterface()->Startup();
+            ModuleInterface* interface = uninitialized.GetInterface();
+            if (interface != nullptr || interface->Initialize() == false) {
+                return Module();
+            }
+
             m_Modules.Push(uninitialized);
             return uninitialized;
         }

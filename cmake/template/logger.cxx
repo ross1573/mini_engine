@@ -1,6 +1,6 @@
 export module @target@:log;
 
-@core_import@
+import mini.core;
 
 namespace @prefix@::@api@ {
 

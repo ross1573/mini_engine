@@ -1,10 +1,18 @@
 include(GenerateExportHeader)
 
-macro (generate_api_name target)
-    set(args PREFIX)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" ${args} "")
+function (generate_api_name target)
+    set(args PREFIX API)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
-    if (DEFINED arg_PREFIX)
+    if (DEFINED arg_API AND NOT arg_API STREQUAL "")
+        #if api name is provided, use it
+        set(api ${arg_API})
+        if (NOT DEFINED PREFIX)
+            set(arg_PREFIX "")
+        else()
+            set(prefix ${arg_PREFIX})
+        endif()
+    elseif (DEFINED arg_PREFIX AND NOT arg_PREFIX STREQUAL "")
         set(prefix ${arg_PREFIX})
         string(REGEX REPLACE "^${prefix}[._]" "" api ${target})
     else()
@@ -23,31 +31,28 @@ macro (generate_api_name target)
     string(REPLACE "." "_" api ${api})
     string(TOUPPER ${api} api_upper)
     string(CONCAT api_full ${prefix} "_" ${api})
-endmacro()
+
+    set(prefix ${prefix} PARENT_SCOPE)
+    set(api ${api} PARENT_SCOPE)
+    set(api_upper ${api_upper} PARENT_SCOPE)
+    set(api_full ${api_full} PARENT_SCOPE)
+endfunction()
 
 function (generate_module_entry target)
-    set(args PREFIX API CLASS)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
+    set(options NULL_INTERFACE)
+    set(args PREFIX API INTERFACE_CLASS)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
 
-    if (DEFINED arg_PREFIX)
-        set(prefix ${arg_PREFIX})
-        generate_api_name(${target} PREFIX ${arg_PREFIX})
-    else()
-        set(prefix "")
-        generate_api_name(${target})
-    endif()
-        
-    # override api if specified
-    if (DEFINED arg_API)
-        set(api ${arg_API})
-        string(TOUPPER ${api} api_upper)
-    endif()
+    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
-    # override class if specified
-    if (DEFINED arg_CLASS)
-        set(class ${arg_CLASS})
+    if (arg_NULL_INTERFACE)
+        set(null_interface "true")
+        set(class "mini::ModuleInterface")
+    elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
+        messag(FATAL_ERROR "no given interface class name")
     else()
-        string(CONCAT class ${prefix} "::" ${api} "::ModuleInterface")
+        set(null_interface "false")
+        string(CONCAT class ${prefix} "::" ${api} "::" ${arg_INTERFACE_CLASS})
     endif()
     
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated.cpp")
@@ -65,7 +70,7 @@ function (generate_module_entry target)
     if (target_type STREQUAL "STATIC_LIBRARY")
         target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=1)
         set_property(GLOBAL APPEND PROPERTY STATIC_MODULE ${target})
-        set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__${api_full}_init_module")
+        set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__${api_full}_start_module")
     elseif (target_type STREQUAL "SHARED_LIBRARY")
         target_compile_definitions(${target} PRIVATE ${api_upper}_STATIC=0)
     elseif (target type STREQUAL "MODULE_LIBRARY")
@@ -131,6 +136,16 @@ function (generate_define_header target)
 endfunction()
 
 function (generate_static_init target)
+    set(args INITIALIZE CLEANUP)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
+
+    if (NOT DEFINED args_INITIALIZE OR arg_INITIALIZE STREQUAL "")
+        set(args_INITIALIZE "StaticInitialize")
+    endif()
+    if (NOT DEFINED args_CLEANUP OR args_CLEANUP STREQUAL "")
+        set(args_CLEANUP "StaticCleanup")
+    endif()
+
     get_property(static_init GLOBAL PROPERTY STATIC_INIT)
     get_property(static_cleanup GLOBAL PROPERTY STATIC_CLEANUP)
 
@@ -158,14 +173,14 @@ function (generate_static_init target)
     list(APPEND contents "namespace ${namespace} {\n\n")
     
     # write static initializer function
-    list(APPEND contents "void StaticInitialize()\n{\n")
+    list(APPEND contents "void ${args_INITIALIZE}()\n{\n")
     foreach (init ${static_init})
         list(APPEND contents "    ${init}()\;\n")
     endforeach()
     list(APPEND contents "}\n\n")
 
     # write static cleanup function
-    list(APPEND contents "void StaticCleanup()\n{\n")
+    list(APPEND contents "void ${args_CLEANUP}()\n{\n")
     foreach (cleanup ${static_cleanup})
         list(APPEND contents "    ${cleanup}()\;\n")
     endforeach()
@@ -181,23 +196,12 @@ function (generate_static_init target)
 endfunction()
 
 function (generate_api_header target)
-    set(args PREFIX FILE_PATH)
+    set(args PREFIX API)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
-    if (DEFINED arg_PREFIX)
-        set(prefix ${arg_PREFIX})
-        generate_api_name(${target} PREFIX ${arg_PREFIX})
-    else()
-        set(prefix "")
-        generate_api_name(${target})
-    endif()
+    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
-    # override file path if specified
-    if (DEFINED arg_FILE_PATH)
-        set(api_header ${arg_FILE_PATH})
-    else()
-        set(api_header "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated.h")
-    endif()
+    set(api_header "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated.h")
 
     generate_export_header(${target}
         BASE_NAME "${api_upper}"
@@ -218,23 +222,7 @@ function (generate_api_log target)
     set(args PREFIX API)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
-    if (DEFINED arg_PREFIX)
-        set(prefix ${arg_PREFIX})
-        generate_api_name(${target} PREFIX ${arg_PREFIX})
-    else()
-        set(prefix "")
-        generate_api_name(${target})
-    endif()
-
-    # override api if specified
-    if (DEFINED arg_API)
-        set(api ${arg_API})
-        string(TOUPPER ${api} api_upper)
-    endif()
-
-    if (NOT ${target} EQUAL "mini.core")
-        set(core_import "import mini.core;")
-    endif()
+    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
     
     snake_to_camel_case(${api})
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.log.generated.cxx")
@@ -252,9 +240,7 @@ function (generate_api_log target)
     )
 endfunction()
 
-function (build_source_tree target)
-    generate_api_name(${target})
-    
+function (build_source_tree target)    
     get_target_property(sources ${target} SOURCES)
     get_target_property(headers ${target} HEADERS)
 

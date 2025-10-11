@@ -1,4 +1,4 @@
-add_module(mini.macos)
+add_module(mini.macos NO_MODULE_INTERFACE)
 
 module_sources(mini.macos
 PUBLIC

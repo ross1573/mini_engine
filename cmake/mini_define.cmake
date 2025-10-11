@@ -11,7 +11,6 @@ add_module_definitions(
     PLATFORM_LINUX=$<IF:$<PLATFORM_ID:Linux>,true,false>
     "\n"
     DEBUG=$<IF:$<CONFIG:Debug>,true,false>
-    LIB_PREFIX="${BUILD_MODULE_PREFIX}"
 )
 
 if (WIN32)

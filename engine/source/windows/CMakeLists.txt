@@ -1,4 +1,4 @@
-add_module(mini.windows)
+add_module(mini.windows NO_MODULE_INTERFACE)
 
 include(windows_header_define)
 

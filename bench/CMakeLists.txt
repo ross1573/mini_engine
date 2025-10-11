@@ -32,7 +32,7 @@ function (no_arg_benchmark name)
     build_source_tree(benchmark.${name})
 endfunction()
 
-add_module(mini.benchmark STATIC)
+add_module(mini.benchmark STATIC NO_MODULE_INTERFACE)
 
 module_sources(mini.benchmark
 PUBLIC

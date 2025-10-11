@@ -1,4 +1,4 @@
-add_module(mini.graphics)
+add_module(mini.graphics NO_MODULE_INTERFACE)
 
 module_sources(mini.graphics
 PUBLIC

@@ -4,10 +4,10 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_CXX_VISIBILITY_PRESET default)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN FALSE)
 
-# logging depeneds on core module, so core module has to do it manually
-set(NO_API_LOG ON)
-
-add_module(mini.core)
+add_module(mini.core 
+    NO_API_LOG
+    NO_MODULE_INTERFACE
+)
 
 module_sources(mini.core
 PUBLIC

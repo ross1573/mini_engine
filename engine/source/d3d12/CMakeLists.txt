@@ -10,8 +10,6 @@ PRIVATE
     $<$<CONFIG:Debug>:<dxgidebug.h$<ANGLE-R>>
 )
 
-generate_module_entry(mini.d3d12)
-
 module_sources(mini.d3d12
 PUBLIC
     FILE_SET d3d12 TYPE CXX_MODULES

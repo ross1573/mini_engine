@@ -8,14 +8,15 @@ import :shared_ptr;
 namespace mini {
 
 export class CORE_API ModuleInterface {
+private:
+    friend class ModuleLoader;
+
 public:
     virtual ~ModuleInterface() noexcept = default;
 
-    virtual void Startup() {}
-    virtual void Shutdown() {}
-
 protected:
-    ModuleInterface() = default;
+    virtual bool Initialize() { return true; }
+    virtual void Shutdown() {}
 };
 
 class ModuleHandle {
@@ -36,8 +37,7 @@ private:
     ModuleInterface* m_Interface;
     String m_Name;
 
-    template <DerivedFromT<ModuleInterface> T, CallableWithReturnT<T*> FactoryT,
-              DeleterT<ModuleInterface>>
+    template <CallableWithReturnT<ModuleInterface*> FactoryT>
     friend class StaticModuleInitializer;
     friend class ModuleLoader;
 
@@ -74,6 +74,9 @@ private:
 public:
     Module Register(Module&&);
     Module Load(StringView);
+
+    static bool ConstructModule(ModuleInterface* interface) { return interface->Initialize(); }
+    static void DestructModule(ModuleInterface* interface) { return interface->Shutdown(); }
 
 private:
     Iterator Find(StringView);
