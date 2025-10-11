@@ -13,7 +13,7 @@ endmacro()
 if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(/W0 /utf-8)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
-    add_compile_options(-Wno-everything)
+    add_compile_options(-Wno-everything -Wno-dev)
 endif()
 
 include(Fmt)
