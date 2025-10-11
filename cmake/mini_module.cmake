@@ -12,7 +12,7 @@ function (add_module name)
         list(GET ARGN 0 first_arg)
         string(TOUPPER ${first_arg} ${first_arg})
         
-        if (${first_arg} MATCHES "^STATIC$|^SHARED$|^MODULE$|^INTERFACE$")
+        if (${first_arg} MATCHES "^STATIC$|^SHARED$")
             set(type ${first_arg})
         endif()
     endif()

@@ -84,7 +84,9 @@ function (generate_module_entry target)
 endfunction()
 
 function (generate_define_header target)
+    string(APPEND parsed_list "#pragma once\n\n")
     list(APPEND COMPILE_DEFINITIONS ${ARGN})
+    
     foreach (definition ${COMPILE_DEFINITIONS})
         # special case on new line
         if (definition STREQUAL "\n")
