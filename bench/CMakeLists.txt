@@ -1,7 +1,7 @@
 include(mini_define)
 include(mini_option)
 include(mini_module)
-include_static(GoogleBenchmark)
+include_shared(GoogleBenchmark)
 
 function (no_arg_benchmark name)
     add_executable(benchmark.${name} ${name}.cpp)
