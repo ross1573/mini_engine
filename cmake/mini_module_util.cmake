@@ -55,11 +55,12 @@ function (generate_module_entry target)
         string(CONCAT class ${prefix} "::" ${api} "::" ${arg_INTERFACE_CLASS})
     endif()
     
-    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated.cpp")
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
+    set(file_name "${target}.entry.generated.cpp")
 
     configure_file(
-        ${ENGINE_PROJECT_DIR}/cmake/template/module_entry.cpp
-        ${file_path}
+        "${ENGINE_PROJECT_DIR}/cmake/template/module_entry.cpp"
+        "${file_path}/${file_name}"
         @ONLY
         NEWLINE_STYLE LF
     )
@@ -74,13 +75,20 @@ function (generate_module_entry target)
         message(FATAL_ERROR "unsupported build type: " ${target_type})
     endif()
 
-    target_sources(${target} PRIVATE ${file_path})
-    set_source_files_properties(${file_path} PROPERTIES GENERATED ON)
+    target_sources(${target} PRIVATE "${file_path}/${file_name}")
+    set_source_files_properties("${file_path}/${file_name}" PROPERTIES GENERATED ON)
 endfunction()
 
 function (generate_define_header target)
-    string(APPEND parsed_list "#pragma once\n\n")
-    list(APPEND COMPILE_DEFINITIONS ${ARGN})
+    set(args PREFIX API)
+    set(multiVal "DEFINITIONS")
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "${multiVal}")
+
+    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
+
+    string(APPEND parsed_list "#ifndef ${api_upper}_DEFINE_H\n")
+    string(APPEND parsed_list "#define ${api_upper}_DEFINE_H\n\n")
+    list(APPEND COMPILE_DEFINITIONS ${arg_DEFINITIONS})
 
     foreach (definition ${COMPILE_DEFINITIONS})
         # special case on new line
@@ -108,27 +116,28 @@ function (generate_define_header target)
         string(APPEND parsed_list "#define " ${definition} "\n")
     endforeach()
 
-    set(define_header "define.generated.h")
+    string(APPEND parsed_list "\n#endif // ${api_upper}_DEFINE_H")
+
+    set(file_name "${target}.define.generated.h")
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
-        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.define/$<CONFIG>")
+        set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated/$<CONFIG>")
     else()
-        set(define_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.define")
+        set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
     endif()
 
     file(GENERATE
-        OUTPUT "${define_path}/${define_header}"
+        OUTPUT "${file_path}/${file_name}"
         CONTENT "${parsed_list}"
         TARGET "${target}"
         FILE_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
         NEWLINE_STYLE LF
     )
 
-    target_include_directories(${target} PRIVATE ${define_path})
-    target_precompile_headers(${target} PRIVATE "${define_path}/${define_header}")
+    target_precompile_headers(${target} PRIVATE "${file_path}/${file_name}")
     target_sources(${target} PRIVATE
         FILE_SET generated_define TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
-        FILES "${define_path}/${define_header}"
+        FILES "${file_path}/${file_name}"
     )
 endfunction()
 
@@ -155,14 +164,16 @@ function (generate_static_init target)
     endif()
 
     # global module section where declarations are written
-    list(APPEND contents "module\;\n\n")
-    foreach (init ${static_init})
-        list(APPEND contents "void ${init}()\;\n")
-    endforeach()
-    foreach (cleanup ${static_cleanup})
-        list(APPEND contents "void ${cleanup}()\;\n")
-    endforeach()
-    list(APPEND contents "\n")
+    if (NOT static_init STREQUAL "" OR NOT static_cleanup STREQUAL "")
+        list(APPEND contents "module\;\n\n")
+        foreach (init ${static_init})
+            list(APPEND contents "void ${init}()\;\n")
+        endforeach()
+        foreach (cleanup ${static_cleanup})
+            list(APPEND contents "void ${cleanup}()\;\n")
+        endforeach()
+        list(APPEND contents "\n")
+    endif()
 
     # start module and namespace
     string(REPLACE "." "::" namespace ${target})
@@ -183,12 +194,13 @@ function (generate_static_init target)
     endforeach()
     list(APPEND contents "}\n\n} // namespace ${namespace}\n")
 
-    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/init.generated.cxx")
-    file(WRITE ${file_path} ${contents})
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
+    set(file_name "${target}.init.generated.cxx")
+    file(WRITE "${file_path}/${file_name}" ${contents})
 
     target_sources(${target} PUBLIC
         FILE_SET generated_init TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
-        FILES ${file_path}
+        FILES "${file_path}/${file_name}"
     )
 endfunction()
 
@@ -198,20 +210,21 @@ function (generate_api_header target)
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
-    set(api_header "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated.h")
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
+    set(file_name "${target}.api.generated.h")
 
     generate_export_header(${target}
         BASE_NAME "${api_upper}"
-        EXPORT_FILE_NAME ${api_header}
+        EXPORT_FILE_NAME "${file_path}/${file_name}"
         EXPORT_MACRO_NAME "${api_upper}_API"
         NO_EXPORT_MACRO_NAME "${api_upper}_HIDDEN"
         DEPRECATED_MACRO_NAME "${api_upper}_DEPRECATED"
     )
 
-    target_precompile_headers(${target} PRIVATE ${api_header})
+    target_precompile_headers(${target} PRIVATE "${file_path}/${file_name}")
     target_sources(${target} PRIVATE
         FILE_SET generated_api TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
-        FILES ${api_header}
+        FILES "${file_path}/${file_name}"
     )
 endfunction()
 
@@ -222,18 +235,19 @@ function (generate_api_log target)
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
     
     snake_to_camel_case(${api})
-    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.log.generated.cxx")
+    set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
+    set(file_name "${target}.log.generated.cxx")
 
     configure_file(
-        ${ENGINE_PROJECT_DIR}/cmake/template/logger.cxx
-        ${file_path}
+        "${ENGINE_PROJECT_DIR}/cmake/template/logger.cxx"
+        "${file_path}/${file_name}"
         @ONLY
         NEWLINE_STYLE LF
     )
 
     target_sources(${target} PUBLIC
         FILE_SET generated_log TYPE CXX_MODULES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
-        FILES ${file_path}
+        FILES "${file_path}/${file_name}"
     )
 endfunction()
 

@@ -36,7 +36,7 @@ function (add_module name)
     generate_api_name(${name} API ${arg_API} PREFIX ${arg_PREFIX})
 
     if (NOT arg_NO_DEFINE_HEADER)
-        generate_define_header(${name}
+        set(module_defines
             MODULE_NAME="${name}"
             MODULE_PREFIX="${prefix}"
             MODULE_API="${api}"
@@ -45,6 +45,11 @@ function (add_module name)
             MODULE_OUTPUT_SUFFIX="$<TARGET_FILE_SUFFIX:${name}>"
             "\n"
             ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
+        )
+        generate_define_header(${name}
+            API ${api}
+            PREFIX ${prefix}
+            DEFINITIONS ${module_defines}
         )
     endif()
 
