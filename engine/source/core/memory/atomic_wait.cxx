@@ -1,3 +1,19 @@
+module;
+
+#if ARCH_ARM64
+#  if PLATFORM_MACOS
+#    define ATOMIC_STATE_ALIGN 128
+#  else
+#    define ATOMIC_STATE_ALIGN 64
+#  endif
+#elif ARCH_AMD64
+#  define ATOMIC_STATE_ALIGN 64
+#elif ARCH_X86
+#  define ATOMIC_STATE_ALIGN 32
+#else
+#  define ATOMIC_STATE_ALIGN 64
+#endif
+
 export module mini.core:atomic_wait;
 
 import :type;
@@ -7,7 +23,6 @@ import :thread_base;
 
 namespace mini::memory {
 
-// TODO: benchmark to find the optimal value for initial spin locking
 static constexpr SizeT PauseAttempt = 2;
 static constexpr SizeT YieldAttempt = 4;
 
@@ -48,8 +63,7 @@ inline bool AtomicSpinWait(T const volatile* loc, T val, MemoryOrder order) noex
     return false;
 }
 
-// TODO: match alignment to cache size
-struct CORE_API alignas(64) AtomicStateEntry {
+struct CORE_API alignas(ATOMIC_STATE_ALIGN) AtomicStateEntry {
 public:
     AtomicContentionT wait;
     AtomicContentionT platform;
