@@ -46,6 +46,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Wextra
         -Wshadow
         -Wpedantic
+        -Wparentheses
         -Wconversion
 
         -Wno-unknown-attributes

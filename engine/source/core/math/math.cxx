@@ -39,13 +39,13 @@ concept Float32ConvertibleT = ConvertibleToT<T, float32>;
 template <typename T>
 concept Float64ConvertibleT = ConvertibleToT<T, float64>;
 
-export template <FloatT T>
+export template <FloatingT T>
 inline /*constexpr*/ T Pow(T base, ConvertibleToT<T> auto exp)
 {
     return static_cast<T>(std::pow(base, static_cast<T>(exp)));
 }
 
-export template <IntT T>
+export template <IntegralT T>
 inline constexpr OffsetT Pow(T base, T exp)
 {
     if consteval {
@@ -68,7 +68,7 @@ inline constexpr OffsetT Pow(T base, T exp)
     }
 }
 
-export template <FloatT T>
+export template <FloatingT T>
 inline /*constexpr*/ T Sqrt(T value)
 {
     return std::sqrt(value);

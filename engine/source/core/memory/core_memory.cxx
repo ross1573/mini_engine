@@ -1,5 +1,6 @@
 module;
 
+#include <bit>
 #include <memory>
 
 #include "builtin.h"
@@ -7,6 +8,8 @@ module;
 // TODO: constexpr placement new operator is coming soon!
 #define CONSTEXPR_CONSTRUCT_AT std::construct_at
 #define CONSTEXPR_DESTRUCT_AT  std::destroy_at
+
+#define CONSTEXPR_BIT_CAST std::bit_cast
 
 export module mini.core:memory;
 
@@ -26,6 +29,12 @@ template <typename T>
 inline constexpr void* MakeVoidPtr(T* ptr)
 {
     return const_cast<void*>(static_cast<const volatile void*>(ptr));
+}
+
+export template <typename To, typename From>
+inline constexpr To BitCast(From const& from) noexcept
+{
+    return CONSTEXPR_BIT_CAST<To>(from);
 }
 
 export template <AddressableT T>
@@ -191,7 +200,7 @@ export template <TrivialT T>
 inline constexpr bool MemCompare(T const* dst, T const* src, SizeT len) noexcept
 {
     if !consteval {
-        return BUILTIN_MEMCMP(dst, src, len * sizeof(T));
+        return BUILTIN_MEMCMP(dst, src, len * sizeof(T)) == 0;
     }
 
     for (; len; --len) {

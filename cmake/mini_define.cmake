@@ -15,7 +15,7 @@ add_module_definitions(
 
 if (WIN32)
     # msvc shit needs to be applied ethier vs or clang
-    add_module_definitions(
+    list(APPEND COMPILE_DEFINITIONS
         _ALLOW_KEYWORD_MACROS
         no_unique_address=msvc::no_unique_address
     )

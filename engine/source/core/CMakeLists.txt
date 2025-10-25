@@ -43,10 +43,13 @@ PUBLIC
         math/vector4.cxx
         math/vertex.cxx
 
+        memory/atomic.cxx
+        memory/atomic_wait.cxx
         memory/allocator.cxx
         memory/buffer.cxx
         memory/core_memory.cxx
         memory/deleter.cxx
+        memory/shared_counter.cxx
         memory/shared_ptr.cxx
         memory/static_buffer.cxx
         memory/unique_ptr.cxx
@@ -56,6 +59,8 @@ PUBLIC
         string/string_utility.cxx
         string/string_view.cxx
         string/string.cxx
+
+        thread/mutex.cxx
 
         type/core_type.cxx
         type/type_concepts.cxx
@@ -69,8 +74,11 @@ PUBLIC
         $<$<PLATFORM_ID:Windows>:windows/win_logger.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
 
+        $<$<PLATFORM_ID:Darwin>:macos/macos_atomic.cxx>
         $<$<PLATFORM_ID:Darwin>:macos/macos_logger.cxx>
         $<$<PLATFORM_ID:Darwin>:macos/macos_module.cxx>
+        $<$<PLATFORM_ID:Darwin>:macos/macos_mutex.cxx>
+        $<$<PLATFORM_ID:Darwin>:macos/macos_thread.cxx>
 
 PRIVATE
     impl/builtin.h

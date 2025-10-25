@@ -13,13 +13,13 @@ import :type_concepts;
 namespace mini {
 
 export template <typename T>
-concept IntT = std::integral<T> && (SameAsT<T, bool> == false);
+concept IntegralT = std::integral<T> && (SameAsT<T, bool> == false);
 
 export template <typename T>
-concept FloatT = std::floating_point<T>;
+concept FloatingT = std::floating_point<T>;
 
 export template <typename T>
-concept ArithmeticT = IntT<T> || FloatT<T>;
+concept ArithmeticT = IntegralT<T> || FloatingT<T>;
 
 export template <typename T>
 concept SignedT = ArithmeticT<T> && std::is_signed_v<T>;
@@ -33,7 +33,7 @@ concept CharT = AnyOfT<RemoveConstVolatileT<T>, char, wchar_t, char8_t, char16_t
 export template <ArithmeticT T>
 class NumericLimit;
 
-template <IntT T>
+template <IntegralT T>
 class NumericLimit<T> {
 public:
     typedef T Type;

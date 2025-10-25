@@ -103,13 +103,13 @@ public:
         return *this;
     }
 
-    inline constexpr StaticSize& operator+=(IntT auto s) noexcept
+    inline constexpr StaticSize& operator+=(IntegralT auto s) noexcept
     {
         size += static_cast<SizeType>(s);
         return *this;
     }
 
-    inline constexpr StaticSize& operator-=(IntT auto s) noexcept
+    inline constexpr StaticSize& operator-=(IntegralT auto s) noexcept
     {
         size -= static_cast<SizeType>(s);
         return *this;
@@ -143,7 +143,7 @@ inline constexpr bool operator==(StaticBuffer<T, CapT, AlignT> const& l,
     return l.Data() == r.Data();
 }
 
-export template <IntT T, SizeT CapacityN>
+export template <IntegralT T, SizeT CapacityN>
 inline constexpr auto operator<=>(StaticSize<CapacityN> const& s, T o) noexcept
 {
     return static_cast<T>(s.size) <=> o;
