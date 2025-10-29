@@ -18,7 +18,7 @@ export enum class MemoryOrder : int {
 };
 
 template <TrivialT T>
-inline T AtomicLoad(T* ptr, MemoryOrder order)
+inline T AtomicLoad(T const* ptr, MemoryOrder order)
 {
     T result;
     __atomic_load(ptr, &result, static_cast<int>(order));
@@ -26,7 +26,7 @@ inline T AtomicLoad(T* ptr, MemoryOrder order)
 }
 
 template <TrivialT T>
-inline T AtomicLoad(T volatile* ptr, MemoryOrder order)
+inline T AtomicLoad(T const volatile* ptr, MemoryOrder order)
 {
     T result;
     __atomic_load(ptr, &result, static_cast<int>(order));
@@ -34,58 +34,62 @@ inline T AtomicLoad(T volatile* ptr, MemoryOrder order)
 }
 
 template <TrivialT T>
-inline void AtomicStore(T* ptr, T* val, MemoryOrder order)
+inline void AtomicStore(T* ptr, T val, MemoryOrder order)
 {
-    __atomic_store(ptr, val, static_cast<int>(order));
+    __atomic_store(ptr, &val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline void AtomicStore(T volatile* ptr, T* val, MemoryOrder order)
+inline void AtomicStore(T volatile* ptr, T val, MemoryOrder order)
 {
-    __atomic_store(ptr, val, static_cast<int>(order));
+    __atomic_store(ptr, &val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline void AtomicExchange(T* ptr, T* val, MemoryOrder order)
+inline T AtomicExchange(T* ptr, T val, MemoryOrder order)
 {
-    __atomic_exchange(ptr, val, static_cast<int>(order));
+    T result;
+    __atomic_exchange(ptr, &val, &result, static_cast<int>(order));
+    return result;
 }
 
 template <TrivialT T>
-inline void AtomicExchange(T volatile* ptr, T* val, MemoryOrder order)
+inline T AtomicExchange(T volatile* ptr, T val, MemoryOrder order)
 {
-    __atomic_exchange(ptr, val, static_cast<int>(order));
+    T result;
+    __atomic_exchange(ptr, &val, &result, static_cast<int>(order));
+    return result;
 }
 
 template <TrivialT T>
-inline bool AtomicCompareExchangeWeak(T* ptr, T* expected, T* desired, MemoryOrder success,
+inline bool AtomicCompareExchangeWeak(T* ptr, T* expected, T desired, MemoryOrder success,
                                       MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, desired, true, static_cast<int>(success),
+    return __atomic_compare_exchange(ptr, expected, &desired, true, static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool AtomicCompareExchangeWeak(T volatile* ptr, T* expected, T* desired, MemoryOrder success,
+inline bool AtomicCompareExchangeWeak(T volatile* ptr, T* expected, T desired, MemoryOrder success,
                                       MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, desired, true, static_cast<int>(success),
+    return __atomic_compare_exchange(ptr, expected, &desired, true, static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool AtomicCompareExchangeStrong(T* ptr, T* expected, T* desired, MemoryOrder success,
+inline bool AtomicCompareExchangeStrong(T* ptr, T* expected, T desired, MemoryOrder success,
                                         MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, desired, false, static_cast<int>(success),
+    return __atomic_compare_exchange(ptr, expected, &desired, false, static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool AtomicCompareExchangeStrong(T volatile* ptr, T* expected, T* desired,
+inline bool AtomicCompareExchangeStrong(T volatile* ptr, T* expected, T desired,
                                         MemoryOrder success, MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, desired, false, static_cast<int>(success),
+    return __atomic_compare_exchange(ptr, expected, &desired, false, static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
@@ -195,16 +199,19 @@ inline CORE_API void AtomicSignalFence(MemoryOrder order)
     __atomic_signal_fence(static_cast<int>(order));
 }
 
-inline CORE_API constexpr bool AtomicAlwaysLockFree(SizeT size)
+consteval bool AtomicAlwaysLockFree(SizeT size)
 {
-    // TODO: pass actual pointer to determine alignment..?
     return __atomic_always_lock_free(size, nullptr);
 }
 
-inline CORE_API constexpr bool AtomicIsLockFree(SizeT size)
+inline CORE_API bool AtomicIsLockFree(SizeT size, void const* ptr)
 {
-    // TODO: pass actual pointer to determine alignment..?
-    return __atomic_is_lock_free(size, nullptr);
+    return __atomic_is_lock_free(size, ptr);
+}
+
+inline CORE_API bool AtomicIsLockFree(SizeT size, void const volatile* ptr)
+{
+    return __atomic_is_lock_free(size, ptr);
 }
 
 using AtomicContentionT = uint64;

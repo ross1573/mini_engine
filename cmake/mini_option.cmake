@@ -52,6 +52,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         -Wno-unknown-attributes
         -Wno-nested-anon-types
         -Wno-gnu-anonymous-struct
+        -Wno-gcc-compat
     )
 
     if (WIN32)

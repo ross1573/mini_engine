@@ -17,6 +17,8 @@ elseif (APPLE)
         set(ARM64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86_64")
         set(AMD64 1)
+    else()
+        message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
     endif()
 endif()
 

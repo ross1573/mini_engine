@@ -11,17 +11,17 @@
     ENSURE_EVAL(expr, var);         \
     ENSURE_EXPR(var)
 
-#define TEST_ENSURE(expr, ...)                                 \
-    if (std::is_constant_evaluated()) {                        \
-        if (!mini::detail::TestExpr(expr)) {                   \
-            memcpy(nullptr, nullptr, 0);                       \
-        }                                                      \
-    }                                                          \
-    else {                                                     \
-        TEST_ENSURE_EXPR(expr, CONCAT(ensure_, __COUNTER__)) { \
-            ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__);       \
-            return -1;                                         \
-        }                                                      \
+#define TEST_ENSURE(expr, ...)                                        \
+    if (std::is_constant_evaluated()) {                               \
+        if (!mini::detail::TestExpr(expr)) {                          \
+            memcpy(nullptr, nullptr, 0);                              \
+        }                                                             \
+    }                                                                 \
+    else {                                                            \
+        TEST_ENSURE_EXPR(expr, ENSURE_CONCAT(ensure_, __COUNTER__)) { \
+            ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__);              \
+            return -1;                                                \
+        }                                                             \
     }
 
 #define TEST_ENSURE_NOTHROW(expr, ...)               \
