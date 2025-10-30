@@ -5,7 +5,7 @@ import :atomic;
 
 namespace mini {
 
-class SharedCounter {
+class CORE_API SharedCounter {
 private:
     typedef memory::Atomic<int32> Counter;
 

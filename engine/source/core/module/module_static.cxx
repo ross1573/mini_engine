@@ -6,7 +6,7 @@ import :module_system;
 
 namespace mini {
 
-class StaticModuleHandle : public ModuleHandle {
+class CORE_API StaticModuleHandle : public ModuleHandle {
 private:
     UniquePtr<ModuleInterface> m_Interface;
 

@@ -111,15 +111,10 @@ using __pchar_t = wchar_t;
 using __pchar_t = char;
 #endif
 
-[[no_inline]]
-__pchar_t* AssertMsg(char const*, char const* = nullptr);
-
-[[no_inline]]
-__pchar_t* AssertLoc(std::source_location const& = std::source_location::current());
-
-[[no_inline]]
-void EnsureHelper(char const*, char const* = nullptr,
-                  std::source_location const& = std::source_location::current());
+ASSERT_API __pchar_t* AssertMsg(char const*, char const* = nullptr);
+ASSERT_API __pchar_t* AssertLoc(std::source_location const& = std::source_location::current());
+ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
+                             std::source_location const& = std::source_location::current());
 
 inline constexpr bool TestExpr(bool arg) noexcept
 {
@@ -137,9 +132,5 @@ inline constexpr bool TestExpr(T* const pointer) noexcept
 {
     return pointer != nullptr;
 }
-
-#if PLATFORM_WINDOWS
-#  include "win_assertion.h"
-#endif
 
 } // namespace mini::detail

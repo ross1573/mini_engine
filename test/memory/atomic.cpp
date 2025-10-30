@@ -1,6 +1,8 @@
 #include <chrono>
 #include <thread>
 
+#include "test_macro.h"
+
 import mini.test;
 
 using namespace mini;
@@ -10,6 +12,15 @@ using namespace mini::test;
 template <SizeT CapacityN>
 struct S {
     alignas(1) byte buffer[CapacityN];
+};
+
+struct NonAtomic {
+public:
+    int32 v[5];
+
+    NonAtomic() noexcept = default;
+    NonAtomic(int32 n) noexcept { FillRange(&v[0], &v[4], n); }
+    operator int32() const noexcept { return v[0]; }
 };
 
 static int32 TestAtomicLockFree()
@@ -54,7 +65,7 @@ static int32 TestAtomicLockFree()
     return 0;
 }
 
-int32 TestWaitNotify()
+int32 TestWaitNotifyIncrement()
 {
     Atomic<uint32> atomic = 0;
     Array<uint32> result;
@@ -88,20 +99,14 @@ int32 TestWaitNotify()
     return 0;
 }
 
-int32 TestWaitNotifyNonAtomic()
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+int32 TestWaitNotify()
 {
-    struct Foo {
-    public:
-        int32 a[5];
-        Foo() noexcept = default;
-        Foo(int32 b) noexcept { FillRange(&a[0], &a[5], b); }
-        bool operator==(Foo const& o) { EqualRange(&o.a[0], &a[0], &a[5]); }
-    };
-
-    Atomic<Foo> a(0);
+    Atomic<T> a(0);
     std::thread t([&a]() {
-        Foo value(1);
-        while (value.a[0] >= 0) {
+        T value = 1;
+        while (static_cast<int32>(value) >= 0) {
             a.CompareExchangeWeak(value, 1, MemoryOrder::acquire);
             a.Notify();
             a.Wait(1, MemoryOrder::acquire);
@@ -126,8 +131,9 @@ int main()
 {
     TEST_ENSURE(TestAtomicLockFree() == 0);
 
-    TEST_ENSURE(TestWaitNotify() == 0);
-    TEST_ENSURE(TestWaitNotifyNonAtomic() == 0);
+    TEST_ENSURE(TestWaitNotifyIncrement() == 0);
+    TEST_ENSURE(TestWaitNotify<int32>() == 0);
+    TEST_ENSURE(TestWaitNotify<NonAtomic>() == 0);
 
     return 0;
 }

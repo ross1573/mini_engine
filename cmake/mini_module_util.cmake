@@ -7,8 +7,8 @@ function (generate_api_name target)
     if (DEFINED arg_API AND NOT arg_API STREQUAL "")
         #if api name is provided, use it
         set(api ${arg_API})
-        if (NOT DEFINED PREFIX)
-            set(arg_PREFIX "")
+        if (NOT DEFINED arg_PREFIX)
+            set(prefix "")
         else()
             set(prefix ${arg_PREFIX})
         endif()
@@ -26,6 +26,10 @@ function (generate_api_name target)
         else()
             set(prefix ${CMAKE_MATCH_1})
         endif()
+    endif()
+
+    if (NOT DEFINED api OR api STREQUAL "")
+        message(FATAL_ERROR "failed to create api name for ${target}")
     endif()
 
     string(REPLACE "." "_" api ${api})
@@ -204,14 +208,22 @@ function (generate_static_init target)
     )
 endfunction()
 
-function (generate_api_header target)
+function (generate_api_header target scope)
     set(args PREFIX API)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
-    set(file_name "${target}.api.generated.h")
+    if (NOT DEFINED prefix OR prefix STREQUAL "")
+        set(file_name "${api}.api.generated.h")
+    else()
+        set(file_name "${prefix}.${api}.api.generated.h")
+    endif()
+
+    if (NOT scope STREQUAL PRIVATE AND NOT scope STREQUAL PUBLIC)
+        message(FATAL_ERROR "scope of API header can only be either PRIVATE or PUBLIC")
+    endif()
 
     generate_export_header(${target}
         BASE_NAME "${api_upper}"
@@ -221,9 +233,9 @@ function (generate_api_header target)
         DEPRECATED_MACRO_NAME "${api_upper}_DEPRECATED"
     )
 
-    target_precompile_headers(${target} PRIVATE "${file_path}/${file_name}")
-    target_sources(${target} PRIVATE
-        FILE_SET generated_api TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+    target_precompile_headers(${target} ${scope} "${file_path}/${file_name}")
+    target_sources(${target} ${scope}
+        FILE_SET generated_api_${scope} TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
         FILES "${file_path}/${file_name}"
     )
 endfunction()

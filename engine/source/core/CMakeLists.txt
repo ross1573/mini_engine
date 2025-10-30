@@ -1,13 +1,9 @@
-# core module mostly contains the fundamentals and relies heavily on templates
-# so instead of selectively exporting the symbols, everything will be exported
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_CXX_VISIBILITY_PRESET default)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN FALSE)
-
 add_module(mini.core 
     NO_API_LOG
     NO_MODULE_INTERFACE
 )
+
+generate_api_header(mini.core PUBLIC PREFIX mini API assert)
 
 module_sources(mini.core
 PUBLIC
@@ -71,8 +67,11 @@ PUBLIC
         module/module_system.cxx
         module/module_static.cxx
 
+        $<$<PLATFORM_ID:Windows>:windows/win_atomic.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_logger.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
+        $<$<PLATFORM_ID:Windows>:windows/win_mutex.cxx>
+        $<$<PLATFORM_ID:Windows>:windows/win_thread.cxx>
 
         $<$<PLATFORM_ID:Darwin>:macos/macos_atomic.cxx>
         $<$<PLATFORM_ID:Darwin>:macos/macos_logger.cxx>
@@ -86,7 +85,7 @@ PRIVATE
     impl/assert_util.cpp
     impl/module_system.cpp
 
-    $<$<PLATFORM_ID:Windows>:impl/windows/win_assertion.h>
+    $<$<CXX_COMPILER_ID:MSVC>:impl/Windows/win_atomic.h>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_assert.cpp>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_logger.cpp>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_module.cpp>
@@ -103,7 +102,7 @@ PUBLIC
 )
 
 target_include_directories(mini.core 
-PRIVATE 
+PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/impl
 )
 
@@ -115,6 +114,9 @@ PUBLIC
 
 if (APPLE)
     target_link_libraries(mini.core PRIVATE "-framework Foundation")
+elseif (WIN32)
+    target_link_libraries(mini.core PRIVATE synchronization.lib)
+    target_precompile_headers(mini.core PUBLIC include/win_assert.h)
 endif()
 
 if (MSVC)

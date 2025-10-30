@@ -19,7 +19,7 @@ protected:
     virtual void Shutdown() {}
 };
 
-class ModuleHandle {
+class CORE_API ModuleHandle {
 public:
     virtual ~ModuleHandle() noexcept = default;
 
@@ -64,7 +64,7 @@ private:
     Module(StringView, SharedPtr<ModuleHandle>&&);
 };
 
-class ModuleLoader {
+class CORE_API ModuleLoader {
 private:
     Array<Module> m_Uninitialized;
     Array<Module> m_Modules;
@@ -82,6 +82,6 @@ private:
     Iterator Find(StringView);
 };
 
-ModuleLoader g_ModuleLoader = ModuleLoader();
+CORE_API ModuleLoader g_ModuleLoader = ModuleLoader();
 
 } // namespace mini

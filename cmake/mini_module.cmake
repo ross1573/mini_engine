@@ -1,6 +1,19 @@
 include(mini_util)
 include(mini_module_util)
 
+macro (set_module_defines)
+    set(module_defines
+        MODULE_NAME="${name}"
+        MODULE_PREFIX="${prefix}"
+        MODULE_API="${api}"
+        MODULE_OUTPUT="$<TARGET_FILE_NAME:${name}>"
+        MODULE_OUTPUT_PREFIX="$<TARGET_FILE_PREFIX:${name}>${prefix}${BUILD_PREFIX}"
+        MODULE_OUTPUT_SUFFIX="$<TARGET_FILE_SUFFIX:${name}>"
+        "\n"
+        ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
+    )
+endmacro()
+
 function (module_sources name)
     target_sources(${ARGV})
     build_source_tree(${name})
@@ -36,16 +49,7 @@ function (add_module name)
     generate_api_name(${name} API ${arg_API} PREFIX ${arg_PREFIX})
 
     if (NOT arg_NO_DEFINE_HEADER)
-        set(module_defines
-            MODULE_NAME="${name}"
-            MODULE_PREFIX="${prefix}"
-            MODULE_API="${api}"
-            MODULE_OUTPUT="$<TARGET_FILE_NAME:${name}>"
-            MODULE_OUTPUT_PREFIX="$<TARGET_FILE_PREFIX:${name}>${prefix}${BUILD_PREFIX}"
-            MODULE_OUTPUT_SUFFIX="$<TARGET_FILE_SUFFIX:${name}>"
-            "\n"
-            ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
-        )
+        set_module_defines()
         generate_define_header(${name}
             API ${api}
             PREFIX ${prefix}
@@ -54,7 +58,7 @@ function (add_module name)
     endif()
 
     if (NOT arg_NO_API_HEADER)
-        generate_api_header(${name} API ${api} PREFIX ${prefix})
+        generate_api_header(${name} PRIVATE API ${api} PREFIX ${prefix})
     endif()
 
     if (NOT arg_NO_API_LOG)

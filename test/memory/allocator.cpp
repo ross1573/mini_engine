@@ -1,3 +1,5 @@
+#include "test_macro.h"
+
 import mini.test;
 
 using namespace mini;

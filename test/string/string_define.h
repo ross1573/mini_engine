@@ -1,3 +1,5 @@
+#include "test_macro.h"
+
 template <typename T>
 struct CStr_inline;
 

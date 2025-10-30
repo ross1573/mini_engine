@@ -39,11 +39,7 @@ PUBLIC
         test.cxx
 )
 
-target_precompile_headers(mini.test 
-PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_macro.h
-)
-
+target_include_directories(mini.test PUBLIC ./)
 target_link_libraries(mini.test PUBLIC mini.core)
 
 add_subdirectory(container)
