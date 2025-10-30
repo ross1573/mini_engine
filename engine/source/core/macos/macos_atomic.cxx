@@ -1,5 +1,6 @@
 module;
 
+#pragma clang diagnostic ignored "-Watomic-alignment"
 #include <os/os_sync_wait_on_address.h>
 
 export module mini.core:atomic_base;

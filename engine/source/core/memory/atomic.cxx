@@ -1,21 +1,21 @@
 module;
 
-#define DIAGNOSE_STORE_ORDER(order)                                                          \
-    DIAGNOSE_ERROR((order == MemoryOrder::acquire || order == MemoryOrder::acquireRelease || \
+#define diagnose_store(order)                                                                \
+    diagnose_error((order == MemoryOrder::acquire || order == MemoryOrder::acquireRelease || \
                     order == MemoryOrder::consume),                                          \
                    "invalid memory order on atomic store operation")
 
-#define DIAGNOSE_LOAD_ORDER(order)                                                          \
-    DIAGNOSE_ERROR((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
+#define diagnose_load(order)                                                                \
+    diagnose_error((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
                    "invalid memory order on atomic load operation")
 
-#define DIAGNOSE_COMPARE_EXCHANGE_ORDER(order)                                              \
-    DIAGNOSE_ERROR((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
+#define diagnose_compare_exchange(order)                                                    \
+    diagnose_error((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
                    "invalid memory order on atomic exchange operation")
 
-#define DIAGNOSE_WAIT_ORDER(order)                                                          \
-    DIAGNOSE_ERROR((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
-                   "invalid memory order on atomic wait operation")
+#define diagnose_wait(order)                                                               \
+    diagnose_wait((order == MemoryOrder::release || order == MemoryOrder::acquireRelease), \
+                  "invalid memory order on atomic wait operation")
 
 export module mini.core:atomic;
 
@@ -132,7 +132,7 @@ inline constexpr Atomic<T>::Atomic(Value val) noexcept
 
 template <TrivialT T>
 inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) noexcept
-    DIAGNOSE_STORE_ORDER(order)
+    [[diagnose_store(order)]]
 {
     if consteval {
         m_Value = val;
@@ -144,7 +144,7 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) noexcept
 
 template <TrivialT T>
 inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) volatile noexcept
-    DIAGNOSE_STORE_ORDER(order)
+    [[diagnose_store(order)]]
 {
     if consteval {
         m_Value = val;
@@ -156,7 +156,7 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) volatile no
 
 template <TrivialT T>
 inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const noexcept
-    DIAGNOSE_LOAD_ORDER(order)
+    [[diagnose_load(order)]]
 {
     if consteval {
         return m_Value;
@@ -167,7 +167,7 @@ inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const noexc
 
 template <TrivialT T>
 inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const volatile noexcept
-    DIAGNOSE_LOAD_ORDER(order)
+    [[diagnose_load(order)]]
 {
     if consteval {
         return m_Value;
@@ -203,7 +203,7 @@ template <TrivialT T>
 inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value desired,
                                                        MemoryOrder success,
                                                        MemoryOrder failure) noexcept
-    DIAGNOSE_COMPARE_EXCHANGE_ORDER(failure)
+    [[diagnose_compare_exchange(failure)]]
 {
     if consteval {
         return ConstexprCompareExchange(expected, desired);
@@ -216,7 +216,7 @@ template <TrivialT T>
 inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value desired,
                                                        MemoryOrder success,
                                                        MemoryOrder failure) volatile noexcept
-    DIAGNOSE_COMPARE_EXCHANGE_ORDER(failure)
+    [[diagnose_compare_exchange(failure)]]
 {
     if consteval {
         return ConstexprCompareExchange(expected, desired);
@@ -240,7 +240,7 @@ template <TrivialT T>
 inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desired,
                                                      MemoryOrder success,
                                                      MemoryOrder failure) noexcept
-    DIAGNOSE_COMPARE_EXCHANGE_ORDER(failure)
+    [[diagnose_compare_exchange(failure)]]
 {
     if consteval {
         return ConstexprCompareExchange(expected, desired);
@@ -253,7 +253,7 @@ template <TrivialT T>
 inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desired,
                                                      MemoryOrder success,
                                                      MemoryOrder failure) volatile noexcept
-    DIAGNOSE_COMPARE_EXCHANGE_ORDER(failure)
+    [[diagnose_compare_exchange(failure)]]
 {
     if consteval {
         return ConstexprCompareExchange(expected, desired);
@@ -419,14 +419,14 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder orde
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Wait(Value old, MemoryOrder order) const noexcept DIAGNOSE_WAIT_ORDER(order)
+inline void Atomic<T>::Wait(Value old, MemoryOrder order) const noexcept [[diagnose_wait(order)]]
 {
     AtomicWait(&m_Value, old, order);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::Wait(Value old, MemoryOrder order) const volatile noexcept
-    DIAGNOSE_WAIT_ORDER(order)
+    [[diagnose_wait(order)]]
 {
     AtomicWait(&m_Value, old, order);
 }
