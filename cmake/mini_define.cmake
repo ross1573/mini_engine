@@ -62,7 +62,7 @@ add_module_definitions(
 
 add_module_definitions(
     ARCH_ARM64=$<IF:$<BOOL:${ARM64}>,true,false>
-    ARCH_AMD64=$<IF:$<BOOL:${AMD64}>,true,false>
+    ARCH_X86_64=$<IF:$<BOOL:${AMD64}>,true,false>
     ARCH_X86=$<IF:$<BOOL:${X86}>,true,false>
 )
 
