@@ -7,123 +7,11 @@ import mini.benchmark;
 using namespace mini;
 using namespace mini::memory;
 
-static void NoOp(benchmark::State& state)
-{
-    for (; state.KeepRunning(););
-}
-
-BENCHMARK(NoOp);
-
-static void AtomicLoad(benchmark::State& state)
-{
-    Atomic<int32> a(1);
-    int32 sum = 0;
-    std::thread t([&a]() {
-        int32 value = 1;
-        while (value > 0) {
-            while (a.CompareExchangeWeak(value, 1, MemoryOrder::relaxed)) {}
-        }
-    });
-
-    for (auto _ : state) {
-        sum += a.Load(MemoryOrder::acquire);
-    }
-
-    a.Store(-1, MemoryOrder::release);
-    t.join();
-    benchmark::DoNotOptimize(sum);
-}
-
-static void AtomicLoad_std(benchmark::State& state)
-{
-    std::atomic<int32> a;
-    int32 sum = 0;
-    std::thread t([&a]() {
-        int32 value = 1;
-        while (value > 0) {
-            while (a.compare_exchange_weak(value, 1, std::memory_order::relaxed)) {}
-        }
-    });
-
-    for (auto _ : state) {
-        sum += a.load(std::memory_order::acquire);
-    }
-
-    a.store(-1, std::memory_order::release);
-    t.join();
-    benchmark::DoNotOptimize(sum);
-}
-
-BENCHMARK(AtomicLoad);
-BENCHMARK(AtomicLoad_std);
-
-static void AtomicStore(benchmark::State& state)
-{
-    Atomic<int32> a(1);
-    int32 sum = 0;
-    std::thread t([&a, &sum]() {
-        int32 value = 1;
-        while (value > 0) {
-            value = a.Load(MemoryOrder::relaxed);
-            sum += value;
-        }
-    });
-
-    for (auto _ : state) {
-        a.Store(1, MemoryOrder::release);
-    }
-
-    a.Store(-1, MemoryOrder::release);
-    t.join();
-    benchmark::DoNotOptimize(sum);
-}
-
-static void AtomicStore_std(benchmark::State& state)
-{
-    std::atomic<int32> a(1);
-    int32 sum = 0;
-    std::thread t([&a, &sum]() {
-        int32 value = 1;
-        while (value > 0) {
-            value = a.load(std::memory_order::relaxed);
-            sum += value;
-        }
-    });
-
-    for (auto _ : state) {
-        a.store(1, std::memory_order::release);
-    }
-
-    a.store(-1, std::memory_order::release);
-    t.join();
-    benchmark::DoNotOptimize(sum);
-}
-
-BENCHMARK(AtomicStore);
-BENCHMARK(AtomicStore_std);
-
-static void AtomicFalseWait(benchmark::State& state)
-{
-    Atomic<int32> a(1);
-
-    for (auto _ : state) {
-        a.Wait(0, MemoryOrder::sequential);
-        benchmark::DoNotOptimize(a);
-    }
-}
-
-static void AtomicFalseWait_std(benchmark::State& state)
-{
-    std::atomic<int32> a(1);
-
-    for (auto _ : state) {
-        a.wait(0);
-        benchmark::DoNotOptimize(a);
-    }
-}
-
-BENCHMARK(AtomicFalseWait);
-BENCHMARK(AtomicFalseWait_std);
+#if PLATFORM_MACOS || PLATFORM_WINDWOS
+using ContentionT = int64;
+#else
+using ContentionT = int32;
+#endif
 
 struct NonAtomic {
 public:
@@ -134,11 +22,125 @@ public:
     operator int32() const noexcept { return v[0]; }
 };
 
-#if PLATFORM_MACOS || PLATFORM_WINDWOS
-using ContentionT = int64;
-#else
-using ContentionT = int32;
-#endif
+static void NoOp(benchmark::State& state)
+{
+    for (; state.KeepRunning(););
+}
+
+BENCHMARK(NoOp);
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicLoad(benchmark::State& state)
+{
+    Atomic<T> a(1);
+    int32 sum = 0;
+    std::thread t([&a]() {
+        while (a.Load(MemoryOrder::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        sum += a.Load(MemoryOrder::acquire);
+    }
+
+    t.join();
+    benchmark::DoNotOptimize(sum);
+}
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicLoad_std(benchmark::State& state)
+{
+    std::atomic<T> a(1);
+    int32 sum = 0;
+    std::thread t([&a]() {
+        while (a.load(std::memory_order::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        sum += a.load(std::memory_order::acquire);
+    }
+
+    t.join();
+    benchmark::DoNotOptimize(sum);
+}
+
+BENCHMARK_TEMPLATE(AtomicLoad, ContentionT);
+BENCHMARK_TEMPLATE(AtomicLoad_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicLoad, NonAtomic);
+BENCHMARK_TEMPLATE(AtomicLoad_std, NonAtomic);
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicStore(benchmark::State& state)
+{
+    Atomic<T> a(1);
+    std::thread t([&a]() {
+        while (a.Exchange(-1, MemoryOrder::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        a.Store(1, MemoryOrder::release);
+    }
+
+    t.join();
+    benchmark::DoNotOptimize(a.Load(MemoryOrder::sequential));
+}
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicStore_std(benchmark::State& state)
+{
+    std::atomic<T> a(1);
+    std::thread t([&a]() {
+        while (a.exchange(-1, std::memory_order::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        a.store(1, std::memory_order::release);
+    }
+
+    t.join();
+    benchmark::DoNotOptimize(a.load(std::memory_order::seq_cst));
+}
+
+BENCHMARK_TEMPLATE(AtomicStore, ContentionT);
+BENCHMARK_TEMPLATE(AtomicStore_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicStore, NonAtomic);
+BENCHMARK_TEMPLATE(AtomicStore_std, NonAtomic);
+
+static void AtomicFalseWait(benchmark::State& state)
+{
+    Atomic<int32> a(1);
+    std::thread t([&a]() {
+        while (a.Load(MemoryOrder::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        a.Wait(0, MemoryOrder::sequential);
+        benchmark::DoNotOptimize(a);
+    }
+
+    t.join();
+}
+
+static void AtomicFalseWait_std(benchmark::State& state)
+{
+    std::atomic<int32> a(1);
+    std::thread t([&a]() {
+        while (a.load(std::memory_order::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        a.wait(0);
+        benchmark::DoNotOptimize(a);
+    }
+
+    t.join();
+}
+
+BENCHMARK(AtomicFalseWait);
+BENCHMARK(AtomicFalseWait_std);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
@@ -148,8 +150,10 @@ static void AtomicWait(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<int32>(value) >= 0) {
-            a.CompareExchangeWeak(value, 1, MemoryOrder::acquire);
-            a.Notify();
+            if (a.CompareExchangeWeak(value, 1, MemoryOrder::acquire)) {
+                a.Notify();
+            }
+
             value = a.Load(MemoryOrder::acquire);
         }
     });
@@ -171,8 +175,10 @@ static void AtomicWait_std(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<int32>(value) >= 0) {
-            a.compare_exchange_weak(value, 1, std::memory_order::acquire);
-            a.notify_one();
+            if (a.compare_exchange_weak(value, 1, std::memory_order::acquire)) {
+                a.notify_one();
+            }
+
             value = a.load(std::memory_order::acquire);
         }
     });
@@ -199,8 +205,10 @@ static void AtomicWaitNotify(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<int32>(value) >= 0) {
-            a.CompareExchangeWeak(value, 1, MemoryOrder::acquire);
-            a.Notify();
+            if (a.CompareExchangeWeak(value, 1, MemoryOrder::acquire)) {
+                a.Notify();
+            }
+
             a.Wait(1, MemoryOrder::acquire);
             value = a.Load(MemoryOrder::acquire);
         }
@@ -225,8 +233,10 @@ static void AtomicWaitNotify_std(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<int32>(value) >= 0) {
-            a.compare_exchange_weak(value, 1, std::memory_order::acquire);
-            a.notify_one();
+            if (a.compare_exchange_weak(value, 1, std::memory_order::acquire)) {
+                a.notify_one();
+            }
+
             a.wait(1, std::memory_order::acquire);
             value = a.load(std::memory_order::acquire);
         }
