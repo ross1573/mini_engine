@@ -3,7 +3,8 @@ module;
 #include <bit>
 #include <memory>
 
-#include "builtin.h"
+#include "cstring.h"
+#include "cwstring.h"
 
 // TODO: constexpr placement new operator is coming soon!
 #define CONSTEXPR_CONSTRUCT_AT std::construct_at

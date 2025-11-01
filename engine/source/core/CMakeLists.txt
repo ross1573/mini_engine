@@ -80,9 +80,10 @@ PUBLIC
         $<$<PLATFORM_ID:Darwin>:macos/macos_thread.cxx>
 
 PRIVATE
-    impl/builtin.h
     impl/assert_util.h
     impl/assert_util.cpp
+    impl/cstring.h
+    impl/cwstring.h
     impl/module_system.cpp
 
     $<$<CXX_COMPILER_ID:MSVC>:impl/Windows/win_atomic.h>

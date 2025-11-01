@@ -1,9 +1,7 @@
 module;
 
-#include <cstring>
-#include <cwchar>
-
-#include "builtin.h"
+#include "cstring.h"
+#include "cwstring.h"
 
 export module mini.core:string_utility;
 
