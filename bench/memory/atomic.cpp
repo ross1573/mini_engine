@@ -258,4 +258,105 @@ BENCHMARK_TEMPLATE(AtomicWaitNotify_std, ContentionT);
 BENCHMARK_TEMPLATE(AtomicWaitNotify, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWaitNotify_std, NonAtomic);
 
+template <SizeT ThreadN>
+static void AtomicMultiWaitNotify(benchmark::State& state)
+{
+    Atomic<int32> a(0);
+    Atomic<int32> lock(0);
+    Array<std::thread> threads(ThreadN);
+
+    auto lockIncrement = [&a, &lock]() -> int32 {
+        lock.Wait(1, MemoryOrder::acquire);
+
+        int32 prev = 0;
+        if (!lock.CompareExchangeStrong(prev, 1, MemoryOrder::acquireRelease)) {
+            return 0;
+        }
+
+        int32 value = a.FetchAdd(1, MemoryOrder::acquireRelease);
+        lock.Store(0, MemoryOrder::release);
+        lock.Notify();
+
+        return value;
+    };
+
+    auto lockIncrementLoop = [&lockIncrement]() {
+        int32 value = 1;
+        while (value >= 0) {
+            value = lockIncrement();
+        }
+    };
+
+    for (SizeT i = 0; i < ThreadN; ++i) {
+        threads.Push(std::thread(lockIncrementLoop));
+    }
+
+    for (auto _ : state) {
+        std::ignore = lockIncrement();
+    }
+
+    a.Store(NumericLimit<int32>::min, MemoryOrder::sequential);
+    a.Notify();
+
+    for (auto& t : threads) {
+        t.join();
+    }
+}
+
+template <SizeT ThreadN>
+static void AtomicMultiWaitNotify_std(benchmark::State& state)
+{
+    std::atomic<int32> a(0);
+    std::atomic<int32> lock(0);
+    Array<std::thread> threads(ThreadN);
+
+    auto lockIncrement = [&a, &lock]() -> int32 {
+        lock.wait(1, std::memory_order::acquire);
+
+        int32 prev = 0;
+        if (!lock.compare_exchange_strong(prev, 1, std::memory_order::acq_rel)) {
+            return 0;
+        }
+
+        int32 value = a.fetch_add(1, std::memory_order::acq_rel);
+        lock.store(0, std::memory_order::release);
+        lock.notify_one();
+
+        return value;
+    };
+
+    auto lockIncrementLoop = [&lockIncrement]() {
+        int32 value = 1;
+        while (value >= 0) {
+            value = lockIncrement();
+        }
+    };
+
+    for (SizeT i = 0; i < ThreadN; ++i) {
+        threads.Push(std::thread(lockIncrementLoop));
+    }
+
+    for (auto _ : state) {
+        std::ignore = lockIncrement();
+    }
+
+    a.store(NumericLimit<int32>::min, std::memory_order::seq_cst);
+    a.notify_one();
+
+    for (auto& t : threads) {
+        t.join();
+    }
+}
+
+BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 4);
+BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 8);
+BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 16);
+BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 32);
+
+// kernel panics when executing libc++'s impl
+// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 4);
+// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 8);
+// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 16);
+// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 32);
+
 BENCHMARK_MAIN();
