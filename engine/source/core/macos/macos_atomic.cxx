@@ -7,6 +7,7 @@ export module mini.core:atomic_impl;
 
 import :type;
 import :memory;
+import :atomic_base;
 
 namespace mini::memory {
 
@@ -64,7 +65,7 @@ inline T AtomicExchange(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 }
 
 template <typename T>
-inline bool AtomicCompareExchangeWeak(AtomicBaes<T>* ptr, T* expected, T desired,
+inline bool AtomicCompareExchangeWeak(AtomicBase<T>* ptr, T* expected, T desired,
                                       MemoryOrder success, MemoryOrder failure)
 {
     return __atomic_compare_exchange(AddressOf(ptr->value), expected, &desired, true,
@@ -199,8 +200,8 @@ struct AtomicWaitableT<T> : TrueT {
     typedef uint64 Type;
 };
 
-inline void AtomicWaitOnAddress(AtomicContention const volatile* addr, AtomicContention value,
-                                SizeT size)
+inline void AtomicWaitOnAddress(AtomicContention const volatile* addr,
+                                AtomicContention::Value value, SizeT size)
 {
     void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
     os_sync_wait_on_address(const_cast<void*>(loc), value, size, OS_SYNC_WAIT_ON_ADDRESS_NONE);
