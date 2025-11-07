@@ -43,7 +43,7 @@ private:
     static constexpr byte signed_flag = SignedT<Type> ? 1 : 0;
 
 public:
-    static constexpr uint32 digits = static_cast<int>(sizeof(Type) * char_bit - signed_flag);
+    static constexpr uint32 digits = static_cast<int>((sizeof(Type) * char_bit) - signed_flag);
     static constexpr uint32 digits10 = digits * 3 / 10;
     static constexpr uint32 radix = 2;
 
