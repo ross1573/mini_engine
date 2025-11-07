@@ -7,7 +7,7 @@ import mini.benchmark;
 using namespace mini;
 using namespace mini::memory;
 
-#if PLATFORM_MACOS || PLATFORM_WINDWOS
+#if PLATFORM_MACOS || PLATFORM_WINDOWS
 using ContentionT = int64;
 #else
 using ContentionT = int32;
@@ -259,44 +259,35 @@ BENCHMARK_TEMPLATE(AtomicWaitNotify, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWaitNotify_std, NonAtomic);
 
 template <SizeT ThreadN>
-static void AtomicMultiWaitNotify(benchmark::State& state)
+static void AtomicSpinLock(benchmark::State& state)
 {
-    Atomic<int32> a(0);
+    Atomic<int32> atomic(1);
     Atomic<int32> lock(0);
     Array<std::thread> threads(ThreadN);
 
-    auto lockIncrement = [&a, &lock]() -> int32 {
-        lock.Wait(1, MemoryOrder::acquire);
-
-        int32 prev = 0;
-        if (!lock.CompareExchangeStrong(prev, 1, MemoryOrder::acquireRelease)) {
-            return 0;
+    auto spinLock = [&atomic, &lock]() -> int32 {
+        while (lock.Exchange(1, MemoryOrder::acquire) == 1) {
+            lock.Wait(1, MemoryOrder::relaxed);
         }
 
-        int32 value = a.FetchAdd(1, MemoryOrder::acquireRelease);
+        int32 value = atomic.Load(MemoryOrder::relaxed);
         lock.Store(0, MemoryOrder::release);
         lock.Notify();
 
         return value;
     };
 
-    auto lockIncrementLoop = [&lockIncrement]() {
-        int32 value = 1;
-        while (value >= 0) {
-            value = lockIncrement();
-        }
-    };
-
     for (SizeT i = 0; i < ThreadN; ++i) {
-        threads.Push(std::thread(lockIncrementLoop));
+        threads.Push(std::thread([&spinLock]() {
+            while (spinLock() > 0) {}
+        }));
     }
 
     for (auto _ : state) {
-        std::ignore = lockIncrement();
+        spinLock();
     }
 
-    a.Store(NumericLimit<int32>::min, MemoryOrder::sequential);
-    a.Notify();
+    atomic.Store(-1, MemoryOrder::sequential);
 
     for (auto& t : threads) {
         t.join();
@@ -304,59 +295,48 @@ static void AtomicMultiWaitNotify(benchmark::State& state)
 }
 
 template <SizeT ThreadN>
-static void AtomicMultiWaitNotify_std(benchmark::State& state)
+static void AtomicSpinLock_std(benchmark::State& state)
 {
-    std::atomic<int32> a(0);
+    std::atomic<int32> atomic(1);
     std::atomic<int32> lock(0);
     Array<std::thread> threads(ThreadN);
 
-    auto lockIncrement = [&a, &lock]() -> int32 {
-        lock.wait(1, std::memory_order::acquire);
-
-        int32 prev = 0;
-        if (!lock.compare_exchange_strong(prev, 1, std::memory_order::acq_rel)) {
-            return 0;
+    auto spinLock = [&atomic, &lock]() -> int32 {
+        while (lock.exchange(1, std::memory_order::acquire) == 1) {
+            lock.wait(1, std::memory_order::relaxed);
         }
 
-        int32 value = a.fetch_add(1, std::memory_order::acq_rel);
+        int32 value = atomic.load(std::memory_order::relaxed);
         lock.store(0, std::memory_order::release);
         lock.notify_one();
 
         return value;
     };
 
-    auto lockIncrementLoop = [&lockIncrement]() {
-        int32 value = 1;
-        while (value >= 0) {
-            value = lockIncrement();
-        }
-    };
-
     for (SizeT i = 0; i < ThreadN; ++i) {
-        threads.Push(std::thread(lockIncrementLoop));
+        threads.Push(std::thread([&spinLock]() {
+            while (spinLock() > 0) {}
+        }));
     }
 
     for (auto _ : state) {
-        std::ignore = lockIncrement();
+        spinLock();
     }
 
-    a.store(NumericLimit<int32>::min, std::memory_order::seq_cst);
-    a.notify_one();
+    atomic.store(-1, std::memory_order::seq_cst);
 
     for (auto& t : threads) {
         t.join();
     }
 }
 
-BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 4);
-BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 8);
-BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 16);
-BENCHMARK_TEMPLATE(AtomicMultiWaitNotify, 32);
-
-// kernel panics when executing libc++'s impl
-// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 4);
-// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 8);
-// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 16);
-// BENCHMARK_TEMPLATE(AtomicMultiWaitNotify_std, 32);
+BENCHMARK_TEMPLATE(AtomicSpinLock, 4);
+BENCHMARK_TEMPLATE(AtomicSpinLock, 8);
+BENCHMARK_TEMPLATE(AtomicSpinLock, 16);
+BENCHMARK_TEMPLATE(AtomicSpinLock, 32);
+BENCHMARK_TEMPLATE(AtomicSpinLock_std, 4);
+BENCHMARK_TEMPLATE(AtomicSpinLock_std, 8);
+BENCHMARK_TEMPLATE(AtomicSpinLock_std, 16);
+BENCHMARK_TEMPLATE(AtomicSpinLock_std, 32);
 
 BENCHMARK_MAIN();
