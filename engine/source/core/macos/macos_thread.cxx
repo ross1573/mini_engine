@@ -3,12 +3,16 @@ module;
 #include <pthread.h>
 #include <sched.h>
 
-#if ARCH_ARM64
-#  define PAUSE() __asm__ __volatile__("yield");
-#elif ARCH_X86_64 || ARCH_X86
-#  define PAUSE() __builtin_ia32_pause();
+#if CLANG || APPLE_CLANG
+#  if ARCH_ARM64
+#    define PAUSE() asm volatile("isb")
+#  elif ARCH_X86_64 || ARCH_X86
+#    define PAUSE() __builtin_ia32_pause();
+#  else
+#    define PAUSE() asm volatile("", , , "memory")
+#  endif
 #else
-#  define PAUSE()
+#  error "unsupported compiler"
 #endif
 
 export module mini.core:thread_base;

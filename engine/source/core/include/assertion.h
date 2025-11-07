@@ -106,13 +106,13 @@ inline constexpr void Unreachable()
 }
 
 #if PLATFORM_WINDOWS
-using __pchar_t = wchar_t;
+#  define CHAR_T wchar_t*
 #else
-using __pchar_t = char;
+#  define CHAR_T char*
 #endif
 
-ASSERT_API __pchar_t* AssertMsg(char const*, char const* = nullptr);
-ASSERT_API __pchar_t* AssertLoc(std::source_location const& = std::source_location::current());
+ASSERT_API CHAR_T AssertMsg(char const*, char const* = nullptr);
+ASSERT_API CHAR_T AssertLoc(std::source_location const& = std::source_location::current());
 ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
                              std::source_location const& = std::source_location::current());
 
@@ -134,3 +134,7 @@ inline constexpr bool TestExpr(T* const pointer) noexcept
 }
 
 } // namespace mini::detail
+
+#undef CHAR_T
+#undef BUILTIN_UNREACHABLE
+#undef BUILTIN_ASSSERT
