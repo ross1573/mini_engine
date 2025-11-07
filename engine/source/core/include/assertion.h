@@ -105,17 +105,6 @@ inline constexpr void Unreachable()
     BUILTIN_UNREACHABLE();
 }
 
-#if PLATFORM_WINDOWS
-#  define CHAR_T wchar_t*
-#else
-#  define CHAR_T char*
-#endif
-
-ASSERT_API CHAR_T AssertMsg(char const*, char const* = nullptr);
-ASSERT_API CHAR_T AssertLoc(std::source_location const& = std::source_location::current());
-ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
-                             std::source_location const& = std::source_location::current());
-
 inline constexpr bool TestExpr(bool arg) noexcept
 {
     return arg;
@@ -132,6 +121,24 @@ inline constexpr bool TestExpr(T* const pointer) noexcept
 {
     return pointer != nullptr;
 }
+
+#if PLATFORM_WINDOWS
+#  pragma warning(push)           // TODO: findout what's causing the problem
+#  pragma warning(disable : 4273) // inconsistent dll linkage
+#  define CHAR_T wchar_t*
+#else
+#  define CHAR_T char*
+#endif
+
+ASSERT_API CHAR_T AssertMsg(char const*, char const* = nullptr);
+ASSERT_API CHAR_T AssertLoc(std::source_location const& = std::source_location::current());
+ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
+                             std::source_location const& = std::source_location::current());
+
+#if PLATFORM_WINDOWS
+#  pragma warning(pop)
+#  include "win_assert.h"
+#endif
 
 } // namespace mini::detail
 

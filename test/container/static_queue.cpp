@@ -186,7 +186,6 @@ int TestRandom()
         q.RemoveFirst();
         q.Assign(q.Begin(), q.End());
 
-        memory::AddressOf(q.End());
         iter = q.Begin();
         TEST_ENSURE(!q.IsEmpty());
         TEST_ENSURE(!q.IsFull());

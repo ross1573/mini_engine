@@ -2,38 +2,75 @@ module;
 
 #include "cstring.h"
 
-#if ARCH_ARM64
-#  if PLATFORM_MACOS
-#    define ATOMIC_STATE_ALIGN 128
-#  else
-#    define ATOMIC_STATE_ALIGN 64
-#  endif
-#elif ARCH_X86_64
-#  define ATOMIC_STATE_ALIGN 64
-#elif ARCH_X86
-#  define ATOMIC_STATE_ALIGN 32
-#else
-#  define ATOMIC_STATE_ALIGN 64
-#endif
-
 export module mini.core:atomic_wait;
 
 import :type;
 import :memory;
 import :atomic_base;
+import :atomic_impl;
 import :thread_base;
 
 namespace mini::memory {
 
-static constexpr SizeT PauseAttempt = 8;
-static constexpr SizeT YieldAttempt = 32;
+constexpr SizeT spinWaitCount = 64;
 
-struct CORE_API alignas(ATOMIC_STATE_ALIGN) AtomicStateEntry {
+template <TrivialT T>
+inline bool AtomicLoadCompare(AtomicBase<T> const volatile* loc, T val, MemoryOrder order) noexcept
+{
+    T current = AtomicLoad(const_cast<AtomicBase<T> volatile*>(loc), order);
+    return BUILTIN_MEMCMP(&current, &val, sizeof(T)) == 0;
+}
+
+template <TrivialT T>
+inline bool AtomicSpinWait(AtomicBase<T> const volatile* loc, T val, MemoryOrder order) noexcept
+{
+    // TODO: fix it with duration, just like libc++
+    for (SizeT i = 0; i < spinWaitCount; ++i) {
+        if (!AtomicLoadCompare(loc, val, order)) {
+            return false;
+        }
+
+        mini::thread::ThreadRelax();
+    }
+
+    return true;
+}
+
+inline CORE_API void AtomicPlatformWait(AtomicContention volatile* wait,
+                                        AtomicContention const volatile* loc,
+                                        AtomicContention::Value value, SizeT size) noexcept
+{
+    AtomicFetchAdd(wait, AtomicContention::Value(1), MemoryOrder::relaxed);
+    AtomicThreadFence(MemoryOrder::sequential);
+    AtomicWaitOnAddress(loc, value, size);
+    AtomicFetchSub(wait, AtomicContention::Value(1), MemoryOrder::release);
+}
+
+inline CORE_API void AtomicPlatformNotify(AtomicContention const volatile* wait,
+                                          AtomicContention const volatile* loc, SizeT size) noexcept
+{
+    AtomicContention::Value waiterCount = AtomicLoad(wait, MemoryOrder::sequential);
+    if (waiterCount != 0) {
+        AtomicNotifyOnAddress(loc, size);
+    }
+}
+
+inline CORE_API void AtomicPlatformNotifyAll(AtomicContention const volatile* wait,
+                                             AtomicContention const volatile* loc,
+                                             SizeT size) noexcept
+{
+    AtomicContention::Value waiterCount = AtomicLoad(wait, MemoryOrder::sequential);
+    if (waiterCount != 0) {
+        AtomicNotifyAllOnAddress(loc, size);
+    }
+}
+
+struct CORE_API alignas(AtomicInterferenceSize) AtomicEntry {
 public:
-    AtomicContentionT wait;
-    AtomicContentionT platform;
+    AtomicContention wait;
+    AtomicContention platform;
 
-    constexpr AtomicStateEntry()
+    constexpr AtomicEntry()
         : wait(0)
         , platform(0)
     {
@@ -43,144 +80,80 @@ public:
 // Most of the user-side processors have less than 32 cores.
 // So, we're assuming that 32 is big enough for our use case.
 // This implementation might get some perf issues with server station setup.
-static constexpr SizeT StateTableSize = 1 << 5;
-static CORE_API AtomicStateEntry g_AtomicStateTable[StateTableSize];
+constexpr SizeT contentionTableSize = 1 << 6;
+CORE_API AtomicEntry g_AtomicContentionTable[contentionTableSize];
 
-inline AtomicStateEntry* AtomicStateEntryByLocation(void const volatile* loc) noexcept
-{
-    // TODO: do we need better hashing..?
-    SizeT ptr = reinterpret_cast<SizeT>(&loc);
-    SizeT buket = (ptr << 2) & (StateTableSize - 1);
-    return &g_AtomicStateTable[buket];
-}
-
-template <TrivialT T>
-inline bool AtomicLoadCompare(T const volatile* loc, T val, MemoryOrder order) noexcept
-{
-    T current = AtomicLoad(const_cast<T volatile*>(loc), order);
-    return BUILTIN_MEMCMP(&current, &val, sizeof(T)) == 0;
-}
-
-template <TrivialT T, typename YieldT>
-inline bool AtomicLoadCompareWithSpin(T const volatile* loc, T val, MemoryOrder order, byte attempt,
-                                      YieldT yield) noexcept
-{
-    for (int i = 0; i < attempt; ++i) {
-        if (!AtomicLoadCompare(loc, val, order)) {
-            return false;
-        }
-
-        yield();
-    }
-
-    return true;
-}
-
-template <TrivialT T>
-inline bool AtomicSpinWait(T const volatile* loc, T val, MemoryOrder order) noexcept
-{
-    if constexpr (AtomicAlwaysLockFree(sizeof(T))) {
-        if (!AtomicLoadCompareWithSpin(loc, val, order, PauseAttempt, &thread::ThreadPause)) {
-            return false;
-        }
-    }
-
-    if (!AtomicLoadCompareWithSpin(loc, val, order, YieldAttempt, &thread::ThreadYield)) {
-        return false;
-    }
-
-    return true;
-}
-
-inline CORE_API void AtomicPlatformWait(AtomicContentionT volatile* wait,
-                                        AtomicContentionT const volatile* loc,
-                                        AtomicContentionT value, SizeT size) noexcept
-{
-    AtomicFetchAdd(wait, static_cast<AtomicContentionT>(1), MemoryOrder::relaxed);
-    AtomicThreadFence(MemoryOrder::sequential);
-    AtomicWaitOnAddress(static_cast<void const volatile*>(loc), value, size);
-    AtomicFetchSub(wait, static_cast<AtomicContentionT>(1), MemoryOrder::release);
-}
-
-inline CORE_API void AtomicPlatformNotify(AtomicContentionT const volatile* wait,
-                                          AtomicContentionT const volatile* loc,
-                                          SizeT size) noexcept
-{
-    AtomicContentionT waiterCount = AtomicLoad(wait, MemoryOrder::sequential);
-    if (waiterCount != 0) {
-        AtomicNotifyOnAddress(static_cast<void const volatile*>(loc), size);
-    }
-}
-
-inline CORE_API void AtomicPlatformNotifyAll(AtomicContentionT const volatile* wait,
-                                             AtomicContentionT const volatile* loc,
-                                             SizeT size) noexcept
-{
-    AtomicContentionT waiterCount = AtomicLoad(wait, MemoryOrder::sequential);
-    if (waiterCount != 0) {
-        AtomicNotifyAllOnAddress(static_cast<void const volatile*>(loc), size);
-    }
-}
-
-template <TrivialT T>
+template <typename T>
 struct AtomicWaitableState {
 public:
-    T const volatile* pointer;
-    AtomicStateEntry* entry;
+    AtomicBase<T> const volatile* pointer;
+    AtomicEntry* entry;
     SizeT size;
 
-    AtomicWaitableState(T const volatile* pointer)
+    AtomicWaitableState(AtomicBase<T> const volatile* pointer)
         : pointer(pointer)
-        , entry(AtomicStateEntryByLocation(pointer))
-        , size(sizeof(AtomicContentionT))
+        , size(sizeof(AtomicContention))
     {
+        SizeT bucket = AtomicAddressHash<T, contentionTableSize>(&pointer->value);
+        entry = reinterpret_cast<AtomicEntry*>(&g_AtomicContentionTable[bucket]);
     }
 };
 
-template <TrivialT T>
+template <typename T>
 struct AtomicNotifiable : AtomicWaitableState<T> {
 public:
     typedef AtomicWaitableState<T> Base;
 
-    AtomicNotifiable(T const volatile* pointer)
+    AtomicNotifiable(AtomicBase<T> const volatile* pointer)
         : Base(pointer)
     {
     }
 
     void Notify()
     {
-        AtomicFetchAdd(&Base::entry->platform, AtomicContentionT(1), MemoryOrder::sequential);
+        AtomicContention::Value val(1);
+        AtomicFetchAdd(&Base::entry->platform, val, MemoryOrder::sequential);
         AtomicPlatformNotify(&Base::entry->wait, &Base::entry->platform, Base::size);
     }
 
     void NotifyAll()
     {
-        AtomicFetchAdd(&Base::entry->platform, AtomicContentionT(1), MemoryOrder::sequential);
+        AtomicContention::Value val(1);
+        AtomicFetchAdd(&Base::entry->platform, val, MemoryOrder::sequential);
         AtomicPlatformNotifyAll(&Base::entry->wait, &Base::entry->platform, Base::size);
     }
 };
 
-template <TrivialT T>
+template <typename T>
     requires AtomicWaitableT<T>::value
 struct AtomicNotifiable<T> : AtomicWaitableState<T> {
 public:
     typedef AtomicWaitableState<T> Base;
 
-    AtomicNotifiable(T const volatile* pointer)
+    AtomicNotifiable(AtomicBase<T> const volatile* pointer)
         : Base(pointer)
     {
     }
 
-    AtomicContentionT const volatile* ContentionAddress()
+    AtomicContention const volatile* ContentionAddress()
     {
-        return reinterpret_cast<AtomicContentionT const volatile*>(Base::pointer);
+        return reinterpret_cast<AtomicContention const volatile*>(Base::pointer);
     }
 
-    void Notify() { AtomicPlatformNotify(&Base::entry->wait, ContentionAddress(), Base::size); }
-    void NotifyAll() { AtomicPlatformNotify(&Base::entry->wait, ContentionAddress(), Base::size); }
+    void Notify()
+    {
+        AtomicContention const volatile* loc = ContentionAddress();
+        AtomicPlatformNotify(&Base::entry->wait, loc, Base::size);
+    }
+
+    void NotifyAll()
+    {
+        AtomicContention const volatile* loc = ContentionAddress();
+        AtomicPlatformNotify(&Base::entry->wait, loc, Base::size);
+    }
 };
 
-template <TrivialT T>
+template <typename T>
 struct AtomicWaitable : public AtomicWaitableState<T> {
 public:
     typedef AtomicWaitableState<T> Base;
@@ -188,7 +161,7 @@ public:
     T old;
     MemoryOrder order;
 
-    AtomicWaitable(T const volatile* pointer, T old, MemoryOrder order)
+    AtomicWaitable(AtomicBase<T> const volatile* pointer, T old, MemoryOrder order)
         : Base(pointer)
         , old(old)
         , order(order)
@@ -198,21 +171,17 @@ public:
     void Wait()
     {
         for (; AtomicSpinWait(Base::pointer, old, order);) {
-            AtomicContentionT* platform = &Base::entry->platform;
-            AtomicContentionT contention = AtomicLoad(platform, MemoryOrder::acquire);
+            AtomicContention* platform = &Base::entry->platform;
+            AtomicContention::Value contention = AtomicLoad(platform, MemoryOrder::acquire);
 
-            // since spin-wait ends with yield, we should have this one last load compare
-            // this is to avoid ABA problem as mush as possible
-            if (!AtomicLoadCompare(Base::pointer, old, order)) {
-                return;
+            if (AtomicLoadCompare(Base::pointer, old, order)) {
+                AtomicPlatformWait(&Base::entry->wait, platform, contention, Base::size);
             }
-
-            AtomicPlatformWait(&Base::entry->wait, platform, contention, Base::size);
         }
     }
 };
 
-template <TrivialT T>
+template <typename T>
     requires AtomicWaitableT<T>::value
 struct AtomicWaitable<T> : public AtomicWaitableState<T> {
 public:
@@ -222,7 +191,7 @@ public:
     T old;
     MemoryOrder order;
 
-    AtomicWaitable(T const volatile* pointer, T old, MemoryOrder order)
+    AtomicWaitable(AtomicBase<T> const volatile* pointer, T old, MemoryOrder order)
         : Base(pointer)
         , old(old)
         , order(order)
@@ -231,30 +200,34 @@ public:
 
     void Wait()
     {
-        for (; AtomicSpinWait(Base::pointer, old, order);) {
-            WaitableT waitable = BitCast<WaitableT>(old);
-            AtomicContentionT const volatile* ptr =
-                reinterpret_cast<AtomicContentionT const volatile*>(Base::pointer);
+        if (!AtomicSpinWait(Base::pointer, old, order)) {
+            return;
+        }
 
+        WaitableT waitable = BitCast<WaitableT>(old);
+        AtomicContention const volatile* ptr =
+            reinterpret_cast<AtomicContention const volatile*>(Base::pointer);
+
+        if (AtomicLoadCompare(Base::pointer, old, order)) {
             AtomicPlatformWait(&Base::entry->wait, ptr, waitable, Base::size);
         }
     }
 };
 
-template <TrivialT T>
-inline void AtomicWait(T const volatile* loc, T old, MemoryOrder order) noexcept
+template <typename T>
+inline void AtomicWait(AtomicBase<T> const volatile* loc, T old, MemoryOrder order) noexcept
 {
     AtomicWaitable(loc, old, order).Wait();
 }
 
-template <TrivialT T>
-inline void AtomicNotify(T const volatile* loc) noexcept
+template <typename T>
+inline void AtomicNotify(AtomicBase<T> const volatile* loc) noexcept
 {
     AtomicNotifiable(loc).Notify();
 }
 
-template <TrivialT T>
-inline void AtomicNotifyAll(T const volatile* loc) noexcept
+template <typename T>
+inline void AtomicNotifyAll(AtomicBase<T> const volatile* loc) noexcept
 {
     AtomicNotifiable(loc).NotifyAll();
 }

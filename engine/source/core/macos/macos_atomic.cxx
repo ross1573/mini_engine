@@ -3,9 +3,10 @@ module;
 #pragma clang diagnostic ignored "-Watomic-alignment"
 #include <os/os_sync_wait_on_address.h>
 
-export module mini.core:atomic_base;
+export module mini.core:atomic_impl;
 
 import :type;
+import :memory;
 
 namespace mini::memory {
 
@@ -18,176 +19,140 @@ export enum class MemoryOrder : int {
     sequential = __ATOMIC_SEQ_CST
 };
 
-template <TrivialT T>
-inline T AtomicLoad(T const* ptr, MemoryOrder order)
+template <typename T>
+inline T AtomicLoad(AtomicBase<T> const* ptr, MemoryOrder order)
 {
     T result;
-    __atomic_load(ptr, &result, static_cast<int>(order));
+    __atomic_load(AddressOf(ptr->value), &result, static_cast<int>(order));
     return result;
 }
 
-template <TrivialT T>
-inline T AtomicLoad(T const volatile* ptr, MemoryOrder order)
+template <typename T>
+inline T AtomicLoad(AtomicBase<T> const volatile* ptr, MemoryOrder order)
 {
     T result;
-    __atomic_load(ptr, &result, static_cast<int>(order));
+    __atomic_load(AddressOf(ptr->value), &result, static_cast<int>(order));
     return result;
 }
 
-template <TrivialT T>
-inline void AtomicStore(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline void AtomicStore(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    __atomic_store(ptr, &val, static_cast<int>(order));
+    __atomic_store(AddressOf(ptr->value), &val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline void AtomicStore(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline void AtomicStore(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    __atomic_store(ptr, &val, static_cast<int>(order));
+    __atomic_store(AddressOf(ptr->value), &val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicExchange(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicExchange(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
     T result;
-    __atomic_exchange(ptr, &val, &result, static_cast<int>(order));
+    __atomic_exchange(AddressOf(ptr->value), &val, &result, static_cast<int>(order));
     return result;
 }
 
-template <TrivialT T>
-inline T AtomicExchange(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicExchange(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
     T result;
-    __atomic_exchange(ptr, &val, &result, static_cast<int>(order));
+    __atomic_exchange(AddressOf(ptr->value), &val, &result, static_cast<int>(order));
     return result;
 }
 
-template <TrivialT T>
-inline bool AtomicCompareExchangeWeak(T* ptr, T* expected, T desired, MemoryOrder success,
-                                      MemoryOrder failure)
+template <typename T>
+inline bool AtomicCompareExchangeWeak(AtomicBaes<T>* ptr, T* expected, T desired,
+                                      MemoryOrder success, MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, &desired, true, static_cast<int>(success),
-                                     static_cast<int>(failure));
+    return __atomic_compare_exchange(AddressOf(ptr->value), expected, &desired, true,
+                                     static_cast<int>(success), static_cast<int>(failure));
 }
 
-template <TrivialT T>
-inline bool AtomicCompareExchangeWeak(T volatile* ptr, T* expected, T desired, MemoryOrder success,
-                                      MemoryOrder failure)
+template <typename T>
+inline bool AtomicCompareExchangeWeak(AtomicBase<T> volatile* ptr, T* expected, T desired,
+                                      MemoryOrder success, MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, &desired, true, static_cast<int>(success),
-                                     static_cast<int>(failure));
+    return __atomic_compare_exchange(AddressOf(ptr->value), expected, &desired, true,
+                                     static_cast<int>(success), static_cast<int>(failure));
 }
 
-template <TrivialT T>
-inline bool AtomicCompareExchangeStrong(T* ptr, T* expected, T desired, MemoryOrder success,
-                                        MemoryOrder failure)
-{
-    return __atomic_compare_exchange(ptr, expected, &desired, false, static_cast<int>(success),
-                                     static_cast<int>(failure));
-}
-
-template <TrivialT T>
-inline bool AtomicCompareExchangeStrong(T volatile* ptr, T* expected, T desired,
+template <typename T>
+inline bool AtomicCompareExchangeStrong(AtomicBase<T>* ptr, T* expected, T desired,
                                         MemoryOrder success, MemoryOrder failure)
 {
-    return __atomic_compare_exchange(ptr, expected, &desired, false, static_cast<int>(success),
-                                     static_cast<int>(failure));
+    return __atomic_compare_exchange(AddressOf(ptr->value), expected, &desired, false,
+                                     static_cast<int>(success), static_cast<int>(failure));
 }
 
-template <TrivialT T>
-inline T AtomicFetchAdd(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline bool AtomicCompareExchangeStrong(AtomicBase<T> volatile* ptr, T* expected, T desired,
+                                        MemoryOrder success, MemoryOrder failure)
 {
-    return __atomic_fetch_add(ptr, val, static_cast<int>(order));
+    return __atomic_compare_exchange(AddressOf(ptr->value), expected, &desired, false,
+                                     static_cast<int>(success), static_cast<int>(failure));
 }
 
-template <TrivialT T>
-inline T AtomicFetchAdd(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchAdd(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_add(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_add(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchSub(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchAdd(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_sub(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_add(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchSub(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchSub(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_sub(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_sub(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchAnd(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchSub(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_and(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_sub(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchAnd(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchAnd(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_and(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_and(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchXor(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchAnd(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_xor(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_and(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchXor(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchXor(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_xor(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_xor(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchOr(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchXor(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_or(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_xor(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchOr(T volatile* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchOr(AtomicBase<T>* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_or(ptr, val, static_cast<int>(order));
+    return __atomic_fetch_or(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
-template <TrivialT T>
-inline T AtomicFetchNand(T* ptr, T val, MemoryOrder order)
+template <typename T>
+inline T AtomicFetchOr(AtomicBase<T> volatile* ptr, T val, MemoryOrder order)
 {
-    return __atomic_fetch_Nand(ptr, val, static_cast<int>(order));
-}
-
-template <TrivialT T>
-inline T AtomicFetchNand(T volatile* ptr, T val, MemoryOrder order)
-{
-    return __atomic_fetch_Nand(ptr, val, static_cast<int>(order));
-}
-
-template <TrivialT T>
-inline T AtomicTestAndSet(T* ptr, MemoryOrder order)
-{
-    return __atomic_test_and_set(ptr, static_cast<int>(order));
-}
-
-template <TrivialT T>
-inline T AtomicTestAndSet(T volatile* ptr, MemoryOrder order)
-{
-    return __atomic_test_and_set(ptr, static_cast<int>(order));
-}
-
-template <TrivialT T>
-inline T AtomicClear(T* ptr, MemoryOrder order)
-{
-    return __atomic_clear(ptr, static_cast<int>(order));
-}
-
-template <TrivialT T>
-inline T AtomicClear(T volatile* ptr, MemoryOrder order)
-{
-    return __atomic_clear(ptr, static_cast<int>(order));
+    return __atomic_fetch_or(AddressOf(ptr->value), val, static_cast<int>(order));
 }
 
 inline CORE_API void AtomicThreadFence(MemoryOrder order)
@@ -205,17 +170,19 @@ consteval bool AtomicAlwaysLockFree(SizeT size)
     return __atomic_always_lock_free(size, nullptr);
 }
 
-inline CORE_API bool AtomicIsLockFree(SizeT size, void const* ptr)
+template <typename T>
+inline constexpr bool AtomicIsLockFree(SizeT size, AtomicBase<T> const* ptr)
 {
-    return __atomic_is_lock_free(size, ptr);
+    return __atomic_is_lock_free(size, static_cast<void*>(AddressOf(ptr)));
 }
 
-inline CORE_API bool AtomicIsLockFree(SizeT size, void const volatile* ptr)
+template <typename T>
+inline constexpr bool AtomicIsLockFree(SizeT size, AtomicBase<T> const volatile* ptr)
 {
-    return __atomic_is_lock_free(size, ptr);
+    return __atomic_is_lock_free(size, static_cast<void volatile*>(AddressOf(ptr)));
 }
 
-using AtomicContentionT = uint64;
+using AtomicContention = AtomicBase<uint64>;
 
 template <typename T>
 struct AtomicWaitableT : FalseT {};
@@ -232,19 +199,23 @@ struct AtomicWaitableT<T> : TrueT {
     typedef uint64 Type;
 };
 
-inline void AtomicWaitOnAddress(void const volatile* addr, AtomicContentionT value, SizeT size)
+inline void AtomicWaitOnAddress(AtomicContention const volatile* addr, AtomicContention value,
+                                SizeT size)
 {
-    os_sync_wait_on_address(const_cast<void*>(addr), value, size, OS_SYNC_WAIT_ON_ADDRESS_NONE);
+    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
+    os_sync_wait_on_address(const_cast<void*>(loc), value, size, OS_SYNC_WAIT_ON_ADDRESS_NONE);
 }
 
-inline void AtomicNotifyOnAddress(void const volatile* addr, SizeT size)
+inline void AtomicNotifyOnAddress(AtomicContention const volatile* addr, SizeT size)
 {
-    os_sync_wake_by_address_any(const_cast<void*>(addr), size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
+    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
+    os_sync_wake_by_address_any(const_cast<void*>(loc), size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
 }
 
-inline void AtomicNotifyAllOnAddress(void const volatile* addr, SizeT size)
+inline void AtomicNotifyAllOnAddress(AtomicContention const volatile* addr, SizeT size)
 {
-    os_sync_wake_by_address_all(const_cast<void*>(addr), size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
+    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
+    os_sync_wake_by_address_all(const_cast<void*>(loc), size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
 }
 
 } // namespace mini::memory

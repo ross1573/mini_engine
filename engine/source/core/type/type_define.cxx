@@ -40,6 +40,8 @@ export using OffsetT = std::ptrdiff_t;
 
 export using TrueT = IntegralConstant<bool, true>;
 export using FalseT = IntegralConstant<bool, false>;
+
+export using IntPtrT = std::intptr_t;
 export using NullptrT = std::nullptr_t;
 
 } // namespace mini

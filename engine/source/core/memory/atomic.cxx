@@ -21,43 +21,29 @@ export module mini.core:atomic;
 
 import :type;
 import :memory;
-import :atomic_base;
-import :atomic_wait;
 import :thread_base;
+import :atomic_base;
+export import :atomic_impl;
+import :atomic_wait;
 
-namespace mini::memory {
-
-template <TrivialT T>
-consteval SizeT AtomicAlignment()
-{
-    // current platform support atomic operations up to 16 bytes
-    constexpr SizeT maxAlign = 1 << 4;
-    if (sizeof(T) > maxAlign) return alignof(T);
-
-    SizeT align = maxAlign;
-    while (align > 0) {
-        if ((align >> 1) < sizeof(T)) return align;
-        align >>= 1;
-    }
-
-    return 1;
-}
+namespace mini {
 
 export using MemoryOrder = mini::memory::MemoryOrder;
 
 export template <TrivialT T>
 struct Atomic {
+private:
+    typedef memory::AtomicBase<T> Base;
+
 public:
-    typedef T Value;
+    typedef typename Base::Value Value;
 
 private:
-    static_assert(sizeof(Value) != 0, "cannot create atomic value from incomplete type.");
-    static constexpr SizeT alignment = AtomicAlignment<Value>();
-
-    alignas(alignment) mutable Value m_Value;
+    mutable Base m_Value;
 
 public:
-    constexpr Atomic() noexcept(NoThrowDefaultConstructibleT<T>) = default;
+    constexpr Atomic() noexcept(NoThrowDefaultConstructibleT<T>)
+        requires DefaultConstructibleT<T>;
     constexpr Atomic(Value) noexcept;
     constexpr ~Atomic() noexcept = default;
 
@@ -125,6 +111,13 @@ private:
 };
 
 template <TrivialT T>
+constexpr Atomic<T>::Atomic() noexcept(NoThrowDefaultConstructibleT<T>)
+    requires DefaultConstructibleT<T>
+    : m_Value(T())
+{
+}
+
+template <TrivialT T>
 inline constexpr Atomic<T>::Atomic(Value val) noexcept
     : m_Value(val)
 {
@@ -135,11 +128,11 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) noexcept
     [[diagnose_store(order)]]
 {
     if consteval {
-        m_Value = val;
+        m_Value.value = val;
         return;
     }
 
-    AtomicStore(&m_Value, val, order);
+    memory::AtomicStore(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -147,11 +140,11 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) volatile no
     [[diagnose_store(order)]]
 {
     if consteval {
-        m_Value = val;
+        m_Value.value = val;
         return;
     }
 
-    AtomicStore(&m_Value, val, order);
+    memory::AtomicStore(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -159,10 +152,10 @@ inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const noexc
     [[diagnose_load(order)]]
 {
     if consteval {
-        return m_Value;
+        return m_Value.value;
     }
 
-    return AtomicLoad(&m_Value, order);
+    return memory::AtomicLoad(&m_Value, order);
 }
 
 template <TrivialT T>
@@ -170,21 +163,21 @@ inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const volat
     [[diagnose_load(order)]]
 {
     if consteval {
-        return m_Value;
+        return m_Value.value;
     }
 
-    return AtomicLoad(&m_Value, order);
+    return memory::AtomicLoad(&m_Value, order);
 }
 
 template <TrivialT T>
 inline constexpr Atomic<T>::Value Atomic<T>::Exchange(Value val, MemoryOrder order) noexcept
 {
     if consteval {
-        m_Value = val;
-        return m_Value;
+        m_Value.value = val;
+        return m_Value.value;
     }
 
-    return AtomicExchange(&m_Value, val, order);
+    return memory::AtomicExchange(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -192,11 +185,11 @@ inline constexpr Atomic<T>::Value Atomic<T>::Exchange(Value val,
                                                       MemoryOrder order) volatile noexcept
 {
     if consteval {
-        m_Value = val;
-        return m_Value;
+        m_Value.value = val;
+        return m_Value.value;
     }
 
-    return AtomicExchange(&m_Value, val, order);
+    return memory::AtomicExchange(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -209,7 +202,7 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeStrong(&m_Value, &expected, desired, success, failure);
+    return memory::AtomicCompareExchangeStrong(&m_Value, &expected, desired, success, failure);
 }
 
 template <TrivialT T>
@@ -222,7 +215,7 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeStrong(&m_Value, &expected, desired, success, failure);
+    return memory::AtomicCompareExchangeStrong(&m_Value, &expected, desired, success, failure);
 }
 
 template <TrivialT T>
@@ -233,7 +226,7 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeStrong(&m_Value, &expected, desired, order, order);
+    return memory::AtomicCompareExchangeStrong(&m_Value, &expected, desired, order, order);
 }
 
 template <TrivialT T>
@@ -246,7 +239,7 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeWeak(&m_Value, &expected, desired, success, failure);
+    return memory::AtomicCompareExchangeWeak(&m_Value, &expected, desired, success, failure);
 }
 
 template <TrivialT T>
@@ -259,7 +252,7 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeWeak(&m_Value, &expected, desired, success, failure);
+    return memory::AtomicCompareExchangeWeak(&m_Value, &expected, desired, success, failure);
 }
 
 template <TrivialT T>
@@ -270,7 +263,7 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeWeak(&m_Value, &expected, desired, order, order);
+    return memory::AtomicCompareExchangeWeak(&m_Value, &expected, desired, order, order);
 }
 
 template <TrivialT T>
@@ -281,7 +274,7 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return AtomicCompareExchangeWeak(&m_Value, &expected, desired, order, order);
+    return memory::AtomicCompareExchangeWeak(&m_Value, &expected, desired, order, order);
 }
 
 template <TrivialT T>
@@ -289,12 +282,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value += val;
+        T tmp = m_Value.value;
+        m_Value.value += val;
         return tmp;
     }
 
-    return AtomicFetchAdd(&m_Value, val, order);
+    return memory::AtomicFetchAdd(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -303,12 +296,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value += val;
+        T tmp = m_Value.value;
+        m_Value.value += val;
         return tmp;
     }
 
-    return AtomicFetchAdd(&m_Value, val, order);
+    return memory::AtomicFetchAdd(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -316,12 +309,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value -= val;
+        T tmp = m_Value.value;
+        m_Value.value -= val;
         return tmp;
     }
 
-    return AtomicFetchSub(&m_Value, val, order);
+    return memory::AtomicFetchSub(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -330,12 +323,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value -= val;
+        T tmp = m_Value.value;
+        m_Value.value -= val;
         return tmp;
     }
 
-    return AtomicFetchSub(&m_Value, val, order);
+    return memory::AtomicFetchSub(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -343,12 +336,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAnd(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value &= val;
+        T tmp = m_Value.value;
+        m_Value.value &= val;
         return tmp;
     }
 
-    return AtomicFetchAnd(&m_Value, val, order);
+    return memory::AtomicFetchAnd(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -357,12 +350,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAnd(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value &= val;
+        T tmp = m_Value.value;
+        m_Value.value &= val;
         return tmp;
     }
 
-    return AtomicFetchAnd(&m_Value, val, order);
+    return memory::AtomicFetchAnd(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -370,8 +363,8 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchXor(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value ^= val;
+        T tmp = m_Value.value;
+        m_Value.value ^= val;
         return tmp;
     }
 
@@ -384,12 +377,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchXor(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value ^= val;
+        T tmp = m_Value.value;
+        m_Value.value ^= val;
         return tmp;
     }
 
-    return AtomicFetchXor(&m_Value, val, order);
+    return memory::AtomicFetchXor(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -397,12 +390,12 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder orde
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value |= val;
+        T tmp = m_Value.value;
+        m_Value.value |= val;
         return tmp;
     }
 
-    return AtomicFetchOr(&m_Value, val, order);
+    return memory::AtomicFetchOr(&m_Value, val, order);
 }
 
 template <TrivialT T>
@@ -410,67 +403,67 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder orde
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value;
-        m_Value = !(m_Value & val);
+        T tmp = m_Value.value;
+        m_Value.value = !(m_Value & val);
         return tmp;
     }
 
-    return AtomicFetchOr(&m_Value, val, order);
+    return memory::AtomicFetchOr(&m_Value, val, order);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::Wait(Value old, MemoryOrder order) const noexcept [[diagnose_wait(order)]]
 {
-    AtomicWait(&m_Value, old, order);
+    memory::AtomicWait(&m_Value, old, order);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::Wait(Value old, MemoryOrder order) const volatile noexcept
     [[diagnose_wait(order)]]
 {
-    AtomicWait(&m_Value, old, order);
+    memory::AtomicWait(&m_Value, old, order);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::Notify() const noexcept
 {
-    AtomicNotify(&m_Value);
+    memory::AtomicNotify(&m_Value);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::Notify() const volatile noexcept
 {
-    AtomicNotify(&m_Value);
+    memory::AtomicNotify(&m_Value);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::NotifyAll() const noexcept
 {
-    AtomicNotifyAll(&m_Value);
+    memory::AtomicNotifyAll(&m_Value);
 }
 
 template <TrivialT T>
 inline void Atomic<T>::NotifyAll() const volatile noexcept
 {
-    AtomicNotifyAll(&m_Value);
+    memory::AtomicNotifyAll(&m_Value);
 }
 
 template <TrivialT T>
 inline bool Atomic<T>::IsLockFree() const noexcept
 {
-    return AtomicIsLockFree(sizeof(Atomic<T>), static_cast<void*>(&m_Value));
+    return memory::AtomicIsLockFree(sizeof(Atomic<T>), &m_Value);
 }
 
 template <TrivialT T>
 inline bool Atomic<T>::IsLockFree() const volatile noexcept
 {
-    return AtomicIsLockFree(sizeof(Atomic<T>), static_cast<void volatile*>(&m_Value));
+    return memory::AtomicIsLockFree(sizeof(Atomic<T>), &m_Value);
 }
 
 template <TrivialT T>
 inline constexpr bool Atomic<T>::IsAlwaysLockFree() noexcept
 {
-    return AtomicAlwaysLockFree(sizeof(Atomic<T>));
+    return memory::AtomicAlwaysLockFree(sizeof(Atomic<T>));
 }
 
 template <TrivialT T>
@@ -501,7 +494,7 @@ template <TrivialT T>
 inline constexpr void Atomic<T>::ThreadFence(MemoryOrder order) noexcept
 {
     if !consteval {
-        AtomicThreadFence(order);
+        memory::AtomicThreadFence(order);
     }
 }
 
@@ -509,19 +502,19 @@ template <TrivialT T>
 inline constexpr void Atomic<T>::SignalFence(MemoryOrder order) noexcept
 {
     if !consteval {
-        AtomicSignalFence(order);
+        memory::AtomicSignalFence(order);
     }
 }
 
 template <TrivialT T>
 inline constexpr bool Atomic<T>::ConstexprCompareExchange(Value& expected, Value desired) noexcept
 {
-    if (m_Value == expected) {
-        m_Value = desired;
+    if (m_Value.value == expected) {
+        m_Value.value = desired;
         return true;
     }
 
-    expected = m_Value;
+    expected = m_Value.value;
     return false;
 }
 
@@ -529,13 +522,13 @@ template <TrivialT T>
 inline constexpr bool Atomic<T>::ConstexprCompareExchange(Value volatile& expected,
                                                           Value desired) volatile noexcept
 {
-    if (static_cast<Value volatile>(m_Value) == expected) {
-        m_Value = static_cast<Value>(desired);
+    if (static_cast<Value volatile>(m_Value.value) == expected) {
+        m_Value.value = static_cast<Value>(desired);
         return true;
     }
 
-    expected = static_cast<Value volatile>(m_Value);
+    expected = static_cast<Value volatile>(m_Value.value);
     return false;
 }
 
-} // namespace mini::memory
+} // namespace mini

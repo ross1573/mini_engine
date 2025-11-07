@@ -336,7 +336,7 @@ BENCHMARK_TEMPLATE(AtomicSpinLock, 16);
 BENCHMARK_TEMPLATE(AtomicSpinLock, 32);
 
 // clang's implementation spin-locks without any pause instruction
-#ifndef CLANG
+#if !CLANG
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 4);
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 8);
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 16);

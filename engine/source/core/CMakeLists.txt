@@ -40,6 +40,7 @@ PUBLIC
         math/vertex.cxx
 
         memory/atomic.cxx
+        memory/atomic_base.cxx
         memory/atomic_wait.cxx
         memory/allocator.cxx
         memory/buffer.cxx
@@ -82,11 +83,13 @@ PUBLIC
 PRIVATE
     impl/assert_util.h
     impl/assert_util.cpp
-    impl/cstring.h
-    impl/cwstring.h
     impl/module_system.cpp
 
-    $<$<CXX_COMPILER_ID:MSVC>:impl/Windows/win_atomic.h>
+    memory/cstring.h
+    memory/cwstring.h
+
+    $<$<CXX_COMPILER_ID:MSVC>:impl/windows/win_atomic.cpp>
+    $<$<PLATFORM_ID:Windows>:include/win_assert.h>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_assert.cpp>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_logger.cpp>
     $<$<PLATFORM_ID:Windows>:impl/windows/win_module.cpp>
@@ -102,11 +105,6 @@ PUBLIC
     include/option.h
 )
 
-target_include_directories(mini.core 
-PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/impl
-)
-
 target_link_libraries(mini.core 
 PUBLIC
     convert_utf
@@ -117,7 +115,6 @@ if (APPLE)
     target_link_libraries(mini.core PRIVATE "-framework Foundation")
 elseif (WIN32)
     target_link_libraries(mini.core PRIVATE synchronization.lib)
-    target_precompile_headers(mini.core PUBLIC include/win_assert.h)
 endif()
 
 if (MSVC)

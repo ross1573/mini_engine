@@ -12,8 +12,8 @@ private:
     MutexT m_Mutex;
 
 public:
-    constexpr Mutex() noexcept { MutexInitialize(m_Mutex); }
-    constexpr ~Mutex() noexcept = default;
+    Mutex() noexcept { MutexInitialize(m_Mutex); }
+    ~Mutex() noexcept = default;
 
     void Lock() { MutexLock(m_Mutex); }
     void Unlock() { MutexUnlock(m_Mutex); }

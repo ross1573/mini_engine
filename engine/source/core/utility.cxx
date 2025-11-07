@@ -1,6 +1,7 @@
 module;
 
 #include <initializer_list>
+#include <source_location>
 
 export module mini.core:utility;
 
@@ -47,5 +48,16 @@ inline constexpr T Exchange(T& v, U&& n)
     v = static_cast<T>(ForwardArg<U>(n));
     return old;
 }
+
+struct Ignore {
+public:
+    template <typename T>
+    constexpr Ignore const& operator=(T const&) const noexcept
+    {
+        return *this;
+    }
+};
+
+export constexpr Ignore ignore;
 
 } // namespace mini

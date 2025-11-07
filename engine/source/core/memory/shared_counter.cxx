@@ -7,7 +7,7 @@ namespace mini {
 
 class CORE_API SharedCounter {
 private:
-    typedef memory::Atomic<int32> Counter;
+    typedef Atomic<int32> Counter;
 
     Counter m_Count;
     Counter m_Weak;

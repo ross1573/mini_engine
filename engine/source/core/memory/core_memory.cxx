@@ -12,19 +12,29 @@ module;
 
 #define CONSTEXPR_BIT_CAST std::bit_cast
 
+#if defined(__has_builtin) && __has_builtin(__builtin_addressof)
+#  define BUILTIN_ADDRESS_OF(x) __builtin_addressof(x)
+#else
+#  define BUILTIN_ADDRESS_OF(x) std::addressof(x)
+#endif
+
 export module mini.core:memory;
 
 import :type;
 import :utility;
-import :iterator;
 
 namespace mini::memory {
 
-export template <typename T>
-concept DereferencableT = requires(T ele) { *ele; };
+template <typename T>
+concept IndirectAddressableT = requires(T ele) {
+    { ele.Address() } -> PtrT;
+};
 
 export template <typename T>
-concept AddressableT = PtrT<T> || ForwardIteratorT<T>;
+concept AddressableT = PtrT<T> || IndirectAddressableT<T>;
+
+export template <typename T>
+concept DereferencableT = requires(T ele) { *ele; };
 
 template <typename T>
 inline constexpr void* MakeVoidPtr(T* ptr)
@@ -39,17 +49,23 @@ inline constexpr To BitCast(From const& from) noexcept
 }
 
 export template <AddressableT T>
-inline constexpr decltype(auto) AddressOf(T const& ele) noexcept
+inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
 {
     if constexpr (PtrT<T>) {
         return ele;
     }
-    else if constexpr (ForwardIteratorT<T>) {
+    else if constexpr (IndirectAddressableT<T>) {
         return ele.Address();
     }
     else {
         NEVER_CALLED("unknown type for address conversion", T);
     }
+}
+
+export template <typename T>
+inline constexpr decltype(auto) AddressOf(T& ele)
+{
+    return BUILTIN_ADDRESS_OF(ele);
 }
 
 template <typename T, typename U>
@@ -217,7 +233,7 @@ export template <typename T, typename... Args>
 inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 {
     for (; begin != end; ++begin) {
-        ConstructAt(AddressOf(begin), ForwardArg<Args>(args)...);
+        ConstructAt(ToAddress(begin), ForwardArg<Args>(args)...);
     }
 }
 
@@ -232,7 +248,7 @@ inline constexpr void ConstructRange(T dest, U begin, U end)
     }
 
     for (; begin != end; ++begin, ++dest) {
-        ConstructAt(AddressOf(dest), *begin);
+        ConstructAt(ToAddress(dest), *begin);
     }
 }
 
@@ -247,7 +263,7 @@ inline constexpr void ConstructBackward(T dest, U begin, U end)
     }
 
     for (; end != begin;) {
-        ConstructAt(AddressOf(--dest), *(--end));
+        ConstructAt(ToAddress(--dest), *(--end));
     }
 }
 
@@ -262,7 +278,7 @@ inline constexpr void MoveConstructRange(T dest, U begin, U end)
     }
 
     for (; begin != end; ++begin, ++dest) {
-        ConstructAt(AddressOf(dest), MoveArg(*begin));
+        ConstructAt(ToAddress(dest), MoveArg(*begin));
     }
 }
 
@@ -277,7 +293,7 @@ inline constexpr void MoveConstructBackward(T dest, U begin, U end)
     }
 
     for (; end != begin;) {
-        ConstructAt(AddressOf(--dest), MoveArg(*(--end)));
+        ConstructAt(ToAddress(--dest), MoveArg(*(--end)));
     }
 }
 
@@ -285,7 +301,7 @@ export template <typename T>
 inline constexpr void DestructRange(T begin, T end)
 {
     for (; begin != end; ++begin) {
-        DestructAt(AddressOf(begin));
+        DestructAt(ToAddress(begin));
     }
 }
 
@@ -298,7 +314,7 @@ inline constexpr void CopyRange(T dest, U begin, U end)
     }
 
     for (; begin != end; ++begin, ++dest) {
-        *AddressOf(dest) = *AddressOf(begin);
+        *ToAddress(dest) = *ToAddress(begin);
     }
 }
 
@@ -311,7 +327,7 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
     }
 
     for (; end != begin;) {
-        *AddressOf(--dest) = *AddressOf(--end);
+        *ToAddress(--dest) = *ToAddress(--end);
     }
 }
 
@@ -324,7 +340,7 @@ inline constexpr void MoveRange(T dest, U begin, U end)
     }
 
     for (; begin != end; ++begin, ++dest) {
-        *AddressOf(dest) = MoveArg(*AddressOf(begin));
+        *ToAddress(dest) = MoveArg(*ToAddress(begin));
     }
 }
 
@@ -337,7 +353,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
     }
 
     for (; end != begin;) {
-        *AddressOf(--dest) = MoveArg(*AddressOf(--end));
+        *ToAddress(--dest) = MoveArg(*ToAddress(--end));
     }
 }
 
@@ -349,7 +365,7 @@ inline constexpr bool EqualRange(T begin1, U begin2, U end2)
     }
 
     for (; begin2 != end2; ++begin1, ++begin2) {
-        if (*AddressOf(begin1) != *AddressOf(begin2)) {
+        if (*ToAddress(begin1) != *ToAddress(begin2)) {
             return false;
         }
     }
@@ -370,7 +386,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     }
 
     for (; begin1 != end1 && begin2 != end2; ++begin1, ++begin2) {
-        if (*AddressOf(begin1) != *AddressOf(begin2)) {
+        if (*ToAddress(begin1) != *ToAddress(begin2)) {
             return false;
         }
     }
@@ -382,7 +398,7 @@ export template <typename T, typename U>
 inline constexpr void FillRange(T begin, T end, U const& value)
 {
     for (; begin != end; ++begin) {
-        *AddressOf(begin) = value;
+        *ToAddress(begin) = value;
     }
 }
 

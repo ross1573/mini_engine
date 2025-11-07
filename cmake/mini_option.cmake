@@ -10,10 +10,15 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         $<$<CONFIG:Debug>:/Zi>
 
         /wd4061 # each case in switch is not handled explicitly
+        /wd4127 # conditional expression is constant
+                # this might have some use cases, but suppressing because 
+                # it's also triggered on constant evaluated functions
+                # which makes consteval function noisy as fuck
         /wd4191 # reinterpret_cast warning
         /wd4201 # nameless struct/union
         /wd4251 # dll-interface missing (even in template)
         /wd4265 # windows api stuff
+        /wd4324 # structure was padded due to alignment specifier
         /wd4365 # signed mismatch on explicit conversion
         /wd4514 # unreferenced inline function has been removed
         /wd4582 # union constructor is not implicitly called
@@ -32,9 +37,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd5030 # unrecognized attribute
         /wd5045 # spectre stuff
         /wd5222 # unrecognized attribute
+        /wd5264 # 'const' variable is not used
         /wd5267 # implicit deprecation of special member functions
-
-        /wd4273 # inconsistent dll linkage - TODO: should be fixed, not suppressed
     )
 
     add_link_options(
