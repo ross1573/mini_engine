@@ -18,7 +18,7 @@ public:
     int32 v[5];
 
     NonAtomic() noexcept = default;
-    NonAtomic(int32 n) noexcept { FillRange(&v[0], &v[4], n); }
+    NonAtomic(int32 n) noexcept { FillRange(&v[0], &v[5], n); }
     operator int32() const noexcept { return v[0]; }
 };
 
@@ -40,7 +40,7 @@ static void AtomicLoad(benchmark::State& state)
     });
 
     for (auto _ : state) {
-        sum += a.Load(MemoryOrder::acquire);
+        sum += static_cast<int32>(a.Load(MemoryOrder::acquire));
     }
 
     t.join();
@@ -58,7 +58,7 @@ static void AtomicLoad_std(benchmark::State& state)
     });
 
     for (auto _ : state) {
-        sum += a.load(std::memory_order::acquire);
+        sum += static_cast<int32>(a.load(std::memory_order::acquire));
     }
 
     t.join();
@@ -75,9 +75,7 @@ template <typename T>
 static void AtomicStore(benchmark::State& state)
 {
     Atomic<T> a(1);
-    std::thread t([&a]() {
-        while (a.Exchange(-1, MemoryOrder::relaxed) < 0) {}
-    });
+    std::thread t([&a]() { a.Exchange(-1, MemoryOrder::relaxed); });
 
     for (auto _ : state) {
         a.Store(1, MemoryOrder::release);
@@ -92,9 +90,7 @@ template <typename T>
 static void AtomicStore_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
-    std::thread t([&a]() {
-        while (a.exchange(-1, std::memory_order::relaxed) < 0) {}
-    });
+    std::thread t([&a]() { a.exchange(-1, std::memory_order::relaxed); });
 
     for (auto _ : state) {
         a.store(1, std::memory_order::release);

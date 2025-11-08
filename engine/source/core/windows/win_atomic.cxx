@@ -271,7 +271,7 @@ public:
         SizeT bucket = memory::AtomicAddressHash<T, lockTableSize>(pointer);
         m_Lock = reinterpret_cast<Lock*>(&g_AtomicLockTable[bucket]);
 
-        for (Lock value; EXCHANGE_ACQUIRE(m_Lock, 1) != 0;) {
+        while (EXCHANGE_ACQUIRE(m_Lock, 1) != 0) {
             while (__iso_volatile_load32(reinterpret_cast<IntCV*>(m_Lock)) != 0) {
                 ::mini::thread::ThreadRelax();
             }
@@ -319,14 +319,14 @@ inline CORE_API constexpr int32 CompareExchangeOrder(int32 success, int32 failur
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline bool __atomic_compare_exchange_1(T* pointer, T* expected, T desired, bool /*weak*/,
+inline bool __atomic_compare_exchange_1(T volatile* pointer, T* expected, T desired, bool /*weak*/,
                                         int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
     ATOMIC_COMPARE_EXCHANGE(8, pointer, expected, &desired, &previous, memorder);
-    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T))) {
+    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T)) == 0) {
         return true;
     }
 
@@ -336,14 +336,14 @@ inline bool __atomic_compare_exchange_1(T* pointer, T* expected, T desired, bool
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline bool __atomic_compare_exchange_2(T* pointer, T* expected, T desired, bool /*weak*/,
+inline bool __atomic_compare_exchange_2(T volatile* pointer, T* expected, T desired, bool /*weak*/,
                                         int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
     ATOMIC_COMPARE_EXCHANGE(16, pointer, expected, &desired, &previous, memorder);
-    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T))) {
+    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T)) == 0) {
         return true;
     }
 
@@ -353,14 +353,14 @@ inline bool __atomic_compare_exchange_2(T* pointer, T* expected, T desired, bool
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline bool __atomic_compare_exchange_4(T* pointer, T* expected, T desired, bool /*weak*/,
+inline bool __atomic_compare_exchange_4(T volatile* pointer, T* expected, T desired, bool /*weak*/,
                                         int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
     ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, &desired, &previous, memorder);
-    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T))) {
+    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T)) == 0) {
         return true;
     }
 
@@ -370,14 +370,14 @@ inline bool __atomic_compare_exchange_4(T* pointer, T* expected, T desired, bool
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline bool __atomic_compare_exchange_8(T* pointer, T* expected, T desired, bool /*weak*/,
+inline bool __atomic_compare_exchange_8(T volatile* pointer, T* expected, T desired, bool /*weak*/,
                                         int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
     ATOMIC_COMPARE_EXCHANGE(64, pointer, expected, &desired, &previous, memorder);
-    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T))) {
+    if (BUILTIN_MEMCMP(&previous, expected, sizeof(T)) == 0) {
         return true;
     }
 
@@ -387,7 +387,7 @@ inline bool __atomic_compare_exchange_8(T* pointer, T* expected, T desired, bool
 
 export template <typename T>
     requires(sizeof(T) == 16)
-inline bool __atomic_compare_exchange_16(T* pointer, T* expected, T desired, bool /*weak*/,
+inline bool __atomic_compare_exchange_16(T volatile* pointer, T* expected, T desired, bool /*weak*/,
                                          int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
@@ -395,7 +395,7 @@ inline bool __atomic_compare_exchange_16(T* pointer, T* expected, T desired, boo
 
     ATOMIC_COMPARE_EXCHANGE_128(pointer, expected, desired, &result, memorder);
     if (result == 0) {
-        BUILTIN_MEMCMP(expected, &desired, sizeof(T));
+        BUILTIN_MEMCPY(expected, &desired, sizeof(T));
     }
 
     return result != 0;
@@ -403,18 +403,21 @@ inline bool __atomic_compare_exchange_16(T* pointer, T* expected, T desired, boo
 
 export template <typename T>
     requires(memory::IsAtomicSupported<T>())
-inline bool __atomic_compare_exchange(T* pointer, T* expected, T* desired, bool /*weak*/,
+inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/,
                                       int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
-    byte result;
 
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 16) {
+        byte result;
+
         ATOMIC_COMPARE_EXCHANGE_128(pointer, expected, desired, &result, memorder);
         if (result == 0) {
-            BUILTIN_MEMCMP(expected, desired, sizeof(T));
+            BUILTIN_MEMCPY(expected, desired, sizeof(T));
         }
+
+        return result != 0;
     }
     else {
         T previous;
@@ -435,35 +438,35 @@ inline bool __atomic_compare_exchange(T* pointer, T* expected, T* desired, bool 
             NEVER_CALLED("atomic type is not marked as unsupported", T);
         }
 
-        result = BUILTIN_MEMCMP(&previous, expected, sizeof(T));
-        if (result == 0) {
-            BUILTIN_MEMCPY(expected, &previous, sizeof(T));
+        if (BUILTIN_MEMCMP(&previous, expected, sizeof(T)) == 0) {
+            return true;
         }
-    }
 
-    return result != 0;
+        BUILTIN_MEMCPY(expected, &previous, sizeof(T));
+        return false;
+    }
 }
 
 export template <typename T>
     requires(!memory::IsAtomicSupported<T>())
-inline bool __atomic_compare_exchange(T* pointer, T* expected, T* desired, bool /*weak*/,
-                                      int32 success, int32 failure)
+inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/,
+                                      int32 /*success*/, int32 /*failure*/)
 {
     constexpr SizeT size = sizeof(T);
     AtomicSpinLock lock(pointer);
 
-    if (BUILTIN_MEMCMP(pointer, expected, size) == 0) {
-        BUILTIN_MEMCPY(pointer, desired, size);
+    if (BUILTIN_MEMCMP(const_cast<T*>(pointer), expected, size) == 0) {
+        BUILTIN_MEMCPY(const_cast<T*>(pointer), desired, size);
         return true;
     }
 
-    BUILTIN_MEMCPY(expected, desired, size);
+    BUILTIN_MEMCPY(expected, const_cast<T*>(pointer), size);
     return false;
 }
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_load_1(T const* pointer, int32 memorder)
+inline T __atomic_load_1(T const volatile* pointer, int32 memorder)
 {
     T result;
     ATOMIC_LOAD(8, pointer, &result, memorder);
@@ -472,7 +475,7 @@ inline T __atomic_load_1(T const* pointer, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_load_2(T const* pointer, int32 memorder)
+inline T __atomic_load_2(T const volatile* pointer, int32 memorder)
 {
     T result;
     ATOMIC_LOAD(16, pointer, &result, memorder);
@@ -481,7 +484,7 @@ inline T __atomic_load_2(T const* pointer, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_load_4(T const* pointer, int32 memorder)
+inline T __atomic_load_4(T const volatile* pointer, int32 memorder)
 {
     T result;
     ATOMIC_LOAD(32, pointer, &result, memorder);
@@ -490,7 +493,7 @@ inline T __atomic_load_4(T const* pointer, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_load_8(T const* pointer, int32 memorder)
+inline T __atomic_load_8(T const volatile* pointer, int32 memorder)
 {
     T result;
     ATOMIC_LOAD(64, pointer, &result, memorder);
@@ -499,7 +502,7 @@ inline T __atomic_load_8(T const* pointer, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 16)
-inline T __atomic_load_16(T const* pointer, int32 memorder)
+inline T __atomic_load_16(T const volatile* pointer, int32 memorder)
 {
     T result;
     ATOMIC_LOAD_128(pointer, &result, memorder);
@@ -507,7 +510,7 @@ inline T __atomic_load_16(T const* pointer, int32 memorder)
 }
 
 export template <typename T>
-inline void __atomic_load(T const* pointer, T* result, int32 memorder)
+inline void __atomic_load(T const volatile* pointer, T* result, int32 memorder)
 {
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
@@ -527,48 +530,48 @@ inline void __atomic_load(T const* pointer, T* result, int32 memorder)
     }
     else {
         AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(result, pointer, size);
+        BUILTIN_MEMCPY(result, const_cast<T*>(pointer), size);
     }
 }
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline void __atomic_store_1(T* pointer, T value, int32 memorder)
+inline void __atomic_store_1(T volatile* pointer, T value, int32 memorder)
 {
     ATOMIC_STORE(8, pointer, &value, memorder);
 }
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline void __atomic_store_2(T* pointer, T value, int32 memorder)
+inline void __atomic_store_2(T volatile* pointer, T value, int32 memorder)
 {
     ATOMIC_STORE(16, pointer, &value, memorder);
 }
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline void __atomic_store_4(T* pointer, T value, int32 memorder)
+inline void __atomic_store_4(T volatile* pointer, T value, int32 memorder)
 {
     ATOMIC_STORE(32, pointer, &value, memorder);
 }
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline void __atomic_store_8(T* pointer, T value, int32 memorder)
+inline void __atomic_store_8(T volatile* pointer, T value, int32 memorder)
 {
     ATOMIC_STORE(64, pointer, &value, memorder);
 }
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline void __atomic_store_16(T* pointer, T value, int32 memorder)
+inline void __atomic_store_16(T volatile* pointer, T value, int32 memorder)
 {
     T result{ value };
     while (!__atomic_compare_exchange_16(pointer, &result, &value, true, memorder, memorder)) {}
 }
 
 export template <typename T>
-inline void __atomic_store(T* pointer, T* value, int32 memorder)
+inline void __atomic_store(T volatile* pointer, T* value, int32 memorder)
 {
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
@@ -588,13 +591,13 @@ inline void __atomic_store(T* pointer, T* value, int32 memorder)
     }
     else {
         AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(pointer, &value, size);
+        BUILTIN_MEMCPY(const_cast<T*>(pointer), value, size);
     }
 }
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_exchange_1(T* pointer, T value, int32 memorder)
+inline T __atomic_exchange_1(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_EXCHANGE(8, pointer, &value, &result, memorder);
@@ -603,7 +606,7 @@ inline T __atomic_exchange_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_exchange_2(T* pointer, T value, int32 memorder)
+inline T __atomic_exchange_2(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_EXCHANGE(16, pointer, &value, &result, memorder);
@@ -612,7 +615,7 @@ inline T __atomic_exchange_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_exchange_4(T* pointer, T value, int32 memorder)
+inline T __atomic_exchange_4(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_EXCHANGE_32(pointer, &value, &result, memorder);
@@ -621,7 +624,7 @@ inline T __atomic_exchange_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_exchange_8(T* pointer, T value, int32 memorder)
+inline T __atomic_exchange_8(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_EXCHANGE(64, pointer, &value, &result, memorder);
@@ -630,7 +633,7 @@ inline T __atomic_exchange_8(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 16)
-inline T __atomic_exchange_16(T* pointer, T value, int32 memorder)
+inline T __atomic_exchange_16(T volatile* pointer, T value, int32 memorder)
 {
     T result{ value };
     while (__atomic_compare_exchange_16(pointer, &result, &value, true, memorder, memorder)) {}
@@ -638,7 +641,7 @@ inline T __atomic_exchange_16(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline void __atomic_exchange(T* pointer, T* value, T* result, int32 memorder)
+inline void __atomic_exchange(T volatile* pointer, T* value, T* result, int32 memorder)
 {
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
@@ -658,14 +661,14 @@ inline void __atomic_exchange(T* pointer, T* value, T* result, int32 memorder)
     }
     else {
         AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(result, pointer, size);
-        BUILTIN_MEMCPY(pointer, value, size);
+        BUILTIN_MEMCPY(result, const_cast<T*>(pointer), size);
+        BUILTIN_MEMCPY(const_cast<T*>(pointer), value, size);
     }
 }
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_fetch_add_1(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_add_1(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_ADD(8, pointer, &value, &result, memorder);
@@ -674,7 +677,7 @@ inline T __atomic_fetch_add_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_fetch_add_2(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_add_2(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_ADD(16, pointer, &value, &result, memorder);
@@ -683,7 +686,7 @@ inline T __atomic_fetch_add_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_fetch_add_4(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_add_4(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_ADD_32(pointer, &value, &result, memorder);
@@ -692,7 +695,7 @@ inline T __atomic_fetch_add_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_fetch_add_8(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_add_8(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_ADD(64, pointer, &value, &result, memorder);
@@ -700,7 +703,7 @@ inline T __atomic_fetch_add_8(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_fetch_add(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
 {
     T result;
 
@@ -726,7 +729,7 @@ inline T __atomic_fetch_add(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_fetch_sub_1(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_sub_1(T volatile* pointer, T value, int32 memorder)
 {
     value = ~value + 1;
     T result;
@@ -736,7 +739,7 @@ inline T __atomic_fetch_sub_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_fetch_sub_2(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_sub_2(T volatile* pointer, T value, int32 memorder)
 {
     value = ~value + 1;
     T result;
@@ -746,7 +749,7 @@ inline T __atomic_fetch_sub_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_fetch_sub_4(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_sub_4(T volatile* pointer, T value, int32 memorder)
 {
     value = ~value + 1;
     T result;
@@ -756,7 +759,7 @@ inline T __atomic_fetch_sub_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_fetch_sub_8(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_sub_8(T volatile* pointer, T value, int32 memorder)
 {
     value = ~value + 1;
     T result;
@@ -765,7 +768,7 @@ inline T __atomic_fetch_sub_8(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_fetch_sub(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
 {
     value = ~value + 1;
     T result;
@@ -792,7 +795,7 @@ inline T __atomic_fetch_sub(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_fetch_and_1(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_and_1(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_AND(8, pointer, &value, &result, memorder);
@@ -801,7 +804,7 @@ inline T __atomic_fetch_and_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_fetch_and_2(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_and_2(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_AND(16, pointer, &value, &result, memorder);
@@ -810,7 +813,7 @@ inline T __atomic_fetch_and_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_fetch_and_4(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_and_4(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_AND_32(pointer, &value, &result, memorder);
@@ -819,7 +822,7 @@ inline T __atomic_fetch_and_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_fetch_and_8(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_and_8(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_AND(64, pointer, &value, &result, memorder);
@@ -827,7 +830,7 @@ inline T __atomic_fetch_and_8(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_fetch_and(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_and(T volatile* pointer, T value, int32 memorder)
 {
     T result;
 
@@ -853,7 +856,7 @@ inline T __atomic_fetch_and(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_fetch_or_1(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_or_1(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_OR(8, pointer, &value, &result, memorder);
@@ -862,7 +865,7 @@ inline T __atomic_fetch_or_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_fetch_or_2(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_or_2(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_OR(16, pointer, &value, &result, memorder);
@@ -871,7 +874,7 @@ inline T __atomic_fetch_or_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_fetch_or_4(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_or_4(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_OR_32(pointer, &value, &result, memorder);
@@ -880,7 +883,7 @@ inline T __atomic_fetch_or_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_fetch_or_8(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_or_8(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_OR(64, pointer, &value, &result, memorder);
@@ -888,7 +891,7 @@ inline T __atomic_fetch_or_8(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_fetch_or(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_or(T volatile* pointer, T value, int32 memorder)
 {
     T result;
 
@@ -914,7 +917,7 @@ inline T __atomic_fetch_or(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline T __atomic_fetch_xor_1(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_xor_1(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_XOR(8, pointer, &value, &result, memorder);
@@ -923,7 +926,7 @@ inline T __atomic_fetch_xor_1(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline T __atomic_fetch_xor_2(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_xor_2(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_XOR(16, pointer, &value, &result, memorder);
@@ -932,7 +935,7 @@ inline T __atomic_fetch_xor_2(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline T __atomic_fetch_xor_4(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_xor_4(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_XOR_32(pointer, &value, &result, memorder);
@@ -941,7 +944,7 @@ inline T __atomic_fetch_xor_4(T* pointer, T value, int32 memorder)
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline T __atomic_fetch_xor_8(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_xor_8(T volatile* pointer, T value, int32 memorder)
 {
     T result;
     ATOMIC_FETCH_XOR(64, pointer, &value, &result, memorder);
@@ -949,7 +952,7 @@ inline T __atomic_fetch_xor_8(T* pointer, T value, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_fetch_xor(T* pointer, T value, int32 memorder)
+inline T __atomic_fetch_xor(T volatile* pointer, T value, int32 memorder)
 {
     T result;
 
@@ -991,7 +994,7 @@ export inline CORE_API void __atomic_thread_fence(int32 memorder)
     THREAD_FENCE(memorder);
 }
 
-export inline constexpr bool __atomic_always_lock_free(SizeT size, void*)
+export inline constexpr bool __atomic_always_lock_free(SizeT size, void const volatile*)
 {
     if (size > memory::AtomicSupportedMaxSize) {
         return false;
@@ -1009,12 +1012,7 @@ export inline constexpr bool __atomic_always_lock_free(SizeT size, void*)
     return false;
 }
 
-export inline bool __atomic_is_lock_free(SizeT size, void*)
-{
-    return __atomic_always_lock_free(size, nullptr);
-}
-
-export inline bool __atomic_is_lock_free(SizeT size, void volatile*)
+export inline bool __atomic_is_lock_free(SizeT size, void const volatile*)
 {
     return __atomic_always_lock_free(size, nullptr);
 }
@@ -1043,7 +1041,7 @@ inline constexpr int32 FailureOrder(MemoryOrder order)
     }
 }
 
-using AtomicContention = AtomicBase<AtomicContentionValueT>;
+using AtomicContention = AtomicContentionValueT;
 
 template <typename T>
 struct AtomicWaitableT : FalseT {};
@@ -1072,7 +1070,7 @@ struct AtomicWaitableT<T> : TrueT {
     typedef uint64 Type;
 };
 
-CORE_API void AtomicWaitOnAddress(AtomicContention const volatile*, AtomicContention::Value, SizeT);
+CORE_API void AtomicWaitOnAddress(AtomicContention const volatile*, AtomicContention, SizeT);
 CORE_API void AtomicNotifyOnAddress(AtomicContention const volatile*, SizeT);
 CORE_API void AtomicNotifyAllOnAddress(AtomicContention const volatile*, SizeT);
 

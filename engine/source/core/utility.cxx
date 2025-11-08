@@ -58,6 +58,6 @@ public:
     }
 };
 
-export constexpr Ignore ignore;
+export CORE_API constexpr Ignore ignore;
 
 } // namespace mini

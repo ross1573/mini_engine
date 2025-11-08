@@ -121,8 +121,9 @@ inline void __atomic_notify_one(T const volatile* pointer) noexcept
     requires(!mini::memory::AtomicWaitableT<T>::value)
 {
     mini::memory::AtomicWaitableContext context(pointer);
+    constexpr mini::memory::AtomicContention contention = 1;
 
-    __atomic_fetch_add(&context.entry->platform, 1, __ATOMIC_SEQ_CST);
+    __atomic_fetch_add(&context.entry->platform, contention, __ATOMIC_SEQ_CST);
     mini::memory::AtomicPlatformNotify(&context.entry->waiter, &context.entry->platform,
                                        context.size);
 }
@@ -132,8 +133,9 @@ inline void __atomic_notify_all(T const volatile* pointer) noexcept
     requires(!mini::memory::AtomicWaitableT<T>::value)
 {
     mini::memory::AtomicWaitableContext context(pointer);
+    constexpr mini::memory::AtomicContention contention = 1;
 
-    __atomic_fetch_add(&context.entry->platform, 1, __ATOMIC_SEQ_CST);
+    __atomic_fetch_add(&context.entry->platform, contention, __ATOMIC_SEQ_CST);
     mini::memory::AtomicPlatformNotifyAll(&context.entry->waiter, &context.entry->platform,
                                           context.size);
 }

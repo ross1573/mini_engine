@@ -16,23 +16,22 @@ import :atomic_impl;
 
 namespace mini::memory {
 
-void AtomicWaitOnAddress(AtomicContention const volatile* addr, AtomicContention::Value value,
-                         SizeT size)
+void AtomicWaitOnAddress(AtomicContention const volatile* addr, AtomicContention value, SizeT size)
 {
-    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
-    WaitOnAddress(const_cast<void*>(loc), static_cast<void*>(&value), size, INFINITE);
+    void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
+    WaitOnAddress(loc, static_cast<void*>(&value), size, INFINITE);
 }
 
 void AtomicNotifyOnAddress(AtomicContention const volatile* addr, SizeT)
 {
-    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
-    WakeByAddressSingle(const_cast<void*>(loc));
+    void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
+    WakeByAddressSingle(loc);
 }
 
 void AtomicNotifyAllOnAddress(AtomicContention const volatile* addr, SizeT)
 {
-    void const volatile* loc = static_cast<void const volatile*>(AddressOf(addr->value));
-    WakeByAddressAll(const_cast<void*>(loc));
+    void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
+    WakeByAddressAll(loc);
 }
 
 } // namespace mini::memory
