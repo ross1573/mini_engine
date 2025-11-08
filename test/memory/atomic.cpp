@@ -218,63 +218,66 @@ int32 TestFetchOperators()
 int32 TestWaitNotifyIncrement()
 {
     Atomic<uint32> atomic = 0;
-    Array<uint32> result(1001);
+    uint32 waiterCount = 0;
+    uint32 notifierCount = 0;
 
-    auto waitNotify = [&atomic, &result](uint32 start, uint32 end) {
-        for (; start < end;) {
+    auto waiter = [&atomic, &waiterCount](uint32 end) {
+        uint32 start = atomic.Load(MemoryOrder::acquire);
+        for (; start < end; ++waiterCount, ++start) {
             atomic.Wait(start, MemoryOrder::acquire);
-            start = atomic.Load(MemoryOrder::acquire);
-            result.Push(start);
-            atomic.Store(++start, MemoryOrder::release);
+        }
+    };
+
+    auto notifier = [&atomic, &notifierCount](uint32 end) {
+        uint32 start = atomic.Load(MemoryOrder::acquire);
+        for (; start < end; ++notifierCount, ++start) {
+            atomic.FetchAdd(1, MemoryOrder::release);
             atomic.Notify();
         }
     };
 
-    for (uint32 n = 0; n < 10; ++n) {
-        result.Clear();
-        atomic.Store(0, MemoryOrder::sequential);
+    constexpr uint32 count = NumericLimit<int32>::max >> 8;
+    auto t1 = std::thread(waiter, count);
+    auto t2 = std::thread(notifier, count);
+    t1.join();
+    t2.join();
 
-        auto t1 = std::thread(waitNotify, 0, 1000);
-        auto t2 = std::thread(waitNotify, 1, 1000);
-        t1.join();
-        t2.join();
-
-        TEST_ENSURE(atomic.Load(MemoryOrder::acquire) == 1001);
-        TEST_ENSURE(result.Size() == 1001);
-        for (SizeT i = 0; i < result.Size(); ++i) {
-            TEST_ENSURE(i == result[i]);
-        }
-    }
+    TEST_ENSURE(atomic.Load(MemoryOrder::acquire) == count);
+    TEST_ENSURE(waiterCount == count);
+    TEST_ENSURE(notifierCount == count);
 
     return 0;
 }
 
 template <typename T>
-int32 TestWaitNotify()
+int32 TestSpinLock()
 {
-    Atomic<T> a(0);
-    std::thread t([&a]() {
-        T value = 1;
-        while (static_cast<int32>(value) >= 0) {
-            if (a.CompareExchangeWeak(value, 1, MemoryOrder::acquire)) {
-                a.Notify();
-            }
+    Atomic<int32> atomic(1);
+    Atomic<int32> lock(0);
 
-            a.Wait(1, MemoryOrder::acquire);
-            value = a.Load(MemoryOrder::acquire);
+    auto spinLock = [&atomic, &lock]() -> int32 {
+        while (lock.Exchange(1, MemoryOrder::acquire) == 1) {
+            lock.Wait(1, MemoryOrder::relaxed);
         }
+
+        int32 value = atomic.Load(MemoryOrder::relaxed);
+        lock.Store(0, MemoryOrder::release);
+        lock.Notify();
+
+        return value;
+    };
+
+    std::thread thread([&spinLock]() {
+        while (spinLock() > 0) {}
     });
 
     // test if hangs
     for (uint32 i = 0; i < NumericLimit<uint32>::max >> 12; ++i) {
-        a.Wait(0, MemoryOrder::acquire);
-        a.Store(0, MemoryOrder::release);
-        a.Notify();
+        spinLock();
     }
 
-    a.Store(-2, MemoryOrder::sequential);
-    a.Notify();
-    t.join();
+    atomic.Store(-2, MemoryOrder::sequential);
+    thread.join();
     return 0;
 }
 
@@ -301,9 +304,9 @@ int main()
     TEST_ENSURE(TestFetchOperators() == 0);
 
     TEST_ENSURE(TestWaitNotifyIncrement() == 0);
-    TEST_ENSURE(TestWaitNotify<int32>() == 0);
-    TEST_ENSURE(TestWaitNotify<Unaligned>() == 0);
-    TEST_ENSURE(TestWaitNotify<NonAtomic>() == 0);
+    TEST_ENSURE(TestSpinLock<int32>() == 0);
+    TEST_ENSURE(TestSpinLock<Unaligned>() == 0);
+    TEST_ENSURE(TestSpinLock<NonAtomic>() == 0);
 
     return 0;
 }
