@@ -330,13 +330,14 @@ static void AtomicSpinLock_std(benchmark::State& state)
     }
 }
 
+// seems like macos kernel panics when trying to join the waiting thread
+// same thing also accurs when using the libc++ implementation
+#if !PLATFORM_MACOS
 BENCHMARK_TEMPLATE(AtomicSpinLock, 4);
 BENCHMARK_TEMPLATE(AtomicSpinLock, 8);
 BENCHMARK_TEMPLATE(AtomicSpinLock, 16);
 BENCHMARK_TEMPLATE(AtomicSpinLock, 32);
 
-// clang's implementation spin-locks without any pause instruction
-#if !CLANG
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 4);
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 8);
 BENCHMARK_TEMPLATE(AtomicSpinLock_std, 16);

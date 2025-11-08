@@ -507,35 +507,6 @@ inline T __atomic_load_16(T const* pointer, int32 memorder)
 }
 
 export template <typename T>
-inline T __atomic_load(T const* pointer, int32 memorder)
-{
-    T result;
-
-    constexpr SizeT size = sizeof(T);
-    if constexpr (size == 1) {
-        ATOMIC_LOAD(8, pointer, &result, memorder);
-    }
-    else if constexpr (size == 2) {
-        ATOMIC_LOAD(16, pointer, &result, memorder);
-    }
-    else if constexpr (size == 4) {
-        ATOMIC_LOAD(32, pointer, &result, memorder);
-    }
-    else if constexpr (size == 8) {
-        ATOMIC_LOAD(64, pointer, &result, memorder);
-    }
-    else if constexpr (size == 16) {
-        ATOMIC_LOAD_128(pointer, &result, memorder);
-    }
-    else {
-        AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(&result, pointer, size);
-    }
-
-    return result;
-}
-
-export template <typename T>
 inline void __atomic_load(T const* pointer, T* result, int32 memorder)
 {
     constexpr SizeT size = sizeof(T);
@@ -594,31 +565,6 @@ inline void __atomic_store_16(T* pointer, T value, int32 memorder)
 {
     T result{ value };
     while (!__atomic_compare_exchange_16(pointer, &result, &value, true, memorder, memorder)) {}
-}
-
-export template <typename T>
-inline void __atomic_store(T* pointer, T value, int32 memorder)
-{
-    constexpr SizeT size = sizeof(T);
-    if constexpr (size == 1) {
-        ATOMIC_STORE(8, pointer, &value, memorder);
-    }
-    else if constexpr (size == 2) {
-        ATOMIC_STORE(16, pointer, &value, memorder);
-    }
-    else if constexpr (size == 4) {
-        ATOMIC_STORE(32, pointer, &value, memorder);
-    }
-    else if constexpr (size == 8) {
-        ATOMIC_STORE(64, pointer, &value, memorder);
-    }
-    else if constexpr (size == 16) {
-        __atomic_store_16(pointer, value, memorder);
-    }
-    else {
-        AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(pointer, &value, size);
-    }
 }
 
 export template <typename T>
@@ -688,36 +634,6 @@ inline T __atomic_exchange_16(T* pointer, T value, int32 memorder)
 {
     T result{ value };
     while (__atomic_compare_exchange_16(pointer, &result, &value, true, memorder, memorder)) {}
-    return result;
-}
-
-export template <typename T>
-inline T __atomic_exchange(T* pointer, T value, int32 memorder)
-{
-    T result;
-
-    constexpr SizeT size = sizeof(T);
-    if constexpr (size == 1) {
-        ATOMIC_EXCHANGE(8, pointer, &value, &result, memorder);
-    }
-    else if constexpr (size == 2) {
-        ATOMIC_EXCHANGE(16, pointer, &value, &result, memorder);
-    }
-    else if constexpr (size == 4) {
-        ATOMIC_EXCHANGE_32(pointer, &value, &result, memorder);
-    }
-    else if constexpr (size == 8) {
-        ATOMIC_EXCHANGE(64, pointer, &value, &result, memorder);
-    }
-    else if constexpr (size == 16) {
-        return __atomic_exchange_16(pointer, value, memorder);
-    }
-    else {
-        AtomicSpinLock lock(pointer);
-        BUILTIN_MEMCPY(&result, pointer, size);
-        BUILTIN_MEMCPY(pointer, &value, size);
-    }
-
     return result;
 }
 
@@ -1098,6 +1014,11 @@ export inline bool __atomic_is_lock_free(SizeT size, void*)
     return __atomic_always_lock_free(size, nullptr);
 }
 
+export inline bool __atomic_is_lock_free(SizeT size, void volatile*)
+{
+    return __atomic_always_lock_free(size, nullptr);
+}
+
 namespace mini::memory {
 
 enum class MemoryOrder : int {
@@ -1109,168 +1030,17 @@ enum class MemoryOrder : int {
     sequential = __ATOMIC_SEQ_CST
 };
 
-template <typename T>
-inline T AtomicLoad(AtomicBase<T> const* pointer, MemoryOrder memorder)
+inline constexpr int32 FailureOrder(MemoryOrder order)
 {
-    return __atomic_load(AddressOf(pointer->value), static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicLoad(AtomicBase<T> const volatile* pointer, MemoryOrder memorder)
-{
-    return __atomic_load(const_cast<T const*>(AddressOf(pointer->value)),
-                         static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline void AtomicStore(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    __atomic_store(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline void AtomicStore(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    __atomic_store(const_cast<T*>(AddressOf(pointer->value)), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicExchange(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_exchange(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicExchange(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_exchange(cosnt_cast<T*>(AddressOf(pointer->value)), value,
-                             static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline bool AtomicCompareExchangeWeak(AtomicBase<T>* pointer, T* expected, T desired,
-                                      MemoryOrder success, MemoryOrder failure)
-{
-    return __atomic_compare_exchange(AddressOf(pointer->value), expected, &desired, true,
-                                     static_cast<int32>(success), static_cast<int32>(failure));
-}
-
-template <typename T>
-inline bool AtomicCompareExchangeWeak(AtomicBase<T> volatile* pointer, T* expected, T desired,
-                                      MemoryOrder success, MemoryOrder failure)
-{
-    return __atomic_compare_exchange(const_cast<T*>(AddressOf(pointer->value)), expected, &desired,
-                                     true, static_cast<int32>(success),
-                                     static_cast<int32>(failure));
-}
-
-template <typename T>
-inline bool AtomicCompareExchangeStrong(AtomicBase<T>* pointer, T* expected, T desired,
-                                        MemoryOrder success, MemoryOrder failure)
-{
-    return __atomic_compare_exchange(AddressOf(pointer->value), expected, &desired, false,
-                                     static_cast<int32>(success), static_cast<int32>(failure));
-}
-
-template <typename T>
-inline bool AtomicCompareExchangeStrong(AtomicBase<T> volatile* pointer, T* expected, T desired,
-                                        MemoryOrder success, MemoryOrder failure)
-{
-    return __atomic_compare_exchange(const_cast<T*>(AddressOf(pointer->value)), expected, &desired,
-                                     false, static_cast<int32>(success),
-                                     static_cast<int32>(failure));
-}
-
-template <typename T>
-inline T AtomicFetchAdd(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_add(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchAdd(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_add(const_cast<T*>(AddressOf(pointer->value)), value,
-                              static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchSub(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_sub(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchSub(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_sub(const_cast<T*>(AddressOf(pointer->value)), value,
-                              static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchAnd(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_and(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchAnd(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_and(const_cast<T*>(AddressOf(pointer->value)), value,
-                              static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchXor(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_xor(AddressOf(pointer->value), value, static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchXor(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_xor(const_cast<T*>(AddressOf(pointer->value)), value,
-                              static_cast<int32>(memorder));
-}
-
-template <typename T>
-inline T AtomicFetchOr(AtomicBase<T>* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_or(AddressOf(pointer->value), value, memorder);
-}
-
-template <typename T>
-inline T AtomicFetchOr(AtomicBase<T> volatile* pointer, T value, MemoryOrder memorder)
-{
-    return __atomic_fetch_or(const_cast<T*>(AddressOf(pointer->value)), value,
-                             static_cast<int32>(memorder));
-}
-
-inline CORE_API void AtomicThreadFence(MemoryOrder memorder)
-{
-    __atomic_thread_fence(static_cast<int32>(memorder));
-}
-
-inline CORE_API void AtomicSignalFence(MemoryOrder memorder)
-{
-    __atomic_signal_fence(static_cast<int32>(memorder));
-}
-
-inline constexpr bool AtomicAlwaysLockFree(SizeT size)
-{
-    return __atomic_always_lock_free(size, nullptr);
-}
-
-template <typename T>
-inline constexpr bool AtomicIsLockFree(SizeT size, AtomicBase<T> const*)
-{
-    return __atomic_is_lock_free(size, nullptr);
-}
-
-template <typename T>
-inline constexpr bool AtomicIsLockFree(SizeT size, AtomicBase<T> const volatile*)
-{
-    return __atomic_is_lock_free(size, nullptr);
+    switch (order) {
+        case MemoryOrder::relaxed:
+        case MemoryOrder::release:        return __ATOMIC_RELAXED;
+        case MemoryOrder::consume:        return __ATOMIC_CONSUME;
+        case MemoryOrder::acquire:
+        case MemoryOrder::acquireRelease: return __ATOMIC_ACQUIRE;
+        case MemoryOrder::sequential:
+        default:                          return __ATOMIC_SEQ_CST;
+    }
 }
 
 using AtomicContention = AtomicBase<AtomicContentionValueT>;
