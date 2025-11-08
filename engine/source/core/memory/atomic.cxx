@@ -110,6 +110,7 @@ public:
 private:
     Atomic(Atomic const&) = delete;
     Atomic& operator=(Atomic const&) = delete;
+    Atomic& operator=(Atomic const&) volatile = delete;
 
     constexpr bool ConstexprCompareExchange(Value&, Value) noexcept;
     constexpr bool ConstexprCompareExchange(Value volatile&, Value) volatile noexcept;
