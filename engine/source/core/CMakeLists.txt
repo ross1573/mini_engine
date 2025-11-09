@@ -44,7 +44,7 @@ PUBLIC
         memory/atomic_wait.cxx
         memory/allocator.cxx
         memory/buffer.cxx
-        memory/core_memory.cxx
+        memory/memory.cxx
         memory/deleter.cxx
         memory/shared_counter.cxx
         memory/shared_ptr.cxx
