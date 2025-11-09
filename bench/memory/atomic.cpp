@@ -250,6 +250,69 @@ BENCHMARK_TEMPLATE(AtomicWait_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicWait, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWait_std, NonAtomic);
 
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicWaitNotify(benchmark::State& state)
+{
+    Atomic<T> a(0);
+    std::thread t([&a]() {
+        T value = 1;
+        while (static_cast<int32>(value) >= 0) {
+            if (a.CompareExchangeWeak(value, 1, MemoryOrder::acquire)) {
+                a.Notify();
+            }
+
+            a.Wait(1, MemoryOrder::acquire);
+            value = a.Load(MemoryOrder::acquire);
+        }
+    });
+
+    for (auto _ : state) {
+        a.Wait(0, MemoryOrder::acquire);
+        a.Store(0, MemoryOrder::release);
+        a.Notify();
+    }
+
+    a.Store(-2, MemoryOrder::sequential);
+    a.Notify();
+    t.join();
+}
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicWaitNotify_std(benchmark::State& state)
+{
+    std::atomic<T> a(0);
+    std::thread t([&a]() {
+        T value = 1;
+        while (static_cast<int32>(value) >= 0) {
+            if (a.compare_exchange_weak(value, 1, std::memory_order::acquire)) {
+                a.notify_one();
+            }
+
+            a.wait(1, std::memory_order::acquire);
+            value = a.load(std::memory_order::acquire);
+        }
+    });
+
+    for (auto _ : state) {
+        a.wait(0, std::memory_order::acquire);
+        a.store(0, std::memory_order::release);
+        a.notify_one();
+    }
+
+    a.store(-2, std::memory_order::seq_cst);
+    a.notify_one();
+    t.join();
+}
+
+BENCHMARK_TEMPLATE(AtomicWaitNotify, ContentionT);
+BENCHMARK_TEMPLATE(AtomicWaitNotify_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicWaitNotify, Unaligned);
+BENCHMARK_TEMPLATE(AtomicWaitNotify_std, Unaligned);
+BENCHMARK_TEMPLATE(AtomicWaitNotify, NonAtomic);
+BENCHMARK_TEMPLATE(AtomicWaitNotify_std, NonAtomic);
+
 template <SizeT ThreadN>
 static void AtomicSpinLock(benchmark::State& state)
 {

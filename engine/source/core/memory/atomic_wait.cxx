@@ -167,11 +167,18 @@ inline void __atomic_wait(T const volatile* pointer, T old, int order) noexcept
 {
     mini::memory::AtomicWaitableContext context(pointer);
     mini::memory::AtomicContention contention;
+    __atomic_load(&context.entry->platform, &contention, __ATOMIC_ACQUIRE);
 
     while (mini::memory::AtomicLoadCompare(context.pointer, old, static_cast<mini::int32>(order))) {
-        __atomic_load(&context.entry->platform, &contention, __ATOMIC_ACQUIRE);
-        mini::memory::AtomicPlatformWait(&context.entry->waiter, &context.entry->platform,
-                                         contention, context.size);
+        // since load compare of non atomic values cannot be fetched atomically,
+        // notify can occur while load comparing the value.
+        // so we should compare the monitor value to check it has been changed.
+        // if so, we should not enter wait or else it will cause a dead lock.
+        if (mini::memory::AtomicLoadCompare(&context.entry->platform, contention,
+                                            __ATOMIC_ACQUIRE)) {
+            mini::memory::AtomicPlatformWait(&context.entry->waiter, &context.entry->platform,
+                                             contention, context.size);
+        }
     }
 }
 
