@@ -215,36 +215,67 @@ int32 TestFetchOperators()
     return 0;
 }
 
-int32 TestWaitNotifyIncrement()
+int32 TestProducerConsumer()
 {
     Atomic<uint32> atomic = 0;
-    uint32 waiterCount = 0;
-    uint32 notifierCount = 0;
+    uint32 consumerCount = 0;
+    uint32 producerCount = 0;
 
-    auto waiter = [&atomic, &waiterCount](uint32 end) {
-        uint32 start = atomic.Load(MemoryOrder::acquire);
-        for (; start < end; ++waiterCount, ++start) {
-            atomic.Wait(start, MemoryOrder::acquire);
+    auto consumer = [&atomic, &consumerCount](uint32 end) {
+        for (uint32 value = 0; value < end; ++consumerCount, ++value) {
+            atomic.Wait(value, MemoryOrder::acquire);
         }
     };
 
-    auto notifier = [&atomic, &notifierCount](uint32 end) {
-        uint32 start = atomic.Load(MemoryOrder::acquire);
-        for (; start < end; ++notifierCount, ++start) {
+    auto producer = [&atomic, &producerCount](uint32 end) {
+        for (uint32 value = 0; value < end; ++producerCount, ++value) {
             atomic.FetchAdd(1, MemoryOrder::release);
             atomic.Notify();
         }
     };
 
     constexpr uint32 count = NumericLimit<int32>::max >> 8;
-    auto t1 = std::thread(waiter, count);
-    auto t2 = std::thread(notifier, count);
+    auto t1 = std::thread(producer, count);
+    auto t2 = std::thread(consumer, count);
     t1.join();
     t2.join();
 
     TEST_ENSURE(atomic.Load(MemoryOrder::acquire) == count);
-    TEST_ENSURE(waiterCount == count);
-    TEST_ENSURE(notifierCount == count);
+    TEST_ENSURE(consumerCount == count);
+    TEST_ENSURE(producerCount == count);
+
+    return 0;
+}
+
+int32 TestSequentialWaitNotify()
+{
+    Atomic<uint32> atomic = 0;
+    Array<uint32> result;
+
+    auto waitNotify = [&atomic, &result](uint32 start, uint32 end) {
+        for (; start < end;) {
+            atomic.Wait(start, MemoryOrder::acquire);
+            start = atomic.Load(MemoryOrder::acquire);
+            result.Push(start);
+            atomic.Store(++start, MemoryOrder::release);
+            atomic.Notify();
+        }
+    };
+
+    constexpr uint32 count = NumericLimit<int32>::max >> 12;
+    constexpr uint32 total = count + 1;
+    result.Reserve(total);
+
+    auto t1 = std::thread(waitNotify, 0, count);
+    auto t2 = std::thread(waitNotify, 1, count);
+    t1.join();
+    t2.join();
+
+    TEST_ENSURE(atomic.Load(MemoryOrder::acquire) == total);
+    TEST_ENSURE(result.Size() == total);
+    for (SizeT i = 0; i < result.Size(); ++i) {
+        TEST_ENSURE(i == result[i]);
+    }
 
     return 0;
 }
@@ -303,7 +334,8 @@ int main()
 
     TEST_ENSURE(TestFetchOperators() == 0);
 
-    TEST_ENSURE(TestWaitNotifyIncrement() == 0);
+    TEST_ENSURE(TestProducerConsumer() == 0);
+    TEST_ENSURE(TestSequentialWaitNotify() == 0);
     TEST_ENSURE(TestSpinLock<int32>() == 0);
     TEST_ENSURE(TestSpinLock<Unaligned>() == 0);
     TEST_ENSURE(TestSpinLock<NonAtomic>() == 0);

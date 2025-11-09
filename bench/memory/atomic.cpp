@@ -13,6 +13,16 @@ using ContentionT = int64;
 using ContentionT = int32;
 #endif
 
+struct Unaligned {
+public:
+    int a;
+    char b;
+
+    Unaligned() noexcept = default;
+    Unaligned(int32 n) noexcept { a = n; }
+    operator int32() const noexcept { return a; }
+};
+
 struct NonAtomic {
 public:
     int32 v[5];
@@ -67,6 +77,8 @@ static void AtomicLoad_std(benchmark::State& state)
 
 BENCHMARK_TEMPLATE(AtomicLoad, ContentionT);
 BENCHMARK_TEMPLATE(AtomicLoad_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicLoad, Unaligned);
+BENCHMARK_TEMPLATE(AtomicLoad_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicLoad, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicLoad_std, NonAtomic);
 
@@ -102,8 +114,51 @@ static void AtomicStore_std(benchmark::State& state)
 
 BENCHMARK_TEMPLATE(AtomicStore, ContentionT);
 BENCHMARK_TEMPLATE(AtomicStore_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicStore, Unaligned);
+BENCHMARK_TEMPLATE(AtomicStore_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicStore, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicStore_std, NonAtomic);
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicCompareExchange(benchmark::State& state)
+{
+    Atomic<T> a(1);
+    std::thread t([&a]() {
+        while (a.Load(MemoryOrder::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        T value = 1;
+        a.CompareExchangeStrong(value, 1, MemoryOrder::acquireRelease);
+    }
+
+    t.join();
+}
+
+template <typename T>
+    requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
+static void AtomicCompareExchange_std(benchmark::State& state)
+{
+    std::atomic<T> a(1);
+    std::thread t([&a]() {
+        while (a.load(std::memory_order::relaxed) < 0) {}
+    });
+
+    for (auto _ : state) {
+        T value = 1;
+        a.compare_exchange_strong(value, 1, std::memory_order::acq_rel);
+    }
+
+    t.join();
+}
+
+BENCHMARK_TEMPLATE(AtomicCompareExchange, ContentionT);
+BENCHMARK_TEMPLATE(AtomicCompareExchange_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicCompareExchange, Unaligned);
+BENCHMARK_TEMPLATE(AtomicCompareExchange_std, Unaligned);
+BENCHMARK_TEMPLATE(AtomicCompareExchange, NonAtomic);
+BENCHMARK_TEMPLATE(AtomicCompareExchange_std, NonAtomic);
 
 static void AtomicFalseWait(benchmark::State& state)
 {
@@ -190,6 +245,8 @@ static void AtomicWait_std(benchmark::State& state)
 
 BENCHMARK_TEMPLATE(AtomicWait, ContentionT);
 BENCHMARK_TEMPLATE(AtomicWait_std, ContentionT);
+BENCHMARK_TEMPLATE(AtomicWait, Unaligned);
+BENCHMARK_TEMPLATE(AtomicWait_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicWait, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWait_std, NonAtomic);
 

@@ -169,7 +169,7 @@ inline void __atomic_wait(T const volatile* pointer, T old, int order) noexcept
     mini::memory::AtomicContention contention;
 
     while (mini::memory::AtomicLoadCompare(context.pointer, old, static_cast<mini::int32>(order))) {
-        __atomic_load(&context.entry->platform, &contention, static_cast<mini::int32>(order));
+        __atomic_load(&context.entry->platform, &contention, __ATOMIC_ACQUIRE);
         mini::memory::AtomicPlatformWait(&context.entry->waiter, &context.entry->platform,
                                          contention, context.size);
     }
