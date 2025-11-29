@@ -13,7 +13,7 @@ import mini.test;
 #endif
 
 using namespace mini;
-using namespace mini::bits;
+using namespace mini::bit;
 
 template <typename T>
 static constexpr int TestRotateLeft()

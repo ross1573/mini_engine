@@ -11,7 +11,7 @@
 
 #  define BUILTIN_ROTL_1(x, s) _rotr8(x, static_cast<unsigned char>(s))
 #  define BUILTIN_ROTL_2(x, s) _rotl16(x, static_cast<unsigned char>(s))
-#  define BUILTIN_ROTL_4(x, s) _rotl32(x, s)
+#  define BUILTIN_ROTL_4(x, s) _rotl(x, s)
 #  define BUILTIN_ROTL_8(x, s) _rotl64(x, s)
 
 #  define HAS_BUILTIN_ROTR_1 1
@@ -21,7 +21,7 @@
 
 #  define BUILTIN_ROTR_1(x, s) _rotr8(x, static_cast<unsigned char>(s))
 #  define BUILTIN_ROTR_2(x, s) _rotr16(x, static_cast<unsigned char>(s))
-#  define BUILTIN_ROTR_4(x, s) _rotr32(x, s)
+#  define BUILTIN_ROTR_4(x, s) _rotr(x, s)
 #  define BUILTIN_ROTR_8(x, s) _rotr64(x, s)
 
 #  define HAS_BUILTIN_CLZ   1

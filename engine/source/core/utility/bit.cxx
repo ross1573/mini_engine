@@ -14,7 +14,7 @@ import :type;
 import :bit_impl;
 #endif
 
-namespace mini::bits {
+namespace mini::bit {
 
 export template <typename To, typename From>
 inline constexpr To BitCast(From const& from) noexcept
@@ -174,4 +174,4 @@ inline constexpr uint32 CountRightOne(T num) noexcept
                                        : NumericLimit<T>::digits;
 }
 
-} // namespace mini::bits
+} // namespace mini::bit
