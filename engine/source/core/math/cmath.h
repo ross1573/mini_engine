@@ -96,7 +96,7 @@
 #if HAS_BUILTIN(__builtin_sqrtf)
 #  define BUILTIN_SQRTF(x) __builtin_sqrtf(x)
 #else
-#  define BUILTIN_SQRTF(x) sqrtf(x);
+#  define BUILTIN_SQRTF(x) sqrtf(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_sqrt)
@@ -108,7 +108,7 @@
 #if HAS_BUILTIN(__builtin_sqrtl)
 #  define BUILTIN_SQRTL(x) __builtin_sqrtl(x)
 #else
-#  define BUILTIN_SQRT(x) sqrtl(x)
+#  define BUILTIN_SQRTL(x) sqrtl(x)
 #endif
 
 #endif // BUILTIN_CMATH_H
