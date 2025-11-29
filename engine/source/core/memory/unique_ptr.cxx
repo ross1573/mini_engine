@@ -1,9 +1,3 @@
-module;
-
-#if PLATFORM_WINDOWS
-#  define no_unique_address msvc::no_unique_address
-#endif
-
 export module mini.core:unique_ptr;
 
 import :type;
@@ -26,7 +20,7 @@ public:
 
 private:
     Ptr m_Ptr;
-    [[no_unique_address]] DelT m_Deleter;
+    [[emptyable_address]] DelT m_Deleter;
 
 public:
     constexpr UniquePtr() noexcept;

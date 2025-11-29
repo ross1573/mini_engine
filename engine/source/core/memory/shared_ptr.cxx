@@ -1,9 +1,3 @@
-module;
-
-#if PLATFORM_WINDOWS
-#  define no_unique_address msvc::no_unique_address
-#endif
-
 export module mini.core:shared_ptr;
 
 import :type;
@@ -22,8 +16,8 @@ private:
     typedef SharedCounter Base;
 
     T* m_Ptr;
-    [[no_unique_address]] AllocT m_Alloc;
-    [[no_unique_address]] DelT m_Deleter;
+    [[emptyable_address]] AllocT m_Alloc;
+    [[emptyable_address]] DelT m_Deleter;
 
 public:
     template <typename AllocU, typename DelU>
@@ -65,7 +59,7 @@ private:
     typedef StaticBuffer<T, 1> Buffer;
 
     Buffer m_Value;
-    [[no_unique_address]] AllocT m_Alloc;
+    [[emptyable_address]] AllocT m_Alloc;
 
 public:
     template <typename AllocU, typename... Args>

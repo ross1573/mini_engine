@@ -3,10 +3,6 @@ module;
 #include <string>
 #include <string_view>
 
-#if PLATFORM_WINDOWS
-#  define no_unique_address msvc::no_unique_address
-#endif
-
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
@@ -95,7 +91,7 @@ private:
         LargeStorage l;
     };
 
-    [[no_unique_address]] AllocT m_Alloc;
+    [[emptyable_address]] AllocT m_Alloc;
     Storage m_Storage;
 
     static_assert(SmallCapacity < 128, "small capacity should not excced 127");

@@ -1,9 +1,3 @@
-module;
-
-#if PLATFORM_WINDOWS
-#  define no_unique_address msvc::no_unique_address
-#endif
-
 export module mini.core:buffer;
 
 import :type;
@@ -15,7 +9,7 @@ namespace mini {
 export template <typename T, AllocatorT<T> AllocT>
 class DynamicBuffer {
 protected:
-    [[no_unique_address]] AllocT m_Alloc;
+    [[emptyable_address]] AllocT m_Alloc;
     SizeT m_Capacity;
     T* m_Buffer;
 

@@ -70,6 +70,7 @@ if (MSVC)
     add_module_definitions(
         force_inline=msvc::forceinline
         no_inline=msvc::noinline
+        emptyable_address=msvc::no_unique_address
         "diagnose(cond, msg, level)"
         "diagnose_warning(cond, msg)"
         "diagnose_error(cond, msg)"
@@ -78,6 +79,7 @@ elseif (CLANG)
     add_module_definitions(
         force_inline=clang::always_inline
         no_inline=clang::noinline
+        emptyable_address=no_unique_address
         "diagnose(cond, msg, level)=clang::diagnose_if(cond, msg, level)"
         "diagnose_warning(cond, msg)=clang::diagnose_if(cond, msg, \"warn\")"
         "diagnose_error(cond, msg)=clang::diagnose_if(cond, msg, \"error\")"
