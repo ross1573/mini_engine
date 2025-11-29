@@ -66,14 +66,6 @@ add_module_definitions(
     ARCH_X86=$<IF:$<BOOL:${X86}>,true,false>
 )
 
-if (WIN32)
-    # msvc shit needs to be applied ethier vs or clang
-    list(APPEND COMPILE_DEFINITIONS
-        _ALLOW_KEYWORD_MACROS
-        no_unique_address=msvc::no_unique_address
-    )
-endif()
-
 if (MSVC)
     add_module_definitions(
         force_inline=msvc::forceinline

@@ -1,3 +1,9 @@
+module;
+
+#if PLATFORM_WINDOWS
+#  define no_unique_address msvc::no_unique_address
+#endif
+
 export module mini.core:shared_ptr;
 
 import :type;
