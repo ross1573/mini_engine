@@ -2,6 +2,10 @@ module;
 
 #include "bit.h"
 
+#include <bit>
+
+#define CONSTEXPR_BIT_CAST std::bit_cast
+
 export module mini.core:bit;
 
 import :type;
@@ -12,10 +16,16 @@ import :bit_impl;
 
 namespace mini::bits {
 
+export template <typename To, typename From>
+inline constexpr To BitCast(From const& from) noexcept
+{
+    return CONSTEXPR_BIT_CAST<To>(from);
+}
+
 export template <UnsignedIntegralT T>
 inline constexpr T RotateLeft(T num, int32 count) noexcept
 {
-    constexpr uint32 digits = NumericLimit<T>::digits;
+    constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
     if !consteval {
         if constexpr (sizeof(T) == 1 && HAS_BUILTIN_ROTL_1) {
@@ -37,14 +47,14 @@ inline constexpr T RotateLeft(T num, int32 count) noexcept
         return num;
     }
 
-    return (remainder > 0) ? ((num << remainder) | (num >> (digits - remainder)))
-                           : ((num >> -remainder) | (num << (digits + remainder)));
+    return (remainder > 0) ? static_cast<T>((num << remainder) | (num >> (digits - remainder)))
+                           : static_cast<T>((num >> -remainder) | (num << (digits + remainder)));
 }
 
 export template <UnsignedIntegralT T>
 inline constexpr T RotateRight(T num, int32 count) noexcept
 {
-    constexpr uint32 digits = NumericLimit<T>::digits;
+    constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
     if !consteval {
         if constexpr (sizeof(T) == 1 && HAS_BUILTIN_ROTR_1) {
@@ -66,8 +76,8 @@ inline constexpr T RotateRight(T num, int32 count) noexcept
         return num;
     }
 
-    return (remainder > 0) ? ((num >> remainder) | (num << (digits - remainder)))
-                           : ((num << -remainder) | (num >> (digits + remainder)));
+    return (remainder > 0) ? static_cast<T>((num >> remainder) | (num << (digits - remainder)))
+                           : static_cast<T>((num << -remainder) | (num >> (digits + remainder)));
 }
 
 export template <UnsignedIntegralT T>

@@ -42,6 +42,7 @@ PUBLIC
 target_include_directories(mini.test PUBLIC ./)
 target_link_libraries(mini.test PUBLIC mini.core)
 
-add_subdirectory(container)
-add_subdirectory(string)
+add_subdirectory(utility)
 add_subdirectory(memory)
+add_subdirectory(string)
+add_subdirectory(container)
