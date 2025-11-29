@@ -62,6 +62,9 @@ concept ExplicitlyConvertibleToT = requires { static_cast<To>(std::declval<From>
 export template <typename From, typename To>
 concept ConvertibleToT = ImplicitlyConvertibleToT<From, To> && ExplicitlyConvertibleToT<From, To>;
 
+export template <typename T, typename U>
+concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
+
 export template <typename From, typename To>
 concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*, To*>;
 

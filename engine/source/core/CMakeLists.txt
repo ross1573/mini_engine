@@ -16,7 +16,6 @@ PUBLIC
         core.cxx
         algorithm.cxx
         logger.cxx
-        utility.cxx
 
         container/array.cxx
         container/static_array.cxx
@@ -65,10 +64,14 @@ PUBLIC
         type/type_numeric.cxx
         type/type_traits.cxx
 
+        utility/utility.cxx
+        utility/bit.cxx
+
         module/module_system.cxx
         module/module_static.cxx
 
         $<$<PLATFORM_ID:Windows>:windows/win_atomic.cxx>
+        $<$<PLATFORM_ID:Windows>:windows/win_bit.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_logger.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_module.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_mutex.cxx>
@@ -87,6 +90,8 @@ PRIVATE
 
     memory/cstring.h
     memory/cwstring.h
+
+    utility/bit.h
 
     $<$<CXX_COMPILER_ID:MSVC>:impl/windows/win_atomic.cpp>
     $<$<PLATFORM_ID:Windows>:include/win_assert.h>

@@ -6,6 +6,7 @@ module;
 export module mini.core:utility;
 
 import :type;
+export import :bit;
 
 namespace mini {
 

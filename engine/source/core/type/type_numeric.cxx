@@ -28,7 +28,19 @@ export template <typename T>
 concept UnsignedT = ArithmeticT<T> && std::is_unsigned_v<T>;
 
 export template <typename T>
+concept SignedIntegralT = IntegralT<T> && SignedT<T>;
+
+export template <typename T>
+concept UnsignedIntegralT = IntegralT<T> && UnsignedT<T>;
+
+export template <typename T>
 concept CharT = AnyOfT<RemoveConstVolatileT<T>, char, wchar_t, char8_t, char16_t, char32_t>;
+
+export template <ArithmeticT T>
+using SignedOfT = std::make_signed_t<T>;
+
+export template <ArithmeticT T>
+using UnsignedOfT = std::make_unsigned_t<T>;
 
 export template <ArithmeticT T>
 class NumericLimit;
