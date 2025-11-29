@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FOUNDATION_H
+#define FOUNDATION_H
 
 #ifdef __OBJC__
 #  import <Foundation/Foundation.h>
@@ -49,3 +50,5 @@ class URL;
 struct Range;
 
 } // namespace NS
+
+#endif // FOUNDATION_H

@@ -88,6 +88,6 @@ elseif (CLANG)
         no_inline=clang::noinline
         "diagnose(cond, msg, level)=clang::diagnose_if(cond, msg, level)"
         "diagnose_warning(cond, msg)=clang::diagnose_if(cond, msg, \"warn\")"
-        "diagnose_error(cond, msg)=clang::diagnose_if(cond, msg,\"error\")"
+        "diagnose_error(cond, msg)=clang::diagnose_if(cond, msg, \"error\")"
     )
 endif()

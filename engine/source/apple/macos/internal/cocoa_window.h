@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCOA_WINDOW_H
+#define COCOA_WINDOW_H
 
 #include <QuartzCore/CAMetalLayer.hpp>
 
@@ -33,3 +34,5 @@ public:
 };
 
 } // namespace mini::cocoa
+
+#endif // COCOA_WINDOW_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MINI_OPTION_H
+#define MINI_OPTION_H
 
 // should be saved into a file
 namespace mini::options {
@@ -28,3 +29,5 @@ inline constexpr bool debugLayer = true;
 inline constexpr bool gpuValidation = false;
 
 } // namespace mini::options
+
+#endif // MINI_OPTION_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCOA_APPLICATION_H
+#define COCOA_APPLICATION_H
 
 #include "appkit.h"
 #include "foundation.h"
@@ -24,3 +25,5 @@ public:
 };
 
 } // namespace mini::cocoa
+
+#endif // COCOA_APPLICATION_H

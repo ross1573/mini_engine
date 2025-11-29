@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COCOA_DELEGATE_H
+#define COCOA_DELEGATE_H
 
 #include "appkit.h"
 #include "cocoa_application.h"
@@ -21,3 +22,5 @@
 - (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate frameRect:(NSRect)frameRect;
 
 @end
+
+#endif // COCOA_DELEGATE_H

@@ -12,7 +12,7 @@ module;
 
 #define CONSTEXPR_BIT_CAST std::bit_cast
 
-#if defined(__has_builtin) && __has_builtin(__builtin_addressof)
+#if HAS_BUILTIN(__builtin_addressof)
 #  define BUILTIN_ADDRESS_OF(x) __builtin_addressof(x)
 #else
 #  define BUILTIN_ADDRESS_OF(x) std::addressof(x)

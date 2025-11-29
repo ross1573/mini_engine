@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ASSERTION_H
+#define ASSERTION_H
 
 #include <cassert>
 #include <source_location>
@@ -7,25 +8,21 @@
 #  define DEBUG_ASSERT 1
 #else
 #  define DEBUG_ASSERT 0
-#endif // DEBUG && !NOASSERT
+#endif // DEBUG && !defined(NOASSERT)
 
-#if defined(__has_builtin) && __has_builtin(__builtin_unreachable)
+#if defined(__has_builtin)
+#  define HAS_BUILTIN(x) __has_builtin(x)
+#else
+#  define HAS_BUILTIN(x) 0
+#endif // defined(__has_builtin)
+
+#if HAS_BUILTIN(__builtin_unreachable)
 #  define BUILTIN_UNREACHABLE() __builtin_unreachable()
 #elif MSVC
 #  define BUILTIN_UNREACHABLE() __assume(false)
 #else
 #  define BUILTIN_UNREACHABLE()
-#endif // __has_builtin(__builtin_unreachable)
-
-#if defined(__has_attribute) && __has_attribute(diagnose_if)
-#  define DIAGNOSE(type, ...)   __attribute__((diagnose_if(__VA_ARGS__, type)))
-#  define DIAGNOSE_WARNING(...) DIAGNOSE("warning", __VA_ARGS__)
-#  define DIAGNOSE_ERROR(...)   DIAGNOSE("error", __VA_ARGS__)
-#else
-#  define DIAGNOSE(type, ...)
-#  define DIAGNOSE_WARNING(...)
-#  define DIAGNOSE_ERROR(...)
-#endif // __has_attribute(diagnose_if)
+#endif // HAS_BUILTIN(__builtin_unreachable)
 
 #define ASSERT_EXPR(expr)      if (!mini::detail::TestExpr(expr)) [[unlikely]]
 #define ENSURE_EXPR(expr)      if (!expr) [[unlikely]]
@@ -40,7 +37,7 @@
 #    define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
 #  else
 #    define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line)
-#  endif
+#  endif // PLATFORM_WINDOWS
 
 #  define ASSERT_INNER(expr, ...)                                               \
       BUILTIN_ASSERT(mini::detail::AssertMsg(#expr __VA_OPT__(, ) __VA_ARGS__), \
@@ -128,7 +125,7 @@ inline constexpr bool TestExpr(T* const pointer) noexcept
 #  define CHAR_T wchar_t*
 #else
 #  define CHAR_T char*
-#endif
+#endif // PLATFORM_WINDOWS
 
 ASSERT_API CHAR_T AssertMsg(char const*, char const* = nullptr);
 ASSERT_API CHAR_T AssertLoc(std::source_location const& = std::source_location::current());
@@ -145,3 +142,5 @@ ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
 #undef CHAR_T
 #undef BUILTIN_UNREACHABLE
 #undef BUILTIN_ASSSERT
+
+#endif // ASSERTION_H
