@@ -88,6 +88,8 @@ PRIVATE
     impl/assert_util.cpp
     impl/module_system.cpp
 
+    math/cmath.h
+
     memory/cstring.h
     memory/cwstring.h
 

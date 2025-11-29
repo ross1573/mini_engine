@@ -1,6 +1,6 @@
 module;
 
-#include <cmath>
+#include "cmath.h"
 
 export module mini.core:math;
 
@@ -39,51 +39,218 @@ concept Float32ConvertibleT = ConvertibleToT<T, float32>;
 template <typename T>
 concept Float64ConvertibleT = ConvertibleToT<T, float64>;
 
-export template <FloatingT T>
-inline /*constexpr*/ T Pow(T base, ConvertibleToT<T> auto exp)
+export template <IntegralT T>
+inline constexpr T Min(T x, T y)
 {
-    return static_cast<T>(std::pow(base, static_cast<T>(exp)));
+    return x < y ? x : y;
+}
+
+export template <FloatingT T>
+inline constexpr T Min(T x, T y)
+{
+    if !consteval {
+        if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
+            return static_cast<T>(BUILTIN_FMINF(static_cast<float>(x), static_cast<float>(y)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+            return static_cast<T>(BUILTIN_FMIN(static_cast<double>(x), static_cast<double>(y)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+            return static_cast<T>(BUILTIN_FMINL(static_cast<long double>(x),
+                                                static_cast<long double>(y)));
+        }
+    }
+
+    return x < y ? x : y;
 }
 
 export template <IntegralT T>
-inline constexpr OffsetT Pow(T base, T exp)
+inline constexpr T Max(T x, T y)
 {
-    if consteval {
-        OffsetT expInt = static_cast<OffsetT>(exp);
-        OffsetT result = 1;
-
-        while (expInt) {
-            if (expInt & 1) {
-                result *= base;
-            }
-
-            expInt >>= 1;
-            base *= base;
-        }
-
-        return result;
-    }
-    else {
-        return static_cast<OffsetT>(Pow(static_cast<float32>(base), static_cast<float32>(exp)));
-    }
+    return x > y ? x : y;
 }
 
 export template <FloatingT T>
-inline /*constexpr*/ T Sqrt(T value)
+inline constexpr T Max(T x, T y)
 {
-    return std::sqrt(value);
+    if !consteval {
+        if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
+            return static_cast<T>(BUILTIN_FMAXF(static_cast<float>(x), static_cast<float>(y)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+            return static_cast<T>(BUILTIN_FMAX(static_cast<double>(x), static_cast<double>(y)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+            return static_cast<T>(BUILTIN_FMAXL(static_cast<long double>(x),
+                                                static_cast<long double>(y)));
+        }
+    }
+
+    return x > y ? x : y;
 }
 
-export template <typename T>
-inline constexpr T const& Min(T const& val1, T const& val2)
+export template <IntegralT T>
+inline constexpr T Abs(T num)
 {
-    return val1 < val2 ? val1 : val2;
+    if constexpr (UnsignedT<T>) {
+        return num;
+    }
+
+    if !consteval {
+        if constexpr (sizeof(T) <= sizeof(int) && ConvertibleWithT<T, int>) {
+            return static_cast<T>(BUILTIN_ABS(static_cast<int>(num)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(long) && ConvertibleWithT<T, long>) {
+            return static_cast<T>(BUILTIN_LABS(static_cast<long>(num)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(long long) && ConvertibleWithT<T, long long>) {
+            return static_cast<T>(BUILTIN_LLABS(static_cast<long long>(num)));
+        }
+    }
+
+    return num < 0 ? -num : num;
 }
 
-export template <typename T>
-inline constexpr T const& Max(T const& val1, T const& val2)
+export template <FloatingT T>
+inline constexpr T Abs(T num)
 {
-    return val1 > val2 ? val1 : val2;
+    if constexpr (UnsignedT<T>) {
+        return num;
+    }
+
+    if !consteval {
+        if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
+            return static_cast<T>(BUILTIN_FABSF(static_cast<float>(num)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+            return static_cast<T>(BUILTIN_FABS(static_cast<double>(num)));
+        }
+        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+            return static_cast<T>(BUILTIN_FABSL(static_cast<long double>(num)));
+        }
+    }
+
+    return num < 0 ? -num : num;
+}
+
+export template <FloatingT T>
+inline /*constexpr*/ T Pow(T base, T exp)
+{
+    if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
+        return static_cast<T>(BUILTIN_POWF(static_cast<float>(base), static_cast<float>(exp)));
+    }
+    else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+        return static_cast<T>(BUILTIN_POW(static_cast<double>(base), static_cast<double>(exp)));
+    }
+    else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+        return static_cast<T>(BUILTIN_POWL(static_cast<long double>(base),
+                                           static_cast<long double>(exp)));
+    }
+    else {
+        NEVER_CALLED("not supported on such type", T);
+    }
+}
+
+template <IntegralT T>
+consteval auto PowIntResultTypeImpl()
+{
+    if constexpr (SignedT<T>) {
+        return OffsetT(0);
+    }
+    else {
+        return SizeT(0);
+    }
+}
+
+export template <IntegralT T, IntegralT U>
+inline constexpr auto PowInt(T base, U exp)
+    requires UnsignedT<U>
+{
+    using ResultT = decltype(PowIntResultTypeImpl<T>());
+    ResultT result = 1;
+
+    while (exp) {
+        if (exp & 1) {
+            result *= base;
+        }
+
+        exp >>= 1;
+        base *= base;
+    }
+
+    return result;
+}
+
+export template <FloatingT T>
+inline /*constexpr*/ T Sqrt(T num)
+{
+    if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
+        return static_cast<T>(BUILTIN_SQRTF(static_cast<float>(num)));
+    }
+    else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+        return static_cast<T>(BUILTIN_SQRT(static_cast<double>(num)));
+    }
+    else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+        return static_cast<T>(BUILTIN_SQRTL(static_cast<long double>(num)));
+    }
+    else {
+        NEVER_CALLED("not supported on such type", T);
+    }
+}
+
+export template <IntegralT T>
+inline /*constexpr*/ float Sqrt(T num)
+{
+    return static_cast<float>(BUILTIN_SQRT(static_cast<double>(num)));
+}
+
+export template <IntegralT T, IntegralT U>
+inline constexpr CommonT<T, U> Gcd(T x, U y)
+{
+    if constexpr (SignedT<T>) {
+        ASSERT(NumericLimit<T>::min != x, "signed interger overflow");
+    }
+    if constexpr (SignedT<U>) {
+        ASSERT(NumericLimit<U>::min != y, "signed integer overflow");
+    }
+
+    using ResultT = CommonT<T, U>;
+    using UnsignedResultT = UnsignedOfT<ResultT>;
+
+    UnsignedResultT ux = static_cast<UnsignedResultT>(Abs(x));
+    UnsignedResultT uy = static_cast<UnsignedResultT>(Abs(y));
+
+    if (ux < uy) {
+        UnsignedResultT tmp = uy;
+        uy = ux;
+        ux = tmp;
+    }
+
+    if (uy == 0) {
+        return ux;
+    }
+
+    ux %= uy;
+    if (ux == 0) {
+        return uy;
+    }
+
+    UnsignedResultT c = ux | uy;
+    int32 shift = static_cast<int32>(bit::CountRightZero(c));
+    ux >>= bit::CountRightZero(ux);
+
+    do {
+        UnsignedResultT tmp = uy >> bit::CountRightZero(y);
+        if (ux > tmp) {
+            uy = ux - tmp;
+            ux = tmp;
+        }
+        else {
+            uy = tmp - ux;
+        }
+    } while (uy != 0);
+
+    return static_cast<ResultT>(ux << shift);
 }
 
 } // namespace mini

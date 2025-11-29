@@ -24,12 +24,12 @@ public:
     explicit constexpr Vector2Int(Int32ConvertibleT auto) noexcept;
 
     /*constexpr*/ float32 Length() const noexcept;
-    /*constexpr*/ SizeT LengthSquared() const noexcept;
+    constexpr SizeT LengthSquared() const noexcept;
 
     constexpr void Clamp(Vector2Int const&, Vector2Int const&) noexcept;
 
     static /*constexpr*/ float32 Distance(Vector2Int const&, Vector2Int const&) noexcept;
-    static /*constexpr*/ SizeT DistanceSquared(Vector2Int const&, Vector2Int const&) noexcept;
+    static constexpr SizeT DistanceSquared(Vector2Int const&, Vector2Int const&) noexcept;
 
     constexpr Vector2Int& operator+=(Vector2Int const&) noexcept;
     constexpr Vector2Int& operator-=(Vector2Int const&) noexcept;
@@ -92,14 +92,12 @@ inline constexpr Vector2Int::Vector2Int(Int32ConvertibleT auto val) noexcept
 
 inline /*constexpr*/ float32 Vector2Int::Length() const noexcept
 {
-    float32 xPow = Pow(static_cast<float32>(x), 2.f);
-    float32 yPow = Pow(static_cast<float32>(y), 2.f);
-    return Sqrt(xPow + yPow);
+    return Sqrt(static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u)));
 }
 
-inline /*constexpr*/ SizeT Vector2Int::LengthSquared() const noexcept
+inline constexpr SizeT Vector2Int::LengthSquared() const noexcept
 {
-    return static_cast<SizeT>(Pow(x, 2) + Pow(y, 2));
+    return static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u));
 }
 
 inline constexpr void Vector2Int::Clamp(Vector2Int const& v1, Vector2Int const& v2) noexcept
@@ -114,8 +112,8 @@ inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1,
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector2Int::DistanceSquared(Vector2Int const& v1,
-                                                       Vector2Int const& v2) noexcept
+inline constexpr SizeT Vector2Int::DistanceSquared(Vector2Int const& v1,
+                                                   Vector2Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }

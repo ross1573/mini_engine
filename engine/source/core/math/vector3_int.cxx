@@ -27,12 +27,12 @@ public:
     explicit constexpr Vector3Int(Int32ConvertibleT auto) noexcept;
 
     /*constexpr*/ float32 Length() const noexcept;
-    /*constexpr*/ SizeT LengthSquared() const noexcept;
+    constexpr SizeT LengthSquared() const noexcept;
 
     constexpr void Clamp(Vector3Int const&, Vector3Int const&) noexcept;
 
     static /*constexpr*/ float32 Distance(Vector3Int const&, Vector3Int const&) noexcept;
-    static /*constexpr*/ SizeT DistanceSquared(Vector3Int const&, Vector3Int const&) noexcept;
+    static constexpr SizeT DistanceSquared(Vector3Int const&, Vector3Int const&) noexcept;
 
     constexpr Vector3Int& operator+=(Vector3Int const&) noexcept;
     constexpr Vector3Int& operator-=(Vector3Int const&) noexcept;
@@ -116,15 +116,12 @@ inline constexpr Vector3Int::Vector3Int(Int32ConvertibleT auto val) noexcept
 
 inline /*constexpr*/ float32 Vector3Int::Length() const noexcept
 {
-    float32 xPow = Pow(static_cast<float32>(x), 2.f);
-    float32 yPow = Pow(static_cast<float32>(y), 2.f);
-    float32 zPow = Pow(static_cast<float32>(z), 2.f);
-    return Sqrt(xPow + yPow + zPow);
+    return Sqrt(static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u)));
 }
 
-inline /*constexpr*/ SizeT Vector3Int::LengthSquared() const noexcept
+inline constexpr SizeT Vector3Int::LengthSquared() const noexcept
 {
-    return static_cast<SizeT>(Pow(x, 2) + Pow(y, 2) + Pow(z, 2));
+    return static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u));
 }
 
 inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& v2) noexcept
@@ -140,8 +137,8 @@ inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1,
     return (v1 - v2).Length();
 }
 
-inline /*constexpr*/ SizeT Vector3Int::DistanceSquared(Vector3Int const& v1,
-                                                       Vector3Int const& v2) noexcept
+inline constexpr SizeT Vector3Int::DistanceSquared(Vector3Int const& v1,
+                                                   Vector3Int const& v2) noexcept
 {
     return static_cast<SizeT>((v1 - v2).LengthSquared());
 }
