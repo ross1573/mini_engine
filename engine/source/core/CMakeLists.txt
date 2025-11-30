@@ -28,6 +28,7 @@ PUBLIC
         iterator/ptr_iterator.cxx
 
         math/math.cxx
+        math/math_base.cxx
         math/color.cxx
         math/rect.cxx
         math/rect_int.cxx

@@ -64,6 +64,13 @@ static int TestGcd(T a, U b)
     return 0;
 }
 
+template <IntegralT T, IntegralT U>
+static int TestLcm(T a, U b)
+{
+    TEST_ENSURE(Lcm(a, b) == std::lcm(a, b));
+    return 0;
+}
+
 int main()
 {
     TEST_ENSURE(TestMax(1.1f, 1.2f) == 0);
@@ -85,8 +92,11 @@ int main()
     TEST_ENSURE(TestSqrt(2.1f) == 0);
     TEST_ENSURE(TestSqrt(2.1) == 0);
 
-    TEST_ENSURE(TestGcd(3u, 17ul) == 0);
-    TEST_ENSURE(TestGcd(42u, 28ul) == 0);
+    TEST_ENSURE(TestGcd(3, 17) == 0);
+    TEST_ENSURE(TestGcd(42, 28) == 0);
+
+    TEST_ENSURE(TestLcm(12, 15) == 0);
+    TEST_ENSURE(TestLcm(3, 4) == 0);
 
     return 0;
 }

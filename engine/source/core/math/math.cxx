@@ -6,6 +6,8 @@ export module mini.core:math;
 
 import :type;
 import :utility;
+import :memory;
+import :math_base;
 
 namespace mini {
 
@@ -40,13 +42,13 @@ template <typename T>
 concept Float64ConvertibleT = ConvertibleToT<T, float64>;
 
 export template <IntegralT T>
-inline constexpr T Min(T x, T y)
+[[nodiscard]] inline constexpr T Min(T x, T y)
 {
     return x < y ? x : y;
 }
 
 export template <FloatingT T>
-inline constexpr T Min(T x, T y)
+[[nodiscard]] inline constexpr T Min(T x, T y)
 {
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
@@ -65,13 +67,13 @@ inline constexpr T Min(T x, T y)
 }
 
 export template <IntegralT T>
-inline constexpr T Max(T x, T y)
+[[nodiscard]] inline constexpr T Max(T x, T y)
 {
     return x > y ? x : y;
 }
 
 export template <FloatingT T>
-inline constexpr T Max(T x, T y)
+[[nodiscard]] inline constexpr T Max(T x, T y)
 {
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
@@ -90,7 +92,7 @@ inline constexpr T Max(T x, T y)
 }
 
 export template <IntegralT T>
-inline constexpr T Abs(T num)
+[[nodiscard]] inline constexpr T Abs(T num)
 {
     if constexpr (UnsignedT<T>) {
         return num;
@@ -108,11 +110,11 @@ inline constexpr T Abs(T num)
         }
     }
 
-    return num < 0 ? -num : num;
+    return num < 0 ? static_cast<T>(0 - static_cast<UnsignedOfT<T>>(num)) : num;
 }
 
 export template <FloatingT T>
-inline constexpr T Abs(T num)
+[[nodiscard]] inline constexpr T Abs(T num)
 {
     if constexpr (UnsignedT<T>) {
         return num;
@@ -134,7 +136,7 @@ inline constexpr T Abs(T num)
 }
 
 export template <FloatingT T>
-inline /*constexpr*/ T Pow(T base, T exp)
+[[nodiscard]] inline /*constexpr*/ T Pow(T base, T exp)
 {
     if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
         return static_cast<T>(BUILTIN_POWF(static_cast<float>(base), static_cast<float>(exp)));
@@ -163,7 +165,7 @@ consteval auto PowIntResultTypeImpl()
 }
 
 export template <IntegralT T, IntegralT U>
-inline constexpr auto PowInt(T base, U exp)
+[[nodiscard]] inline constexpr auto PowInt(T base, U exp)
     requires UnsignedT<U>
 {
     using ResultT = decltype(PowIntResultTypeImpl<T>());
@@ -182,7 +184,7 @@ inline constexpr auto PowInt(T base, U exp)
 }
 
 export template <FloatingT T>
-inline /*constexpr*/ T Sqrt(T num)
+[[nodiscard]] inline /*constexpr*/ T Sqrt(T num)
 {
     if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
         return static_cast<T>(BUILTIN_SQRTF(static_cast<float>(num)));
@@ -199,21 +201,14 @@ inline /*constexpr*/ T Sqrt(T num)
 }
 
 export template <IntegralT T>
-inline /*constexpr*/ float Sqrt(T num)
+[[nodiscard]] inline /*constexpr*/ float Sqrt(T num)
 {
     return static_cast<float>(BUILTIN_SQRT(static_cast<double>(num)));
 }
 
 export template <IntegralT T, IntegralT U>
-inline constexpr CommonT<T, U> Gcd(T x, U y)
+[[nodiscard]] inline constexpr CommonT<T, U> Gcd(T x, U y)
 {
-    if constexpr (SignedT<T>) {
-        ASSERT(NumericLimit<T>::min != x, "signed interger overflow");
-    }
-    if constexpr (SignedT<U>) {
-        ASSERT(NumericLimit<U>::min != y, "signed integer overflow");
-    }
-
     using ResultT = CommonT<T, U>;
     using UnsignedResultT = UnsignedOfT<ResultT>;
 
@@ -227,20 +222,20 @@ inline constexpr CommonT<T, U> Gcd(T x, U y)
     }
 
     if (uy == 0) {
-        return ux;
+        return static_cast<ResultT>(ux);
     }
 
     ux %= uy;
     if (ux == 0) {
-        return uy;
+        return static_cast<ResultT>(uy);
     }
 
-    UnsignedResultT c = ux | uy;
-    int32 shift = static_cast<int32>(bit::CountRightZero(c));
+    UnsignedResultT uc = ux | uy;
+    int32 shift = static_cast<int32>(bit::CountRightZero(uc));
     ux >>= bit::CountRightZero(ux);
 
     do {
-        UnsignedResultT tmp = uy >> bit::CountRightZero(y);
+        UnsignedResultT tmp = uy >> bit::CountRightZero(uy);
         if (ux > tmp) {
             uy = ux - tmp;
             ux = tmp;
@@ -251,6 +246,23 @@ inline constexpr CommonT<T, U> Gcd(T x, U y)
     } while (uy != 0);
 
     return static_cast<ResultT>(ux << shift);
+}
+
+export template <IntegralT T, IntegralT U>
+[[nodiscard]] inline constexpr CommonT<T, U> Lcm(T x, U y)
+{
+    using ResultT = CommonT<T, U>;
+
+    if (x == 0 || y == 0) {
+        return 0;
+    }
+
+    ResultT a = Abs(x) / Gcd(x, y);
+    ResultT b = Abs(y);
+    ResultT result;
+
+    VERIFY(!BUILTIN_MUL_OVERFLOW(a, b, memory::AddressOf(result)), "integer overflow in lcm");
+    return result;
 }
 
 } // namespace mini

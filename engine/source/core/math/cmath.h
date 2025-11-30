@@ -111,4 +111,10 @@
 #  define BUILTIN_SQRTL(x) sqrtl(x)
 #endif
 
+#if HAS_BUILTIN(__builtin_mul_overflow)
+#  define BUILTIN_MUL_OVERFLOW(x, y, r) __builtin_mul_overflow(x, y, r)
+#else
+#  define BUILTIN_MUL_OVERFLOW(x, y, r) MulOverflow(x, y, r)
+#endif
+
 #endif // BUILTIN_CMATH_H
