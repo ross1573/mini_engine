@@ -60,8 +60,6 @@ static int TestSqrt(T a)
 template <IntegralT T, IntegralT U>
 static int TestGcd(T a, U b)
 {
-    auto tmp = Gcd(a, b);
-    auto tmp2 = std::gcd(a, b);
     TEST_ENSURE(Gcd(a, b) == std::gcd(a, b));
     return 0;
 }
@@ -88,7 +86,7 @@ int main()
     TEST_ENSURE(TestSqrt(2.1) == 0);
 
     TEST_ENSURE(TestGcd(3u, 17ul) == 0);
-    TEST_ENSURE(TestGcd(42u, 14ul) == 0);
+    TEST_ENSURE(TestGcd(42u, 28ul) == 0);
 
     return 0;
 }
