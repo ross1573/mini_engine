@@ -67,6 +67,7 @@ PUBLIC
 
         utility/utility.cxx
         utility/bit.cxx
+        utility/bit_base.cxx
 
         module/module_system.cxx
         module/module_static.cxx

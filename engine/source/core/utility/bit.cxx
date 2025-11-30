@@ -83,8 +83,6 @@ inline constexpr T RotateRight(T num, int32 count) noexcept
 export template <UnsignedIntegralT T>
 inline constexpr uint32 CountLeftZero(T num) noexcept
 {
-    static_assert(HAS_BUILTIN_CLZLL, "CLZ is not implemented on this platform");
-
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CLZG) {
         return static_cast<uint32>(BUILTIN_CLZG(num, static_cast<int32>(digits)));
@@ -94,15 +92,15 @@ inline constexpr uint32 CountLeftZero(T num) noexcept
         return digits;
     }
 
-    if constexpr (sizeof(T) <= sizeof(unsigned int) && HAS_BUILTIN_CLZ) {
+    if constexpr (sizeof(T) <= sizeof(unsigned int)) {
         return static_cast<uint32>(BUILTIN_CLZ(num)) -
                (NumericLimit<unsigned int>::digits - digits);
     }
-    else if constexpr (sizeof(T) <= sizeof(unsigned long) && HAS_BUILTIN_CLZL) {
+    else if constexpr (sizeof(T) <= sizeof(unsigned long)) {
         return static_cast<uint32>(BUILTIN_CLZL(num)) -
                (NumericLimit<unsigned long>::digits - digits);
     }
-    else if constexpr (sizeof(T) <= sizeof(unsigned long long) && HAS_BUILTIN_CLZLL) {
+    else if constexpr (sizeof(T) <= sizeof(unsigned long long)) {
         return static_cast<uint32>(BUILTIN_CLZLL(num)) -
                (NumericLimit<unsigned long long>::digits - digits);
     }
@@ -135,8 +133,6 @@ inline constexpr uint32 CountLeftOne(T num) noexcept
 export template <UnsignedIntegralT T>
 inline constexpr uint32 CountRightZero(T num) noexcept
 {
-    static_assert(HAS_BUILTIN_CTZLL, "CTZ is not implemented on this platform");
-
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CTZG) {
         return static_cast<uint32>(BUILTIN_CTZG(num, static_cast<int32>(digits)));
@@ -146,13 +142,13 @@ inline constexpr uint32 CountRightZero(T num) noexcept
         return digits;
     }
 
-    if constexpr (sizeof(T) <= sizeof(unsigned int) && HAS_BUILTIN_CTZ) {
+    if constexpr (sizeof(T) <= sizeof(unsigned int)) {
         return static_cast<uint32>(BUILTIN_CTZ(num));
     }
-    else if constexpr (sizeof(T) <= sizeof(unsigned long) && HAS_BUILTIN_CTZL) {
+    else if constexpr (sizeof(T) <= sizeof(unsigned long)) {
         return static_cast<uint32>(BUILTIN_CTZL(num));
     }
-    else if constexpr (sizeof(T) <= sizeof(unsigned long long) && HAS_BUILTIN_CTZLL) {
+    else if constexpr (sizeof(T) <= sizeof(unsigned long long)) {
         return static_cast<uint32>(BUILTIN_CTZLL(num));
     }
     else {

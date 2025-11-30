@@ -24,18 +24,12 @@
 #  define BUILTIN_ROTR_4(x, s) _rotr(x, s)
 #  define BUILTIN_ROTR_8(x, s) _rotr64(x, s)
 
-#  define HAS_BUILTIN_CLZ   1
-#  define HAS_BUILTIN_CLZL  0
-#  define HAS_BUILTIN_CLZLL 1
-
 #  define BUILTIN_CLZ(x)   _clz(x)
+#  define BUILTIN_CLZL(x)  _clzl(x)
 #  define BUILTIN_CLZLL(x) _clzll(x)
 
-#  define HAS_BUILTIN_CTZ   1
-#  define HAS_BUILTIN_CTZL  0
-#  define HAS_BUILTIN_CTZLL 1
-
 #  define BUILTIN_CTZ(x)   _ctz(x)
+#  define BUILTIN_CTZL(x)  _ctzl(x)
 #  define BUILTIN_CTZLL(x) _ctzll(x)
 #else
 #  define HAS_BUILTIN_ROTL_1 0
@@ -55,25 +49,28 @@
 #  define HAS_BUILTIN_CLZG 0
 #endif
 
-#if HAS_BUILTIN(__builtin_clz)
-#  define HAS_BUILTIN_CLZ 1
-#  define BUILTIN_CLZ(x)  __builtin_clz(x)
-#elif !defined(HAS_BUILTIN_CLZ)
-#  define HAS_BUILTIN_CLZ 0
+#ifndef BUILTIN_CLZ
+#  if HAS_BUILTIN(__builtin_clz)
+#    define BUILTIN_CLZ(x) __builtin_clz(x)
+#  else
+#    define BUILTIN_CLZ(x) Clz(x)
+#  endif
 #endif
 
-#if HAS_BUILTIN(__builtin_clzl)
-#  define HAS_BUILTIN_CLZL 1
-#  define BUILTIN_CLZL(x)  __builtin_clzl(x)
-#elif !defined(HAS_BUILTIN_CLZL)
-#  define HAS_BUILTIN_CLZL 0
+#ifndef BUILTIN_CLZL
+#  if HAS_BUILTIN(__builtin_clzl)
+#    define BUILTIN_CLZL(x) __builtin_clzl(x)
+#  else
+#    define BUILTIN_CLZL(x) Clz(x)
+#  endif
 #endif
 
-#if HAS_BUILTIN(__builtin_clzll)
-#  define HAS_BUILTIN_CLZLL 1
-#  define BUILTIN_CLZLL(x)  __builtin_clzll(x)
-#elif !defined(HAS_BUILTIN_CLZLL)
-#  define HAS_BUILTIN_CLZLL 0
+#ifndef BUILTIN_CLZLL
+#  if HAS_BUILTIN(__builtin_clzll)
+#    define BUILTIN_CLZLL(x) __builtin_clzll(x)
+#  else
+#    define BUILTIN_CLZLL(x) Clz(x)
+#  endif
 #endif
 
 #if HAS_BUILTIN(__builtin_ctzg)
@@ -83,25 +80,28 @@
 #  define HAS_BUILTIN_CTZG 0
 #endif
 
-#if HAS_BUILTIN(__builtin_ctz)
-#  define HAS_BUILTIN_CTZ 1
-#  define BUILTIN_CTZ(x)  __builtin_ctz(x)
-#elif !defined(HAS_BUILTIN_CTZ)
-#  define HAS_BUILTIN_CTZ 0
+#ifndef BUILTIN_CTZ
+#  if HAS_BUILTIN(__builtin_ctz)
+#    define BUILTIN_CTZ(x) __builtin_ctz(x)
+#  else
+#    define BUILTIN_CTZ(x) Ctz(x)
+#  endif
 #endif
 
-#if HAS_BUILTIN(__builtin_ctzl)
-#  define HAS_BUILTIN_CTZL 1
-#  define BUILTIN_CTZL(x)  __builtin_ctzl(x)
-#elif !defined(HAS_BUILTIN_CTZL)
-#  define HAS_BUILTIN_CTZL 0
+#ifndef BUILTIN_CTZL
+#  if HAS_BUILTIN(__builtin_ctzl)
+#    define BUILTIN_CTZL(x) __builtin_ctzl(x)
+#  else
+#    define BUILTIN_CTZL(x) Ctz(x)
+#  endif
 #endif
 
-#if HAS_BUILTIN(__builtin_ctzll)
-#  define HAS_BUILTIN_CTZLL 1
-#  define BUILTIN_CTZLL(x)  __builtin_ctzll(x)
-#elif !defined(HAS_BUILTIN_CTZLL)
-#  define HAS_BUILTIN_CTZLL 0
+#ifndef BUILTIN_CTZLL
+#  if HAS_BUILTIN(__builtin_ctzll)
+#    define BUILTIN_CTZLL(x) __builtin_ctzll(x)
+#  else
+#    define BUILTIN_CTZLL(x) Ctz(x)
+#  endif
 #endif
 
 #endif // BUILTIN_BIT_H

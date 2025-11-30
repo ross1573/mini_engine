@@ -5,33 +5,14 @@ module;
 export module mini.core:bit_impl;
 
 import :type;
+import :bit_base;
 
 namespace mini::bit {
-
-template <UnsignedIntegralT T>
-inline constexpr uint32 clz(T x)
-{
-    constexpr uint32 digits = NumericLimit<T>::digits;
-    uint32 n = digits;
-    uint32 c = digits >> 1;
-
-    do {
-        T y = static_cast<T>(x >> c);
-        if (y) {
-            n -= c;
-            x = y;
-        }
-
-        c >>= 1;
-    } while (c);
-
-    return n - static_cast<uint32>(x);
-}
 
 inline constexpr uint32 _clz(uint32 x)
 {
     if consteval {
-        return clz(x);
+        return Clz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -49,7 +30,7 @@ inline constexpr uint32 _clz(uint32 x)
 inline constexpr uint32 _clzll(uint64 x)
 {
     if consteval {
-        return clz(x);
+        return Clz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -72,31 +53,22 @@ inline constexpr uint32 _clzll(uint64 x)
 #endif // ARCH_X86
 }
 
-template <UnsignedIntegralT T>
-inline constexpr uint32 ctz(T x)
+inline constexpr uint32 _clzl(unsigned long x)
 {
-    constexpr uint32 digits = NumericLimit<T>::digits;
-    uint32 n = digits;
-    uint32 c = digits >> 1;
-    x = static_cast<T>(~x & (x - 1));
+    if constexpr (sizeof(unsigned long) == 4) {
+        return _clz(x);
+    }
+    else if constexpr (sizeof(unsigned long) == 8) {
+        return _clzll(x);
+    }
 
-    do {
-        T y = static_cast<T>(x >> c);
-        if (y) {
-            n -= c;
-            x = y;
-        }
-
-        c >>= 1;
-    } while (c);
-
-    return digits - n + static_cast<uint32>(x);
+    return Clz(x);
 }
 
 inline constexpr uint32 _ctz(uint32 x)
 {
     if consteval {
-        return ctz(x);
+        return Ctz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -114,7 +86,7 @@ inline constexpr uint32 _ctz(uint32 x)
 inline constexpr uint32 _ctzll(uint64 x)
 {
     if consteval {
-        return ctz(x);
+        return Ctz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -131,6 +103,18 @@ inline constexpr uint32 _ctzll(uint64 x)
 #else
 #  error "unsupported architecture"
 #endif
+}
+
+inline constexpr uint32 _ctzl(unsigned long x)
+{
+    if constexpr (sizeof(unsigned long) == 4) {
+        return _ctz(x);
+    }
+    else if constexpr (sizeof(unsigned long) == 8) {
+        return _ctzll(x);
+    }
+
+    return Ctz(x);
 }
 
 } // namespace mini::bit
