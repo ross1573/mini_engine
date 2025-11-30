@@ -4,17 +4,22 @@ import :type;
 
 namespace mini {
 
-template <SignedIntegralT T>
-inline constexpr bool MulOverflow(T x, T y, T& result)
+template <IntegralT T>
+inline constexpr bool MulOverflow(T const x, T const y, T* result)
 {
+    if constexpr (UnsignedT<T>) {
+        *result = static_cast<T>(x * y);
+        return (x != 0) && (y > NumericLimit<T>::max / x);
+    }
+
     using Unsigned = UnsignedOfT<T>;
 
-    constexpr Unsigned ux = x < 0 ? (0 - static_cast<Unsigned>(x)) : static_cast<Unsigned>(x);
-    constexpr Unsigned uy = y < 0 ? (0 - static_cast<Unsigned>(y)) : static_cast<Unsigned>(y);
-    constexpr Unsigned ur = ux * uy;
+    Unsigned const ux = x < 0 ? (0 - static_cast<Unsigned>(x)) : static_cast<Unsigned>(x);
+    Unsigned const uy = y < 0 ? (0 - static_cast<Unsigned>(y)) : static_cast<Unsigned>(y);
+    Unsigned const ur = ux * uy;
 
-    constexpr bool isNegative = (x < 0) ^ (y < 0);
-    result = isNegative ? (0 - ur) : ur;
+    bool const isNegative = (x < 0) ^ (y < 0);
+    *result = isNegative ? (0 - ur) : ur;
 
     if (ux == 0 || uy == 0) {
         return false;
