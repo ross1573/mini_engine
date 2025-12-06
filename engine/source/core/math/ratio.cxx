@@ -30,24 +30,6 @@ private:
 public:
     static inline constexpr int64 num = sign * unum / gcd;
     static inline constexpr int64 denom = uden / gcd;
-
-    template <int64 NumU, int64 DenomU>
-    consteval auto operator+(Ratio<NumU, DenomU>);
-
-    template <int64 NumU, int64 DenomU>
-    consteval auto operator-(Ratio<NumU, DenomU>);
-
-    template <int64 NumU, int64 DenomU>
-    consteval auto operator*(Ratio<NumU, DenomU>);
-
-    template <int64 NumU, int64 DenomU>
-    consteval auto operator/(Ratio<NumU, DenomU>);
-
-    template <int64 NumU, int64 DenomU>
-    consteval bool operator==(Ratio<NumU, DenomU>);
-
-    template <int64 NumU, int64 DenomU>
-    consteval auto operator<=>(Ratio<NumU, DenomU>);
 };
 
 template <int64 X, int64 Y>
@@ -186,48 +168,6 @@ consteval auto Compare(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
     else {
         return Compare(Ratio<y.denom, ry>{}, Ratio<x.denom, rx>{});
     }
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval auto Ratio<NumN, DenomN>::operator+(Ratio<NumU, DenomU> other)
-{
-    return Add(*this, other);
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval auto Ratio<NumN, DenomN>::operator-(Ratio<NumU, DenomU> other)
-{
-    return Subtract(*this, other);
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval auto Ratio<NumN, DenomN>::operator*(Ratio<NumU, DenomU> other)
-{
-    return Multiply(*this, other);
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval auto Ratio<NumN, DenomN>::operator/(Ratio<NumU, DenomU> other)
-{
-    return Divide(*this, other);
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval bool Ratio<NumN, DenomN>::operator==(Ratio<NumU, DenomU> other)
-{
-    return Equal(*this, other);
-}
-
-template <int64 NumN, int64 DenomN>
-template <int64 NumU, int64 DenomU>
-consteval auto Ratio<NumN, DenomN>::operator<=>(Ratio<NumU, DenomU> other)
-{
-    return Compare(*this, other);
 }
 
 export template <int64 NumN, int64 DenomN, int64 NumU, int64 DenomU>
