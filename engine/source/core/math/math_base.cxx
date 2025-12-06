@@ -5,6 +5,53 @@ import :type;
 namespace mini {
 
 template <IntegralT T>
+inline constexpr bool AddOverflow(T const x, T const y, T* result)
+{
+    if constexpr (UnsignedT<T>) {
+        *result = static_cast<T>(x + y);
+        return y > NumericLimit<T>::max - x;
+    }
+
+    using Unsigned = UnsignedOfT<T>;
+
+    Unsigned const ux = static_cast<Unsigned>(x);
+    Unsigned const uy = static_cast<Unsigned>(y);
+    *result = static_cast<T>(ux + uy);
+
+    if (x > 0 && y > 0) {
+        return *result <= 0;
+    }
+    else if (x < 0 && y < 0) {
+        return *result >= 0;
+    }
+
+    return false;
+}
+
+template <IntegralT T>
+inline constexpr bool SubOverflow(T const x, T const y, T* result)
+{
+    if constexpr (UnsignedT<T>) {
+        return x < y;
+    }
+
+    using Unsigned = UnsignedOfT<T>;
+
+    Unsigned const ux = static_cast<Unsigned>(x);
+    Unsigned const uy = static_cast<Unsigned>(y);
+    *result = static_cast<T>(ux - uy);
+
+    if (x <= 0 && y > 0) {
+        return *result >= 0;
+    }
+    else if (x >= 0 && y < 0) {
+        return *result <= 0;
+    }
+
+    return false;
+}
+
+template <IntegralT T>
 inline constexpr bool MulOverflow(T const x, T const y, T* result)
 {
     if constexpr (UnsignedT<T>) {

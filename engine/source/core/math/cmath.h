@@ -111,6 +111,18 @@
 #  define BUILTIN_SQRTL(x) sqrtl(x)
 #endif
 
+#if HAS_BUILTIN(__builtin_add_overflow)
+#  define BUILTIN_ADD_OVERFLOW(x, y, r) __builtin_add_overflow(x, y, r)
+#else
+#  define BUILTIN_ADD_OVERFLOW(x, y, r) AddOverflow(x, y, r)
+#endif
+
+#if HAS_BUILTIN(__builtin_sub_overflow)
+#  define BUILTIN_SUB_OVERFLOW(x, y, r) __builtin_sub_overflow(x, y, r)
+#else
+#  define BUILTIN_SUB_OVERFLOW(x, y, r) SubOverflow(x, y, r)
+#endif
+
 #if HAS_BUILTIN(__builtin_mul_overflow)
 #  define BUILTIN_MUL_OVERFLOW(x, y, r) __builtin_mul_overflow(x, y, r)
 #else

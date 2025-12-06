@@ -29,6 +29,7 @@ PUBLIC
 
         math/math.cxx
         math/math_base.cxx
+        math/ratio.cxx
         math/color.cxx
         math/rect.cxx
         math/rect_int.cxx

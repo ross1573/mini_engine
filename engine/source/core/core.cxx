@@ -6,6 +6,7 @@ export import :algorithm;
 export import :logger;
 
 export import :math;
+export import :ratio;
 export import :color;
 export import :rect;
 export import :rect_int;
