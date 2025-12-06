@@ -166,17 +166,26 @@ consteval auto Equal(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
 template <int64 NumN, int64 DenomN, int64 NumU, int64 DenomU>
 consteval auto Compare(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
 {
+    constexpr int64 sx = x.num == 0 ? 0 : (x.num > 0 ? 1 : -1);
+    constexpr int64 sy = y.num == 0 ? 0 : (y.num > 0 ? 1 : -1);
+    if constexpr (sx != sy) {
+        return sx <=> sy;
+    }
+
     constexpr int64 qx = x.num / x.denom;
     constexpr int64 qy = y.num / y.denom;
-
-    if (qx != qy) {
+    if constexpr (qx != qy) {
         return qx <=> qy;
     }
 
-    // constexpr int64 rx = x.num % x.denom;
-    // constexpr int64 ry = y.num % y.denom;
-
-    return 0;
+    constexpr int64 rx = x.num % x.denom;
+    constexpr int64 ry = y.num % y.denom;
+    if constexpr (rx == 0 || ry == 0) {
+        return rx <=> ry;
+    }
+    else {
+        return Compare(Ratio<y.denom, ry>{}, Ratio<x.denom, rx>{});
+    }
 }
 
 template <int64 NumN, int64 DenomN>

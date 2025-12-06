@@ -52,11 +52,25 @@ int main()
     TestDiv<Ratio<2, 3>, Ratio<5, 3>, Ratio<2, 5>>();
     TestDiv<Ratio<2, 3>, Ratio<3, 5>, Ratio<10, 9>>();
 
+    static_assert(Ratio<2, 3>{} > Ratio<3, 5>{});
+    static_assert(Ratio<-2, 3>{} < Ratio<3, 5>{});
+    static_assert(Ratio<-2, -3>{} > Ratio<3, 5>{});
+    static_assert(Ratio<4, 6>{} > Ratio<6, 10>{});
+    static_assert(Ratio<-4, 6>{} < Ratio<6, 10>{});
+    static_assert(Ratio<-4, -6>{} > Ratio<6, 10>{});
+    static_assert(Ratio<1, 3>{} < Ratio<7, 6>{});
+    static_assert(Ratio<0, 3>{} < Ratio<7, 6>{});
+    static_assert(Ratio<0, 3>{} > Ratio<-7, 6>{});
+    static_assert(Ratio<0, 3>{} == Ratio<0, 6>{});
+
     constexpr auto int64Max = NumericLimit<int64>::max;
     constexpr auto int64Min = NumericLimit<int64>::min;
     TestAdd<Ratio<int64Max, 2>, Ratio<int64Min + 2, 2>, Ratio<1, 2>>();
     TestSub<Ratio<int64Max, 2>, Ratio<int64Max - 1, 2>, Ratio<1, 2>>();
     TestMul<Ratio<int64Max, 1>, Ratio<1, 1>, Ratio<int64Max, 1>>();
+
+    static_assert(Ratio<int64Max, 1>{} > Ratio<int64Max, 2>{});
+    static_assert(Ratio<int64Max, 1>{} > Ratio<int64Min + 1, 1>{});
 
     return 0;
 }
