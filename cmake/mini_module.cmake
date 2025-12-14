@@ -1,5 +1,6 @@
 include(mini_util)
-include(mini_module_util)
+include(mini_module_generate)
+include(mini_module_source)
 
 macro (set_module_defines)
     set(module_defines
@@ -14,11 +15,6 @@ macro (set_module_defines)
     )
 endmacro()
 
-function (module_sources name)
-    target_sources(${ARGV})
-    build_source_tree(${name})
-endfunction()
-
 function (add_module name)
     # parse module type
     if (${ARGC} GREATER 1)
@@ -29,6 +25,8 @@ function (add_module name)
             set(type ${first_arg})
         endif()
     endif()
+
+    add_library(${name} ${type})
 
     set(options 
         "NO_DEFINE_HEADER"
@@ -43,8 +41,6 @@ function (add_module name)
         "INTERFACE_CLASS"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
-
-    add_library(${name} ${type})
 
     generate_api_name(${name} API ${arg_API} PREFIX ${arg_PREFIX})
 
@@ -95,4 +91,6 @@ function (add_module name)
         FOLDER module
         OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
     )
+
+    set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
 endfunction()
