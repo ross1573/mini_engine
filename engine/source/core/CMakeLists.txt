@@ -17,7 +17,7 @@ PUBLIC
         algorithm.cxx
         logger.cxx
 
-        chrono/clock.cxx
+        # chrono/clock.cxx
         chrono/duration.cxx
 
         container/array.cxx
