@@ -5,7 +5,7 @@ module;
 export module mini.core:math;
 
 import :type;
-import :utility;
+import :bit;
 import :memory;
 import :math_base;
 

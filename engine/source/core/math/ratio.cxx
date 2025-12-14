@@ -11,6 +11,30 @@ import :math_base;
 namespace mini {
 
 export template <int64 NumN, int64 DenomN = 1>
+class Ratio;
+
+template <typename T>
+constexpr bool IsRatioT = false;
+
+template <int64 NumN, int64 DenomN>
+constexpr bool IsRatioT<Ratio<NumN, DenomN>> = true;
+
+export template <typename T>
+concept RatioT = IsRatioT<T>;
+
+export template <RatioT R1, RatioT R2>
+using RatioAddT = decltype(R1{} + R2{});
+
+export template <RatioT R1, RatioT R2>
+using RatioSubtractT = decltype(R1{} - R2{});
+
+export template <RatioT R1, RatioT R2>
+using RatioMultiplyT = decltype(R1{} * R2{});
+
+export template <RatioT R1, RatioT R2>
+using RatioDivideT = decltype(R1{} / R2{});
+
+template <int64 NumN, int64 DenomN>
 class Ratio {
 private:
     template <int64 NumU, int64 DenomU>

@@ -1,9 +1,11 @@
 export module mini.core;
 
 export import :type;
-export import :utility;
 export import :algorithm;
 export import :logger;
+
+export import :utility;
+export import :bit;
 
 export import :math;
 export import :ratio;
@@ -19,7 +21,6 @@ export import :vertex;
 
 export import :memory;
 export import :atomic;
-export import :mutex;
 export import :allocator;
 export import :deleter;
 export import :shared_ptr;
@@ -38,6 +39,11 @@ export import :string_convert;
 export import :string_view;
 export import :string;
 export import :format;
+
+export import :clock;
+export import :duration;
+
+export import :mutex;
 
 export import :module_system;
 export import :module_static;

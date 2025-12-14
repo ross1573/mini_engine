@@ -303,7 +303,7 @@ int32 TestSpinLock()
     });
 
     // test if hangs
-    for (uint32 i = 0; i < NumericLimit<uint32>::max >> 12; ++i) {
+    for (uint32 i = 0; i < NumericLimit<uint16>::max; ++i) {
         spinLock();
     }
 

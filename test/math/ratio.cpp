@@ -10,6 +10,7 @@ consteval void TestAdd()
     auto result = R1{} + R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
+    static_assert(SameAsT<RatioAddT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -18,6 +19,7 @@ consteval void TestSub()
     auto result = R1{} - R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
+    static_assert(SameAsT<RatioSubtractT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -26,6 +28,7 @@ consteval void TestMul()
     auto result = R1{} * R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
+    static_assert(SameAsT<RatioMultiplyT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -34,6 +37,7 @@ consteval void TestDiv()
     auto result = R1{} / R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
+    static_assert(SameAsT<RatioDivideT<R1, R2>, Result>);
 }
 
 int main()

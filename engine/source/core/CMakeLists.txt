@@ -17,6 +17,9 @@ PUBLIC
         algorithm.cxx
         logger.cxx
 
+        chrono/clock.cxx
+        chrono/duration.cxx
+
         container/array.cxx
         container/static_array.cxx
         container/static_queue.cxx
@@ -52,6 +55,9 @@ PUBLIC
         memory/static_buffer.cxx
         memory/unique_ptr.cxx
 
+        module/module_system.cxx
+        module/module_static.cxx
+
         string/format.cxx
         string/string_convert.cxx
         string/string_utility.cxx
@@ -69,9 +75,6 @@ PUBLIC
         utility/utility.cxx
         utility/bit.cxx
         utility/bit_base.cxx
-
-        module/module_system.cxx
-        module/module_static.cxx
 
         $<$<PLATFORM_ID:Windows>:windows/win_atomic.cxx>
         $<$<PLATFORM_ID:Windows>:windows/win_bit.cxx>
