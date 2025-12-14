@@ -98,8 +98,31 @@ function (build_source_tree target)
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.hxx")
     endif()
 
-    # build source tree
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Implementation Files" FILES ${implementations})
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
+    # build generated tree
     source_group("Generated Files" FILES ${generated_files})
+
+    # build impl tree
+    foreach (impl_file ${implementations})
+        if (IS_ABSOLUTE ${impl_file})
+            cmake_path(RELATIVE_PATH ${impl_file} OUTPUT_VARIABLE impl_file)
+        endif()
+
+        set(group "Implementation Files")
+        cmake_path(CONVERT ${impl_file} TO_CMAKE_PATH_LIST file_path NORMALIZE)
+        string(REPLACE "/" ";" path_list ${file_path})
+        
+        list(POP_BACK path_list)
+        foreach (path ${path_list})
+            if (path STREQUAL "impl")
+                continue()
+            endif()
+
+            string(APPEND group "/" ${path})
+        endforeach()
+
+        source_group(${group} FILES ${impl_file})
+    endforeach()
+
+    # build source tree
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
 endfunction()
