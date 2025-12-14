@@ -1,3 +1,5 @@
+include (mini_util)
+
 function (build_source_tree target)
     get_target_property(source_dir ${target} SOURCE_DIR)
     get_target_property(binary_dir ${target} BINARY_DIR)
@@ -124,6 +126,7 @@ function (module_sources target)
 endfunction()
 
 function (exec_build_source_tree)
+    timer_start(build_source_tree)
     get_property(build_list GLOBAL PROPERTY BUILD_SOURCE_TREE_TARGET)
     
     foreach (target ${build_list})
@@ -135,4 +138,7 @@ function (exec_build_source_tree)
         build_source_tree(${target})
         set_target_properties(${target} PROPERTIES BUILD_SOURCE_TREE_FLAG OFF)
     endforeach()
+
+    timer_end(build_source_tree)
+    timer_print("Building source tree" build_source_tree)
 endfunction()
