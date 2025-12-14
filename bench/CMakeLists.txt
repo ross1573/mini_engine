@@ -34,7 +34,7 @@ endfunction()
 
 add_module(mini.benchmark STATIC NO_MODULE_INTERFACE)
 
-module_sources(mini.benchmark
+target_sources(mini.benchmark
 PUBLIC
     FILE_SET benchmark TYPE CXX_MODULES
     FILES
@@ -46,6 +46,8 @@ PUBLIC
     mini.core
     benchmark::benchmark
 )
+
+build_source_tree(mini.benchmark)
 
 add_subdirectory(container)
 add_subdirectory(memory)

@@ -21,5 +21,3 @@ endif()
 
 add_subdirectory_analyzed(engine)
 add_subdirectory_analyzed(launcher)
-
-exec_build_source_tree()

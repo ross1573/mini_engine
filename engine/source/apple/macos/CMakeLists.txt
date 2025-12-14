@@ -1,6 +1,6 @@
 add_module(mini.macos NO_MODULE_INTERFACE)
 
-module_sources(mini.macos
+target_sources(mini.macos
 PUBLIC
     FILE_SET macos TYPE CXX_MODULES
     FILES
@@ -35,3 +35,5 @@ target_include_directories(mini.macos
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/internal
 )
+
+build_source_tree(mini.macos)

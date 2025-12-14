@@ -1,6 +1,6 @@
 add_module(mini.graphics NO_MODULE_INTERFACE)
 
-module_sources(mini.graphics
+target_sources(mini.graphics
 PUBLIC
     FILE_SET graphics TYPE CXX_MODULES
     FILES
@@ -18,3 +18,5 @@ target_link_libraries(mini.graphics
 PUBLIC 
     mini.core
 )
+
+build_source_tree(mini.graphics)

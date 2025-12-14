@@ -1,6 +1,6 @@
 add_module(mini.metal)
 
-module_sources(mini.metal
+target_sources(mini.metal
 PUBLIC
     FILE_SET metal TYPE CXX_MODULES
     FILES
@@ -34,3 +34,5 @@ PRIVATE
     "-framework Foundation"
     "-framework QuartzCore"
 )
+
+build_source_tree(mini.metal)

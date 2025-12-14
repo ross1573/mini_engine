@@ -40,7 +40,6 @@ export import :string_view;
 export import :string;
 export import :format;
 
-export import :clock;
 export import :duration;
 
 export import :mutex;

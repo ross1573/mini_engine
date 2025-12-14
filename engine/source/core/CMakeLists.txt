@@ -5,7 +5,7 @@ add_module(mini.core
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
 
-module_sources(mini.core
+target_sources(mini.core
 PUBLIC
     include/assertion.h
     include/option.h
@@ -133,3 +133,5 @@ endif()
 if (MSVC)
     target_compile_options(mini.core PRIVATE /wd4582)
 endif()
+
+build_source_tree(mini.core)

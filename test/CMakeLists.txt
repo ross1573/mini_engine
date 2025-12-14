@@ -29,7 +29,7 @@ endfunction()
 
 add_module(mini.test SHARED NO_MODULE_INTERFACE)
 
-module_sources(mini.test
+target_sources(mini.test
 PUBLIC
     test_macro.h
 
@@ -41,6 +41,8 @@ PUBLIC
 
 target_include_directories(mini.test PUBLIC ./)
 target_link_libraries(mini.test PUBLIC mini.core)
+
+build_source_tree(mini.test)
 
 add_subdirectory(utility)
 add_subdirectory(memory)

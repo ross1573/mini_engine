@@ -1,8 +1,6 @@
 include (mini_util)
 
 function (build_source_tree target)
-    get_target_property(source_dir ${target} SOURCE_DIR)
-    get_target_property(binary_dir ${target} BINARY_DIR)
     get_target_property(sources ${target} SOURCES)
     get_target_property(headers ${target} HEADERS)
 
@@ -62,36 +60,23 @@ function (build_source_tree target)
 
     get_property(module_list GLOBAL PROPERTY MODULE_LIST)
     foreach (file ${filtered_list})
-        if (${file} IN_LIST module_list)
-            continue()
-        endif()
-
-        if (IS_ABSOLUTE ${file})
-            set(path ${file})
-        else()
-            cmake_path(ABSOLUTE_PATH file 
-                BASE_DIRECTORY ${source_dir} 
-                NORMALIZE 
-                OUTPUT_VARIABLE path)
-        endif()
-
         # filter generated source file
-        get_source_file_property(generated ${path} GENERATED)
+        get_source_file_property(generated ${file} GENERATED)
         if (generated)
-            list(APPEND generated_files ${path})
+            list(APPEND generated_files ${file})
             continue()
         endif()
 
         # filter implementation files
-        if (${path} MATCHES "^impl/.*|.*/impl/.*")
-            list(APPEND implementations ${path})
+        if (${file} MATCHES "^impl/.*|.*/impl/.*")
+            list(APPEND implementations ${file})
         else()
-            list(APPEND files ${path})
+            list(APPEND files ${file})
         endif()
     endforeach()
 
     # make a list of generated files
-    set(cmake_gen_path "${binary_dir}/CMakeFiles/${target}.dir")
+    set(cmake_gen_path "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir")
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.cxx")
@@ -114,31 +99,7 @@ function (build_source_tree target)
     endif()
 
     # build source tree
-    source_group(TREE ${source_dir} PREFIX "Implementation Files" FILES ${implementations})
-    source_group(TREE ${source_dir} PREFIX "Source Files" FILES ${files})
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Implementation Files" FILES ${implementations})
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${files})
     source_group("Generated Files" FILES ${generated_files})
-endfunction()
-
-function (module_sources target)
-    target_sources(${ARGV})
-    set_target_properties(${target} PROPERTIES BUILD_SOURCE_TREE_FLAG ON)
-    set_property(GLOBAL APPEND PROPERTY BUILD_SOURCE_TREE_TARGET ${target})
-endfunction()
-
-function (exec_build_source_tree)
-    timer_start(build_source_tree)
-    get_property(build_list GLOBAL PROPERTY BUILD_SOURCE_TREE_TARGET)
-    
-    foreach (target ${build_list})
-        get_target_property(build_flag ${target} BUILD_SOURCE_TREE_FLAG)
-        if (NOT build_flag)
-            continue()
-        endif()
-
-        build_source_tree(${target})
-        set_target_properties(${target} PROPERTIES BUILD_SOURCE_TREE_FLAG OFF)
-    endforeach()
-
-    timer_end(build_source_tree)
-    timer_print("Building source tree" build_source_tree)
 endfunction()

@@ -10,7 +10,7 @@ PRIVATE
     $<$<CONFIG:Debug>:<dxgidebug.h$<ANGLE-R>>
 )
 
-module_sources(mini.d3d12
+target_sources(mini.d3d12
 PUBLIC
     FILE_SET d3d12 TYPE CXX_MODULES
     FILES
@@ -44,3 +44,4 @@ PRIVATE
 )
 
 copy_d3d12(mini.d3d12)
+build_source_tree(mini.d3d12)

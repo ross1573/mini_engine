@@ -1,6 +1,6 @@
 add_module(mini.apple STATIC NO_MODULE_INTERFACE)
 
-module_sources(mini.apple
+target_sources(mini.apple
 PUBLIC
     include/appkit.h
     include/foundation.h
@@ -27,5 +27,7 @@ PUBLIC
     mini.platform
     metal.cpp
 )
+
+build_source_tree(mini.apple)
 
 add_subdirectory(macos)
