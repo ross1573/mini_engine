@@ -1,7 +1,7 @@
-export module mini.core:move_iterator;
+export module mini.iterator:move_iterator;
 
+import mini.type;
 import :type;
-import :iterator;
 
 namespace mini {
 

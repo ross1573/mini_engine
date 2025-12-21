@@ -1,6 +1,7 @@
 export module mini.platform;
 
-import mini.core;
+import mini.utility;
+
 export import :window;
 export import :handle;
 

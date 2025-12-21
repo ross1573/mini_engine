@@ -1,6 +1,6 @@
 module mini.d3d12;
 
-import mini.core;
+import mini.math;
 import mini.platform;
 import mini.windows;
 import :log;

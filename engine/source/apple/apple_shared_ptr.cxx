@@ -1,6 +1,8 @@
 export module mini.apple:shared_ptr;
 
-import mini.core;
+import mini.type;
+import mini.memory;
+import mini.utility;
 
 export namespace mini {
 

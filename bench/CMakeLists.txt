@@ -32,7 +32,11 @@ function (no_arg_benchmark name)
     build_source_tree(benchmark.${name})
 endfunction()
 
-add_module(mini.benchmark STATIC NO_MODULE_INTERFACE)
+add_module(mini.benchmark STATIC
+    NO_MODULE_INTERFACE
+    NO_MODULE_ENTRY
+    NO_API_LOG
+)
 
 target_sources(mini.benchmark
 PUBLIC
@@ -49,5 +53,5 @@ PUBLIC
 
 build_source_tree(mini.benchmark)
 
-add_subdirectory(container)
-add_subdirectory(memory)
+add_subdirectory(string)
+add_subdirectory(thread)

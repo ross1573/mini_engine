@@ -2,7 +2,7 @@ module;
 
 #include <type_traits>
 
-export module mini.core:type_traits;
+export module mini.type:traits;
 
 namespace mini {
 

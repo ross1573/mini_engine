@@ -4,9 +4,9 @@ module;
 #include <concepts>
 #include <type_traits>
 
-export module mini.core:type_concepts;
+export module mini.type:concepts;
 
-import :type_traits;
+import :traits;
 
 template <typename T, typename... Args>
 struct AnyOfImpl {
@@ -78,6 +78,9 @@ export template <typename T>
 concept DefaultConstructibleT = std::is_default_constructible_v<T>;
 
 export template <typename T>
+concept TriviallyConstructibleT = std::is_trivially_constructible_v<T>;
+
+export template <typename T>
 concept NoThrowDefaultConstructibleT = std::is_nothrow_default_constructible_v<T>;
 
 export template <typename T>
@@ -94,6 +97,12 @@ concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assign
 
 export template <typename T>
 concept DestructibleT = std::destructible<T>;
+
+export template <typename T>
+concept NoThrowDestructibleT = std::is_nothrow_destructible_v<T>;
+
+export template <typename T>
+concept TriviallyDestructibleT = std::is_trivially_destructible_v<T>;
 
 export template <typename T>
 concept MovableT = std::movable<T>;

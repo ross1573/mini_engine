@@ -4,7 +4,7 @@ module;
 
 module mini.windows;
 
-import mini.core;
+import mini.math;
 import mini.platform;
 
 namespace mini::windows {

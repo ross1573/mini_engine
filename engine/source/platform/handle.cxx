@@ -1,6 +1,5 @@
 export module mini.platform:handle;
 
-import mini.core;
 import mini.graphics;
 import :window;
 

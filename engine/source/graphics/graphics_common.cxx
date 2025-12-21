@@ -4,7 +4,7 @@ module;
 
 export module mini.graphics:common;
 
-import mini.core;
+import mini.string;
 
 namespace mini::graphics {
 

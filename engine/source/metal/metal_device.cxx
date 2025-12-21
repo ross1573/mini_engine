@@ -1,6 +1,5 @@
 export module mini.metal:device;
 
-import mini.core;
 import mini.graphics;
 import mini.apple;
 

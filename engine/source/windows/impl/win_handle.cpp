@@ -4,7 +4,6 @@ module;
 
 module mini.windows;
 
-import mini.core;
 import mini.engine;
 import mini.graphics;
 import mini.platform;

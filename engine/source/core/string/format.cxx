@@ -1,10 +1,10 @@
-export module mini.core:format;
+export module mini.string:format;
 
-import :type;
-import :allocator;
-import :string;
-import :string_view;
 import fmt;
+import mini.type;
+import mini.memory;
+import :basic_string;
+import :basic_string_view;
 
 namespace mini {
 

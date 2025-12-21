@@ -1,6 +1,7 @@
 export module mini.platform:window;
 
-import mini.core;
+import mini.math;
+import mini.string;
 
 namespace mini::platform {
 

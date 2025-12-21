@@ -1,6 +1,10 @@
 export module mini.graphics;
 
-import mini.core;
+import mini.utility;
+import mini.string;
+import mini.array;
+import mini.modules;
+
 export import :common;
 export import :device;
 export import :render_context;

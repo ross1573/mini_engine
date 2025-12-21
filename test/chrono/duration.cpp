@@ -5,6 +5,8 @@
 #define TEST_DURATION(x, y) TEST_ENSURE(DurationEqual(x, y) == true);
 
 import mini.test;
+import mini.math;
+import mini.chrono;
 
 using namespace mini;
 

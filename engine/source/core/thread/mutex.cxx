@@ -1,9 +1,9 @@
-export module mini.core:mutex;
+export module mini.thread:mutex;
 
-import :type;
+import mini.type;
 import :mutex_base;
 
-namespace mini::thread {
+namespace mini {
 
 export class CORE_API Mutex {
 private:
@@ -47,4 +47,4 @@ private:
     RecursiveMutex& operator=(RecursiveMutex const&) = delete;
 };
 
-} // namespace mini::thread
+} // namespace mini

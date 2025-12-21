@@ -22,11 +22,10 @@ concept AlwaysTrue = true;
 #define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{}.allocate(x)
 #define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{}.deallocate(x, size)
 
-export module mini.core:allocator;
+export module mini.memory:allocator;
 
-import :type;
-import :utility;
-import :memory;
+import mini.type;
+import :operation;
 
 namespace mini {
 
@@ -144,7 +143,7 @@ inline constexpr bool operator==(Allocator<T> const&, Allocator<U> const&)
     return true;
 }
 
-struct DummyAllocator {
+export struct UnbindedAllocator {
 public:
     typedef void Value;
     typedef void* Ptr;
@@ -169,12 +168,12 @@ public:
 };
 
 export template <typename U>
-inline constexpr Allocator<U> RebindAllocator(DummyAllocator)
+inline constexpr Allocator<U> RebindAllocator(UnbindedAllocator)
 {
     return mini::Allocator<U>{};
 }
 
-export inline constexpr bool operator==(DummyAllocator const&, DummyAllocator const&)
+export inline constexpr bool operator==(UnbindedAllocator const&, UnbindedAllocator const&)
 {
     return true;
 }

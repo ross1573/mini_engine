@@ -1,6 +1,5 @@
 export module mini.graphics:device;
 
-import mini.core;
 import :common;
 import :render_context;
 import :swap_chain;

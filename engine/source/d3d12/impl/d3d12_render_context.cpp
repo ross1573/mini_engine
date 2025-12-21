@@ -1,6 +1,7 @@
 module mini.d3d12;
 
-import mini.core;
+import mini.type;
+import mini.utility;
 import :device;
 import :render_context;
 import :swap_chain;

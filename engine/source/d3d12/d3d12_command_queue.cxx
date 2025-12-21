@@ -1,6 +1,6 @@
 export module mini.d3d12:command_queue;
 
-import mini.core;
+import mini.type;
 import mini.graphics;
 import mini.windows;
 

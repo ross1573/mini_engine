@@ -5,10 +5,10 @@ module;
 #include <concepts>
 #include <type_traits>
 
-export module mini.core:type_numeric;
+export module mini.type:numeric;
 
-import :type_define;
-import :type_concepts;
+import :define;
+import :concepts;
 
 namespace mini {
 

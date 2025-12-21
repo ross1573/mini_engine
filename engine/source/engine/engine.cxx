@@ -1,6 +1,8 @@
 export module mini.engine;
 
-import mini.core;
+import mini.utility;
+import mini.string;
+import mini.array;
 
 namespace mini {
 

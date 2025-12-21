@@ -1,6 +1,6 @@
 module mini.metal;
 
-import mini.core;
+import mini.math;
 import mini.graphics;
 import mini.apple;
 import :render_context;

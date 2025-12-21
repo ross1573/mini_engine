@@ -1,6 +1,5 @@
 export module mini.d3d12:device;
 
-import mini.core;
 import mini.graphics;
 import mini.windows;
 import :swap_chain;

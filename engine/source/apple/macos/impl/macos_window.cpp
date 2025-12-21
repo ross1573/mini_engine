@@ -1,6 +1,6 @@
 module mini.macos;
 
-import mini.core;
+import mini.string;
 import :handle;
 
 namespace mini::macos {

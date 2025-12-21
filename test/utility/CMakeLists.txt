@@ -1,1 +1,1 @@
-no_arg_test(bit)
+no_arg_test(shared_ptr)

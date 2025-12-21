@@ -1,6 +1,7 @@
 export module mini.macos:window;
 
-import mini.core;
+import mini.math;
+import mini.string;
 import mini.apple;
 import mini.engine;
 

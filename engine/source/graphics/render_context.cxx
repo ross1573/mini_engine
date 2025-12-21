@@ -1,6 +1,6 @@
 export module mini.graphics:render_context;
 
-import mini.core;
+import mini.math;
 
 namespace mini::graphics {
 

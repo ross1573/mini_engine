@@ -1,7 +1,8 @@
-export module mini.core:rect_int;
+export module mini.math:rect_int;
 
+import mini.type;
 import :type;
-import :math;
+import :operation;
 import :vector2;
 import :vector2_int;
 import :vector3_int;

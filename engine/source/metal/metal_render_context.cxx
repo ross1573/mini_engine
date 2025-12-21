@@ -1,6 +1,6 @@
 export module mini.metal:render_context;
 
-import mini.core;
+import mini.math;
 import mini.graphics;
 import mini.apple;
 

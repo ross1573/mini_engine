@@ -1,6 +1,6 @@
-export module mini.core:deleter;
+export module mini.memory:deleter;
 
-import :type;
+import mini.type;
 
 namespace mini {
 

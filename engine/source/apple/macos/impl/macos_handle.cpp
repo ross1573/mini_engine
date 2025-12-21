@@ -4,7 +4,7 @@ module;
 
 module mini.macos;
 
-import mini.core;
+import mini.type;
 import mini.platform;
 import mini.graphics;
 import mini.engine;

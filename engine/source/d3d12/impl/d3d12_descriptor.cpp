@@ -1,6 +1,7 @@
 module mini.d3d12;
 
-import mini.core;
+import mini.utility;
+import mini.array;
 import mini.windows;
 import :descriptor;
 

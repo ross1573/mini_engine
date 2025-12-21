@@ -1,7 +1,8 @@
-export module mini.core:color;
+export module mini.math:color;
 
+import mini.type;
 import :type;
-import :math;
+import :operation;
 
 namespace mini {
 

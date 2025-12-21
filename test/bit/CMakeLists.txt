@@ -1,0 +1,1 @@
+no_arg_test(bit)

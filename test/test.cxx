@@ -4,7 +4,8 @@ module;
 
 export module mini.test;
 
-export import mini.core;
+import mini.memory;
+import mini.string;
 export import :log;
 
 export namespace mini::test {

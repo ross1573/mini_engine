@@ -1,6 +1,6 @@
 module mini.graphics;
 
-import mini.core;
+import mini.type;
 import :log;
 
 namespace mini {

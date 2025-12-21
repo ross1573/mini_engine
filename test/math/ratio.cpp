@@ -1,6 +1,7 @@
 #include "test_macro.h"
 
 import mini.test;
+import mini.math;
 
 using namespace mini;
 

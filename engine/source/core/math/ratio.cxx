@@ -2,11 +2,11 @@ module;
 
 #include "cmath.h"
 
-export module mini.core:ratio;
+export module mini.math:ratio;
 
-import :type;
-import :math;
-import :math_base;
+import mini.type;
+import :base;
+import :operation;
 
 namespace mini {
 

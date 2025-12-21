@@ -1,6 +1,5 @@
 module mini.platform;
 
-import mini.core;
 import :log;
 
 namespace mini {

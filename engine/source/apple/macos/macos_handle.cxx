@@ -1,6 +1,6 @@
 export module mini.macos:handle;
 
-import mini.core;
+import mini.type;
 import mini.platform;
 import mini.graphics;
 

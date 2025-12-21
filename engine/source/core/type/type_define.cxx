@@ -3,7 +3,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 
-export module mini.core:type_define;
+export module mini.type:define;
 
 template <typename T, T val>
 struct IntegralConstant {

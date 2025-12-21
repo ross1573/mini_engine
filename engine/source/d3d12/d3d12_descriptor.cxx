@@ -1,6 +1,5 @@
 export module mini.d3d12:descriptor;
 
-import mini.core;
 import mini.windows;
 
 export namespace mini::d3d12 {
