@@ -1,5 +1,7 @@
 export module mini.utility;
 
+export import mini.type;
+
 export import :ignore;
 export import :initializer_list;
 export import :source_location;

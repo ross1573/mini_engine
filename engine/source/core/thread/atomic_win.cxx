@@ -28,7 +28,13 @@ import mini.type;
 
 namespace mini {
 
-using AtomicContention = AtomicContentionValueT;
+#if ARCH_ARM64 || ARCH_X86_64
+using AtomicContention = int64;
+#elif ARCH_X86
+using AtomicContention = int32;
+#else
+# error "unsupported architecture"
+#endif
 
 template <typename T>
 struct AtomicWaitableT : FalseT {};

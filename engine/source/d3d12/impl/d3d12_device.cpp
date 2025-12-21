@@ -1,5 +1,6 @@
 module mini.d3d12;
 
+import mini.string;
 import mini.windows;
 import mini.engine;
 import :log;

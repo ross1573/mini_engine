@@ -13,7 +13,7 @@ import mini.type;
 import :base;
 
 #if PLATFORM_WINDOWS
-import :bit_windows;
+import :platform;
 #endif
 
 namespace mini::bit {

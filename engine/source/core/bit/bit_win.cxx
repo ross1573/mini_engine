@@ -2,7 +2,7 @@ module;
 
 #include <intrin.h>
 
-export module mini.bit:windows;
+export module mini.bit:platform;
 
 import mini.type;
 import :base;

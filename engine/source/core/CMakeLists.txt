@@ -160,7 +160,7 @@ PUBLIC
         thread/thread.cxx
 
 PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:impl/windows/win_atomic.cpp>
+    $<$<CXX_COMPILER_ID:MSVC>:thread/impl/atomic_win.cpp>
 )
 
 # modules

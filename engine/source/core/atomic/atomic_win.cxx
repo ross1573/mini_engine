@@ -2,7 +2,7 @@ module;
 
 #include <intrin.h>
 
-#include "cstring.h"
+#include "memory/cstring.h"
 
 export module mini.atomic;
 
@@ -34,6 +34,14 @@ export constexpr int32 __ATOMIC_MAX_SUPPORT_SIZE = 8;
 
 using AtomicLock = uint32;
 #endif // Packed128
+
+#if ARCH_ARM64
+#  define PAUSE() __isb(_ARM64_BARRIER_SY)
+#elif ARCH_X86_64 || ARCH_X86
+#  define PAUSE() _mm_pause()
+#else
+#  define PAUSE() __nop()
+#endif
 
 #define SIGNAL_FENCE()                 \
     _Pragma("warning(push)");          \
@@ -74,9 +82,9 @@ using AtomicLock = uint32;
 #  define EXCHANGE_ACQUIRE(pointer, value)                                   \
       _InterlockedExchange(reinterpret_cast<long volatile*>(pointer), value)
 
-#  define STORE_SEQ_CST(size, pointer, value)                                        \
-      ignore = _InterlockedExchange##size(reinterpret_cast<long volatile*>(pointer), \
-                                          *reinterpret_cast<long*>(value))
+#  define STORE_SEQ_CST(size, pointer, value)                                      \
+       (void)_InterlockedExchange##size(reinterpret_cast<long volatile*>(pointer), \
+                                        *reinterpret_cast<long*>(value))
 
 #  define STORE_RELEASE(size, pointer, value) \
       SIGNAL_FENCE();                         \
@@ -118,15 +126,15 @@ using AtomicLock = uint32;
 #if ARCH_X86_64
 #  define ATOMIC_BUILTIN_128_IMPL(op, memorder, ...) mini::ignore = op(__VA_ARGS__);
 #elif ARCH_ARM64
-#  define ATOMIC_BUILTIN_128_IMPL(op, memorder, ...)                          \
-      switch (memorder) {                                                     \
-          case __ATOMIC_RELAXED: mini::ignore = op##_nf(__VA_ARGS__); break;  \
-          case __ATOMIC_ACQUIRE:                                              \
-          case __ATOMIC_CONSUME: mini::ignore = op##_acq(__VA_ARGS__); break; \
-          case __ATOMIC_RELEASE: mini::ignore = op##_rel(__VA_ARGS__); break; \
-          default:                                                            \
-          case __ATOMIC_ACQ_REL:                                              \
-          case __ATOMIC_SEQ_CST: mini::ignore = op(__VA_ARGS__); break;       \
+#  define ATOMIC_BUILTIN_128_IMPL(op, memorder, ...)                 \
+      switch (memorder) {                                            \
+          case __ATOMIC_RELAXED: (void)op##_nf(__VA_ARGS__); break;  \
+          case __ATOMIC_ACQUIRE:                                     \
+          case __ATOMIC_CONSUME: (void)op##_acq(__VA_ARGS__); break; \
+          case __ATOMIC_RELEASE: (void)op##_rel(__VA_ARGS__); break; \
+          default:                                                   \
+          case __ATOMIC_ACQ_REL:                                     \
+          case __ATOMIC_SEQ_CST: (void)op(__VA_ARGS__); break;       \
       }
 #endif // ATOMIC_BUILTIN_128_IMPL
 
@@ -275,7 +283,7 @@ public:
         while (EXCHANGE_ACQUIRE(m_Lock, 1) != 0) {
             auto volatilePtr = reinterpret_cast<int const volatile*>(m_Lock);
             while (__iso_volatile_load32(volatilePtr) != 0) {
-                ::mini::thread::ThreadRelax();
+                PAUSE();
             }
         }
     }
