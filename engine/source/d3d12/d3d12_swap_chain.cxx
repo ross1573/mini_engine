@@ -1,6 +1,6 @@
 export module mini.d3d12:swap_chain;
 
-import mini.math;
+import mini.core;
 import mini.graphics;
 import mini.windows;
 import :descriptor;

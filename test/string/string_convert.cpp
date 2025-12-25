@@ -1,7 +1,6 @@
 #include "test_macro.h"
 
 import mini.test;
-import mini.string;
 import convert_utf;
 
 #define TEST_CONVERT_UTF(from, to)           \

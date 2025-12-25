@@ -2,7 +2,7 @@ module;
 
 export module mini.graphics:swap_chain;
 
-import mini.math;
+import mini.core;
 
 namespace mini::graphics {
 

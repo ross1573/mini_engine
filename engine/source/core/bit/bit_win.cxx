@@ -2,7 +2,7 @@ module;
 
 #include <intrin.h>
 
-export module mini.bit:platform;
+export module mini.core:bit_platform;
 
 import mini.type;
 import :base;

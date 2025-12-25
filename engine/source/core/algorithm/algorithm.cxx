@@ -1,8 +1,8 @@
-export module mini.algorithm;
+export module mini.core:algorithm;
 
-export import mini.type;
-import mini.iterator;
-import mini.memory;
+import :type;
+import :iterator;
+import :memory_operation;
 
 namespace mini {
 

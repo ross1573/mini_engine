@@ -1,13 +1,6 @@
 module;
 
-#include <memory>
-
-// TODO: MSVC throws an error when compiling with nothrow tag
-#if MSVC // clang-format off
-#  define NOTHROW_T
-#else
-#  define NOTHROW_T ,std::nothrow_t{}
-#endif // clang-format on
+#include "memory.h"
 
 // TODO: clang complains about recursion, while others dont
 #if CLANG
@@ -18,14 +11,10 @@ concept AlwaysTrue = true;
 #  define REBIND_RESULT_T UnbindedAllocatorT
 #endif
 
-// TODO: only compiler can do constexpr (de)allocate
-#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{}.allocate(x)
-#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{}.deallocate(x, size)
+export module mini.core:allocator;
 
-export module mini.memory:allocator;
-
-import mini.type;
-import :operation;
+import :type;
+import :memory_operation;
 
 namespace mini {
 
@@ -87,7 +76,7 @@ struct Allocator {
             ptr = CONSTEXPR_ALLOC(T, size);
         }
         else {
-            ptr = static_cast<T*>(::operator new(size * sizeof(T) NOTHROW_T));
+            ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(size * sizeof(T) NOTHROW_T));
             VERIFY(ptr, "allocation failed. possible out-of-memory");
         }
 
@@ -112,7 +101,7 @@ struct Allocator {
             return;
         }
 
-        ::operator delete(memory::MakeVoidPtr(loc) NOTHROW_T);
+        BUILTIN_OPERATOR_DELETE(memory::MakeVoidPtr(loc) NOTHROW_T);
     }
 };
 

@@ -1,4 +1,4 @@
-import mini.modules;
+import mini.core;
 import @target@;
 
 namespace {

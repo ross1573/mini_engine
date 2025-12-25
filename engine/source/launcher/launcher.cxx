@@ -1,6 +1,6 @@
 export module mini.launcher;
 
-import mini.debug;
+import mini.core;
 import mini.platform;
 import mini.engine;
 import :static_init;

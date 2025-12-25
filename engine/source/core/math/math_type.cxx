@@ -2,9 +2,9 @@ module;
 
 #include "cmath.h"
 
-export module mini.math:type;
+export module mini.core:math_type;
 
-import mini.type;
+import :type;
 
 namespace mini {
 

@@ -1,9 +1,10 @@
-export module mini.modules:module_system;
+export module mini.core:module_system;
 
-import mini.type;
-import mini.utility;
-import mini.array;
-import mini.string;
+import :type;
+import :utility_operation;
+import :array;
+import :string;
+import :shared_ptr;
 
 namespace mini {
 

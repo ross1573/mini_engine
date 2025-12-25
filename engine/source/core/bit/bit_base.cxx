@@ -1,6 +1,7 @@
-export module mini.bit:base;
+export module mini.core:bit_base;
 
-import mini.type;
+import :type;
+import :numeric;
 
 namespace mini::bit {
 

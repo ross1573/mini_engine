@@ -1,7 +1,7 @@
-export module mini.modules:dynamic_module;
+export module mini.core:dynamic_module;
 
-import mini.string;
-import mini.memory;
+import :string;
+import :unique_ptr;
 import :module_system;
 
 namespace mini {

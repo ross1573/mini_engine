@@ -1,9 +1,6 @@
 #include "assert_util.h"
 
-import mini.type;
-import mini.debug;
-import mini.memory;
-import mini.string;
+import mini.core;
 
 constexpr int bufSize = DEBUG * 1023 + 1;
 

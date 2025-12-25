@@ -3,9 +3,10 @@ module;
 #include "memory/cstring.h"
 #include "memory/cwstring.h"
 
-export module mini.string:memory;
+export module mini.core:string_memory;
 
-import mini.type;
+import :type;
+import :numeric;
 
 namespace mini::memory {
 

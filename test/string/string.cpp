@@ -3,8 +3,6 @@
 #include "string_define.h"
 
 import mini.test;
-import mini.memory;
-import mini.string;
 
 using namespace mini;
 using namespace mini::test;

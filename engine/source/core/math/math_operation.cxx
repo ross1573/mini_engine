@@ -2,13 +2,13 @@ module;
 
 #include "cmath.h"
 
-export module mini.math:operation;
+export module mini.core:math_operation;
 
-import mini.type;
-import mini.bit;
-import mini.memory;
 import :type;
-import :base;
+import :bit_operation;
+import :memory_operation;
+import :math_type;
+import :math_base;
 
 namespace mini {
 

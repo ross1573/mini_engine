@@ -1,8 +1,8 @@
-export module mini.math:vector2;
+export module mini.core:vector2;
 
-import mini.type;
 import :type;
-import :operation;
+import :math_type;
+import :math_operation;
 
 namespace mini {
 

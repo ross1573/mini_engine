@@ -2,9 +2,7 @@
 #include <benchmark/benchmark.h>
 #include <thread>
 
-import mini.memory;
-import mini.array;
-import mini.thread;
+import mini.benchmark;
 
 using namespace mini;
 

@@ -3,7 +3,6 @@
 #include "test_macro.h"
 
 import mini.test;
-import mini.bit;
 
 #ifdef DEBUG_TEST_BIT
 #  define TEST_BIT(func, type) TEST_ENSURE((func<type>() == 0));

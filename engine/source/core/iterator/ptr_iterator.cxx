@@ -1,7 +1,7 @@
-export module mini.iterator:ptr_iterator;
+export module mini.core:ptr_iterator;
 
-import mini.type;
 import :type;
+import :iterator;
 
 namespace mini {
 

@@ -1,7 +1,7 @@
-export module mini.debug:base;
+export module mini.core:logger_platform;
 
-import mini.type;
-import mini.string;
+import :type;
+import :string;
 
 namespace mini {
 

@@ -2,10 +2,11 @@ module;
 
 #include <windows.h>
 
-module mini.modules;
+module mini.core;
 
-import mini.string;
-import mini.memory;
+import :utility_operation;
+import :string;
+import :unique_ptr;
 import :module_system;
 import :dynamic_module;
 

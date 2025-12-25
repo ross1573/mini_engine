@@ -2,9 +2,7 @@ module;
 
 #include <initializer_list>
 
-export module mini.utility:initializer_list;
-
-import mini.type;
+export module mini.core:initializer_list;
 
 namespace mini {
 

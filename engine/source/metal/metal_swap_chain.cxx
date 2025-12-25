@@ -1,7 +1,6 @@
 export module mini.metal:swap_chain;
 
-import mini.type;
-import mini.math;
+import mini.core;
 import mini.graphics;
 import mini.apple;
 

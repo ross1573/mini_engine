@@ -2,10 +2,10 @@ module;
 
 #include <dlfcn.h>
 
-module mini.modules;
+module mini.core;
 
-import mini.string;
-import mini.memory;
+import :string;
+import :memory_operation;
 import :module_system;
 import :dynamic_module;
 

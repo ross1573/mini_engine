@@ -1,1 +1,0 @@
-no_arg_test(static_queue)

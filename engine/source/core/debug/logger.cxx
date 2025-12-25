@@ -1,9 +1,10 @@
-export module mini.debug:logger;
+export module mini.core:logger;
 
-import mini.type;
-import mini.utility;
-import mini.string;
-import :base;
+import :type;
+import :utility_operation;
+import :source_location;
+import :string;
+import :logger_platform;
 
 namespace mini {
 

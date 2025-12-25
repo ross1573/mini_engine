@@ -2,11 +2,11 @@ module;
 
 #include <windows.h>
 
-module mini.debug;
+module mini.core;
 
-import mini.type;
-import mini.string;
-import :base;
+import :type;
+import :string;
+import :logger_platform;
 
 namespace mini {
 

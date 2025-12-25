@@ -1,6 +1,14 @@
 #ifndef BUILTIN_BIT_H
 #define BUILTIN_BIT_H
 
+#include <bit>
+
+#if HAS_BUILTIN(__builtin_bit_cast)
+#  define BUILTIN_BIT_CAST(To, From) __builtin_bit_cast(To, From)
+#else
+#  define BUILTIN_BIT_CAST(To, From) std::bit_cast<To>(From)
+#endif
+
 #if PLATFORM_WINDOWS
 #  include <intrin.h>
 

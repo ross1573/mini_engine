@@ -1,6 +1,7 @@
-export module mini.math:base;
+export module mini.core:math_base;
 
-import mini.type;
+import :type;
+import :numeric;
 
 namespace mini {
 

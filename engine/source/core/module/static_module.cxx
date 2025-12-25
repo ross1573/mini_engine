@@ -1,7 +1,8 @@
-export module mini.modules:static_module;
+export module mini.core:static_module;
 
-import mini.type;
-import mini.memory;
+import :type;
+import :unique_ptr;
+import :string_view;
 import :module_system;
 
 namespace mini {

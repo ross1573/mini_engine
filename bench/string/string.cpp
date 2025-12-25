@@ -11,7 +11,7 @@ constexpr int shortSize = sizeof(void*) * 2 - 2;
 
 constexpr char const* longStr = "Hello world from long string!";
 
-import mini.string;
+import mini.benchmark;
 
 using namespace mini;
 

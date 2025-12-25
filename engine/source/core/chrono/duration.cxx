@@ -1,7 +1,7 @@
-export module mini.chrono:duration;
+export module mini.core:duration;
 
-import mini.type;
-import mini.math;
+import :type;
+import :ratio;
 
 namespace mini {
 

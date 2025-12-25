@@ -1,6 +1,6 @@
 module mini.metal;
 
-import mini.type;
+import mini.core;
 import mini.platform;
 import mini.apple;
 import :swap_chain;

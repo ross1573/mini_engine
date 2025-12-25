@@ -4,9 +4,10 @@ module;
 #include "cwstring.h"
 #include "memory.h"
 
-export module mini.memory:operation;
+export module mini.core:memory_operation;
 
-import mini.type;
+import :type;
+import :utility_operation;
 
 namespace mini::memory {
 

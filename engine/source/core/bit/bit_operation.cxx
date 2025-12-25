@@ -1,19 +1,15 @@
 module;
 
-#include <bit>
-
 #include "bit.h"
 #include "memory/cstring.h"
 
-#define CONSTEXPR_BIT_CAST std::bit_cast
+export module mini.core:bit_operation;
 
-export module mini.bit:operation;
-
-import mini.type;
-import :base;
+import :type;
+import :bit_base;
 
 #if PLATFORM_WINDOWS
-import :platform;
+import :bit_platform;
 #endif
 
 namespace mini::bit {
@@ -23,7 +19,7 @@ inline constexpr To BitCast(From const& from) noexcept
     requires(sizeof(To) == sizeof(From))
 {
     if consteval {
-        return CONSTEXPR_BIT_CAST<To>(from);
+        return BUILTIN_BIT_CAST(To, from);
     }
     else {
         To result;

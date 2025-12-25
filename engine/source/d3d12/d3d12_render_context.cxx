@@ -1,6 +1,6 @@
 export module mini.d3d12:render_context;
 
-import mini.type;
+import mini.core;
 import mini.graphics;
 import mini.windows;
 import :command_queue;

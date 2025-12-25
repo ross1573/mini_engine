@@ -1,6 +1,6 @@
-export module mini.utility:ignore;
+export module mini.core:ignore;
 
-import mini.type;
+import :type;
 
 namespace mini {
 

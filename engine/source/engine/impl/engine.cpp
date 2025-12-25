@@ -4,9 +4,7 @@ module;
 
 module mini.engine;
 
-import mini.memory;
-import mini.math;
-import mini.string;
+import mini.core;
 import mini.platform;
 import mini.graphics;
 
