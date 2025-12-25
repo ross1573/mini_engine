@@ -4,6 +4,7 @@ import :type;
 import :initializer_list;
 import :utility_operation;
 import :memory_operation;
+import :algorithm;
 import :allocator;
 import :dynamic_buffer;
 import :array_iterator;

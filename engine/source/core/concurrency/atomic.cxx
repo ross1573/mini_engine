@@ -33,8 +33,6 @@ import :atomic_wait;
 
 namespace mini {
 
-export using MemoryOrder = MemoryOrder;
-
 export template <TrivialT T>
 struct Atomic {
 private:

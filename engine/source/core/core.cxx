@@ -46,6 +46,7 @@ export import :format;
 
 export import :logger;
 
+export import :atomic_base;
 export import :atomic_platform;
 export import :atomic_platform_wait;
 export import :atomic;

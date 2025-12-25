@@ -4,8 +4,8 @@ module;
 
 export module mini.core:bit_platform;
 
-import mini.type;
-import :base;
+import :type;
+import :bit_base;
 
 namespace mini::bit {
 

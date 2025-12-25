@@ -5,7 +5,7 @@ import :atomic_platform;
 
 namespace mini {
 
-enum class MemoryOrder : int {
+export enum class MemoryOrder : int {
     relaxed = __ATOMIC_RELAXED,
     consume = __ATOMIC_CONSUME,
     acquire = __ATOMIC_ACQUIRE,

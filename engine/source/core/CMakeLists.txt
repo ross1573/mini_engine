@@ -127,7 +127,7 @@ PRIVATE
     $<$<PLATFORM_ID:Darwin>:debug/impl/assert_macos.cpp>
     debug/impl/assert_util.cpp
 
-    $<$<PLATFORM_ID:Windows>:debug/include/assertion_win.cpp>
+    $<$<PLATFORM_ID:Windows>:debug/include/assertion_win.h>
     debug/include/assertion.h
 )
 
