@@ -178,6 +178,7 @@ PUBLIC
     FILE_SET chrono TYPE CXX_MODULES
     FILES
         chrono/duration.cxx
+        chrono/time_point.cxx
 )
 
 target_sources(mini.core

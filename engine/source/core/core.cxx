@@ -57,5 +57,6 @@ export import :static_module;
 export import :module_system;
 
 export import :duration;
+export import :time_point;
 
 export import :algorithm;

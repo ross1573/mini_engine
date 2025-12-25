@@ -15,9 +15,6 @@ export using Seconds = Duration<int64, Ratio<1, 1>>;
 export using Minutes = Duration<int32, Ratio<60, 1>>;
 export using Hours = Duration<int32, Ratio<3600, 1>>;
 export using Days = Duration<int32, Ratio<86400, 1>>;
-export using Weeks = Duration<int32, Ratio<604800, 1>>;
-export using Months = Duration<int32, Ratio<2629746, 1>>;
-export using Years = Duration<int32, Ratio<31556952, 1>>;
 
 template <typename T>
 constexpr bool IsDurationT = false;

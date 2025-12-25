@@ -1,7 +1,6 @@
 module;
 
 #include <os/os_sync_wait_on_address.h>
-#include <sched.h>
 
 #if CLANG || GNUC
 #  if ARCH_ARM64
