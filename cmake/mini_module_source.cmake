@@ -5,7 +5,7 @@ function (build_source_tree target)
     get_target_property(headers ${target} HEADERS)
 
     # search for HEADER_SETS
-    # if its named "generated", it will be treated as generated file set
+    # if it starts with "GENERATED", it will be treated as generated file set
     get_target_property(header_sets ${target} HEADER_SETS)
     foreach (header_set IN LISTS header_sets)
         get_target_property(header_files ${target} HEADER_SET_${header_set})
@@ -19,7 +19,7 @@ function (build_source_tree target)
     endforeach()
 
     # search for CXX_MODULE_SETS
-    # if its named "generated", it will be treated as generated file set
+    # if it starts with "GENERATED", it will be treated as generated file set
     get_target_property(module_sets ${target} CXX_MODULE_SETS)
     foreach (module_set IN LISTS module_sets)
         get_target_property(module_files ${target} CXX_MODULE_SET_${module_set})

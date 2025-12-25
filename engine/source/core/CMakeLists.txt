@@ -1,6 +1,6 @@
 add_module(mini.core 
     NO_API_LOG
-    NO_MODULE_INTERFACE
+    NO_MODULE_ENTRY
 )
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
