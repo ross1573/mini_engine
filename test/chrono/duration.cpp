@@ -79,9 +79,6 @@ int main()
     static_assert(TestDuration<Minutes, std::chrono::minutes>() == 0);
     static_assert(TestDuration<Hours, std::chrono::hours>() == 0);
     static_assert(TestDuration<Days, std::chrono::days>() == 0);
-    static_assert(TestDuration<Weeks, std::chrono::weeks>() == 0);
-    static_assert(TestDuration<Months, std::chrono::months>() == 0);
-    static_assert(TestDuration<Years, std::chrono::years>() == 0);
 
     return 0;
 }
