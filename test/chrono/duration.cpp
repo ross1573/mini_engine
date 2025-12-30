@@ -46,6 +46,8 @@ constexpr int TestDuration()
 
     TEST_DURATION(t += T(2), u += U(2));
     TEST_DURATION(t -= T(2), u -= U(2));
+    TEST_DURATION(t += TestDurationT(2), u += TestDurationU(2));
+    TEST_DURATION(t -= TestDurationT(2), u -= TestDurationU(2));
 
     using FloatDurationT = Duration<float64, typename T::Period>;
     using FloatDurationU = std::chrono::duration<float64, typename U::period>;

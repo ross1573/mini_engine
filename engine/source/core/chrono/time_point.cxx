@@ -1,7 +1,3 @@
-module;
-
-#include <ctime>
-
 export module mini.core:time_point;
 
 import :type;
@@ -40,10 +36,8 @@ public:
 
     constexpr Duration SinceEpoch() const noexcept;
 
-    template <DurationT U>
-    constexpr TimePoint& operator+=(U const&) noexcept;
-    template <DurationT U>
-    constexpr TimePoint& operator-=(U const&) noexcept;
+    constexpr TimePoint& operator+=(Duration const&) noexcept;
+    constexpr TimePoint& operator-=(Duration const&) noexcept;
 
     static constexpr TimePoint Min() noexcept;
     static constexpr TimePoint Max() noexcept;
@@ -75,18 +69,16 @@ constexpr TimePoint<T>::Duration TimePoint<T>::SinceEpoch() const noexcept
 }
 
 template <DurationT T>
-template <DurationT U>
-constexpr TimePoint<T>& TimePoint<T>::operator+=(U const& duration) noexcept
+constexpr TimePoint<T>& TimePoint<T>::operator+=(Duration const& duration) noexcept
 {
-    m_Duration += DurationCast<T>(duration);
+    m_Duration += duration;
     return *this;
 }
 
 template <DurationT T>
-template <DurationT U>
-constexpr TimePoint<T>& TimePoint<T>::operator-=(U const& duration) noexcept
+constexpr TimePoint<T>& TimePoint<T>::operator-=(Duration const& duration) noexcept
 {
-    m_Duration -= DurationCast<T>(duration);
+    m_Duration -= duration;
     return *this;
 }
 
