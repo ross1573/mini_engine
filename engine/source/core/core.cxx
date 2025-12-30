@@ -58,5 +58,6 @@ export import :module_system;
 
 export import :duration;
 export import :time_point;
+export import :clock;
 
 export import :algorithm;

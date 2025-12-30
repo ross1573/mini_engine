@@ -179,6 +179,8 @@ PUBLIC
     FILES
         chrono/duration.cxx
         chrono/time_point.cxx
+        $<$<PLATFORM_ID:Darwin>:chrono/clock_macos.cxx>
+        chrono/clock.cxx
 )
 
 target_sources(mini.core
