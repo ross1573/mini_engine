@@ -194,19 +194,22 @@ inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr bool MemCompare(T const* dst, T const* src, SizeT len) noexcept
+inline constexpr bool MemCompare(T const* x, T const* y, SizeT len) noexcept
 {
     if !consteval {
-        return BUILTIN_MEMCMP(dst, src, len * sizeof(T)) == 0;
+        return BUILTIN_MEMCMP(x, y, len * sizeof(T));
     }
 
     for (; len; --len) {
-        if (*dst++ != *src++) {
-            return false;
+        if (*x != *y) {
+            return (*x < *y) ? -1 : 1;
         }
+
+        ++x;
+        ++y;
     }
 
-    return true;
+    return 0;
 }
 
 export template <typename T, typename... Args>

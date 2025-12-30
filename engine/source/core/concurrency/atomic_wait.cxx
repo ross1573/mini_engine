@@ -9,6 +9,8 @@ export module mini.core:atomic_wait;
 
 import :type;
 import :memory_operation;
+import :duration;
+import :clock;
 import :atomic_platform;
 import :atomic_platform_wait;
 
@@ -20,20 +22,27 @@ template <TrivialT T>
 inline bool AtomicLoadCompare(T const volatile* loc, T val, int32 order) noexcept
 {
     T current;
-    __atomic_load(loc, &current, order);
+    __atomic_load(loc, memory::AddressOf(current), order);
     return memory::MemCompare(memory::AddressOf(current), memory::AddressOf(val), sizeof(T)) == 0;
 }
 
 template <TrivialT T>
 inline bool AtomicSpinWait(T const volatile* loc, T val, int32 order) noexcept
 {
-    // TODO: fix it with duration, just like libc++
-    for (SizeT i = 0; i < spinWaitCount; ++i) {
-        if (!AtomicLoadCompare(loc, val, order)) {
-            return false;
+    Clock::TimePoint start = Clock::Now();
+    for (;;) {
+        for (SizeT i = 0; i < spinWaitCount; ++i) {
+            if (!AtomicLoadCompare(loc, val, order)) {
+                return false;
+            }
+
+            AtomicRelax();
         }
 
-        AtomicRelax();
+        Clock::TimePoint tp = Clock::Now();
+        if ((tp - start) > MicroSeconds(2)) {
+            break;
+        }
     }
 
     return AtomicLoadCompare(loc, val, order);

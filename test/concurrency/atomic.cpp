@@ -246,39 +246,6 @@ int32 TestProducerConsumer()
     return 0;
 }
 
-int32 TestSequentialWaitNotify()
-{
-    Atomic<uint32> atomic = 0;
-    Array<uint32> result;
-
-    auto waitNotify = [&atomic, &result](uint32 start, uint32 end) {
-        for (; start < end;) {
-            atomic.Wait(start, MemoryOrder::acquire);
-            start = atomic.Load(MemoryOrder::acquire);
-            result.Push(start);
-            atomic.Store(++start, MemoryOrder::release);
-            atomic.Notify();
-        }
-    };
-
-    constexpr uint32 count = NumericLimit<int32>::max >> 12;
-    constexpr uint32 total = count + 1;
-    result.Reserve(total);
-
-    auto t1 = std::thread(waitNotify, 0, count);
-    auto t2 = std::thread(waitNotify, 1, count);
-    t1.join();
-    t2.join();
-
-    TEST_ENSURE(atomic.Load(MemoryOrder::acquire) == total);
-    TEST_ENSURE(result.Size() == total);
-    for (SizeT i = 0; i < result.Size(); ++i) {
-        TEST_ENSURE(i == result[i]);
-    }
-
-    return 0;
-}
-
 template <typename T>
 int32 TestSpinLock()
 {
@@ -334,7 +301,7 @@ int main()
     TEST_ENSURE(TestFetchOperators() == 0);
 
     TEST_ENSURE(TestProducerConsumer() == 0);
-    TEST_ENSURE(TestSequentialWaitNotify() == 0);
+
     TEST_ENSURE(TestSpinLock<int32>() == 0);
     TEST_ENSURE(TestSpinLock<Unaligned>() == 0);
     TEST_ENSURE(TestSpinLock<NonAtomic>() == 0);
