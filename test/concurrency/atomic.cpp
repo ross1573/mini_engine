@@ -172,7 +172,7 @@ int32 TestCompareExchange()
     return 0;
 }
 
-int32 TestFetchOperators()
+int32 TestIntegralFetchOperators()
 {
     Atomic<int32> a(1);
 
@@ -210,6 +210,51 @@ int32 TestFetchOperators()
     TEST_ENSURE(a.FetchXor(2, MemoryOrder::release) == 1);
     TEST_ENSURE(a.FetchXor(2, MemoryOrder::acquireRelease) == 3);
     TEST_ENSURE(a.FetchXor(2, MemoryOrder::sequential) == 1);
+
+    return 0;
+}
+
+int32 TestFloatingFetchOperators()
+{
+    float32 result = 1.23f;
+    Atomic<float32> a = result;
+
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::relaxed) == result);
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::acquire) == (result += 1.0f));
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::consume) == (result += 1.0f));
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::release) == (result += 1.0f));
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::acquireRelease) == (result += 1.0f));
+    TEST_ENSURE(a.FetchAdd(1.0f, MemoryOrder::sequential) == (result += 1.0f));
+
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::relaxed) == (result += 1.0f));
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::acquire) == (result -= 1.0f));
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::consume) == (result -= 1.0f));
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::release) == (result -= 1.0f));
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::acquireRelease) == (result -= 1.0f));
+    TEST_ENSURE(a.FetchSub(1.0f, MemoryOrder::sequential) == (result -= 1.0f));
+
+    return 0;
+}
+
+int32 TestPointerFetchOperators()
+{
+    StaticArray<int32, 7> sarr;
+    auto iter = sarr.Begin();
+    Atomic<int32*> a = iter.Address();
+
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::relaxed) == (iter++).Address());
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::acquire) == (iter++).Address());
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::consume) == (iter++).Address());
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::release) == (iter++).Address());
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::acquireRelease) == (iter++).Address());
+    TEST_ENSURE(a.FetchAdd(1, MemoryOrder::sequential) == (iter++).Address());
+
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::relaxed) == (iter--).Address());
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::acquire) == (iter--).Address());
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::consume) == (iter--).Address());
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::release) == (iter--).Address());
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::acquireRelease) == (iter--).Address());
+    TEST_ENSURE(a.FetchSub(1, MemoryOrder::sequential) == (iter--).Address());
 
     return 0;
 }
@@ -298,7 +343,9 @@ int main()
     TEST_ENSURE(TestCompareExchange<Unaligned>() == 0);
     TEST_ENSURE(TestCompareExchange<NonAtomic>() == 0);
 
-    TEST_ENSURE(TestFetchOperators() == 0);
+    TEST_ENSURE(TestIntegralFetchOperators() == 0);
+    TEST_ENSURE(TestFloatingFetchOperators() == 0);
+    TEST_ENSURE(TestPointerFetchOperators() == 0);
 
     TEST_ENSURE(TestProducerConsumer() == 0);
 

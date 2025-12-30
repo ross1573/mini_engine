@@ -229,7 +229,7 @@ template <typename T, typename ArrayT>
 inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator++(int32) noexcept
 {
     ArrayIterator t(*this);
-    ++t.m_Ptr;
+    ++(*this);
     return t;
 }
 
@@ -237,7 +237,7 @@ template <typename T, typename ArrayT>
 inline constexpr ArrayIterator<T, ArrayT> ArrayIterator<T, ArrayT>::operator--(int32) noexcept
 {
     ArrayIterator t(*this);
-    --t.m_Ptr;
+    --(*this);
     return t;
 }
 

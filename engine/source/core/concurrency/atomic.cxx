@@ -86,6 +86,24 @@ public:
     constexpr Value FetchOr(Value, MemoryOrder) volatile noexcept
         requires IntegralT<Value>;
 
+    constexpr Value FetchAdd(Value, MemoryOrder) noexcept
+        requires FloatingT<Value>;
+    constexpr Value FetchAdd(Value, MemoryOrder) volatile noexcept
+        requires FloatingT<Value>;
+    constexpr Value FetchSub(Value, MemoryOrder) noexcept
+        requires FloatingT<Value>;
+    constexpr Value FetchSub(Value, MemoryOrder) volatile noexcept
+        requires FloatingT<Value>;
+
+    constexpr Value FetchAdd(OffsetT, MemoryOrder) noexcept
+        requires(PtrT<Value> && !FunctionPtrT<T>);
+    constexpr Value FetchAdd(OffsetT, MemoryOrder) volatile noexcept
+        requires(PtrT<Value> && !FunctionPtrT<T>);
+    constexpr Value FetchSub(OffsetT, MemoryOrder) noexcept
+        requires(PtrT<Value> && !FunctionPtrT<T>);
+    constexpr Value FetchSub(OffsetT, MemoryOrder) volatile noexcept
+        requires(PtrT<Value> && !FunctionPtrT<T>);
+
     void Wait(Value, MemoryOrder) const noexcept;
     void Wait(Value, MemoryOrder) const volatile noexcept;
     void Notify() const noexcept;
@@ -100,8 +118,8 @@ public:
     static constexpr void ThreadFence(MemoryOrder order) noexcept;
     static constexpr void SignalFence(MemoryOrder order) noexcept;
 
-    constexpr operator Value() const noexcept;
-    constexpr operator Value() const volatile noexcept;
+    explicit constexpr operator Value() const noexcept;
+    explicit constexpr operator Value() const volatile noexcept;
     constexpr Value operator=(Value) noexcept;
     constexpr Value operator=(Value) volatile noexcept;
 
@@ -136,7 +154,8 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) noexcept
         return;
     }
 
-    __atomic_store(memory::AddressOf(m_Value.value), &val, static_cast<int>(order));
+    __atomic_store(memory::AddressOf(m_Value.value), memory::AddressOf(val),
+                   static_cast<int>(order));
 }
 
 template <TrivialT T>
@@ -148,7 +167,8 @@ inline constexpr void Atomic<T>::Store(Value val, MemoryOrder order) volatile no
         return;
     }
 
-    __atomic_store(memory::AddressOf(m_Value.value), &val, static_cast<int>(order));
+    __atomic_store(memory::AddressOf(m_Value.value), memory::AddressOf(val),
+                   static_cast<int>(order));
 }
 
 template <TrivialT T>
@@ -160,7 +180,8 @@ inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const noexc
     }
 
     Value result;
-    __atomic_load(memory::AddressOf(m_Value.value), &result, static_cast<int>(order));
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(result),
+                  static_cast<int>(order));
     return result;
 }
 
@@ -173,7 +194,8 @@ inline constexpr Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const volat
     }
 
     Value result;
-    __atomic_load(memory::AddressOf(m_Value.value), &result, static_cast<int>(order));
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(result),
+                  static_cast<int>(order));
     return result;
 }
 
@@ -186,7 +208,8 @@ inline constexpr Atomic<T>::Value Atomic<T>::Exchange(Value val, MemoryOrder ord
     }
 
     Value result;
-    __atomic_exchange(memory::AddressOf(m_Value.value), &val, &result, static_cast<int>(order));
+    __atomic_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(val),
+                      memory::AddressOf(result), static_cast<int>(order));
     return result;
 }
 
@@ -214,8 +237,9 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, false,
-                                     static_cast<int>(success), static_cast<int>(failure));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), false, static_cast<int>(success),
+                                     static_cast<int>(failure));
 }
 
 template <TrivialT T>
@@ -228,8 +252,9 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, false,
-                                     static_cast<int>(success), static_cast<int>(failure));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), false, static_cast<int>(success),
+                                     static_cast<int>(failure));
 }
 
 template <TrivialT T>
@@ -240,8 +265,9 @@ inline constexpr bool Atomic<T>::CompareExchangeStrong(Value& expected, Value de
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, false,
-                                     static_cast<int>(order), FailureOrder(order));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), false, static_cast<int>(order),
+                                     FailureOrder(order));
 }
 
 template <TrivialT T>
@@ -254,8 +280,9 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, true,
-                                     static_cast<int>(success), static_cast<int>(failure));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), true, static_cast<int>(success),
+                                     static_cast<int>(failure));
 }
 
 template <TrivialT T>
@@ -268,8 +295,9 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, true,
-                                     static_cast<int>(success), static_cast<int>(failure));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), true, static_cast<int>(success),
+                                     static_cast<int>(failure));
 }
 
 template <TrivialT T>
@@ -280,8 +308,9 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, true,
-                                     static_cast<int>(order), FailureOrder(order));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), true, static_cast<int>(order),
+                                     FailureOrder(order));
 }
 
 template <TrivialT T>
@@ -292,8 +321,9 @@ inline constexpr bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desi
         return ConstexprCompareExchange(expected, desired);
     }
 
-    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), &expected, &desired, true,
-                                     static_cast<int>(order), FailureOrder(order));
+    return __atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(expected),
+                                     memory::AddressOf(desired), true, static_cast<int>(order),
+                                     FailureOrder(order));
 }
 
 template <TrivialT T>
@@ -301,9 +331,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value += val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_add(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -315,9 +345,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value += val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_add(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -328,9 +358,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value -= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_sub(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -342,9 +372,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value -= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_sub(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -355,9 +385,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAnd(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value &= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_and(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -369,9 +399,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchAnd(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value &= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_and(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -382,9 +412,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchXor(Value val, MemoryOrder ord
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value ^= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_xor(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -396,9 +426,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchXor(Value val,
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value ^= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_xor(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -409,9 +439,9 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder orde
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value |= val;
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_or(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
@@ -422,12 +452,172 @@ inline constexpr Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder orde
     requires IntegralT<Value>
 {
     if consteval {
-        T tmp = m_Value.value;
+        Value old = m_Value.value;
         m_Value.value = !(m_Value & val);
-        return tmp;
+        return old;
     }
 
     return __atomic_fetch_or(memory::AddressOf(m_Value.value), val, static_cast<int>(order));
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value value, MemoryOrder order) noexcept
+    requires FloatingT<Value>
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value += value;
+        return old;
+    }
+
+    Value old;
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                  static_cast<int>(MemoryOrder::relaxed));
+
+    Value tmp = old + value;
+    while (!__atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                                      memory::AddressOf(tmp), true, static_cast<int>(order),
+                                      FailureOrder(order))) {
+        tmp = old + value;
+    }
+
+    return old;
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(Value value,
+                                                      MemoryOrder order) volatile noexcept
+    requires FloatingT<Value>
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value += value;
+        return old;
+    }
+
+    Value old;
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                  static_cast<int>(MemoryOrder::relaxed));
+
+    Value tmp = old + value;
+    while (!__atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                                      memory::AddressOf(tmp), true, static_cast<int>(order),
+                                      FailureOrder(order))) {
+        tmp = old + value;
+    }
+
+    return old;
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) noexcept
+    requires FloatingT<Value>
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value -= value;
+        return old;
+    }
+
+    Value old;
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                  static_cast<int>(MemoryOrder::relaxed));
+
+    Value tmp = old - value;
+    while (!__atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                                      memory::AddressOf(tmp), true, static_cast<int>(order),
+                                      FailureOrder(order))) {
+        tmp = old - value;
+    }
+
+    return old;
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(Value value,
+                                                      MemoryOrder order) volatile noexcept
+    requires FloatingT<Value>
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value -= value;
+        return old;
+    }
+
+    Value old;
+    __atomic_load(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                  static_cast<int>(MemoryOrder::relaxed));
+
+    Value tmp = old - value;
+    while (!__atomic_compare_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(old),
+                                      memory::AddressOf(tmp), true, static_cast<int>(order),
+                                      FailureOrder(order))) {
+        tmp = old - value;
+    }
+
+    return old;
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset, MemoryOrder order) noexcept
+    requires(PtrT<Value> && !FunctionPtrT<T>)
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value += offset;
+        return old;
+    }
+
+    OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
+    return __atomic_fetch_add(memory::AddressOf(m_Value.value), offset * diff,
+                              static_cast<int>(order));
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset,
+                                                      MemoryOrder order) volatile noexcept
+    requires(PtrT<Value> && !FunctionPtrT<T>)
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value += offset;
+        return old;
+    }
+
+    OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
+    return __atomic_fetch_add(memory::AddressOf(m_Value.value), offset * diff,
+                              static_cast<int>(order));
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(OffsetT offset, MemoryOrder order) noexcept
+    requires(PtrT<Value> && !FunctionPtrT<T>)
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value -= offset;
+        return old;
+    }
+
+    OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
+    return __atomic_fetch_sub(memory::AddressOf(m_Value.value), offset * diff,
+                              static_cast<int>(order));
+}
+
+template <TrivialT T>
+inline constexpr Atomic<T>::Value Atomic<T>::FetchSub(OffsetT offset,
+                                                      MemoryOrder order) volatile noexcept
+    requires(PtrT<Value> && !FunctionPtrT<T>)
+{
+    if consteval {
+        Value old = m_Value.value;
+        m_Value.value -= offset;
+        return old;
+    }
+
+    OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
+    return __atomic_fetch_sub(memory::AddressOf(m_Value.value), offset * diff,
+                              static_cast<int>(order));
 }
 
 template <TrivialT T>

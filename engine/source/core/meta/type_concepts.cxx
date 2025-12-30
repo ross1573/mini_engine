@@ -30,6 +30,12 @@ export template <typename T>
 concept ArrT = std::is_array_v<T>;
 
 export template <typename T>
+concept FunctionT = std::is_function_v<T>;
+
+export template <typename T>
+concept FunctionPtrT = std::is_function_v<RemovePtrT<T>>;
+
+export template <typename T>
 concept NonPtrT = !PtrT<T>;
 
 export template <typename T>
