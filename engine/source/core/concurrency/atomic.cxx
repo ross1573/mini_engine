@@ -223,7 +223,8 @@ inline constexpr Atomic<T>::Value Atomic<T>::Exchange(Value val,
     }
 
     Value result;
-    __atomic_exchange(memory::AddressOf(m_Value.value), &val, &result, static_cast<int>(order));
+    __atomic_exchange(memory::AddressOf(m_Value.value), memory::AddressOf(val),
+                      memory::AddressOf(result), static_cast<int>(order));
     return result;
 }
 
