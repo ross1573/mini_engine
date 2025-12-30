@@ -1,5 +1,7 @@
 add_module(mini.apple STATIC NO_MODULE_INTERFACE)
 
+enable_language(OBJCXX)
+
 target_sources(mini.apple
 PUBLIC
     include/appkit.h

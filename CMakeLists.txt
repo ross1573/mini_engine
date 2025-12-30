@@ -35,10 +35,6 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "build")
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake/modules")
 
-if (APPLE)
-    enable_language(OBJCXX)
-endif()
-
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
 
