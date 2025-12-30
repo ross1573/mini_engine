@@ -27,25 +27,35 @@ inline bool AtomicLoadCompare(T const volatile* loc, T val, int32 order) noexcep
 }
 
 template <TrivialT T>
-inline bool AtomicSpinWait(T const volatile* loc, T val, int32 order) noexcept
+inline bool AtomicSpinWaitLoop(T const volatile* loc, T val, int32 order) noexcept
 {
     Clock::TimePoint start = Clock::Now();
     for (;;) {
         for (SizeT i = 0; i < spinWaitCount; ++i) {
+            AtomicRelax();
+
             if (!AtomicLoadCompare(loc, val, order)) {
                 return false;
             }
-
-            AtomicRelax();
         }
 
         Clock::TimePoint tp = Clock::Now();
-        if ((tp - start) > MicroSeconds(2)) {
+        if ((tp - start) > MicroSeconds(4)) {
             break;
         }
     }
 
-    return AtomicLoadCompare(loc, val, order);
+    return true;
+}
+
+template <TrivialT T>
+inline bool AtomicSpinWait(T const volatile* loc, T val, int32 order) noexcept
+{
+    if (!AtomicLoadCompare(loc, val, order)) {
+        return false;
+    }
+
+    return AtomicSpinWaitLoop(loc, val, order);
 }
 
 inline CORE_API void AtomicPlatformWait(AtomicContention volatile* waiter,

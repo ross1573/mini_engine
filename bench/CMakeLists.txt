@@ -54,4 +54,4 @@ PUBLIC
 build_source_tree(mini.benchmark)
 
 add_subdirectory(string)
-add_subdirectory(thread)
+add_subdirectory(concurrency)
