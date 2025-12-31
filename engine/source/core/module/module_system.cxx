@@ -72,13 +72,13 @@ private:
     Module(StringView, SharedPtr<ModuleHandle>&&);
 };
 
-template <DerivedFromT<Module::Interface> T>
+template <DerivedFromT<ModuleInterface> T>
 T* Module::GetInterface() noexcept
 {
     return dynamic_cast<T*>(m_Interface);
 }
 
-template <DerivedFromT<Module::Interface> T>
+template <DerivedFromT<ModuleInterface> T>
 T const* Module::GetInterface() const noexcept
 {
     return dynamic_cast<T*>(m_Interface);

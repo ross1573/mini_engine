@@ -11,6 +11,8 @@ namespace mini::graphics {
 
 export class GRAPHICS_API ModuleInterface : public mini::Module::Interface {
 public:
+    virtual ~ModuleInterface() = default;
+
     virtual mini::graphics::Device* CreateGraphicDevice() = 0;
 };
 

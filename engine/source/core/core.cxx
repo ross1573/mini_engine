@@ -52,7 +52,6 @@ export import :atomic_platform_wait;
 export import :atomic;
 export import :mutex;
 
-export import :dynamic_module;
 export import :static_module;
 export import :module_system;
 

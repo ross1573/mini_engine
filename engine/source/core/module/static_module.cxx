@@ -32,7 +32,7 @@ public:
     const Interface* GetInterface() const noexcept final { return m_Interface.Get(); }
 };
 
-export template <CallableWithReturnT<Module::Interface*> FactoryT>
+export template <CallableWithReturnT<ModuleInterface*> FactoryT>
 class StaticModuleInitializer {
 private:
     static_assert(NoThrowDefaultConstructibleT<FactoryT>,

@@ -5,10 +5,13 @@ module;
 
 export module mini.core:module_platform;
 
+import :string;
 import :string_view;
 import :memory_operation;
 
 namespace mini {
+
+using NativeModuleHandle = HMODULE;
 
 String BuildModulePath(StringView name)
 {
@@ -23,17 +26,17 @@ String BuildModulePath(StringView name)
     return modulePath;
 }
 
-void* LoadModule(StringView path)
+NativeModuleHandle LoadModule(StringView path)
 {
     return LoadLibraryA(path.Data());
 }
 
-void UnloadModule(void* handle)
+void UnloadModule(NativeModuleHandle handle)
 {
     FreeLibrary(handle);
 }
 
-void* LoadFunction(void* handle, StringView name)
+void* LoadFunction(NativeModuleHandle handle, StringView name)
 {
     ENSURE(handle, "module not loaded") {
         return nullptr;

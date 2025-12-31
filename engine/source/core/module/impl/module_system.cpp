@@ -5,6 +5,7 @@ import :string_view;
 import :shared_ptr;
 import :module_system;
 import :module_loader;
+import :dynamic_module;
 
 namespace mini {
 
