@@ -9,7 +9,7 @@ export import :swap_chain;
 
 namespace mini::graphics {
 
-export class GRAPHICS_API ModuleInterface : public mini::ModuleInterface {
+export class GRAPHICS_API ModuleInterface : public mini::Module::Interface {
 public:
     virtual mini::graphics::Device* CreateGraphicDevice() = 0;
 };

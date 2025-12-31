@@ -1,27 +1,47 @@
-export module mini.core:dynamic_module;
+module;
+
+#include <dlfcn.h>
+
+export module mini.core:module_platform;
 
 import :string;
-import :unique_ptr;
-import :module_system;
+import :string_view;
+import :memory_operation;
 
 namespace mini {
 
-class DynamicModuleHandle final : public ModuleHandle {
-private:
-    void* m_Handle;
-    UniquePtr<ModuleInterface> m_Interface;
+using NativeModuleHandle = void*;
 
-public:
-    DynamicModuleHandle(StringView);
-    DynamicModuleHandle(DynamicModuleHandle&&) noexcept;
-    ~DynamicModuleHandle() final;
+String BuildModulePath(StringView name)
+{
+    StringView prefix = MODULE_OUTPUT_PREFIX ".";
+    StringView suffix = MODULE_OUTPUT_SUFFIX;
 
-    bool IsValid() const noexcept final;
-    void* GetNativeHandle() noexcept final;
-    ModuleInterface* GetInterface() noexcept final;
+    String modulePath(prefix.Size() + name.Size() + suffix.Size());
+    modulePath.Append(prefix);
+    modulePath.Append(name);
+    modulePath.Append(suffix);
 
-private:
-    void* LoadFunction(StringView);
-};
+    return modulePath;
+}
+
+NativeModuleHandle LoadModule(StringView path)
+{
+    return dlopen(path.Data(), RTLD_NOW | RTLD_LOCAL);
+}
+
+void UnloadModule(NativeModuleHandle handle)
+{
+    dlclose(handle);
+}
+
+void* LoadFunction(NativeModuleHandle handle, StringView name)
+{
+    ENSURE(handle, "module not loaded") {
+        return nullptr;
+    }
+
+    return dlsym(handle, name.Data());
+}
 
 } // namespace mini

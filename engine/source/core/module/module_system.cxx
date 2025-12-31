@@ -1,14 +1,14 @@
 export module mini.core:module_system;
 
 import :type;
-import :utility_operation;
-import :array;
 import :string;
+import :string_view;
 import :shared_ptr;
+import :module_platform;
 
 namespace mini {
 
-export class CORE_API ModuleInterface {
+class CORE_API ModuleInterface {
 private:
     friend class ModuleLoader;
 
@@ -22,23 +22,33 @@ protected:
 
 class CORE_API ModuleHandle {
 public:
+    typedef NativeModuleHandle NativeHandle;
+    typedef ModuleInterface Interface;
+
+public:
     virtual ~ModuleHandle() noexcept = default;
 
     virtual bool IsValid() const noexcept = 0;
-    virtual void* GetNativeHandle() noexcept = 0;
-    virtual ModuleInterface* GetInterface() noexcept = 0;
+
+    virtual NativeHandle GetNativeHandle() noexcept = 0;
+    virtual Interface* GetInterface() noexcept = 0;
+    virtual const Interface* GetInterface() const noexcept = 0;
 
 protected:
     ModuleHandle() = default;
 };
 
 export class CORE_API Module {
+public:
+    typedef ModuleHandle Handle;
+    typedef ModuleInterface Interface;
+
 private:
-    SharedPtr<ModuleHandle> m_Handle;
-    ModuleInterface* m_Interface;
+    SharedPtr<Handle> m_Handle;
+    Interface* m_Interface;
     String m_Name;
 
-    template <CallableWithReturnT<ModuleInterface*> FactoryT>
+    template <CallableWithReturnT<Interface*> FactoryT>
     friend class StaticModuleInitializer;
     friend class ModuleLoader;
 
@@ -47,42 +57,31 @@ public:
     Module(StringView);
 
     bool IsValid() const noexcept { return m_Handle.IsValid(); }
-    String GetName() const { return m_Name; }
-    ModuleInterface* GetInterface() const noexcept { return m_Interface; }
+    String GetName() const noexcept { return m_Name; }
 
-    void* GetNativeHandle() const noexcept
-    {
-        return m_Handle.IsValid() ? m_Handle->GetNativeHandle() : nullptr;
-    }
+    Interface* GetInterface() noexcept { return m_Interface; }
+    Interface const* GetInterface() const noexcept { return m_Interface; }
 
-    template <DerivedFromT<ModuleInterface> T>
-    T* GetInterface() noexcept
-    {
-        return dynamic_cast<T*>(GetInterface());
-    }
+    template <DerivedFromT<Interface> T>
+    T* GetInterface() noexcept;
+
+    template <DerivedFromT<Interface> T>
+    T const* GetInterface() const noexcept;
 
 private:
     Module(StringView, SharedPtr<ModuleHandle>&&);
 };
 
-class CORE_API ModuleLoader {
-private:
-    Array<Module> m_Uninitialized;
-    Array<Module> m_Modules;
+template <DerivedFromT<Module::Interface> T>
+T* Module::GetInterface() noexcept
+{
+    return dynamic_cast<T*>(m_Interface);
+}
 
-    using Iterator = Array<Module>::Iterator;
-
-public:
-    Module Register(Module&&);
-    Module Load(StringView);
-
-    static bool ConstructModule(ModuleInterface* interface) { return interface->Initialize(); }
-    static void DestructModule(ModuleInterface* interface) { return interface->Shutdown(); }
-
-private:
-    Iterator Find(StringView);
-};
-
-CORE_API ModuleLoader g_ModuleLoader = ModuleLoader();
+template <DerivedFromT<Module::Interface> T>
+T const* Module::GetInterface() const noexcept
+{
+    return dynamic_cast<T*>(m_Interface);
+}
 
 } // namespace mini

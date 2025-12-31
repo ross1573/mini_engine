@@ -1,8 +1,10 @@
 module mini.core;
 
-import :string;
-import :memory_operation;
+import :array;
+import :string_view;
+import :shared_ptr;
 import :module_system;
+import :module_loader;
 
 namespace mini {
 
@@ -48,7 +50,7 @@ Module ModuleLoader::Load(StringView name)
         return *iter;
     }
 
-    for (Module const& uninitialized : m_Uninitialized) {
+    for (Module& uninitialized : m_Uninitialized) {
         if (uninitialized.GetName() == name) {
             ModuleInterface* interface = uninitialized.GetInterface();
             if (interface != nullptr && interface->Initialize() == false) {

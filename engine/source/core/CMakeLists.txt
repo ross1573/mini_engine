@@ -158,12 +158,13 @@ PUBLIC
         $<$<PLATFORM_ID:Windows>:module/module_win.cxx>
         $<$<PLATFORM_ID:Darwin>:module/module_macos.cxx>
         module/module_system.cxx
+        module/module_loader.cxx
+        module/dynamic_module.cxx
         module/static_module.cxx
 
 PRIVATE
-    $<$<PLATFORM_ID:Windows>:module/impl/module_win.cpp>
-    $<$<PLATFORM_ID:Darwin>:module/impl/module_macos.cpp>
     module/impl/module_system.cpp
+    module/impl/dynamic_module.cpp
 )
 
 target_sources(mini.core

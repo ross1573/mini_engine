@@ -51,7 +51,7 @@ function (generate_module_entry target)
 
     if (arg_NULL_INTERFACE)
         set(null_interface "true")
-        set(class "mini::ModuleInterface")
+        set(class "mini::Module::Interface")
     elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
         messag(FATAL_ERROR "no given interface class name")
     else()
