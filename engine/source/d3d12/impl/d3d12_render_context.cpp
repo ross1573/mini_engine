@@ -58,7 +58,7 @@ void RenderContext::BeginRender()
     D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_CurrentBuffer->descriptor.offset;
 
     m_CommandList->ResourceBarrier(1, &barrier);
-    m_CommandList->ClearRenderTargetView(cpuOffset, Color::clear.data, 0, nullptr);
+    m_CommandList->ClearRenderTargetView(cpuOffset, Color::Clear().data, 0, nullptr);
 }
 
 void RenderContext::EndRender()
