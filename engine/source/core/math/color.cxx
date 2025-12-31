@@ -33,12 +33,12 @@ public:
 
     constexpr bool operator==(Color const&) const noexcept;
 
-    CORE_API static const Color white;
-    CORE_API static const Color black;
-    CORE_API static const Color clear;
-    CORE_API static const Color red;
-    CORE_API static const Color green;
-    CORE_API static const Color blue;
+    static constexpr Color White() noexcept { return Color(1.f, 1.f, 1.f, 1.f); }
+    static constexpr Color Black() noexcept { return Color(0.f, 0.f, 0.f, 1.f); }
+    static constexpr Color Clear() noexcept { return Color(0.f, 0.f, 0.f, 0.f); }
+    static constexpr Color Red() noexcept { return Color(1.f, 0.f, 0.f, 1.f); }
+    static constexpr Color Green() noexcept { return Color(0.f, 1.f, 0.f, 1.f); }
+    static constexpr Color Blue() noexcept { return Color(0.f, 0.f, 1.f, 1.f); }
 };
 
 export constexpr Color operator+(Color const&, Color const&) noexcept;
@@ -46,13 +46,6 @@ export constexpr Color operator-(Color const&, Color const&) noexcept;
 export constexpr Color operator*(Color const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Color operator/(Color const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Color operator*(Float32ConvertibleT auto const, Color const&) noexcept;
-
-inline Color const Color::white = Color(1.f, 1.f, 1.f, 1.f);
-inline Color const Color::black = Color(0.f, 0.f, 0.f, 1.f);
-inline Color const Color::clear = Color(0.f, 0.f, 0.f, 0.f);
-inline Color const Color::red = Color(1.f, 0.f, 0.f, 1.f);
-inline Color const Color::green = Color(0.f, 1.f, 0.f, 1.f);
-inline Color const Color::blue = Color(0.f, 0.f, 1.f, 1.f);
 
 inline constexpr Color::Color() noexcept
     : r(0.f)

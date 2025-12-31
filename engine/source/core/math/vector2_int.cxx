@@ -44,10 +44,10 @@ public:
 
     explicit constexpr operator Vector2() const noexcept;
 
-    CORE_API static const Vector2Int zero;
-    CORE_API static const Vector2Int one;
-    CORE_API static const Vector2Int unitX;
-    CORE_API static const Vector2Int unitY;
+    static constexpr Vector2Int Zero() noexcept { return Vector2Int(0, 0); }
+    static constexpr Vector2Int One() noexcept { return Vector2Int(1, 1); }
+    static constexpr Vector2Int UnitX() noexcept { return Vector2Int(1, 0); }
+    static constexpr Vector2Int UnitY() noexcept { return Vector2Int(0, 1); }
 };
 
 export constexpr Vector2Int operator+(Vector2Int const&, Vector2Int const&) noexcept;
@@ -55,11 +55,6 @@ export constexpr Vector2Int operator-(Vector2Int const&, Vector2Int const&) noex
 export constexpr Vector2Int operator*(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
 export constexpr Vector2Int operator/(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
 export constexpr Vector2Int operator*(Int32ConvertibleT auto const, Vector2Int const&) noexcept;
-
-inline Vector2Int const Vector2Int::zero = Vector2Int();
-inline Vector2Int const Vector2Int::one = Vector2Int(1, 1);
-inline Vector2Int const Vector2Int::unitX = Vector2Int(1, 0);
-inline Vector2Int const Vector2Int::unitY = Vector2Int(0, 1);
 
 inline constexpr Vector2Int::Vector2Int() noexcept
     : x(0)

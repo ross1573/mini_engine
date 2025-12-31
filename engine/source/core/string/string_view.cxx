@@ -34,11 +34,11 @@ public:
     typedef T const& ConstRef;
     using ConstIterator = ArrayIterator<ConstValue, BasicStringView const>;
 
-    static constexpr T empty[1] = { '\0' };
-
 private:
     ConstPtr m_Data;
     SizeT m_Size;
+
+    static constexpr T empty[1] = { '\0' };
 
 public:
     constexpr BasicStringView() noexcept;
@@ -80,6 +80,8 @@ public:
     constexpr operator std::basic_string_view<T>() const noexcept;
 
     constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
+
+    static constexpr BasicStringView Empty() noexcept;
 
 private:
     BasicStringView(NullptrT) = delete;
@@ -353,6 +355,12 @@ export template <CharT T>
 inline constexpr std::basic_string_view<T> ToStdStringView(BasicStringView<T> const& other) noexcept
 {
     return std::basic_string_view<T>(other.Data(), other.Size());
+}
+
+template <CharT T>
+inline constexpr BasicStringView<T> BasicStringView<T>::Empty() noexcept
+{
+    return empty;
 }
 
 template <CharT T>

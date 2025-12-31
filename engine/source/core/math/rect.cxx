@@ -37,10 +37,8 @@ public:
 
     constexpr bool operator==(Rect const&) const noexcept;
 
-    CORE_API static const Rect zero;
+    static constexpr Rect Zero() noexcept { return Rect(0.f, 0.f, 0.f, 0.f); }
 };
-
-inline Rect const Rect::zero = Rect();
 
 inline constexpr Rect::Rect() noexcept
     : x(0.f)

@@ -53,17 +53,17 @@ public:
 
     explicit constexpr operator Vector2() const noexcept;
 
-    CORE_API static const Vector3 zero;
-    CORE_API static const Vector3 one;
-    CORE_API static const Vector3 unitX;
-    CORE_API static const Vector3 unitY;
-    CORE_API static const Vector3 unitZ;
-    CORE_API static const Vector3 up;
-    CORE_API static const Vector3 down;
-    CORE_API static const Vector3 left;
-    CORE_API static const Vector3 right;
-    CORE_API static const Vector3 forward;
-    CORE_API static const Vector3 backward;
+    static constexpr Vector3 Zero() noexcept { return Vector3(0.f, 0.f, 0.f); }
+    static constexpr Vector3 One() noexcept { return Vector3(1.f, 1.f, 1.f); }
+    static constexpr Vector3 UnitX() noexcept { return Vector3(1.f, 0.f, 0.f); }
+    static constexpr Vector3 UnitY() noexcept { return Vector3(0.f, 1.f, 0.f); }
+    static constexpr Vector3 UnitZ() noexcept { return Vector3(0.f, 0.f, 1.f); }
+    static constexpr Vector3 Up() noexcept { return Vector3(0.f, 1.f, 0.f); }
+    static constexpr Vector3 Down() noexcept { return Vector3(0.f, -1.f, 0.f); }
+    static constexpr Vector3 Left() noexcept { return Vector3(-1.f, 0.f, 0.f); }
+    static constexpr Vector3 Right() noexcept { return Vector3(1.f, 0.f, 0.f); }
+    static constexpr Vector3 Forward() noexcept { return Vector3(0.f, 0.f, 1.f); }
+    static constexpr Vector3 Backward() noexcept { return Vector3(0.f, 0.f, -1.f); }
 };
 
 export constexpr Vector3 operator+(Vector3 const&, Vector3 const&) noexcept;
@@ -71,18 +71,6 @@ export constexpr Vector3 operator-(Vector3 const&, Vector3 const&) noexcept;
 export constexpr Vector3 operator*(Vector3 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector3 operator/(Vector3 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector3 operator*(Float32ConvertibleT auto const, Vector3 const&) noexcept;
-
-inline Vector3 const Vector3::zero = Vector3();
-inline Vector3 const Vector3::one = Vector3(1.f, 1.f, 1.f);
-inline Vector3 const Vector3::unitX = Vector3(1.f, 0.f, 0.f);
-inline Vector3 const Vector3::unitY = Vector3(0.f, 1.f, 0.f);
-inline Vector3 const Vector3::unitZ = Vector3(0.f, 0.f, 1.f);
-inline Vector3 const Vector3::up = Vector3(0.f, 1.f, 0.f);
-inline Vector3 const Vector3::down = Vector3(0.f, -1.f, 0.f);
-inline Vector3 const Vector3::left = Vector3(-1.f, 0.f, 0.f);
-inline Vector3 const Vector3::right = Vector3(1.f, 0.f, 0.f);
-inline Vector3 const Vector3::forward = Vector3(0.f, 0.f, 1.f);
-inline Vector3 const Vector3::backward = Vector3(0.f, 0.f, -1.f);
 
 inline constexpr Vector3::Vector3() noexcept
     : x(0.f)

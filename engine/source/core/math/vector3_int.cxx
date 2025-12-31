@@ -49,17 +49,17 @@ public:
     constexpr explicit operator Vector2() const noexcept;
     constexpr explicit operator Vector3() const noexcept;
 
-    CORE_API static const Vector3Int zero;
-    CORE_API static const Vector3Int one;
-    CORE_API static const Vector3Int unitX;
-    CORE_API static const Vector3Int unitY;
-    CORE_API static const Vector3Int unitZ;
-    CORE_API static const Vector3Int up;
-    CORE_API static const Vector3Int down;
-    CORE_API static const Vector3Int left;
-    CORE_API static const Vector3Int right;
-    CORE_API static const Vector3Int forward;
-    CORE_API static const Vector3Int backward;
+    static constexpr Vector3Int Zero() noexcept { return Vector3Int(0, 0, 0); }
+    static constexpr Vector3Int One() noexcept { return Vector3Int(1, 1, 1); }
+    static constexpr Vector3Int UnitX() noexcept { return Vector3Int(1, 0, 0); }
+    static constexpr Vector3Int UnitY() noexcept { return Vector3Int(0, 1, 0); }
+    static constexpr Vector3Int UnitZ() noexcept { return Vector3Int(0, 0, 1); }
+    static constexpr Vector3Int Up() noexcept { return Vector3Int(0, 1, 0); }
+    static constexpr Vector3Int Down() noexcept { return Vector3Int(0, -1, 0); }
+    static constexpr Vector3Int Left() noexcept { return Vector3Int(-1, 0, 0); }
+    static constexpr Vector3Int Right() noexcept { return Vector3Int(1, 0, 0); }
+    static constexpr Vector3Int Forward() noexcept { return Vector3Int(0, 0, 1); }
+    static constexpr Vector3Int Backward() noexcept { return Vector3Int(0, 0, -1); }
 };
 
 export constexpr Vector3Int operator+(Vector3Int const&, Vector3Int const&) noexcept;
@@ -67,18 +67,6 @@ export constexpr Vector3Int operator-(Vector3Int const&, Vector3Int const&) noex
 export constexpr Vector3Int operator*(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
 export constexpr Vector3Int operator/(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
 export constexpr Vector3Int operator*(Int32ConvertibleT auto const, Vector3Int const&) noexcept;
-
-inline Vector3Int const Vector3Int::zero = Vector3Int();
-inline Vector3Int const Vector3Int::one = Vector3Int(1, 1, 1);
-inline Vector3Int const Vector3Int::unitX = Vector3Int(1, 0, 0);
-inline Vector3Int const Vector3Int::unitY = Vector3Int(0, 1, 0);
-inline Vector3Int const Vector3Int::unitZ = Vector3Int(0, 0, 1);
-inline Vector3Int const Vector3Int::up = Vector3Int(0, 1, 0);
-inline Vector3Int const Vector3Int::down = Vector3Int(0, -1, 0);
-inline Vector3Int const Vector3Int::left = Vector3Int(-1, 0, 0);
-inline Vector3Int const Vector3Int::right = Vector3Int(1, 0, 0);
-inline Vector3Int const Vector3Int::forward = Vector3Int(0, 0, 1);
-inline Vector3Int const Vector3Int::backward = Vector3Int(0, 0, -1);
 
 inline constexpr Vector3Int::Vector3Int() noexcept
     : x(0)

@@ -14,6 +14,7 @@ protected:
 
 public:
     Window(Application*);
+    virtual ~Window();
 
     void AlertError(char const*);
 

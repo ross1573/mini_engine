@@ -49,10 +49,10 @@ public:
 
     constexpr bool operator==(Vector2 const&) const noexcept;
 
-    CORE_API static const Vector2 zero;
-    CORE_API static const Vector2 one;
-    CORE_API static const Vector2 unitX;
-    CORE_API static const Vector2 unitY;
+    static constexpr Vector2 Zero() noexcept { return Vector2(0.f, 0.f); }
+    static constexpr Vector2 One() noexcept { return Vector2(1.f, 1.f); }
+    static constexpr Vector2 UnitX() noexcept { return Vector2(1.f, 0.f); }
+    static constexpr Vector2 UnitY() noexcept { return Vector2(0.f, 1.f); }
 };
 
 export constexpr Vector2 operator+(Vector2 const&, Vector2 const&) noexcept;
@@ -60,11 +60,6 @@ export constexpr Vector2 operator-(Vector2 const&, Vector2 const&) noexcept;
 export constexpr Vector2 operator*(Vector2 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector2 operator/(Vector2 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector2 operator*(Float32ConvertibleT auto const, Vector2 const&) noexcept;
-
-inline Vector2 const Vector2::zero = Vector2();
-inline Vector2 const Vector2::one = Vector2(1.f, 1.f);
-inline Vector2 const Vector2::unitX = Vector2(1.f, 0.f);
-inline Vector2 const Vector2::unitY = Vector2(0.f, 1.f);
 
 inline constexpr Vector2::Vector2() noexcept
     : x(0)

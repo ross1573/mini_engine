@@ -7,8 +7,8 @@ import mini.engine;
 namespace mini::macos {
 
 export class MACOS_API Window final
-    : public apple::Window
-    , private cocoa::Window {
+    : private cocoa::Window
+    , public apple::Window {
 public:
     Window(cocoa::Application*);
 
@@ -20,7 +20,7 @@ public:
     inline void Show() final { cocoa::Window::Show(); }
     inline void Hide() final { cocoa::Window::Hide(); }
 
-    inline RectInt GetSize() const final { return RectInt::zero; }
+    inline RectInt GetSize() const final { return RectInt::Zero(); }
     inline bool IsMinimized() const final { return cocoa::Window::IsMinimized(); }
     inline bool IsMaximized() const final { return cocoa::Window::IsMaximized(); }
     inline bool IsFullScreen() const { return cocoa::Window::IsFullScreen(); }

@@ -54,12 +54,12 @@ public:
 
     constexpr explicit operator Vector3() const noexcept;
 
-    CORE_API static const Vector4 zero;
-    CORE_API static const Vector4 one;
-    CORE_API static const Vector4 unitX;
-    CORE_API static const Vector4 unitY;
-    CORE_API static const Vector4 unitZ;
-    CORE_API static const Vector4 unitW;
+    static constexpr Vector4 Zero() noexcept { return Vector4(0.f, 0.f, 0.f, 0.f); }
+    static constexpr Vector4 One() noexcept { return Vector4(1.f, 1.f, 1.f, 1.f); }
+    static constexpr Vector4 UnitX() noexcept { return Vector4(1.f, 0.f, 0.f, 0.f); }
+    static constexpr Vector4 UnitY() noexcept { return Vector4(0.f, 1.f, 0.f, 0.f); }
+    static constexpr Vector4 UnitZ() noexcept { return Vector4(0.f, 0.f, 1.f, 0.f); }
+    static constexpr Vector4 UnitW() noexcept { return Vector4(0.f, 0.f, 0.f, 1.f); }
 };
 
 export constexpr Vector4 operator+(Vector4 const&, Vector4 const&) noexcept;
@@ -67,13 +67,6 @@ export constexpr Vector4 operator-(Vector4 const&, Vector4 const&) noexcept;
 export constexpr Vector4 operator*(Vector4 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector4 operator/(Vector4 const&, Float32ConvertibleT auto const) noexcept;
 export constexpr Vector4 operator*(Float32ConvertibleT auto const, Vector4 const&) noexcept;
-
-inline Vector4 const Vector4::zero = Vector4();
-inline Vector4 const Vector4::one = Vector4(1.f, 1.f, 1.f, 1.f);
-inline Vector4 const Vector4::unitX = Vector4(1.f, 0.f, 0.f, 0.f);
-inline Vector4 const Vector4::unitY = Vector4(0.f, 1.f, 0.f, 0.f);
-inline Vector4 const Vector4::unitZ = Vector4(0.f, 0.f, 1.f, 0.f);
-inline Vector4 const Vector4::unitW = Vector4(0.f, 0.f, 0.f, 1.f);
 
 inline constexpr Vector4::Vector4() noexcept
     : x(0.f)

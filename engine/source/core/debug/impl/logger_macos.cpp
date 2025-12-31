@@ -12,7 +12,7 @@ import :logger_platform;
 
 namespace mini {
 
-String LoggerBase::m_Identifier = StringView::empty;
+String LoggerBase::m_Identifier = StringView::Empty();
 
 LoggerBase::LoggerBase(StringView category)
     : m_Category(category)
@@ -57,7 +57,7 @@ StringView LoggerBase::InitializeIdentifier()
         return m_Identifier;
     }
 
-    String identifier = StringView::empty;
+    String identifier = StringView::Empty();
     uint32 encoding = kCFStringEncodingUTF8;
     bool result;
 

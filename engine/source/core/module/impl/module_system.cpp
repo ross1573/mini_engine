@@ -72,7 +72,7 @@ Module ModuleLoader::Load(StringView name)
 
 ModuleLoader::Iterator ModuleLoader::Find(StringView name)
 {
-    if (name == StringView::empty) [[unlikely]] {
+    if (name == StringView::Empty()) [[unlikely]] {
         return m_Modules.End();
     }
 

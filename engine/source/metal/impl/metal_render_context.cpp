@@ -42,10 +42,13 @@ void RenderContext::BeginRender()
     MTL::RenderPassColorAttachmentDescriptor* clearColorAttachment =
         renderPass->colorAttachments()->object(0);
 
+    Color clear = Color::Clear();
+    MTL::ClearColor clearColor(clear.r, clear.g, clear.b, clear.a);
+
     clearColorAttachment->setTexture(texture);
     clearColorAttachment->setLoadAction(MTL::LoadActionClear);
     clearColorAttachment->setStoreAction(MTL::StoreActionStore);
-    clearColorAttachment->setClearColor(MTL::ClearColor(0.0, 0.0, 0.0, 0.0));
+    clearColorAttachment->setClearColor(clearColor);
     clearColorAttachment->clearColor();
 
     m_CmdEncoder = m_CmdBuffer->renderCommandEncoder(renderPass);
