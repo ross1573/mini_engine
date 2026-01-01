@@ -6,6 +6,7 @@ module;
 export module mini.core:bit_operation;
 
 import :type;
+import :memory_operation;
 import :bit_base;
 
 #if PLATFORM_WINDOWS
@@ -23,7 +24,7 @@ inline constexpr To BitCast(From const& from) noexcept
     }
     else {
         To result;
-        BUILTIN_MEMCPY(AddressOf(from), AddressOf(result), sizeof(From));
+        BUILTIN_MEMCPY(memory::AddressOf(from), memory::AddressOf(result), sizeof(From));
         return result;
     }
 }
