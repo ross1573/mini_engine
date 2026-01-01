@@ -168,9 +168,9 @@ public:
 
 private:
     template <typename AllocT, typename DelT>
-    constexpr void AllocateBlock(T*, AllocT&&, DelT&&);
+    constexpr void AllocateBlock(T*, AllocT const&, DelT&&);
     template <typename AllocT, typename... Args>
-    constexpr void AllocateInplaceBlock(AllocT&&, Args&&...);
+    constexpr void AllocateInplaceBlock(AllocT const&, Args&&...);
 
     template <NonRefT U, UnbindedAllocatorT AllocT, typename... Args>
     friend constexpr SharedPtr<U> AllocateShared(AllocT const&, Args&&...)
@@ -468,28 +468,28 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& o) noexcep
 
 template <NonRefT T>
 template <typename AllocT, typename DelT>
-inline constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT&& alloc, DelT&& del)
+inline constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT const& alloc, DelT&& del)
 {
     typedef SharedBlock<T, AllocT, DelT> Block;
 
     auto&& blockAlloc = RebindAllocator<Block>(alloc);
     AllocResult<Block> result = blockAlloc.Allocate(1);
 
-    memory::ConstructAt(result.pointer, ptr, ForwardArg<AllocT>(alloc), ForwardArg<DelT>(del));
+    memory::ConstructAt(result.pointer, ptr, alloc, ForwardArg<DelT>(del));
     m_Ptr = ptr;
     m_Counter = result.pointer;
 }
 
 template <NonRefT T>
 template <typename AllocT, typename... Args>
-inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT&& alloc, Args&&... args)
+inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Args&&... args)
 {
     typedef InplaceSharedBlock<T, AllocT> Block;
 
     auto&& blockAlloc = RebindAllocator<Block>(alloc);
     AllocResult<Block> result = blockAlloc.Allocate(1);
 
-    memory::ConstructAt(result.pointer, ForwardArg<AllocT>(alloc), ForwardArg<Args>(args)...);
+    memory::ConstructAt(result.pointer, alloc, ForwardArg<Args>(args)...);
     m_Ptr = result.pointer->Get();
     m_Counter = result.pointer;
 }
