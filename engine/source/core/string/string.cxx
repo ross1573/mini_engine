@@ -6,10 +6,9 @@ module;
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
-// TODO: might be an msvc bug while using with c++20 modules
-// #elif MSVC
-// #  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
-// #  define PACKED_STRUCT_END      __pragma(pack(pop))
+#elif MSVC
+#  define PACKED_STRUCT_BEGIN(x) __pragma(pack(push, x))
+#  define PACKED_STRUCT_END      __pragma(pack(pop))
 #else
 #  define PACKED_STRUCT_BEGIN(x)
 #  define PACKED_STRUCT_END
@@ -66,10 +65,10 @@ private:
         PACKED_STRUCT_BEGIN(1)
         struct {
             SizeT layout : 1;
-            SizeT size   : (sizeof(SizeT) * 8 - 1);
+            SizeT size : (sizeof(SizeT) * 8 - 1);
         };
-        PACKED_STRUCT_END
         LargeBuffer buffer;
+        PACKED_STRUCT_END
     };
 
     static constexpr SizeT AllocatedSize = (sizeof(LargeStorage) / sizeof(T)) - 2;
@@ -82,8 +81,8 @@ private:
             byte layout : 1;
             byte size   : 7;
         };
-        PACKED_STRUCT_END
         SmallBuffer buffer;
+        PACKED_STRUCT_END
     };
 
     union Storage {

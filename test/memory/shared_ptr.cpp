@@ -17,8 +17,7 @@ static constexpr bool ConstexprSharedPtr()
 
 int main()
 {
-#if !MSVC
-    // TODO: probably MSVC bug (since msvc just sucks at constant evaluation)
+#if !MSVC || _MSC_VER >= 1950 // bug is still reproducible on 1944
     static_assert(ConstexprSharedPtr());
 #endif
 
