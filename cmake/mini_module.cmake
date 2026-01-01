@@ -15,8 +15,7 @@ macro (set_module_defines)
     )
 endmacro()
 
-function (add_module name)
-    # parse module type
+macro (parse_module_type)
     if (${ARGC} GREATER 1)
         list(GET ARGN 0 first_arg)
         string(TOUPPER ${first_arg} ${first_arg})
@@ -25,9 +24,9 @@ function (add_module name)
             set(type ${first_arg})
         endif()
     endif()
+endmacro()
 
-    add_library(${name} ${type})
-
+function (add_module name)
     set(options 
         "NO_DEFINE_HEADER"
         "NO_API_HEADER"
@@ -41,7 +40,9 @@ function (add_module name)
         "INTERFACE_CLASS"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
+    parse_module_type()
 
+    add_library(${name} ${type})
     generate_api_name(${name} API ${arg_API} PREFIX ${arg_PREFIX})
 
     if (NOT arg_NO_DEFINE_HEADER)
@@ -62,23 +63,17 @@ function (add_module name)
     endif()
 
     if (NOT arg_NO_MODULE_ENTRY)
-        if (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
+        if (arg_NO_MODULE_INTERFACE)
+            set(arg_INTERFACE_CLASS "")
+        elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
             set(arg_INTERFACE_CLASS "ModuleInterface")
         endif()
 
-        if (arg_NO_MODULE_INTERFACE)
-            generate_module_entry(${name}
-                API ${api}
-                PREFIX ${prefix}
-                NULL_INTERFACE
-            )
-        else()
-            generate_module_entry(${name}
-                API ${api}
-                PREFIX ${prefix}
-                INTERFACE_CLASS ${arg_INTERFACE_CLASS}
-            )
-        endif()
+        generate_module_entry(${name}
+            API ${api}
+            PREFIX ${prefix}
+            INTERFACE_CLASS ${arg_INTERFACE_CLASS}
+        )
     endif()
 
     target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
