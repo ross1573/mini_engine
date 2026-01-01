@@ -42,6 +42,7 @@ DynamicModuleHandle::~DynamicModuleHandle()
         return;
     }
 
+    m_Interface.Reset();
     UnloadModule(m_NativeHandle);
 }
 
