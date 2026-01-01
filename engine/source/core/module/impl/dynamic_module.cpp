@@ -28,12 +28,6 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name)
     }
 
     m_Interface = UniquePtr<Interface>(interface);
-    bool result = ModuleLoader::ConstructModule(m_Interface.Get());
-    if (result == false) {
-        UnloadModule(m_NativeHandle);
-        m_NativeHandle = nullptr;
-        m_Interface.Reset();
-    }
 }
 
 DynamicModuleHandle::DynamicModuleHandle(DynamicModuleHandle&& other) noexcept
@@ -46,11 +40,6 @@ DynamicModuleHandle::~DynamicModuleHandle()
 {
     if (m_NativeHandle == nullptr) {
         return;
-    }
-
-    if (m_Interface != nullptr) {
-        ModuleLoader::DestructModule(m_Interface.Get());
-        m_Interface.Reset();
     }
 
     UnloadModule(m_NativeHandle);

@@ -39,15 +39,9 @@ private:
                   "factory must be nothrow default constructible");
 
 public:
-    static void Register(StringView name) { g_ModuleLoader.Register(GetModule(name)); }
-
-private:
-    static Module GetModule(StringView name)
+    static void Register(StringView name)
     {
-        SharedPtr<StaticModuleHandle> targetHandle =
-            MakeShared<StaticModuleHandle>(name, FactoryT{}());
-
-        return Module(name, StaticCast<ModuleHandle>(MoveArg(targetHandle)));
+        g_ModuleLoader.RegisterUninitialized(name, FactoryT{}());
     }
 };
 

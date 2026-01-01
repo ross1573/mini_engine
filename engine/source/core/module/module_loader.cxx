@@ -4,26 +4,38 @@ import :array;
 import :string;
 import :string_view;
 import :shared_ptr;
+import :weak_ptr;
 import :module_system;
 
 namespace mini {
 
+struct ModuleRef {
+public:
+    SharedPtr<ModuleHandle> handle;
+    String name;
+};
+
+struct ModuleWeakRef {
+public:
+    WeakPtr<ModuleHandle> handle;
+    String name;
+};
+
 class CORE_API ModuleLoader {
 private:
-    Array<Module> m_Uninitialized;
-    Array<Module> m_Modules;
+    typedef Array<ModuleRef>::Iterator RefIterator;
+    typedef Array<ModuleWeakRef>::Iterator WeakRefIterator;
 
-    using Iterator = Array<Module>::Iterator;
+    // TODO: use hash map instead
+    Array<ModuleRef> m_Uninitialized;
+    Array<ModuleWeakRef> m_Modules;
 
 public:
-    Module Register(Module&&);
+    bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
     Module Load(StringView);
 
-    static bool ConstructModule(ModuleInterface* interface) { return interface->Initialize(); }
-    static void DestructModule(ModuleInterface* interface) { return interface->Shutdown(); }
-
 private:
-    Iterator Find(StringView);
+    SharedPtr<ModuleHandle> LoadHandle(StringView);
 };
 
 CORE_API ModuleLoader g_ModuleLoader = ModuleLoader();

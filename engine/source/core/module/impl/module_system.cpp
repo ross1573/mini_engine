@@ -3,6 +3,8 @@ module mini.core;
 import :array;
 import :string_view;
 import :shared_ptr;
+import :weak_ptr;
+import :algorithm;
 import :module_system;
 import :module_loader;
 import :dynamic_module;
@@ -26,67 +28,64 @@ Module::Module(StringView name, SharedPtr<ModuleHandle>&& handle)
     }
 }
 
-Module ModuleLoader::Register(Module&& in)
+bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle> handle)
 {
-    String name = in.GetName();
-    Iterator iter = Find(name);
-    if (iter != m_Modules.End()) {
-        return *iter;
+    RefIterator refIter =
+        FindIf(m_Uninitialized.Begin(), m_Uninitialized.End(),
+               [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
+
+    if (refIter != m_Uninitialized.End()) {
+        return false;
     }
 
-    for (Module const& uninitialized : m_Uninitialized) {
-        if (uninitialized.GetName() == name) {
-            return uninitialized;
-        }
-    }
-
-    m_Uninitialized.Push(in);
-    return MoveArg(in);
+    m_Uninitialized.Push(ModuleRef{ .handle = MoveArg(handle), .name = name });
+    return true;
 }
 
 Module ModuleLoader::Load(StringView name)
 {
-    Iterator iter = Find(name);
-    if (iter != m_Modules.End()) {
-        return *iter;
-    }
-
-    for (Module& uninitialized : m_Uninitialized) {
-        if (uninitialized.GetName() == name) {
-            ModuleInterface* interface = uninitialized.GetInterface();
-            if (interface != nullptr && interface->Initialize() == false) {
-                return Module();
-            }
-
-            m_Modules.Push(uninitialized);
-            return uninitialized;
-        }
-    }
-
-    SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
-    if (dynHandle->IsValid() == false) {
+    SharedPtr<ModuleHandle> handle = LoadHandle(name);
+    if (handle.IsValid() == false) {
         return Module();
     }
 
-    Module mod(name, MoveArg(dynHandle));
-    m_Modules.Push(mod);
-    return mod;
+    ModuleInterface* interface = handle->GetInterface();
+    if (interface != nullptr && interface->Initialize() == false) {
+        return Module();
+    }
+
+    m_Modules.Push(ModuleWeakRef{ .handle = handle, .name = name });
+    return Module(name, MoveArg(handle));
 }
 
-ModuleLoader::Iterator ModuleLoader::Find(StringView name)
+SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 {
-    if (name == StringView::Empty()) [[unlikely]] {
-        return m_Modules.End();
-    }
+    WeakRefIterator weakRefIter =
+        FindIf(m_Modules.Begin(), m_Modules.End(),
+               [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
 
-    Iterator iter = m_Modules.Begin();
-    for (; iter != m_Modules.End(); ++iter) {
-        if (iter->GetName() == name) {
-            break;
+    if (weakRefIter != m_Modules.End()) {
+        if (weakRefIter->handle.IsValid()) {
+            return StaticCast<ModuleHandle>(weakRefIter->handle.Lock());
         }
+
+        m_Modules.RemoveAt(weakRefIter);
     }
 
-    return iter;
+    RefIterator refIter =
+        FindIf(m_Uninitialized.Begin(), m_Uninitialized.End(),
+               [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
+
+    if (refIter != m_Uninitialized.End()) {
+        return StaticCast<ModuleHandle>(MoveArg(refIter->handle));
+    }
+
+    SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
+    if (dynHandle->IsValid()) {
+        return StaticCast<ModuleHandle>(MoveArg(dynHandle));
+    }
+
+    return nullptr;
 }
 
 } // namespace mini

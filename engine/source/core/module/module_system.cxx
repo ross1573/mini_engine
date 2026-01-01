@@ -17,7 +17,6 @@ public:
 
 protected:
     virtual bool Initialize() { return true; }
-    virtual void Shutdown() {}
 };
 
 class CORE_API ModuleHandle {
@@ -44,13 +43,13 @@ public:
     typedef ModuleInterface Interface;
 
 private:
-    SharedPtr<Handle> m_Handle;
-    Interface* m_Interface;
-    String m_Name;
-
     template <CallableWithReturnT<Interface*> FactoryT>
     friend class StaticModuleInitializer;
     friend class ModuleLoader;
+
+    SharedPtr<Handle> m_Handle;
+    Interface* m_Interface;
+    String m_Name;
 
 public:
     Module() = default;
