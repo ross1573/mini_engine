@@ -41,7 +41,12 @@ PUBLIC
 
 target_include_directories(mini.test PUBLIC ./)
 target_link_libraries(mini.test PUBLIC mini.core)
-target_link_options(mini.test PUBLIC -fsanitize=address)
+
+if (MSVC)
+    target_link_options(mini.test PUBLIC $<$<BOOL:${X86}>:-fsanitize=address>)
+else()
+    target_link_options(mini.test PUBLIC -fsanitize=address)
+endif()
 
 build_source_tree(mini.test)
 

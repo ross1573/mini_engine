@@ -5,7 +5,7 @@ module;
 #if MSVC
 #  if ARCH_ARM64
 #    define PAUSE() __isb(_ARM64_BARRIER_SY)
-#  elif ARCH_X86_64 || ARCH_X86
+#  elif ARCH_X86
 #    define PAUSE() _mm_pause()
 #  else
 #    define PAUSE() __nop()
@@ -13,7 +13,7 @@ module;
 #elif CLANG || GNUC
 #  if ARCH_ARM64
 #    define PAUSE() asm volatile("isb")
-#  elif ARCH_X86_64 || ARCH_X86
+#  elif ARCH_X86
 #    define PAUSE() __builtin_ia32_pause()
 #  else
 #    define PAUSE() asm volatile("", , , "memory")
@@ -30,7 +30,7 @@ namespace mini {
 
 #if ARCH_ARM64 || ARCH_X86_64
 using AtomicContention = int64;
-#elif ARCH_X86
+#elif ARCH_X86_32
 using AtomicContention = int32;
 #else
 #  error "unsupported architecture"

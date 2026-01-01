@@ -6,9 +6,11 @@ if (WIN32)
     if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
         set(ARM64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Aa][Mm][Dd]64|[Ii][Aa]64")
-        set(AMD64 1)
+        set(X86 1)
+        set(X86_64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86")
-        set(X64 1)
+        set(X86 1)
+        set(X86_32 1)
     else()
         message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
     endif()
@@ -16,7 +18,8 @@ elseif (APPLE)
     if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
         set(ARM64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86_64")
-        set(AMD64 1)
+        set(X86 1)
+        set(X86_64 1)
     else()
         message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
     endif()
@@ -62,8 +65,9 @@ add_module_definitions(
 
 add_module_definitions(
     ARCH_ARM64=$<IF:$<BOOL:${ARM64}>,true,false>
-    ARCH_X86_64=$<IF:$<BOOL:${AMD64}>,true,false>
     ARCH_X86=$<IF:$<BOOL:${X86}>,true,false>
+    ARCH_X86_64=$<IF:$<BOOL:${X86_64}>,true,false>
+    ARCH_X86_32=$<IF:$<BOOL:${X86_32}>,true,false>
 )
 
 if (MSVC)

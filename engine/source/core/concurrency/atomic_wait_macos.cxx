@@ -5,7 +5,7 @@ module;
 #if CLANG || GNUC
 #  if ARCH_ARM64
 #    define PAUSE() asm volatile("isb")
-#  elif ARCH_X86_64 || ARCH_X86
+#  elif ARCH_X86
 #    define PAUSE() __builtin_ia32_pause();
 #  else
 #    define PAUSE() asm volatile("", , , "memory")

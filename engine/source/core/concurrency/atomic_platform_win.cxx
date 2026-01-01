@@ -30,7 +30,7 @@ public:
 };
 
 using AtomicLock = uint64;
-#elif ARCH_X86
+#elif ARCH_X86_32
 export constexpr int32 __ATOMIC_INTERFERENCE_SIZE = 32;
 export constexpr int32 __ATOMIC_MAX_SUPPORT_SIZE = 8;
 
@@ -39,7 +39,7 @@ using AtomicLock = uint32;
 
 #if ARCH_ARM64
 #  define PAUSE() __isb(_ARM64_BARRIER_SY)
-#elif ARCH_X86_64 || ARCH_X86
+#elif ARCH_X86
 #  define PAUSE() _mm_pause()
 #else
 #  define PAUSE() __nop()
@@ -51,7 +51,7 @@ using AtomicLock = uint32;
     _ReadWriteBarrier();               \
     _Pragma("warning(pop)")
 
-#if ARCH_X86_64 || ARCH_X86
+#if ARCH_X86
 #  define THREAD_FENCE_ASM()
 #  define THREAD_FENCE(memorder)          \
       SIGNAL_FENCE();                     \
@@ -80,7 +80,7 @@ using AtomicLock = uint32;
     __iso_volatile_store##size(reinterpret_cast<int##size volatile*>(pointer), \
                                *reinterpret_cast<int##size*>(value))
 
-#if ARCH_X86_64 || ARCH_X86
+#if ARCH_X86
 #  define EXCHANGE_ACQUIRE(pointer, value)                                   \
       _InterlockedExchange(reinterpret_cast<long volatile*>(pointer), value)
 
@@ -106,7 +106,7 @@ using AtomicLock = uint32;
       *result = *reinterpret_cast<decltype(result)>(memory::AddressOf(opRet))
 #endif // LOAD
 
-#if ARCH_X86_64 || ARCH_X86
+#if ARCH_X86
 #  define ATOMIC_BUILTIN_IMPL(type, op, result, memorder, ...)                \
       type opRet = op(__VA_ARGS__);                                           \
       *result = *reinterpret_cast<decltype(result)>(memory::AddressOf(opRet))
@@ -145,7 +145,7 @@ using AtomicLock = uint32;
 #define ATOMIC_BUILTIN_32(op, result, memorder, ...)             \
     ATOMIC_BUILTIN_IMPL(long, op, result, memorder, __VA_ARGS__)
 
-#if ARCH_X86 || ARCH_X86_64
+#if ARCH_X86
 #  define ATOMIC_LOAD(size, pointer, result, memorder) \
       VOLATILE_LOAD(size, pointer, result);            \
       if (memorder != __ATOMIC_RELAXED) {              \
@@ -162,7 +162,7 @@ using AtomicLock = uint32;
       }
 #endif // ATOMIC_LOAD
 
-#if ARCH_X86 || ARCH_X86_64
+#if ARCH_X86
 #  define ATOMIC_STORE(size, pointer, value, memorder) \
       if (memorder == __ATOMIC_RELAXED) {              \
           VOLATILE_STORE(size, pointer, value);        \

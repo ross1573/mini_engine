@@ -16,7 +16,7 @@ inline constexpr uint32 _clz(uint32 x)
     }
 
 // TODO: optimize with AVX inst
-#if ARCH_X86 || ARCH_X86_64
+#if ARCH_X86
     unsigned long result = 0;
     _BitScanReverse(&result, x);
     return 31 ^ static_cast<uint32>(result);
@@ -24,7 +24,7 @@ inline constexpr uint32 _clz(uint32 x)
     return _CountLeadingZeros(x);
 #else
 #  error "unsupported architecture"
-#endif // ARCH_X86 || ARCH_X86_64
+#endif // ARCH
 }
 
 inline constexpr uint32 _clzll(uint64 x)
@@ -34,7 +34,7 @@ inline constexpr uint32 _clzll(uint64 x)
     }
 
 // TODO: optimize with AVX inst
-#if ARCH_X86
+#if ARCH_X86_32
     unsigned long result = 0;
     if (_BitScanReverse(&result, static_cast<uint32>(x >> 32))) {
         return 63 ^ static_cast<uint32>(result + 32);
@@ -50,7 +50,7 @@ inline constexpr uint32 _clzll(uint64 x)
     return _CountLeadingZeros64(x);
 #else
 #  error "unsupported architecture"
-#endif // ARCH_X86
+#endif // ARCH
 }
 
 inline constexpr uint32 _clzl(unsigned long x)
@@ -72,7 +72,7 @@ inline constexpr uint32 _ctz(uint32 x)
     }
 
 // TODO: optimize with AVX inst
-#if ARCH_X86 || ARCH_X86_64
+#if ARCH_X86
     unsigned long result = 0;
     _BitScanForward(&result, x);
     return result;
@@ -80,7 +80,7 @@ inline constexpr uint32 _ctz(uint32 x)
     return _CountTrailingZeros(x);
 #else
 #  error "unsupported architecture"
-#endif // ARCH_X86 || ARCH_X86_64
+#endif // ARCH
 }
 
 inline constexpr uint32 _ctzll(uint64 x)
@@ -90,7 +90,7 @@ inline constexpr uint32 _ctzll(uint64 x)
     }
 
 // TODO: optimize with AVX inst
-#if ARCH_X86 || ARCH_X86_64
+#if ARCH_X86_32
     unsigned long result = 0;
     if (_BitScanForward(&result, static_cast<uint32>(x >> 32))) {
         return static_cast<uint32>(result + 32);
@@ -102,7 +102,7 @@ inline constexpr uint32 _ctzll(uint64 x)
     return _CountTrailingZeros64(x);
 #else
 #  error "unsupported architecture"
-#endif
+#endif // ARCH
 }
 
 inline constexpr uint32 _ctzl(unsigned long x)

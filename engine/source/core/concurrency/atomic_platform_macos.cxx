@@ -6,7 +6,7 @@ export module mini.core:atomic_platform;
 #elif ARCH_X86_64
 #  define ATOMIC_INTERFERENCE_SIZE 64
 #  define ATOMIC_SUPPORTED_SIZE    16
-#elif ARCH_X86
+#elif ARCH_X86_32
 #  define ATOMIC_INTERFERENCE_SIZE 32
 #  define ATOMIC_SUPPORTED_SIZE    8
 #else
