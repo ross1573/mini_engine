@@ -190,6 +190,9 @@ PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
         core.cxx
+
+PRIVATE
+    $<$<PLATFORM_ID:Windows>:internal/min_windows.h>
 )
 
 target_precompile_headers(mini.core 
@@ -201,6 +204,8 @@ PUBLIC
 target_include_directories(mini.core
 PUBLIC
     debug/include
+    include/
+    internal/
 )
 
 target_link_libraries(mini.core 

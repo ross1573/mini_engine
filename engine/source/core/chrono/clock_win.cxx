@@ -1,8 +1,6 @@
 module;
 
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRA_LEAN
-#include <windows.h>
+#include "internal/min_windows.h"
 
 export module mini.core:clock_platform;
 

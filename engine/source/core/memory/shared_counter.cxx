@@ -74,24 +74,28 @@ inline constexpr SizeT SharedCounter::WeakCount() const noexcept
 
 inline constexpr void SharedCounter::Retain(SizeT count) noexcept
 {
+    CounterValue add = static_cast<CounterValue>(count);
+
     if consteval {
-        m_Count += count;
-        m_Weak += count;
+        m_Count += add;
+        m_Weak += add;
         return;
     }
 
-    __atomic_fetch_add(&m_Count, static_cast<CounterValue>(count), __ATOMIC_RELAXED);
-    __atomic_fetch_add(&m_Weak, static_cast<CounterValue>(count), __ATOMIC_RELAXED);
+    __atomic_fetch_add(&m_Count, add, __ATOMIC_RELAXED);
+    __atomic_fetch_add(&m_Weak, add, __ATOMIC_RELAXED);
 }
 
 inline constexpr void SharedCounter::RetainWeak(SizeT count) noexcept
 {
+    CounterValue add = static_cast<CounterValue>(count);
+
     if consteval {
-        m_Weak += count;
+        m_Weak += add;
         return;
     }
 
-    __atomic_fetch_add(&m_Weak, static_cast<CounterValue>(count), __ATOMIC_RELAXED);
+    __atomic_fetch_add(&m_Weak, add, __ATOMIC_RELAXED);
 }
 
 inline constexpr void SharedCounter::Release(SizeT count) noexcept

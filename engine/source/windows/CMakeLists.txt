@@ -1,13 +1,5 @@
 add_module(mini.windows NO_MODULE_INTERFACE)
 
-include(windows_header_define)
-
-target_precompile_headers(mini.windows
-PRIVATE
-    <windows.h>
-    <unknwn.h>
-)
-
 target_sources(mini.windows
 PUBLIC
     FILE_SET windows TYPE CXX_MODULES
@@ -18,6 +10,7 @@ PUBLIC
         win_window.cxx
 
 PRIVATE
+    win_include.h
     impl/win_handle.cpp
     impl/win_window.cpp
 )
@@ -35,6 +28,11 @@ PRIVATE
 target_include_directories(mini.windows
 PRIVATE
     ${ENGINE_PROJECT_DIR}/engine/platform/windows
+)
+
+target_precompile_headers(mini.windows
+PRIVATE
+    win_include.h
 )
 
 build_source_tree(mini.windows)

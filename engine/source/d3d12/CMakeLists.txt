@@ -1,14 +1,6 @@
-add_module(mini.d3d12)
-
-include(windows_header_define)
 include(${ENGINE_EXTERNAL_DIR}/d3d12/d3d12.cmake)
 
-target_precompile_headers(mini.d3d12
-PRIVATE
-    <d3d12.h>
-    <dxgi1_6.h>
-    $<$<CONFIG:Debug>:<dxgidebug.h$<ANGLE-R>>
-)
+add_module(mini.d3d12)
 
 target_sources(mini.d3d12
 PUBLIC
@@ -22,6 +14,7 @@ PUBLIC
         d3d12_swap_chain.cxx
 
 PRIVATE
+    d3d12_include.h
     impl/d3d12_command_queue.cpp
     impl/d3d12_descriptor.cpp
     impl/d3d12_device.cpp
@@ -41,6 +34,11 @@ PRIVATE
     d3dcompiler.lib
     mini.windows
     mini.engine
+)
+
+target_precompile_headers(mini.d3d12
+PRIVATE
+    d3d12_include.h
 )
 
 copy_d3d12(mini.d3d12)

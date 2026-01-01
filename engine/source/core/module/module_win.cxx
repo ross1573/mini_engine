@@ -1,7 +1,6 @@
 module;
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "internal/min_windows.h"
 
 export module mini.core:module_platform;
 

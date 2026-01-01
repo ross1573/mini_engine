@@ -1,6 +1,6 @@
 module;
 
-#include <windows.h>
+#include "internal/min_windows.h"
 
 module mini.core;
 

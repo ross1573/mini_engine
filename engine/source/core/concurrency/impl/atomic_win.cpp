@@ -1,11 +1,6 @@
 module;
 
-#define WIN32_LEAN_AND_MEAN
-#define NOWINBASEINTERLOCK
-#define NOSERVICE
-#define NOMCX
-#define NOIME
-#include <windows.h>
+#include "internal/min_windows.h"
 
 module mini.core;
 
