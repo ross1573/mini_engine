@@ -60,4 +60,5 @@ export import :duration;
 export import :time_point;
 export import :clock;
 
+export import :algorithm_memory;
 export import :algorithm;

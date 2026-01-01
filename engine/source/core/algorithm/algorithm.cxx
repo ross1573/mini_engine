@@ -2,7 +2,7 @@ export module mini.core:algorithm;
 
 import :type;
 import :iterator;
-import :memory_operation;
+import :algorithm_memory;
 
 namespace mini {
 
@@ -93,6 +93,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 
 export template <ForwardIteratorT T, typename U>
 inline constexpr void FillRange(T begin, T end, U const& value)
+    requires ConvertibleToT<U, typename T::Value>
 {
     ASSERT(CheckRange(begin, end));
     memory::FillRange(begin, end, value);
@@ -117,6 +118,27 @@ inline constexpr SizeT Distance(T first, T last)
     ASSERT(diff >= 0, "distance cannot be negative value");
 
     return static_cast<SizeT>(diff);
+}
+
+export template <ForwardIteratorT T, typename U = typename T::Value>
+inline constexpr T Find(T first, T last, U const& value)
+{
+    ASSERT(CheckRange(first, last));
+    return memory::Find(first, last, value);
+}
+
+export template <ForwardIteratorT T, CallableWithReturnT<bool, typename T::Value> PredT>
+inline constexpr T FindIf(T first, T last, PredT pred)
+{
+    ASSERT(CheckRange(first, last));
+    return memory::FindIf(first, last, pred);
+}
+
+export template <ForwardIteratorT T, CallableWithReturnT<bool, typename T::Value> PredT>
+inline constexpr T FindIfNot(T first, T last, PredT pred)
+{
+    ASSERT(CheckRange(first, last));
+    return memory::FindIfNot(first, last, pred);
 }
 
 } // namespace mini

@@ -1,7 +1,7 @@
 #ifndef BUILTIN_CMATH_H
 #define BUILTIN_CMATH_H
 
-#include <cmath>
+#include <math.h>
 
 #if HAS_BUILTIN(__builtin_fminf)
 #  define BUILTIN_FMINF(x, y) __builtin_fminf(x, y)

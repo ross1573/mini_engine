@@ -172,6 +172,7 @@ target_sources(mini.core
 PUBLIC
     FILE_SET algorithm TYPE CXX_MODULES
     FILES
+        algorithm/algorithm_memory.cxx
         algorithm/algorithm.cxx
 )
 
