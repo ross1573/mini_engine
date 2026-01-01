@@ -35,8 +35,9 @@ PUBLIC
         memory/deleter.cxx
         memory/memory_operation.cxx
         memory/shared_counter.cxx
-        memory/shared_ptr.cxx
         memory/unique_ptr.cxx
+        memory/shared_ptr.cxx
+        memory/weak_ptr.cxx
 
 PRIVATE
     memory/cstring.h

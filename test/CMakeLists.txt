@@ -41,6 +41,7 @@ PUBLIC
 
 target_include_directories(mini.test PUBLIC ./)
 target_link_libraries(mini.test PUBLIC mini.core)
+target_link_options(mini.test PUBLIC -fsanitize=address)
 
 build_source_tree(mini.test)
 

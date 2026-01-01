@@ -12,8 +12,6 @@ namespace mini {
 template <typename T, typename AllocT, typename DelT>
 class SharedBlock : public SharedCounter {
 private:
-    typedef SharedCounter Base;
-
     T* m_Ptr;
     [[emptyable_address]] AllocT m_Alloc;
     [[emptyable_address]] DelT m_Deleter;
@@ -21,7 +19,7 @@ private:
 public:
     template <typename AllocU, typename DelU>
     inline constexpr SharedBlock(T* ptr, AllocU&& alloc, DelU&& del) noexcept
-        : Base()
+        : SharedCounter()
         , m_Ptr(ptr)
         , m_Alloc(ForwardArg<AllocU>(alloc))
         , m_Deleter(ForwardArg<DelU>(del))
@@ -54,74 +52,30 @@ private:
 template <typename T, typename AllocT>
 class InplaceSharedBlock : public SharedCounter {
 private:
-    typedef SharedCounter Base;
-
     alignas(alignof(T)) byte m_Buffer[sizeof(T)];
     [[emptyable_address]] AllocT m_Alloc;
 
 public:
     template <typename AllocU, typename... Args>
         requires ConstructibleFromT<T, Args...>
-    inline constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args)
+    inline InplaceSharedBlock(AllocU&& alloc, Args&&... args)
         noexcept(NoThrowConstructibleFromT<T, Args...>)
-        : Base()
+        : SharedCounter()
         , m_Alloc(ForwardArg<AllocU>(alloc))
     {
         T* ptr = reinterpret_cast<T*>(&m_Buffer[0]);
         memory::ConstructAt(ptr, ForwardArg<Args>(args)...);
     }
 
-    inline constexpr T* Get() noexcept { return reinterpret_cast<T*>(&m_Buffer[0]); }
+    inline T* Get() noexcept { return reinterpret_cast<T*>(&m_Buffer[0]); }
 
-    inline constexpr void DeletePtr() noexcept override
+    inline void DeletePtr() noexcept override
     {
         T* ptr = reinterpret_cast<T*>(&m_Buffer[0]);
         memory::DestructAt(ptr);
     }
 
-    inline constexpr void DeleteSharedBlock() noexcept override
-    {
-        auto alloc = RebindAllocator<InplaceSharedBlock>(MoveArg(m_Alloc));
-        memory::DestructAt(this);
-        alloc.Deallocate(this, 1);
-    }
-
-private:
-    InplaceSharedBlock(InplaceSharedBlock const&) = delete;
-    InplaceSharedBlock(InplaceSharedBlock&&) = delete;
-
-    InplaceSharedBlock& operator=(InplaceSharedBlock const&) = delete;
-    InplaceSharedBlock& operator=(InplaceSharedBlock&&) = delete;
-};
-
-template <NoThrowDefaultConstructibleT T, typename AllocT>
-class InplaceSharedBlock<T, AllocT> : public SharedCounter {
-private:
-    typedef SharedCounter Base;
-
-    T m_Buffer;
-    [[emptyable_address]] AllocT m_Alloc;
-
-public:
-    template <typename AllocU, typename... Args>
-        requires ConstructibleFromT<T, Args...>
-    inline constexpr InplaceSharedBlock(AllocU&& alloc, Args&&... args)
-        noexcept(NoThrowConstructibleFromT<T, Args...>)
-        : Base()
-        , m_Alloc(ForwardArg<AllocU>(alloc))
-    {
-        memory::ConstructAt(memory::AddressOf(m_Buffer), ForwardArg<Args>(args)...);
-    }
-
-    inline constexpr T* Get() noexcept { return AddressOf(m_Buffer); }
-
-    inline constexpr void DeletePtr() noexcept override
-    {
-        T* ptr = AddressOf(m_Buffer);
-        memory::DestructAt(ptr);
-    }
-
-    inline constexpr void DeleteSharedBlock() noexcept override
+    inline void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<InplaceSharedBlock>(MoveArg(m_Alloc));
         memory::DestructAt(this);
@@ -137,12 +91,15 @@ private:
 };
 
 export template <NonRefT T>
+class WeakPtr;
+
+export template <NonRefT T>
 class SharedPtr {
 private:
-    typedef SharedCounter Base;
-
     template <NonRefT U>
     friend class SharedPtr;
+    template <NonRefT U>
+    friend class WeakPtr;
 
 public:
     typedef T Value;
@@ -151,7 +108,7 @@ public:
 
 private:
     Ptr m_Ptr;
-    Base* m_Counter;
+    SharedCounter* m_Counter;
 
 public:
     constexpr SharedPtr() noexcept;
@@ -543,7 +500,15 @@ inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args
              ConstructibleFromT<T, Args...>
 {
     SharedPtr<T> ret;
-    ret.AllocateInplaceBlock(alloc, ForwardArg<Args>(args)...);
+
+    if consteval {
+        T* ptr = ::new T(ForwardArg<Args>(args)...);
+        ret.AllocateBlock(ptr, alloc, DefaultDeleter<T>{});
+    }
+    else {
+        ret.AllocateInplaceBlock(alloc, ForwardArg<Args>(args)...);
+    }
+
     return ret;
 }
 

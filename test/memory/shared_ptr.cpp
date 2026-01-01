@@ -12,7 +12,14 @@ static constexpr bool ConstexprSharedPtr()
     {
         SharedPtr<ConstexprFoo> p3(p);
     }
-    return p.Equals(p2) && p.OwnerEquals(p2);
+
+    SharedPtr<ConstexprFoo> p4 = MakeShared<ConstexprFoo>("string");
+    SharedPtr<ConstexprFoo> p5(p4);
+    {
+        SharedPtr<ConstexprFoo> p6(p4);
+    }
+
+    return (p.Equals(p2) && p.OwnerEquals(p2)) && (p4.Equals(p5) && p4.OwnerEquals(p5));
 }
 
 int main()

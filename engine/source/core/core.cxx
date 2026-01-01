@@ -12,8 +12,9 @@ export import :utility_operation;
 export import :allocator;
 export import :deleter;
 export import :memory_operation;
-export import :shared_ptr;
 export import :unique_ptr;
+export import :shared_ptr;
+export import :weak_ptr;
 
 export import :bit_operation;
 
