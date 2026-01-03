@@ -1,6 +1,7 @@
 export module mini.core:format;
 
-import fmt;
+export import fmt;
+
 import :type;
 import :memory_operation;
 import :string;
@@ -65,16 +66,26 @@ inline constexpr String ToString(T const& val, StringView fmt = "{}")
     return Format(fmt, val);
 }
 
-export template <CharT T, AllocatorT<T> AllocT>
-inline constexpr auto format_as(BasicString<T, AllocT> const& str)
-{
-    return fmt::basic_string_view<T>(str.Data(), str.Size());
-}
-
-export template <CharT T>
-inline constexpr auto format_as(BasicStringView<T> const& str)
-{
-    return fmt::basic_string_view<T>(str.Data(), str.Size());
-}
-
 } // namespace mini
+
+namespace fmt {
+
+export template <mini::CharT T, mini::AllocatorT<T> AllocT>
+struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<T>, T> {
+    auto format(mini::BasicString<T, AllocT> const& str, format_context& ctx) const
+    {
+        basic_string_view<T> sv = fmt::basic_string_view<T>(str.Data(), str.Size());
+        return formatter<basic_string_view<T>>::format(sv, ctx);
+    }
+};
+
+export template <mini::CharT T>
+struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, T> {
+    auto format(mini::BasicStringView<T> const& str, format_context& ctx) const
+    {
+        basic_string_view<T> sv = fmt::basic_string_view<T>(str.Data(), str.Size());
+        return formatter<basic_string_view<T>>::format(sv, ctx);
+    }
+};
+
+} // namespace fmt

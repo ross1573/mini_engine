@@ -43,9 +43,8 @@ function (generate_api_name target)
 endfunction()
 
 function (generate_module_entry target)
-    set(options NULL_INTERFACE)
-    set(args PREFIX API INTERFACE_CLASS IMPORT)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
+    set(args PREFIX API NULL_INTERFACE INTERFACE_CLASS IMPORT)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 

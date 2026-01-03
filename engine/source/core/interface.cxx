@@ -14,9 +14,18 @@ private:
     bool Initialize() final;
 };
 
+Interface::Interface() noexcept
+{
+}
+
 Interface::~Interface() noexcept
 {
     ASSERT(g_ModuleLoader.Count() == 0, "module remaining");
+}
+
+bool Interface::Initialize()
+{
+    return true;
 }
 
 } // namespace mini::core
