@@ -13,7 +13,7 @@ protected:
     platform::Handle* CreateHandle() final { return new macos::Handle(); }
     platform::Window* CreateWindow() final
     {
-        macos::Handle* handle = static_cast<macos::Handle*>(Platform::GetHandle());
+        macos::Handle* handle = static_cast<macos::Handle*>(Get()->GetHandle());
         return new macos::Window((cocoa::Application*)handle);
     }
 };

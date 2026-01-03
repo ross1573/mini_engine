@@ -38,6 +38,7 @@ function (add_module name)
         "PREFIX" 
         "API" 
         "INTERFACE_CLASS"
+        "ENTRY_IMPORT"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
     parse_module_type()
@@ -65,14 +66,20 @@ function (add_module name)
     if (NOT arg_NO_MODULE_ENTRY)
         if (arg_NO_MODULE_INTERFACE)
             set(arg_INTERFACE_CLASS "")
+            set(null_interface ON)
         elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
             set(arg_INTERFACE_CLASS "Interface")
+            set(null_interface OFF)
+        else()
+            set(null_interface OFF)
         endif()
 
         generate_module_entry(${name}
             API ${api}
             PREFIX ${prefix}
             INTERFACE_CLASS ${arg_INTERFACE_CLASS}
+            NULL_INTERFACE ${null_interface}
+            IMPORT ${arg_ENTRY_IMPORT}
         )
     endif()
 

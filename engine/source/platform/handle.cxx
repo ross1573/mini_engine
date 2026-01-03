@@ -12,6 +12,7 @@ public:
     virtual bool IsValid() const noexcept = 0;
 
     virtual void PollEvents() = 0;
+    virtual void AlertError(StringView const&) = 0;
 
 protected:
     Handle() = default;

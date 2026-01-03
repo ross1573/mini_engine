@@ -4,34 +4,64 @@ import :log;
 
 namespace mini::platform {
 
-Interface::~Interface()
+Interface::Interface() noexcept
 {
-    g_Window.Reset();
-    g_Handle.Reset();
+    interface = this;
+}
+
+Interface::~Interface() noexcept
+{
+    m_Window.Reset();
+    m_Handle.Reset();
+
+    interface = nullptr;
+}
+
+void Interface::PollEvents()
+{
+    if (m_Handle != nullptr) {
+        m_Handle->PollEvents();
+    }
 }
 
 bool Interface::Initialize()
 {
-    Module platformModule = Module(options::platformModule);
-    ENSURE(platformModule.IsValid(), "failed to load platform module") return false;
+    m_NativeModule.Load(options::platformModule);
+    ENSURE(m_NativeModule.IsValid(), "failed to load platform module") return false;
 
-    Platform* interface = platformModule.GetInterface<Platform>();
-    ENSURE(interface, "platform interface not implemented") return false;
+    Platform* platformInterface = m_NativeModule.GetInterface<Platform>();
+    ENSURE(platformInterface, "platform interface not implemented") return false;
 
-    interface->m_NativeModule = MoveArg(platformModule);
-    Handle* handle = interface->CreateHandle();
+    Handle* handle = platformInterface->CreateHandle();
     ENSURE(handle && handle->IsValid(), "failed to create platform handle") return false;
 
-    g_Handle = UniquePtr(handle);
+    m_Handle = UniquePtr(handle);
     Log("platform handle created");
 
-    Window* window = interface->CreateWindow();
+    Window* window = platformInterface->CreateWindow();
     ENSURE(window && window->IsValid(), "failed to create window handle") return false;
 
-    g_Window = UniquePtr(window);
+    m_Window = UniquePtr(window);
     Log("platform window created");
 
     return true;
 }
 
 } // namespace mini::platform
+
+namespace mini {
+
+void Platform::AlertError(StringView const& msg)
+{
+    Handle* handle = platform::interface->GetHandle();
+    if (handle != nullptr) {
+        handle->AlertError(msg);
+    }
+}
+
+platform::Interface* Platform::Get() const noexcept
+{
+    return platform::interface;
+}
+
+} // namespace mini

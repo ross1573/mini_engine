@@ -39,8 +39,8 @@ void Interface::Launch()
 
     m_Engine = UniquePtr(new Engine(platform, graphics));
 
-    Platform::GetWindow()->Show();
-    Platform::GetHandle()->PollEvents();
+    platform->GetWindow()->Show();
+    platform->PollEvents();
 
     m_Engine->Run();
 }
@@ -82,15 +82,17 @@ void Engine::Run()
     while (m_Running) {
         m_Graphics->BeginFrame();
         {
-            RectInt windowSize = Platform::GetWindow()->GetSize();
+            platform::Window* window = m_Platform->GetWindow();
+            RectInt windowSize = window->GetSize();
             Rect windowRect(windowSize);
 
-            m_Graphics->GetRenderContext()->SetViewport(windowRect, 0.1f, 100.f);
-            m_Graphics->GetRenderContext()->SetScissorRect(windowSize);
+            graphics::RenderContext* renderContext = m_Graphics->GetRenderContext();
+            renderContext->SetViewport(windowRect, 0.1f, 100.f);
+            renderContext->SetScissorRect(windowSize);
         }
         m_Graphics->EndFrame();
 
-        Platform::GetHandle()->PollEvents();
+        m_Platform->PollEvents();
     }
 }
 
@@ -104,7 +106,7 @@ void Engine::Quit()
 
 void Engine::Abort(String const& msg)
 {
-    Platform::GetWindow()->DialogCritical(msg);
+    Platform::AlertError(msg);
     memory::DestructAt(&msg);
 
     engine::interface->Shutdown();

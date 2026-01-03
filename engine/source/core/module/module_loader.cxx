@@ -23,8 +23,9 @@ public:
 
 class CORE_API ModuleLoader {
 private:
-    typedef Array<ModuleRef>::Iterator RefIterator;
-    typedef Array<ModuleWeakRef>::Iterator WeakRefIterator;
+    typedef typename Array<ModuleRef>::Iterator RefIterator;
+    typedef typename Array<ModuleRef>::ConstIterator RefConstIterator;
+    typedef typename Array<ModuleWeakRef>::Iterator WeakRefIterator;
 
     // TODO: use hash map instead
     Array<ModuleRef> m_Uninitialized;
@@ -33,6 +34,8 @@ private:
 public:
     bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
     SharedPtr<ModuleHandle> Load(StringView);
+
+    SizeT Count() const noexcept;
 
 private:
     SharedPtr<ModuleHandle> LoadHandle(StringView);

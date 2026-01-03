@@ -1,6 +1,6 @@
 module @target@;
 
-import mini.core;
+import @import@;
 
 namespace {
 

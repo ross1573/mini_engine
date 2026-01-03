@@ -93,19 +93,6 @@ Window::~Window()
     m_View = nullptr;
 }
 
-void Window::AlertError(char const* msg)
-{
-    @autoreleasepool {
-        NSString* errMsg = [NSString stringWithUTF8String:msg];
-        NSAlert* alert = [[NSAlert alloc] init];
-        [alert addButtonWithTitle:@"OK"];
-        [alert setMessageText:@"Error"];
-        [alert setInformativeText:errMsg];
-        [alert setAlertStyle:NSAlertStyleCritical];
-        [alert runModal];
-    }
-}
-
 void Window::Minimize()
 {
     if (IsMinimized()) {

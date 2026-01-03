@@ -93,6 +93,18 @@ bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle
 
 SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 {
+    WeakRefIterator weakRefIter =
+        FindIf(m_Modules.Begin(), m_Modules.End(),
+               [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
+
+    if (weakRefIter != m_Modules.End()) {
+        if (weakRefIter->handle.IsValid()) {
+            return StaticCast<ModuleHandle>(weakRefIter->handle.Lock());
+        }
+
+        m_Modules.RemoveAt(weakRefIter);
+    }
+
     SharedPtr<ModuleHandle> handle = LoadHandle(name);
     if (handle.IsValid() == false) {
         return nullptr;
@@ -109,18 +121,6 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 
 SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 {
-    WeakRefIterator weakRefIter =
-        FindIf(m_Modules.Begin(), m_Modules.End(),
-               [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
-
-    if (weakRefIter != m_Modules.End()) {
-        if (weakRefIter->handle.IsValid()) {
-            return StaticCast<ModuleHandle>(weakRefIter->handle.Lock());
-        }
-
-        m_Modules.RemoveAt(weakRefIter);
-    }
-
     RefIterator refIter =
         FindIf(m_Uninitialized.Begin(), m_Uninitialized.End(),
                [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
@@ -135,6 +135,16 @@ SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
     }
 
     return nullptr;
+}
+
+SizeT ModuleLoader::Count() const noexcept
+{
+    SizeT count = 0;
+    for (auto const& mod : m_Modules) {
+        if (mod.handle.IsValid()) ++count;
+    }
+
+    return count;
 }
 
 } // namespace mini

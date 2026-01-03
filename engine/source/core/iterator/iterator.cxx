@@ -92,6 +92,20 @@ inline constexpr typename T::Iterator end(T &c)
 }
 
 export template <typename T>
+inline constexpr typename T::ConstIterator begin(T const &c)
+    requires ForwardIteratorT<typename T::ConstIterator>
+{
+    return c.Begin();
+}
+
+export template <typename T>
+inline constexpr typename T::ConstIterator end(T const &c)
+    requires ForwardIteratorT<typename T::ConstIterator>
+{
+    return c.End();
+}
+
+export template <typename T>
 inline constexpr typename T::ConstIterator cbegin(T const &c)
     requires ForwardIteratorT<typename T::ConstIterator>
 {

@@ -8,19 +8,29 @@ export import :handle;
 namespace mini::platform {
 
 export class PLATFORM_API Interface final : public Module::Interface {
+private:
+    Module m_NativeModule;
+    UniquePtr<Handle> m_Handle;
+    UniquePtr<Window> m_Window;
+
 public:
-    virtual ~Interface() final;
+    Interface() noexcept;
+    ~Interface() noexcept final;
+
+    void PollEvents();
+
+    Handle* GetHandle() const noexcept { return m_Handle.Get(); }
+    Window* GetWindow() const noexcept { return m_Window.Get(); }
 
 private:
-    virtual bool Initialize() override;
+    bool Initialize() final;
 };
+
+PLATFORM_API Interface* interface = nullptr;
 
 } // namespace mini::platform
 
 namespace mini {
-
-PLATFORM_API UniquePtr<platform::Handle> g_Handle;
-PLATFORM_API UniquePtr<platform::Window> g_Window;
 
 export class PLATFORM_API Platform : public Module::Interface {
 public:
@@ -30,19 +40,18 @@ public:
 private:
     friend class platform::Interface;
 
-    Module m_NativeModule;
-
 public:
     virtual ~Platform() override = default;
 
-    static Handle* GetHandle() noexcept { return g_Handle.Get(); }
-    static Window* GetWindow() noexcept { return g_Window.Get(); }
+    virtual Handle* CreateHandle() = 0;
+    virtual Window* CreateWindow() = 0;
+
+    static void AlertError(StringView const&);
 
 protected:
     Platform() noexcept = default;
 
-    virtual Handle* CreateHandle() = 0;
-    virtual Window* CreateWindow() = 0;
+    platform::Interface* Get() const noexcept;
 };
 
 } // namespace mini

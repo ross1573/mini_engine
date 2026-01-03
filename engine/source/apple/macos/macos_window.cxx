@@ -18,8 +18,6 @@ public:
 
     bool IsValid() const noexcept final { return Base::IsValid(); }
 
-    void DialogCritical(String const& msg) final;
-
     void Resize(RectInt const& windowSize) final;
     void Minimize() final { Base::Minimize(); }
     void Maximize() final { Base::Maximize(); }

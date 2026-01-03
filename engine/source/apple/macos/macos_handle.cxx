@@ -19,6 +19,7 @@ public:
     bool IsValid() const noexcept final { return Base::IsValid(); }
 
     void PollEvents() final { Base::PollEvents(); }
+    void AlertError(StringView const& msg) final { Base::AlertError(msg.Data()); }
 
     NSApplication* GetNSApplication() const noexcept;
 

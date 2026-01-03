@@ -18,8 +18,6 @@ public:
 
     bool IsValid() const noexcept;
 
-    void AlertError(char const*);
-
     void Show();
     void Hide();
     void Minimize();

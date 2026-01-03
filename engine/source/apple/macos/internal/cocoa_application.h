@@ -19,6 +19,7 @@ public:
 
     void Launch();
     void PollEvents();
+    void AlertError(char const*);
 
     virtual void ApplicationWillFinishLaunching(NS::Notification*) = 0;
     virtual void ApplicationDidFinishLaunching(NS::Notification*) = 0;

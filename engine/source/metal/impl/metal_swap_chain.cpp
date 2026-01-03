@@ -12,14 +12,13 @@ SwapChain::SwapChain(MTL::Device* device)
     , m_Drawable(nullptr)
 {
     ASSERT(m_Layer, "failed to retrieve MetalLayer object");
+
     m_Layer->setDevice(device);
 }
 
 bool SwapChain::Initialize()
 {
-    auto window = (apple::Window*)Platform::GetWindow();
-    window->SetMetalLayer(m_Layer.Get());
-
+    interface->GetWindow()->SetMetalLayer(m_Layer.Get());
     return true;
 }
 
@@ -43,12 +42,12 @@ void SwapChain::SetVSync([[maybe_unused]] uint8 vsync)
 
 void SwapChain::SetFullScreen(bool fullscreen)
 {
-    static_cast<apple::Window*>(Platform::GetWindow())->SetFullScreen(fullscreen);
+    interface->GetWindow()->SetFullScreen(fullscreen);
 }
 
 bool SwapChain::GetFullScreen() const
 {
-    return static_cast<apple::Window*>(Platform::GetWindow())->IsFullScreen();
+    return interface->GetWindow()->IsFullScreen();
 }
 
 CA::MetalDrawable* SwapChain::GetCurrentDrawable()

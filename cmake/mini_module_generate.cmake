@@ -44,7 +44,7 @@ endfunction()
 
 function (generate_module_entry target)
     set(options NULL_INTERFACE)
-    set(args PREFIX API INTERFACE_CLASS)
+    set(args PREFIX API INTERFACE_CLASS IMPORT)
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
@@ -58,6 +58,12 @@ function (generate_module_entry target)
     else()
         set(null_interface "false")
         string(CONCAT class ${prefix} "::" ${api} "::" ${arg_INTERFACE_CLASS})
+    endif()
+
+    if (NOT DEFINED arg_IMPORT OR arg_IMPORT STREQUAL "")
+        set(import "mini.core")
+    else()
+        set(import ${arg_IMPORT})
     endif()
     
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
