@@ -31,7 +31,7 @@ add_module(mini.test SHARED NO_MODULE_INTERFACE)
 
 target_sources(mini.test
 PUBLIC
-    test_macro.h
+    include/test_macro.h
 
 PUBLIC
     FILE_SET test TYPE CXX_MODULES
@@ -39,7 +39,7 @@ PUBLIC
         test.cxx
 )
 
-target_include_directories(mini.test PUBLIC ./)
+target_include_directories(mini.test PUBLIC include)
 target_link_libraries(mini.test PUBLIC mini.core)
 
 if (MSVC)
