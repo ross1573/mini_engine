@@ -1,6 +1,6 @@
 add_module(mini.core 
-    NO_API_LOG
-    NO_MODULE_ENTRY
+    NO_API_LOG 
+    ENTRY_IMPORT ":interface"
 )
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
@@ -191,6 +191,7 @@ target_sources(mini.core
 PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
+        interface.cxx
         core.cxx
 
 PRIVATE
