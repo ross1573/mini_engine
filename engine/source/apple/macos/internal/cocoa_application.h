@@ -13,7 +13,9 @@ protected:
 
 public:
     Application();
-    ~Application();
+    virtual ~Application() noexcept;
+
+    bool IsValid() const noexcept;
 
     void Launch();
     void PollEvents();
@@ -23,6 +25,11 @@ public:
 
     virtual void OnKeyDown(unsigned int keyCode) = 0;
 };
+
+inline bool Application::IsValid() const noexcept
+{
+    return m_Application != nullptr;
+}
 
 } // namespace mini::cocoa
 

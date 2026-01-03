@@ -12,19 +12,12 @@ namespace mini::windows {
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-Handle::Handle(HINSTANCE inst)
-    : m_Instance(inst)
+Handle::Handle()
 {
+    auto className = options::name;
+
+    m_Instance = GetModuleHandle(nullptr);
     ASSERT(m_Instance);
-}
-
-Handle::~Handle()
-{
-}
-
-bool Handle::Initialize()
-{
-    auto className = mini::options::name;
 
     WNDCLASSEX wcex = {
         .cbSize = sizeof(WNDCLASSEX),
@@ -42,12 +35,11 @@ bool Handle::Initialize()
     };
 
     RegisterClassExA(&wcex);
-    return true;
 }
 
-platform::Window* Handle::CreatePlatformWindow()
+bool Handle::IsValid() const noexcept
 {
-    return new windows::Window();
+    return m_Instance != nullptr;
 }
 
 void Handle::PollEvents()

@@ -1,5 +1,6 @@
+module @target@;
+
 import mini.core;
-import @target@;
 
 namespace {
 
@@ -8,7 +9,11 @@ private:
     typedef @class@ Interface;
 
     static_assert(mini::DerivedFromT<Interface, mini::Module::Interface>,
-                  "module interface must inherit from mini::ModuleInterface class.");
+                  "module interface must inherit from mini::Module::Interface class.");
+
+    static_assert(mini::AbstractT<Interface> == false, 
+                  "module interface cannot be an abstract type. " 
+                  "consider passing NO_MODULE_ENTRY when adding the module");
 
     static_assert(mini::DefaultConstructibleT<Interface>,
                   "non default constructible module inteface must be generated manually. "
@@ -25,7 +30,7 @@ public:
 } // namespace
 
 #if @api_upper@_STATIC
-void __@api_full@_start_module()
+extern "C" void __@api_full@_start_module()
 {
     mini::StaticModuleInitializer<InterfaceFactory>::Register("@api@");
 }

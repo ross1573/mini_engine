@@ -3,99 +3,87 @@ module mini.graphics;
 import mini.core;
 import :log;
 
-namespace mini {
+namespace mini::graphics {
 
-bool Graphics::Initialize()
+Interface::Interface() noexcept
 {
-    ASSERT(g_Device == nullptr);
-
-    return LoadAPI(mini::options::graphicsAPI);
+    interface = this;
 }
 
-bool Graphics::LoadAPI(StringView api)
+Interface::~Interface() noexcept
 {
-    Module graphicsModule = Module(api);
-    ENSURE(graphicsModule.IsValid(), "failed to load graphics module") {
+    m_RenderContext.Reset();
+    m_SwapChain.Reset();
+    m_Device.Reset();
+
+    m_CurrentAPI = API::Null;
+    interface = nullptr;
+}
+
+bool Interface::Initialize()
+{
+    m_CurrentModule.Load(options::graphicsModule);
+    ENSURE(m_CurrentModule.IsValid(), "failed to load graphics module") {
         return false;
     }
-    graphics::Log("{0} module loaded", api);
 
-    using GraphicsInterface = mini::graphics::ModuleInterface;
-    GraphicsInterface* interface = graphicsModule.GetInterface<GraphicsInterface>();
-    ENSURE(interface,
-           Format("{0} graphics has not been implemented mini::graphics::ModuleInterface",
-                  mini::options::graphicsAPI)
-               .Data()) {
+    String moduleName = m_CurrentModule.GetName();
+    Graphics* current = m_CurrentModule.GetInterface<Graphics>();
+    ENSURE(current, "has not implemented mini::graphics::Interface") {
         return false;
     }
+    Log(moduleName + " module loaded");
 
-    using GraphicsDevice = mini::graphics::Device;
-    GraphicsDevice* device = interface->CreateGraphicDevice();
+    Device* device = current->CreateDevice();
     ENSURE(device, "failed to create graphic device") {
         return false;
     }
-    graphics::Log("{0} device created", api);
+    Log(moduleName + " device created");
 
-    g_Graphics = MakeUnique<Graphics>();
-    g_Graphics->m_Module = MoveArg(graphicsModule);
-    g_Device = UniquePtr(device);
-    g_CurrAPI = g_Device->GetAPI();
+    m_Device = UniquePtr(device);
+    m_CurrentAPI = m_Device->GetAPI();
 
-    ENSURE(g_CurrAPI != API::Null, "unknown api") return false;
-    ENSURE(g_Device->Initialize(), "failed to initialize graphics device") {
+    ENSURE(m_CurrentAPI != API::Null, "unknown api") return false;
+    ENSURE(m_Device->Initialize(), "failed to initialize graphics device") {
         return false;
     }
-    graphics::Log("{0} device initialized", api);
+    Log("{} device initialized", m_CurrentAPI);
 
-    g_RenderContext = UniquePtr(g_Device->CreateRenderContext());
-    ENSURE(g_RenderContext && g_RenderContext->Initialize(), "Failed to create render context") {
+    m_RenderContext = UniquePtr(m_Device->CreateRenderContext());
+    ENSURE(m_RenderContext && m_RenderContext->Initialize(), "Failed to create render context") {
         return false;
     }
-    graphics::Log("render context initialized");
+    Log("{} render context initialized", m_CurrentAPI);
 
-    g_SwapChain = UniquePtr(g_Device->CreateSwapChain());
-    ENSURE(g_SwapChain && g_SwapChain->Initialize(), "Failed to create swap chain") {
+    m_SwapChain = UniquePtr(m_Device->CreateSwapChain());
+    ENSURE(m_SwapChain && m_SwapChain->Initialize(), "Failed to create swap chain") {
         return false;
     }
-    graphics::Log("swap chain initialized");
+    Log("{} swap chain initialized", m_CurrentAPI);
 
     return true;
 }
 
-void Graphics::Shutdown()
+void Interface::BeginFrame()
 {
-    g_RenderContext.Reset();
-    g_SwapChain.Reset();
-    g_Device.Reset();
-    g_CurrAPI = API::Null;
-
-    for (auto& func : g_Graphics->m_ExitCallback) {
-        func();
-    }
-
-    g_Graphics.Reset();
+    m_RenderContext->BeginRender();
 }
 
-void Graphics::AtExit(CallbackFunc func)
+void Interface::EndFrame()
 {
-    g_Graphics->m_ExitCallback.Push(func);
+    m_RenderContext->EndRender();
+    m_RenderContext->Execute();
+
+    m_SwapChain->Present();
 }
 
-void Graphics::BeginFrame()
-{
-    g_RenderContext->BeginRender();
-}
+} // namespace mini::graphics
 
-void Graphics::EndFrame()
-{
-    g_RenderContext->EndRender();
-    g_RenderContext->Execute();
-    g_SwapChain->Present();
-}
+namespace mini {
 
 void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
 {
-    SwapChain* swapChain = GetSwapChain();
+    SwapChain* swapChain = graphics::interface->GetSwapChain();
     if (swapChain == nullptr) [[unlikely]] {
         graphics::LogError("failed to change resolution. SwapChain is not initialized");
         return;

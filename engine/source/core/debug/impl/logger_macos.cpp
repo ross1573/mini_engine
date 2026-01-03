@@ -83,7 +83,6 @@ StringView LoggerBase::InitializeIdentifier()
 
 init_finish:
     if (bundle != nullptr) CFRelease(bundle);
-    if (bundleIdentifier != nullptr) CFRelease(bundleIdentifier);
 
     if (identifier.IsEmpty() == false) {
         m_Identifier = MoveArg(identifier);

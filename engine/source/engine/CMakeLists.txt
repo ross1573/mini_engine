@@ -1,4 +1,4 @@
-add_module(mini.engine NO_MODULE_INTERFACE)
+add_module(mini.engine)
 
 target_sources(mini.engine
 PUBLIC

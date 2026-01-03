@@ -24,18 +24,18 @@ export enum class CommandType : int8 {
     Copy
 };
 
-export GRAPHICS_API inline String ToString(API api)
+export GRAPHICS_API inline constexpr StringView format_as(API api)
 {
     switch (api) {
-        case API::D3D12:  return String{ "D3D12" };
-        case API::Metal:  return String{ "Metal" };
-        case API::Vulkan: return String{ "Vulkan" };
+        case API::D3D12:  return StringView{ "d3d12" };
+        case API::Metal:  return StringView{ "metal" };
+        case API::Vulkan: return StringView{ "vulkan" };
 
         case API::Null: [[fallthrough]];
         default:        break;
     }
 
-    return String{ "null" };
+    return StringView{ "null" };
 }
 
 GRAPHICS_API const std::regex d3d12_regex("[Dd]3[Dd]12");

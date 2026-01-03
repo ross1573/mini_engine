@@ -155,7 +155,7 @@ Application::Application()
     }
 }
 
-Application::~Application()
+Application::~Application() noexcept
 {
     [m_Application release];
     [m_AutoReleasePool release];

@@ -520,7 +520,7 @@ inline constexpr SharedPtr<T> MakeShared(Args&&... args)
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr auto operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
+inline constexpr bool operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r.Get();
@@ -534,7 +534,7 @@ inline constexpr auto operator<=>(SharedPtr<T> const& l, SharedPtr<U> const& r) 
 }
 
 export template <NonRefT T>
-inline constexpr auto operator==(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr bool operator==(SharedPtr<T> const s, NullptrT) noexcept
 {
     return s.Get() == nullptr;
 }

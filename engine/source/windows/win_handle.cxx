@@ -11,17 +11,15 @@ private:
     HINSTANCE m_Instance;
 
 public:
-    Handle(HINSTANCE);
-    ~Handle() final;
+    Handle();
+    ~Handle() noexcept final = default;
 
-    bool Initialize() final;
+    bool IsValid() const noexcept final;
+
     void PollEvents() final;
-
-    platform::Window* CreatePlatformWindow() final;
-
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 
-    inline HINSTANCE GetHINSTANCE() const { return m_Instance; }
+    HINSTANCE GetHINSTANCE() const { return m_Instance; }
 };
 
 } // namespace mini::windows

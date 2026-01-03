@@ -8,16 +8,6 @@ export module mini.core:type_concepts;
 
 import :type_traits;
 
-template <typename T, typename... Args>
-struct AnyOfImpl {
-    static constexpr bool value = (std::is_same<T, Args>::value || ...);
-};
-
-template <typename T>
-struct AnyOfImpl<T> {
-    static constexpr bool value = false;
-};
-
 namespace mini {
 
 export template <typename T>
@@ -47,17 +37,34 @@ concept NonArrT = !ArrT<T>;
 export template <typename T>
 concept ValueT = NonPtrT<T> && NonRefT<T> && !std::is_array_v<T>;
 
-export template <typename Base, typename Derived>
-concept BaseOfT = std::is_base_of_v<Base, Derived>;
+export template <typename T>
+concept AbstractT = std::is_abstract_v<T>;
 
-export template <typename Derived, typename Base>
-concept DerivedFromT = std::is_base_of_v<Base, Derived>;
+} // namespace mini
+
+namespace mini {
+
+template <typename T, typename... Args>
+struct AnyOfImpl {
+    static constexpr bool value = (std::is_same<T, Args>::value || ...);
+};
+
+template <typename T>
+struct AnyOfImpl<T> {
+    static constexpr bool value = false;
+};
 
 export template <typename T, typename U>
 concept SameAsT = std::same_as<T, U>;
 
 export template <typename T, typename... Args>
 concept AnyOfT = AnyOfImpl<T, Args...>::value;
+
+export template <typename Base, typename Derived>
+concept BaseOfT = std::is_base_of_v<Base, Derived>;
+
+export template <typename Derived, typename Base>
+concept DerivedFromT = std::is_base_of_v<Base, Derived>;
 
 export template <typename From, typename To>
 concept ImplicitlyConvertibleToT = std::is_convertible_v<From, To>;
@@ -73,6 +80,16 @@ concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
 
 export template <typename From, typename To>
 concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*, To*>;
+
+export template <typename T, typename U>
+concept AssignableFromT = std::assignable_from<T, U>;
+
+export template <typename T, typename U>
+concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
+
+} // namespace mini
+
+namespace mini {
 
 export template <typename T, typename... Args>
 concept ConstructibleFromT = std::constructible_from<T, Args...>;
@@ -94,12 +111,6 @@ concept MoveConstructibleT = std::move_constructible<T>;
 
 export template <typename T>
 concept CopyConstructibleT = std::copy_constructible<T>;
-
-export template <typename T, typename U>
-concept AssignableFromT = std::assignable_from<T, U>;
-
-export template <typename T, typename U>
-concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
 
 export template <typename T>
 concept DestructibleT = std::destructible<T>;
@@ -128,6 +139,10 @@ export template <typename T>
 concept TrivialT = std::is_trivially_copyable_v<T> && NoThrowDefaultConstructibleT<T> &&
                    NoThrowCopyableT<T>;
 
+} // namespace mini
+
+namespace mini {
+
 export template <typename T, typename... Args>
 concept CallableT = std::is_invocable_v<T, Args...>;
 
@@ -136,6 +151,10 @@ concept CallableWithReturnT = std::is_invocable_r_v<Ret, T, Args...>;
 
 export template <typename T, typename... Args>
 concept NoThrowCallableT = std::is_nothrow_invocable_v<T, Args...>;
+
+} // namespace mini
+
+namespace mini {
 
 export template <typename T>
 concept EqualityComparableT = std::equality_comparable<T>;

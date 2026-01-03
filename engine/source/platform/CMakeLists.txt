@@ -1,4 +1,4 @@
-add_module(mini.platform NO_MODULE_INTERFACE)
+add_module(mini.platform)
 
 target_sources(mini.platform
 PUBLIC

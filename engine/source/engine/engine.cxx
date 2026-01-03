@@ -1,43 +1,69 @@
 export module mini.engine;
 
 import mini.core;
+import mini.platform;
+import mini.graphics;
 
 namespace mini {
 
-export class ENGINE_API Engine {
-public:
-    typedef void (*CallbackFunc)();
+export class Engine;
 
+} // namespace mini
+
+namespace mini::engine {
+
+export class ENGINE_API Interface final : public Module::Interface {
+private:
+    Module m_Platform;
+    Module m_Graphics;
+
+    UniquePtr<Engine> m_Engine;
+
+public:
+    Interface();
+    ~Interface() noexcept final;
+
+    void Launch();
+    void Shutdown();
+
+    Engine* GetEngine() noexcept { return m_Engine.Get(); }
+
+protected:
+    bool Initialize() final;
+};
+
+ENGINE_API Interface* interface = nullptr;
+
+} // namespace mini::engine
+
+namespace mini {
+
+class ENGINE_API Engine {
 private:
     bool m_Running;
+    platform::Interface* m_Platform;
+    graphics::Interface* m_Graphics;
 
-    Array<CallbackFunc> m_QuitCallback;
-    Array<CallbackFunc> m_ExitCallback;
-
-private:
-    Engine();
-
-    bool Initialize();
-    void Shutdown();
+    friend class engine::Interface;
 
 public:
     ~Engine();
 
-    static void Launch();
+    void Run();
+
     static void Quit();
     static void Abort(String const& = "");
 
-    static void AtQuit(CallbackFunc);
-    static void AtExit(CallbackFunc);
+    static bool IsRunning();
 
-    inline static bool IsRunning();
+private:
+    Engine(platform::Interface*, graphics::Interface*);
 };
 
-ENGINE_API UniquePtr<Engine> g_Engine;
-
-bool Engine::IsRunning()
+inline bool Engine::IsRunning()
 {
-    return g_Engine.Get() && g_Engine->m_Running;
+    Engine* engine = engine::interface->GetEngine();
+    return engine != nullptr && engine->m_Running;
 }
 
 } // namespace mini

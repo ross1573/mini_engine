@@ -24,7 +24,9 @@ private:
 
 public:
     Window();
-    ~Window() = default;
+    ~Window() noexcept final = default;
+
+    bool IsValid() const noexcept final;
 
     void DialogCritical(String const&) final;
 
@@ -34,11 +36,11 @@ public:
     void Show() final;
     void Hide() final;
 
-    inline RectInt GetSize() const final { return m_Rect; }
-    inline bool IsMinimized() const final { return m_State == Minimized; }
-    inline bool IsMaximized() const final { return m_State == Maximized; }
+    RectInt GetSize() const final { return m_Rect; }
+    bool IsMinimized() const final { return m_State == Minimized; }
+    bool IsMaximized() const final { return m_State == Maximized; }
 
-    inline HWND GetHWND() const { return m_WindowHandle; }
+    HWND GetHWND() const { return m_WindowHandle; }
 };
 
 } // namespace mini::windows

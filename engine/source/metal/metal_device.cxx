@@ -17,8 +17,8 @@ public:
     graphics::SwapChain* CreateSwapChain() final;
     graphics::RenderContext* CreateRenderContext() final;
 
-    inline graphics::API GetAPI() const final { return graphics::API::Metal; }
-    inline MTL::Device* GetMTLDevice() const { return m_Device.Get(); }
+    graphics::API GetAPI() const final { return graphics::API::Metal; }
+    MTL::Device* GetMTLDevice() const { return m_Device.Get(); }
 };
 
 } // namespace mini::metal

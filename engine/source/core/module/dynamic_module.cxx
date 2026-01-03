@@ -11,6 +11,7 @@ class DynamicModuleHandle final : public ModuleHandle {
 public:
     typedef typename ModuleHandle::NativeHandle NativeHandle;
     typedef typename ModuleHandle::Interface Interface;
+    typedef typename ModuleHandle::ConstInterface ConstInterface;
 
 private:
     NativeHandle m_NativeHandle;
@@ -25,7 +26,7 @@ public:
 
     NativeHandle GetNativeHandle() noexcept final;
     Interface* GetInterface() noexcept final;
-    const Interface* GetInterface() const noexcept final;
+    ConstInterface* GetInterface() const noexcept final;
 
     template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
     FuncT GetFunction(NativeHandle, StringView);

@@ -6,7 +6,9 @@ namespace mini::platform {
 
 export class PLATFORM_API Window {
 public:
-    virtual ~Window() = default;
+    virtual ~Window() noexcept = default;
+
+    virtual bool IsValid() const noexcept = 0;
 
     virtual void DialogCritical(String const&) = 0;
 

@@ -8,102 +8,106 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 
+namespace mini::engine {
+
+Interface::Interface()
+{
+    interface = this;
+}
+
+Interface::~Interface() noexcept
+{
+    interface = nullptr;
+}
+
+bool Interface::Initialize()
+{
+    m_Platform.Load("platform");
+    m_Graphics.Load("graphics");
+
+    return m_Platform.IsValid() && m_Graphics.IsValid();
+}
+
+void Interface::Launch()
+{
+    ENSURE(m_Engine == nullptr, "another instance of engine is created") {
+        return;
+    }
+
+    platform::Interface* platform = m_Platform.GetInterface<platform::Interface>();
+    graphics::Interface* graphics = m_Graphics.GetInterface<graphics::Interface>();
+
+    m_Engine = UniquePtr(new Engine(platform, graphics));
+
+    Platform::GetWindow()->Show();
+    Platform::GetHandle()->PollEvents();
+
+    m_Engine->Run();
+}
+
+void Interface::Shutdown()
+{
+    m_Engine->m_Running = false;
+    m_Engine.Reset();
+
+    std::exit(-1);
+}
+
+} // namespace mini::engine
+
 namespace mini {
 
-Engine::Engine()
+Engine::Engine(platform::Interface* platform, graphics::Interface* graphics)
     : m_Running(false)
-    , m_QuitCallback()
-    , m_ExitCallback()
+    , m_Platform(platform)
+    , m_Graphics(graphics)
 {
 }
 
 Engine::~Engine()
 {
-    m_Running = false;
+    ENSURE(m_Running == false, "engine is still running") {}
+
+    m_Platform = nullptr;
+    m_Graphics = nullptr;
 }
 
-bool Engine::Initialize()
+void Engine::Run()
 {
-    ENSURE(Graphics::Initialize(), "failed to initialize graphics") return false;
-
-    m_Running = true;
-    return true;
-}
-
-void Engine::Shutdown()
-{
-    Graphics::Shutdown();
-    Platform::Shutdown();
-
-    for (auto func : g_Engine->m_ExitCallback) {
-        func();
-    }
-
-    g_Engine.Reset();
-}
-
-void Engine::Launch()
-{
-    ASSERT(g_Engine == nullptr, "another instance of engine is running");
-    g_Engine = UniquePtr(new Engine());
-
-    if (!g_Engine->Initialize()) {
+    ENSURE(m_Running == false, "engine is already running") {
         return;
     }
 
-    Platform::GetWindow()->Show();
-    Platform::GetHandle()->PollEvents();
-
-    while (g_Engine->m_Running) {
-        Graphics::BeginFrame();
+    m_Running = true;
+    while (m_Running) {
+        m_Graphics->BeginFrame();
         {
             RectInt windowSize = Platform::GetWindow()->GetSize();
             Rect windowRect(windowSize);
 
-            Graphics::GetRenderContext()->SetViewport(windowRect, 0.1f, 100.f);
-            Graphics::GetRenderContext()->SetScissorRect(windowSize);
+            m_Graphics->GetRenderContext()->SetViewport(windowRect, 0.1f, 100.f);
+            m_Graphics->GetRenderContext()->SetScissorRect(windowSize);
         }
-        Graphics::EndFrame();
+        m_Graphics->EndFrame();
 
         Platform::GetHandle()->PollEvents();
     }
-
-    g_Engine->Shutdown();
 }
 
 void Engine::Quit()
 {
-    for (auto func : g_Engine->m_QuitCallback) {
-        func();
-    }
-    g_Engine->m_QuitCallback.Clear();
-
-    if (g_Engine != nullptr) {
-        g_Engine->m_Running = false;
+    Engine* engine = engine::interface->GetEngine();
+    if (engine != nullptr) {
+        engine->m_Running = false;
     }
 }
 
 void Engine::Abort(String const& msg)
 {
     Platform::GetWindow()->DialogCritical(msg);
-
-    if (g_Engine != nullptr) {
-        g_Engine->m_Running = false;
-        g_Engine->Shutdown();
-    }
-
     memory::DestructAt(&msg);
-    std::exit(-1);
-}
 
-void Engine::AtQuit(CallbackFunc func)
-{
-    g_Engine->m_QuitCallback.Push(func);
-}
-
-void Engine::AtExit(CallbackFunc func)
-{
-    g_Engine->m_ExitCallback.Push(func);
+    engine::interface->Shutdown();
 }
 
 } // namespace mini

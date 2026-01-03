@@ -53,7 +53,7 @@ public:
     Descriptor Allocate();
     void Deallocate(Descriptor);
 
-    inline uint32 GetIncrementalSize() const { return m_IncrementSize; }
+    uint32 GetIncrementalSize() const { return m_IncrementSize; }
 
 private:
     bool AllocateHeap();

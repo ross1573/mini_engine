@@ -18,9 +18,11 @@ inline constexpr unsigned char vsync = 0;
 inline constexpr unsigned char bufferCount = 2;
 
 #if PLATFORM_WINDOWS
-inline constexpr char const* graphicsAPI = "d3d12";
+inline constexpr char const* graphicsModule = "d3d12";
+inline constexpr char const* platformModule = "windows";
 #elif PLATFORM_MACOS
-inline constexpr char const* graphicsAPI = "metal";
+inline constexpr char const* graphicsModule = "metal";
+inline constexpr char const* platformModule = "macos";
 #else
 inline constexpr char const* graphicsAPI = nullptr;
 #endif

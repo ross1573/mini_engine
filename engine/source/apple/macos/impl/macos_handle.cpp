@@ -13,22 +13,8 @@ namespace mini::macos {
 
 Handle::Handle()
     : cocoa::Application()
+    , platform::Handle()
 {
-}
-
-bool Handle::Initialize()
-{
-    ENSURE(m_Application, "failed to get shared NSApplication") {
-        return false;
-    }
-
-    Launch();
-    return true;
-}
-
-platform::Window* Handle::CreatePlatformWindow()
-{
-    return new Window(static_cast<cocoa::Application*>(this));
 }
 
 void Handle::OnKeyDown(uint32 keyCode)

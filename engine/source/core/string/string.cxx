@@ -65,7 +65,7 @@ private:
         PACKED_STRUCT_BEGIN(1)
         struct {
             SizeT layout : 1;
-            SizeT size : (sizeof(SizeT) * 8 - 1);
+            SizeT size   : (sizeof(SizeT) * 8 - 1);
         };
         LargeBuffer buffer;
         PACKED_STRUCT_END
@@ -1681,7 +1681,7 @@ export template <CharT T, AllocatorT<T> AllocT, StringLikeT<T> ViewT>
 inline constexpr BasicString<T, AllocT> operator+(BasicString<T, AllocT> const& l, ViewT const& r)
 {
     BasicString<T, AllocT> s = l;
-    l.Append(r);
+    s.Append(r);
     return s;
 }
 

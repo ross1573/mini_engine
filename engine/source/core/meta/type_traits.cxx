@@ -31,6 +31,6 @@ export template <bool Cond, typename T, typename F>
 using ConditionalT = std::conditional<Cond, T, F>::type;
 
 export template <typename... Args>
-using CommonT = std::common_type_t<Args...>;
+using CommonT = std::common_type<Args...>::type;
 
 } // namespace mini

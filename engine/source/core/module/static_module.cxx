@@ -12,14 +12,15 @@ class CORE_API StaticModuleHandle : public ModuleHandle {
 public:
     typedef typename ModuleHandle::NativeHandle NativeHandle;
     typedef typename ModuleHandle::Interface Interface;
+    typedef typename ModuleHandle::ConstInterface ConstInterface;
 
 private:
     UniquePtr<Interface> m_Interface;
 
 public:
-    StaticModuleHandle(StringView) noexcept {}
-    StaticModuleHandle(StringView, Interface* interface) noexcept
-        : m_Interface(interface)
+    StaticModuleHandle(StringView name, Interface* interface) noexcept
+        : ModuleHandle(name)
+        , m_Interface(interface)
     {
     }
 
@@ -29,7 +30,7 @@ public:
 
     NativeHandle GetNativeHandle() noexcept final { return nullptr; }
     Interface* GetInterface() noexcept final { return m_Interface.Get(); }
-    const Interface* GetInterface() const noexcept final { return m_Interface.Get(); }
+    ConstInterface* GetInterface() const noexcept final { return m_Interface.Get(); }
 };
 
 export template <CallableWithReturnT<ModuleInterface*> FactoryT>
@@ -41,7 +42,9 @@ private:
 public:
     static void Register(StringView name)
     {
-        g_ModuleLoader.RegisterUninitialized(name, FactoryT{}());
+        ModuleInterface* interface = FactoryT{}();
+        SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, interface);
+        g_ModuleLoader.RegisterUninitialized(name, StaticCast<ModuleHandle>(MoveArg(handle)));
     }
 };
 

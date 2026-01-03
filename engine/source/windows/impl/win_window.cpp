@@ -23,7 +23,7 @@ Window::Window()
     uint32 styleEx = WS_EX_APPWINDOW;
     uint32 style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 
-    if (mini::options::resizableWindow) {
+    if (options::resizableWindow) {
         style |= WS_THICKFRAME;
     }
 
@@ -32,6 +32,11 @@ Window::Window()
                                      nullptr);
 
     SetMenu(m_WindowHandle, 0);
+}
+
+bool Window::IsValid() const noexcept
+{
+    return m_WindowHandle != nullptr;
 }
 
 void Window::DialogCritical(String const& msg)

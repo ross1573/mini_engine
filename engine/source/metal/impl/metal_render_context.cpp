@@ -16,6 +16,7 @@ RenderContext::RenderContext(MTL::Device* device)
     , m_EventValue(0)
 {
     ASSERT(device);
+
     m_CmdQueue = TransferShared(device->newCommandQueue());
     m_Event = TransferShared(device->newSharedEvent());
 }
@@ -35,7 +36,7 @@ void RenderContext::BeginRender()
 
     m_AutoReleasePool = TransferShared(NS::AutoreleasePool::alloc()->init());
     m_CmdBuffer = m_CmdQueue->commandBuffer();
-    m_Drawable = ((SwapChain*)Graphics::GetSwapChain())->GetCurrentDrawable();
+    m_Drawable = interface->GetSwapChain()->GetCurrentDrawable();
 
     MTL::Texture* texture = m_Drawable->texture();
     MTL::RenderPassDescriptor* renderPass = MTL::RenderPassDescriptor::renderPassDescriptor();

@@ -1,7 +1,14 @@
 if (WIN32)
     add_executable(mini.launcher WIN32 windows/win_main.cpp)
 elseif (APPLE)
-    add_executable(mini.launcher MACOSX_BUNDLE macos/macos_main.cpp)
+    enable_language(OBJCXX)
+
+    add_executable(mini.launcher MACOSX_BUNDLE 
+        macos/macos_main.cpp
+        macos/macos_init.mm
+    )
+
+    target_link_libraries(mini.launcher PRIVATE "-framework AppKit")
     set_target_properties(mini.launcher 
     PROPERTIES 
         MACOSX_BUNDLE TRUE
@@ -16,9 +23,9 @@ endif()
 
 target_sources(mini.launcher
 PUBLIC 
-FILE_SET launcher TYPE CXX_MODULES
-FILES
-    launcher.cxx
+    FILE_SET launcher TYPE CXX_MODULES
+    FILES
+        launcher.cxx
 )
 
 generate_define_header(mini.launcher)
@@ -31,10 +38,6 @@ get_property(static_modules GLOBAL PROPERTY STATIC_MODULE)
 set(modules
     mini.core
     mini.engine
-    mini.platform
-
-    $<$<PLATFORM_ID:Windows>:mini.windows>
-    $<$<PLATFORM_ID:Darwin>:mini.macos>
 )
 
 list(APPEND modules ${static_modules})

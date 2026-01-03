@@ -2,28 +2,36 @@ module mini.platform;
 
 import :log;
 
-namespace mini {
+namespace mini::platform {
 
-bool Platform::Initialize(Handle* handle)
-{
-    ASSERT(handle);
-
-    g_Handle = UniquePtr(handle);
-    ENSURE(g_Handle->Initialize(), "Failed to initialize platform handle") {
-        return false;
-    }
-    platform::Log("platform handle initialized");
-
-    g_Window = UniquePtr(g_Handle->CreatePlatformWindow());
-    platform::Log("platform window initialized");
-
-    return true;
-}
-
-void Platform::Shutdown()
+Interface::~Interface()
 {
     g_Window.Reset();
     g_Handle.Reset();
 }
 
-} // namespace mini
+bool Interface::Initialize()
+{
+    Module platformModule = Module(options::platformModule);
+    ENSURE(platformModule.IsValid(), "failed to load platform module") return false;
+
+    Platform* interface = platformModule.GetInterface<Platform>();
+    ENSURE(interface, "platform interface not implemented") return false;
+
+    interface->m_NativeModule = MoveArg(platformModule);
+    Handle* handle = interface->CreateHandle();
+    ENSURE(handle && handle->IsValid(), "failed to create platform handle") return false;
+
+    g_Handle = UniquePtr(handle);
+    Log("platform handle created");
+
+    Window* window = interface->CreateWindow();
+    ENSURE(window && window->IsValid(), "failed to create window handle") return false;
+
+    g_Window = UniquePtr(window);
+    Log("platform window created");
+
+    return true;
+}
+
+} // namespace mini::platform

@@ -1,8 +1,10 @@
 import mini.launcher;
-import mini.macos;
+
+void NSApplicationInit();
 
 int main()
 {
-    mini::LaunchEngine(new mini::macos::Handle());
+    NSApplicationInit();
+    mini::LaunchEngine();
     return 0;
 }

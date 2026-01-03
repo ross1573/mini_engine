@@ -9,55 +9,70 @@ export import :swap_chain;
 
 namespace mini::graphics {
 
-export class GRAPHICS_API ModuleInterface : public mini::Module::Interface {
-public:
-    virtual ~ModuleInterface() = default;
+export class GRAPHICS_API Interface final : public Module::Interface {
+private:
+    Module m_CurrentModule;
+    API m_CurrentAPI;
 
-    virtual mini::graphics::Device* CreateGraphicDevice() = 0;
+    UniquePtr<Device> m_Device;
+    UniquePtr<SwapChain> m_SwapChain;
+    UniquePtr<RenderContext> m_RenderContext;
+
+public:
+    Interface() noexcept;
+    ~Interface() noexcept final;
+
+    void BeginFrame();
+    void EndFrame();
+
+    Module GetCurrentModule() const noexcept { return m_CurrentModule; }
+    API GetCurrentAPI() const noexcept { return m_CurrentAPI; }
+
+    Device* GetDevice() const noexcept { return m_Device.Get(); }
+    SwapChain* GetSwapChain() const noexcept { return m_SwapChain.Get(); }
+    RenderContext* GetRenderContext() const noexcept { return m_RenderContext.Get(); }
+
+private:
+    bool Initialize() final;
 };
+
+GRAPHICS_API Interface* interface = nullptr;
 
 } // namespace mini::graphics
 
 namespace mini {
 
-GRAPHICS_API graphics::API g_CurrAPI = graphics::API::Null;
-GRAPHICS_API UniquePtr<graphics::Device> g_Device;
-GRAPHICS_API UniquePtr<graphics::SwapChain> g_SwapChain;
-GRAPHICS_API UniquePtr<graphics::RenderContext> g_RenderContext;
+export class GRAPHICS_API Graphics : public Module::Interface {
+private:
+    typedef graphics::Interface Interface;
 
-export class GRAPHICS_API Graphics {
 public:
     typedef graphics::API API;
     typedef graphics::Device Device;
     typedef graphics::SwapChain SwapChain;
     typedef graphics::RenderContext RenderContext;
 
-    typedef void (*CallbackFunc)();
-
-private:
-    Module m_Module;
-    Array<CallbackFunc> m_ExitCallback;
-
 public:
-    static bool Initialize();
-    static void Shutdown();
-    static void AtExit(CallbackFunc);
+    virtual Device* CreateDevice() = 0;
 
-    static void BeginFrame();
-    static void EndFrame();
     static void ChangeResolution(uint32, uint32, bool);
 
-    static bool IsDeviceCurrent() noexcept { return g_Device != nullptr; }
-    static bool IsDeviceCurrent(API api) noexcept { return (bool)g_Device && g_CurrAPI == api; }
+    static bool IsDeviceCurrent() noexcept;
+    static bool IsDeviceCurrent(API) noexcept;
 
-    inline static Device* GetDevice() noexcept { return g_Device.Get(); }
-    inline static SwapChain* GetSwapChain() noexcept { return g_SwapChain.Get(); }
-    inline static RenderContext* GetRenderContext() noexcept { return g_RenderContext.Get(); }
-
-private:
-    static bool LoadAPI(StringView);
+protected:
+    Interface* Get() const noexcept { return graphics::interface; }
 };
 
-GRAPHICS_API UniquePtr<Graphics> g_Graphics;
+bool Graphics::IsDeviceCurrent() noexcept
+{
+    return graphics::interface->GetDevice() != nullptr;
+}
+
+bool Graphics::IsDeviceCurrent(API api) noexcept
+{
+    return graphics::interface->GetDevice() != nullptr &&
+           graphics::interface->GetCurrentAPI() == api;
+}
 
 } // namespace mini

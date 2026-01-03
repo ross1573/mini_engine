@@ -10,6 +10,7 @@ import :dynamic_module;
 namespace mini {
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name)
+    : ModuleHandle(name)
 {
     String path = BuildModulePath(name);
     m_NativeHandle = LoadModule(path);

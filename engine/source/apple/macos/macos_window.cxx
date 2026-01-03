@@ -9,29 +9,35 @@ namespace mini::macos {
 export class MACOS_API Window final
     : private cocoa::Window
     , public apple::Window {
+private:
+    typedef cocoa::Window Base;
+
 public:
     Window(cocoa::Application*);
+    ~Window() noexcept final = default;
+
+    bool IsValid() const noexcept final { return Base::IsValid(); }
 
     void DialogCritical(String const& msg) final;
 
     void Resize(RectInt const& windowSize) final;
-    inline void Minimize() final { cocoa::Window::Minimize(); }
-    inline void Maximize() final { cocoa::Window::Maximize(); }
-    inline void Show() final { cocoa::Window::Show(); }
-    inline void Hide() final { cocoa::Window::Hide(); }
+    void Minimize() final { Base::Minimize(); }
+    void Maximize() final { Base::Maximize(); }
+    void Show() final { Base::Show(); }
+    void Hide() final { Base::Hide(); }
 
-    inline RectInt GetSize() const final { return RectInt::Zero(); }
-    inline bool IsMinimized() const final { return cocoa::Window::IsMinimized(); }
-    inline bool IsMaximized() const final { return cocoa::Window::IsMaximized(); }
-    inline bool IsFullScreen() const { return cocoa::Window::IsFullScreen(); }
+    bool IsMinimized() const final { return Base::IsMinimized(); }
+    bool IsMaximized() const final { return Base::IsMaximized(); }
+    bool IsFullScreen() const { return Base::IsFullScreen(); }
 
-    inline void SetFullScreen(bool active) final { cocoa::Window::SetFullScreen(active); }
-    inline void SetMetalLayer(CA::MetalLayer* layer) final { cocoa::Window::SetMetalLayer(layer); }
-    inline NSWindow* GetNSWindow() { return m_Window; }
+    void SetFullScreen(bool active) final { Base::SetFullScreen(active); }
+    void SetMetalLayer(CA::MetalLayer* layer) final { Base::SetMetalLayer(layer); }
+    RectInt GetSize() const final { return RectInt::Zero(); }
+    NSWindow* GetNSWindow() { return m_Window; }
 
 private:
-    inline bool ShouldClose() final { return true; }
-    inline void WillClose() final { Engine::Quit(); }
+    bool ShouldClose() final { return true; }
+    void WillClose() final { Engine::Quit(); }
 };
 
 } // namespace mini::macos

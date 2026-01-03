@@ -28,9 +28,9 @@ public:
 
     uint64 ExecuteCommandList(ID3D12CommandList*);
 
-    inline ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue; }
-    inline HANDLE GetFenceHandle() const { return m_FenceHandle; }
-    inline uint64 GetCurrentFence() const { return m_FenceValue; }
+    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue; }
+    HANDLE GetFenceHandle() const { return m_FenceHandle; }
+    uint64 GetCurrentFence() const { return m_FenceValue; }
 };
 
 } // namespace mini::d3d12

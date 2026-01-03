@@ -66,7 +66,7 @@ function (add_module name)
         if (arg_NO_MODULE_INTERFACE)
             set(arg_INTERFACE_CLASS "")
         elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
-            set(arg_INTERFACE_CLASS "ModuleInterface")
+            set(arg_INTERFACE_CLASS "Interface")
         endif()
 
         generate_module_entry(${name}

@@ -11,21 +11,70 @@ import :dynamic_module;
 
 namespace mini {
 
-Module::Module(StringView name)
-    : Module(g_ModuleLoader.Load(name))
+ModuleHandle::ModuleHandle(StringView name) noexcept
+    : m_Name(name)
 {
 }
 
-Module::Module(StringView name, SharedPtr<ModuleHandle>&& handle)
-    : m_Handle(MoveArg(handle))
-    , m_Name(name)
+ModuleHandle::~ModuleHandle() noexcept
 {
-    if (m_Handle->IsValid()) [[likely]] {
-        m_Interface = m_Handle->GetInterface();
+    for (auto func : m_ExitCallback) {
+        try {
+            func();
+        }
+        catch (...) {
+            String msg = Format("exception occured while invoking "
+                                "AtExit callback {} on module {}",
+                                (void*)func, m_Name.Data());
+            ENSURE(false, msg.Data()) {}
+        }
     }
-    else {
-        m_Interface = nullptr;
+}
+
+bool ModuleHandle::AtExit(CallbackFunc func) noexcept
+{
+    auto iter = Find(m_ExitCallback.Begin(), m_ExitCallback.End(), func);
+    if (iter != m_ExitCallback.End()) {
+        return false;
     }
+
+    m_ExitCallback.Push(func);
+    return true;
+}
+
+bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
+{
+    auto iter = Find(m_ExitCallback.Begin(), m_ExitCallback.End(), func);
+    if (iter == m_ExitCallback.End()) {
+        return false;
+    }
+
+    m_ExitCallback.RemoveAt(iter);
+    return true;
+}
+
+Module::Module() noexcept
+    : m_Handle()
+    , m_Interface(nullptr)
+{
+}
+
+Module::Module(StringView name)
+    : m_Handle(g_ModuleLoader.Load(name))
+    , m_Interface(m_Handle != nullptr ? m_Handle->GetInterface() : nullptr)
+{
+}
+
+void Module::Load(StringView name)
+{
+    m_Handle = g_ModuleLoader.Load(name);
+    m_Interface = m_Handle != nullptr ? m_Handle->GetInterface() : nullptr;
+}
+
+void Module::Unload() noexcept
+{
+    m_Handle.Reset();
+    m_Interface = nullptr;
 }
 
 bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle> handle)
@@ -42,20 +91,20 @@ bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle
     return true;
 }
 
-Module ModuleLoader::Load(StringView name)
+SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 {
     SharedPtr<ModuleHandle> handle = LoadHandle(name);
     if (handle.IsValid() == false) {
-        return Module();
+        return nullptr;
     }
 
     ModuleInterface* interface = handle->GetInterface();
     if (interface != nullptr && interface->Initialize() == false) {
-        return Module();
+        return nullptr;
     }
 
     m_Modules.Push(ModuleWeakRef{ .handle = handle, .name = name });
-    return Module(name, MoveArg(handle));
+    return handle;
 }
 
 SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)

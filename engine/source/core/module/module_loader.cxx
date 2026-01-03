@@ -32,7 +32,7 @@ private:
 
 public:
     bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
-    Module Load(StringView);
+    SharedPtr<ModuleHandle> Load(StringView);
 
 private:
     SharedPtr<ModuleHandle> LoadHandle(StringView);

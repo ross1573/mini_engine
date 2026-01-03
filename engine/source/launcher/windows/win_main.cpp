@@ -7,17 +7,14 @@
 #endif
 
 import mini.launcher;
-import mini.platform;
-import mini.windows;
 
-int APIENTRY wWinMain(_In_ HINSTANCE inst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
+int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
 {
 #if DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    mini::platform::Handle* handle = new mini::windows::Handle(inst);
-    mini::LaunchEngine(handle);
+    mini::LaunchEngine();
 
 #if DEBUG
     ASSERT(_CrtCheckMemory());

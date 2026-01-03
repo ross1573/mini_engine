@@ -16,6 +16,8 @@ public:
     Window(Application*);
     virtual ~Window();
 
+    bool IsValid() const noexcept;
+
     void AlertError(char const*);
 
     void Show();
@@ -33,6 +35,11 @@ public:
     virtual bool ShouldClose() = 0;
     virtual void WillClose() = 0;
 };
+
+inline bool Window::IsValid() const noexcept
+{
+    return m_Window != nullptr;
+}
 
 } // namespace mini::cocoa
 

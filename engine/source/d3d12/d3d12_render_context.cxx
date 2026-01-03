@@ -30,8 +30,8 @@ public:
     void SetViewport(Rect const&, float32, float32) final;
     void SetScissorRect(RectInt const&) final;
 
-    inline CommandQueue* GetCommandQueue() const { return m_CommandQueue.Get(); }
-    inline ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
+    CommandQueue* GetCommandQueue() const { return m_CommandQueue.Get(); }
+    ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }
 };
 
 } // namespace mini::d3d12

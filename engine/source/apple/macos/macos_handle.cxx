@@ -7,23 +7,31 @@ import mini.graphics;
 namespace mini::macos {
 
 export class MACOS_API Handle final
-    : public platform::Handle
-    , private cocoa::Application {
+    : protected cocoa::Application
+    , public platform::Handle {
+private:
+    typedef cocoa::Application Base;
+
 public:
     Handle();
+    ~Handle() noexcept final = default;
 
-    bool Initialize() final;
-    void PollEvents() final { cocoa::Application::PollEvents(); }
+    bool IsValid() const noexcept final { return Base::IsValid(); }
 
-    platform::Window* CreatePlatformWindow() final;
+    void PollEvents() final { Base::PollEvents(); }
 
-    inline NSApplication* GetNSApplication() { return m_Application; }
+    NSApplication* GetNSApplication() const noexcept;
 
-private:
+protected:
     void ApplicationWillFinishLaunching(NS::Notification*) final {}
     void ApplicationDidFinishLaunching(NS::Notification*) final {}
 
     void OnKeyDown(uint32) final;
 };
+
+NSApplication* Handle::GetNSApplication() const noexcept
+{
+    return m_Application;
+}
 
 } // namespace mini::macos
