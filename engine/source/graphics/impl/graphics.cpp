@@ -32,13 +32,13 @@ bool Interface::Initialize()
     ENSURE(current, "has not implemented mini::graphics::Interface") {
         return false;
     }
-    Log(moduleName + " module loaded");
+    Log("{} module loaded", moduleName);
 
     Device* device = current->CreateDevice();
     ENSURE(device, "failed to create graphic device") {
         return false;
     }
-    Log(moduleName + " device created");
+    Log("{} device created", moduleName);
 
     m_Device = UniquePtr(device);
     m_CurrentAPI = m_Device->GetAPI();

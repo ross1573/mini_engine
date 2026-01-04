@@ -79,6 +79,9 @@ struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<
     }
 };
 
+export template <mini::CharT T, mini::AllocatorT<T> AllocT>
+struct fmt::is_range<mini::BasicString<T, AllocT>, T> : mini::FalseT {};
+
 export template <mini::CharT T>
 struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicStringView<T> const& str, format_context& ctx) const
@@ -87,5 +90,8 @@ struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, 
         return formatter<basic_string_view<T>>::format(sv, ctx);
     }
 };
+
+export template <mini::CharT T>
+struct fmt::is_range<mini::BasicStringView<T>, T> : mini::FalseT {};
 
 } // namespace fmt

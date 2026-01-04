@@ -34,19 +34,19 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
     StringView exprView = expr;
     StringView msgView = msg;
 
-    // if (msgView.IsEmpty()) {
-    //     assertLogger.Fatal("\n\nEnsure failed!\n"
-    //                        "  Expression: {0}\n"
-    //                        "  Function: {1}",
-    //                        exprView, locBuffer);
-    // }
-    // else {
-    //     assertLogger.Fatal("\n\nEnsure failed!\n"
-    //                        "  Expression: {0}\n"
-    //                        "  Message: {1}\n"
-    //                        "  Function: {2}",
-    //                        exprView, msgView, locBuffer);
-    // }
+    if (msgView.IsEmpty()) {
+        assertLogger.Fatal("\n\nEnsure failed!\n"
+                           "  Expression: {0}\n"
+                           "  Function: {1}",
+                           exprView, locBuffer);
+    }
+    else {
+        assertLogger.Fatal("\n\nEnsure failed!\n"
+                           "  Expression: {0}\n"
+                           "  Message: {1}\n"
+                           "  Function: {2}",
+                           exprView, msgView, locBuffer);
+    }
 }
 
 } // namespace mini::detail
