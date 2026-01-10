@@ -30,7 +30,7 @@ NativeModuleHandle LoadModule(StringView path)
     return LoadLibraryA(path.Data());
 }
 
-NativeModuleHandle LoadMainProgramHandle()
+NativeModuleHandle LoadMainProgram()
 {
     return GetModuleHandle(nullptr);
 }

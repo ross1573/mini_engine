@@ -14,7 +14,7 @@ private:
 
 public:
     Handle();
-    ~Handle() noexcept final = default;
+    ~Handle() noexcept = default;
 
     bool IsValid() const noexcept final { return Base::IsValid(); }
 

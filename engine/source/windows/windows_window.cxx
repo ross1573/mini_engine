@@ -24,11 +24,9 @@ private:
 
 public:
     Window();
-    ~Window() noexcept final = default;
+    ~Window() noexcept = default;
 
     bool IsValid() const noexcept final;
-
-    void DialogCritical(String const&) final;
 
     void Resize(RectInt const&) final;
     void Minimize() final;

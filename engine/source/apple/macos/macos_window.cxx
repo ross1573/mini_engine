@@ -14,7 +14,7 @@ private:
 
 public:
     Window(cocoa::Application*);
-    ~Window() noexcept final = default;
+    ~Window() noexcept = default;
 
     bool IsValid() const noexcept final { return Base::IsValid(); }
 

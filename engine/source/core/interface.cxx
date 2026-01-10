@@ -7,7 +7,7 @@ namespace mini {
 
 class CORE_API Core final : public ModuleInterface {
 public:
-    ~Core() noexcept final { ASSERT(g_ModuleLoader.Count() == 0, "module remaining"); }
+    ~Core() noexcept { ASSERT(g_ModuleLoader.Count() == 0, "module remaining"); }
 };
 
 } // namespace mini

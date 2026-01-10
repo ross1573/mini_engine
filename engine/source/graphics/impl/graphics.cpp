@@ -28,8 +28,7 @@ bool Graphics::Initialize()
     }
 
     String moduleName = m_CurrentModule.LibraryName();
-    ENSURE(m_CurrentModule.GetInterface(),
-           Format("{} has not implemented mini::graphics::Interface", moduleName).Data()) {
+    ENSURE(m_CurrentModule.GetInterface(), "module does not implement mini::graphics::Interface") {
         return false;
     }
     graphics::Log("{} module loaded", moduleName);
@@ -92,7 +91,7 @@ void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
 {
     SwapChain* swapChain = graphics::interface->GetSwapChain();
     if (swapChain == nullptr) [[unlikely]] {
-        graphics::LogError("failed to change resolution. SwapChain is not initialized");
+        // graphics::LogError("failed to change resolution. SwapChain is not initialized");
         return;
     }
 

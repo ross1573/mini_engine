@@ -12,11 +12,12 @@ private:
 
 public:
     Handle();
-    ~Handle() noexcept final = default;
+    ~Handle() noexcept = default;
 
     bool IsValid() const noexcept final;
 
     void PollEvents() final;
+    void AlertError(StringView const&) final;
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 
     HINSTANCE GetHINSTANCE() const { return m_Instance; }

@@ -7,15 +7,25 @@ export import :handle;
 export import :window;
 export import :shared_ptr;
 
-namespace mini::windows {
+namespace mini {
 
-class WINDOWS_API Interface final : public Platform {
+export class WINDOWS_API Windows final : public platform::Interface {
 public:
-    ~Interface() noexcept final = default;
+    Windows() noexcept;
+    ~Windows() noexcept;
+
+    windows::Handle* GetHandle() noexcept;
+    windows::Window* GetWindow() noexcept;
 
 protected:
-    platform::Handle* CreateHandle() final { return new windows::Handle(); }
-    platform::Window* CreateWindow() final { return new windows::Window(); }
+    platform::Handle* CreateHandle() final;
+    platform::Window* CreateWindow() final;
 };
+
+} // namespace mini
+
+namespace mini::windows {
+
+WINDOWS_API Windows* interface = nullptr;
 
 } // namespace mini::windows

@@ -8,13 +8,11 @@ namespace mini {
 
 export class ENGINE_API Engine final : public ModuleInterface {
 private:
-    Module<Platform> m_Platform;
-    Module<Graphics> m_Graphics;
     bool m_Running;
 
 public:
     Engine();
-    ~Engine() noexcept final;
+    ~Engine() noexcept;
 
     void Launch();
     void Shutdown();

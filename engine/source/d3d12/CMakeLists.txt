@@ -17,6 +17,7 @@ PUBLIC
 
 PRIVATE
     d3d12_include.h
+    impl/d3d12.cpp
     impl/d3d12_command_queue.cpp
     impl/d3d12_descriptor.cpp
     impl/d3d12_device.cpp

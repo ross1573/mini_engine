@@ -24,7 +24,7 @@ public:
 
 protected:
     Interface() noexcept { m_Platform = interface; }
-    virtual ~Interface() noexcept { m_Platform = nullptr; }
+    ~Interface() noexcept { m_Platform = nullptr; }
 };
 
 } // namespace mini::platform

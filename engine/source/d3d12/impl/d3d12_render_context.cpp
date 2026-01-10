@@ -8,8 +8,9 @@ import :command_queue;
 
 namespace mini::d3d12 {
 
-RenderContext::RenderContext()
-    : m_CommandQueue(nullptr)
+RenderContext::RenderContext(ID3D12Device* device)
+    : m_Device(device)
+    , m_CommandQueue(nullptr)
     , m_CurrentBuffer()
     , m_CommandAllocator(nullptr)
     , m_CommandList(nullptr)
@@ -23,7 +24,7 @@ RenderContext::~RenderContext()
 
 bool RenderContext::Initialize()
 {
-    ID3D12Device* device = ((Device*)Graphics::GetDevice())->GetD3D12Device();
+    ID3D12Device* device = interface->GetDevice()->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
     m_CommandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
@@ -39,7 +40,7 @@ bool RenderContext::Initialize()
 void RenderContext::BeginRender()
 {
     m_CommandQueue->WaitForFence(m_CommandQueue->GetCurrentFence());
-    m_CurrentBuffer = ((SwapChain*)Graphics::GetSwapChain())->GetCurrentBuffer();
+    m_CurrentBuffer = interface->GetSwapChain()->GetCurrentBuffer();
 
     VERIFY(m_CommandAllocator->Reset(), "failed to reset command allocator");
     VERIFY(m_CommandList->Reset(m_CommandAllocator, nullptr), "failed to reset command list");

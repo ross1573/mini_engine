@@ -25,7 +25,7 @@ public:
     {
     }
 
-    virtual ~StaticModuleHandle() noexcept = default;
+    ~StaticModuleHandle() noexcept = default;
 
     bool IsValid() const noexcept final { return true; }
 

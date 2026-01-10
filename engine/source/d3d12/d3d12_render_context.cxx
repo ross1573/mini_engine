@@ -10,6 +10,7 @@ export namespace mini::d3d12 {
 
 class RenderContext final : public graphics::RenderContext {
 private:
+    SharedPtr<ID3D12Device> m_Device;
     UniquePtr<CommandQueue> m_CommandQueue;
     SwapChainBuffer* m_CurrentBuffer;
 
@@ -17,8 +18,8 @@ private:
     SharedPtr<ID3D12GraphicsCommandList> m_CommandList;
 
 public:
-    RenderContext();
-    ~RenderContext() final;
+    RenderContext(ID3D12Device*);
+    ~RenderContext();
 
     bool Initialize() final;
 

@@ -19,7 +19,7 @@ Window::Window()
     auto titleName = options::title;
     m_Rect = RectInt(options::x, options::y, options::width, options::height);
 
-    HINSTANCE instance = ((Handle*)Platform::GetHandle())->GetHINSTANCE();
+    HINSTANCE instance = interface->GetHandle()->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
     uint32 style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 
@@ -37,11 +37,6 @@ Window::Window()
 bool Window::IsValid() const noexcept
 {
     return m_WindowHandle != nullptr;
-}
-
-void Window::DialogCritical(String const& msg)
-{
-    MessageBoxA(m_WindowHandle, msg.Data(), nullptr, MB_ICONERROR | MB_OK);
 }
 
 void Window::Resize(RectInt const& rect)

@@ -56,6 +56,12 @@ void Handle::PollEvents()
     }
 }
 
+void Handle::AlertError(StringView const& msg)
+{
+    HWND handle = interface->GetWindow()->GetHWND();
+    MessageBoxA(handle, msg.Data(), nullptr, MB_ICONERROR | MB_OK);
+}
+
 void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg,
                             [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
@@ -78,7 +84,7 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    Handle* handle = (Handle*)Platform::GetHandle();
+    Handle* handle = interface->GetHandle();
     handle->ProcessMessage(hWnd, message, wParam, lParam);
     return DefWindowProcA(hWnd, message, wParam, lParam);
 }

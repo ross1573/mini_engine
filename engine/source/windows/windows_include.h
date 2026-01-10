@@ -48,4 +48,7 @@
 #include <unknwn.h>
 #include <windows.h>
 
+#undef interface
+#undef CreateWindow;
+
 #endif // WIN_INCLUDE_H

@@ -53,4 +53,6 @@
 #  include <dxgidebug.h>
 #endif
 
+#undef interface
+
 #endif // D3D12_INCLUDE_H

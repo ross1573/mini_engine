@@ -6,15 +6,16 @@ target_sources(mini.windows
 PUBLIC
     FILE_SET windows TYPE CXX_MODULES
     FILES
+        windows_shared_ptr.cxx
+        windows_handle.cxx
+        windows_window.cxx
         windows.cxx
-        win_shared_ptr.cxx
-        win_handle.cxx
-        win_window.cxx
 
 PRIVATE
-    win_include.h
-    impl/win_handle.cpp
-    impl/win_window.cpp
+    windows_include.h
+    impl/windows_handle.cpp
+    impl/windows_window.cpp
+    impl/windows.cpp
 )
 
 target_link_libraries(mini.windows 
@@ -34,7 +35,7 @@ PRIVATE
 
 target_precompile_headers(mini.windows
 PRIVATE
-    win_include.h
+    windows_include.h
 )
 
 build_source_tree(mini.windows)

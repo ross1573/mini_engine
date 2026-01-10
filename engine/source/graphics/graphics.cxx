@@ -29,7 +29,7 @@ private:
 
 public:
     Graphics() noexcept;
-    ~Graphics() noexcept final;
+    ~Graphics() noexcept;
 
     void BeginFrame();
     void EndFrame();

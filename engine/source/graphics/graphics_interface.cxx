@@ -22,7 +22,7 @@ public:
 
 protected:
     Interface() noexcept { m_Graphics = interface; }
-    virtual ~Interface() noexcept { m_Graphics = nullptr; }
+    ~Interface() noexcept { m_Graphics = nullptr; }
 };
 
 } // namespace mini::graphics

@@ -11,7 +11,7 @@ private:
 
 public:
     Macos() noexcept = default;
-    ~Macos() noexcept final { m_Handle = nullptr; }
+    ~Macos() noexcept { m_Handle = nullptr; }
 
 protected:
     platform::Handle* CreateHandle() final

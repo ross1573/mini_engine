@@ -3,6 +3,7 @@ module mini.d3d12;
 import mini.core;
 import mini.platform;
 import mini.windows;
+
 import :log;
 import :device;
 import :descriptor;
@@ -40,9 +41,9 @@ bool SwapChain::Initialize()
     m_VSync = options::vsync;
 
     SharedPtr<IDXGISwapChain1> swapChain;
-    auto window = (windows::Window*)Platform::GetWindow();
-    auto factory = ((Device*)Graphics::GetDevice())->GetDXGIFactory();
-    auto renderContext = (RenderContext*)Graphics::GetRenderContext();
+    auto window = interface->GetWindow();
+    auto factory = interface->GetDevice()->GetDXGIFactory();
+    auto renderContext = interface->GetRenderContext();
     auto commandQueue = renderContext->GetCommandQueue()->GetD3D12CommandQueue();
 
     RectInt size = window->GetSize();
@@ -95,7 +96,7 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
         return;
     }
 
-    Graphics::GetRenderContext()->WaitForIdle();
+    interface->GetRenderContext()->WaitForIdle();
 
     m_Width = width;
     m_Height = height;
@@ -121,7 +122,7 @@ void SwapChain::SetVSync(uint8 vSync)
 
 void SwapChain::SetFullScreen(bool fullscreen)
 {
-    Graphics::GetRenderContext()->WaitForIdle();
+    interface->GetRenderContext()->WaitForIdle();
 
     if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr))) {
         LogError("Failed to set fullscreen state");
@@ -144,7 +145,7 @@ void SwapChain::CreateBuffers(uint8 count)
     ASSERT(m_Buffers.Size() == 0, "swap chain buffer not released");
     ENSURE(m_Width * m_Height > 0, "invalid width and height") return;
 
-    Device* device = (Device*)Graphics::GetDevice();
+    Device* device = interface->GetDevice();
     uint32 swapChainFlags = (m_VSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
     DXGI_FORMAT formatFlag = DXGI_FORMAT_R8G8B8A8_UNORM;
 

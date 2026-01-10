@@ -18,7 +18,7 @@ private:
 public:
     DynamicModuleHandle(StringView);
     DynamicModuleHandle(DynamicModuleHandle&&) noexcept;
-    ~DynamicModuleHandle() final;
+    ~DynamicModuleHandle();
 
     bool IsValid() const noexcept final;
 

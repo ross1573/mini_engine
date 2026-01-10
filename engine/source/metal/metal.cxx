@@ -15,7 +15,7 @@ private:
 
 public:
     Metal() noexcept;
-    ~Metal() noexcept final;
+    ~Metal() noexcept;
 
     graphics::Device* CreateDevice() final { return new metal::Device(); }
 

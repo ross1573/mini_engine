@@ -67,7 +67,11 @@ inline void Logger::Message(Level level, MessageContext context, Args&&... args)
         log.Append(context.message);
     }
     else {
+// another fucking msvc bug: https://developercommunity.visualstudio.com/t/11018040
+// fix of the issue may take some to be released
+#if !PLATFORM_WINDOWS
         FormatTo(log, context.message, ForwardArg<Args>(args)...);
+#endif
     }
 
     LoggerBase::PrintMessage(static_cast<byte>(level), log);

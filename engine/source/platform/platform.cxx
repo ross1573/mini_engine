@@ -21,7 +21,7 @@ private:
 
 public:
     Platform() noexcept;
-    ~Platform() noexcept final;
+    ~Platform() noexcept;
 
     void PollEvents();
 
