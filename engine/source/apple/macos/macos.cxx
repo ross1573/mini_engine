@@ -3,19 +3,27 @@ export module mini.macos;
 export import :handle;
 export import :window;
 
-namespace mini::macos {
+namespace mini {
 
-export class MACOS_API Interface final : public Platform {
+export class MACOS_API Macos final : public platform::Interface {
+private:
+    macos::Handle* m_Handle = nullptr;
+
 public:
-    ~Interface() noexcept final = default;
+    Macos() noexcept = default;
+    ~Macos() noexcept final { m_Handle = nullptr; }
 
 protected:
-    platform::Handle* CreateHandle() final { return new macos::Handle(); }
+    platform::Handle* CreateHandle() final
+    {
+        m_Handle = new macos::Handle();
+        return m_Handle;
+    }
+
     platform::Window* CreateWindow() final
     {
-        macos::Handle* handle = static_cast<macos::Handle*>(Get()->GetHandle());
-        return new macos::Window((cocoa::Application*)handle);
+        return new macos::Window((cocoa::Application*)m_Handle);
     }
 };
 
-} // namespace mini::macos
+} // namespace mini

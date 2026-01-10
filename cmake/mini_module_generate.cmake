@@ -43,20 +43,13 @@ function (generate_api_name target)
 endfunction()
 
 function (generate_module_entry target)
-    set(args PREFIX API NULL_INTERFACE INTERFACE_CLASS IMPORT)
+    set(args INTERFACE IMPORT)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
-    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
-
-    if (arg_NULL_INTERFACE)
-        set(null_interface "true")
-        set(class "mini::Module::Interface")
-    elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
-        set(null_interface "true")
-        set(class "mini::Module::Interface")
+    if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
+        set(class "DefaultInterface")
     else()
-        set(null_interface "false")
-        string(CONCAT class ${prefix} "::" ${api} "::" ${arg_INTERFACE_CLASS})
+        set(class ${arg_INTERFACE})
     endif()
 
     if (NOT DEFINED arg_IMPORT OR arg_IMPORT STREQUAL "")
@@ -246,12 +239,7 @@ function (generate_api_header target scope)
     )
 endfunction()
 
-function (generate_api_log target)
-    set(args PREFIX API)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
-
-    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
-    
+function (generate_module_log target)    
     snake_to_camel_case(${api})
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
     set(file_name "${target}.log.generated.cxx")

@@ -1,10 +1,13 @@
-add_module(mini.platform)
+add_module(mini.platform
+    ENTRY_INTERFACE mini::Platform
+)
 
 target_sources(mini.platform
 PUBLIC
     FILE_SET platform TYPE CXX_MODULES
     FILES
         platform.cxx
+        platform_interface.cxx
         handle.cxx
         window.cxx
 

@@ -30,14 +30,13 @@ function (add_module name)
     set(options 
         "NO_DEFINE_HEADER"
         "NO_API_HEADER"
-        "NO_API_LOG" 
+        "NO_MODULE_LOG"
         "NO_MODULE_ENTRY"
-        "NO_MODULE_INTERFACE"
     )
     set(args
         "PREFIX" 
-        "API" 
-        "INTERFACE_CLASS"
+        "API"
+        "ENTRY_INTERFACE"
         "ENTRY_IMPORT"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
@@ -60,25 +59,16 @@ function (add_module name)
     endif()
 
     if (NOT arg_NO_API_LOG)
-        generate_api_log(${name} API ${api} PREFIX ${prefix})
+        generate_module_log(${name})
     endif()
 
     if (NOT arg_NO_MODULE_ENTRY)
-        if (arg_NO_MODULE_INTERFACE)
-            set(arg_INTERFACE_CLASS "")
-            set(null_interface ON)
-        elseif (NOT DEFINED arg_INTERFACE_CLASS OR arg_INTERFACE_CLASS STREQUAL "")
-            set(arg_INTERFACE_CLASS "Interface")
-            set(null_interface OFF)
-        else()
-            set(null_interface OFF)
+        if (NOT DEFINED arg_ENTRY_INTERFACE OR arg_ENTRY_INTERFACE STREQUAL "")
+            set(arg_ENTRY_INTERFACE "")
         endif()
 
         generate_module_entry(${name}
-            API ${api}
-            PREFIX ${prefix}
-            INTERFACE_CLASS ${arg_INTERFACE_CLASS}
-            NULL_INTERFACE ${null_interface}
+            INTERFACE ${arg_ENTRY_INTERFACE}
             IMPORT ${arg_ENTRY_IMPORT}
         )
     endif()

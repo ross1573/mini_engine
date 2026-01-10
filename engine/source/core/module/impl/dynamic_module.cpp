@@ -18,17 +18,17 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name)
         return;
     }
 
-    auto startFunc = GetFunction<Interface*>(m_NativeHandle, "__start_module");
+    auto startFunc = GetFunction<ModuleInterface*>(m_NativeHandle, "__start_module");
     if (startFunc == nullptr) {
         return;
     }
 
-    Interface* interface = startFunc();
+    ModuleInterface* interface = startFunc();
     if (interface == nullptr) {
         return;
     }
 
-    m_Interface = UniquePtr<Interface>(interface);
+    m_Interface = UniquePtr<ModuleInterface>(interface);
 }
 
 DynamicModuleHandle::DynamicModuleHandle(DynamicModuleHandle&& other) noexcept
@@ -52,17 +52,12 @@ bool DynamicModuleHandle::IsValid() const noexcept
     return m_NativeHandle != nullptr;
 }
 
-DynamicModuleHandle::NativeHandle DynamicModuleHandle::GetNativeHandle() noexcept
+DynamicModuleHandle::NativeModule DynamicModuleHandle::NativeHandle() noexcept
 {
     return m_NativeHandle;
 }
 
-DynamicModuleHandle::Interface* DynamicModuleHandle::GetInterface() noexcept
-{
-    return m_Interface.Get();
-}
-
-const DynamicModuleHandle::Interface* DynamicModuleHandle::GetInterface() const noexcept
+ModuleInterface* DynamicModuleHandle::GetInterface() const noexcept
 {
     return m_Interface.Get();
 }

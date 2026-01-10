@@ -19,7 +19,9 @@ export void LaunchEngine()
     launcher::StaticInitialize();
     launcher::logger.Log("static initialized");
 
-    Module("engine").GetInterface<engine::Interface>()->Launch();
+    Module<Engine> engine("engine");
+    engine->Launch();
+    engine.Release();
 
     launcher::StaticCleanup();
 }

@@ -12,7 +12,7 @@ import :dynamic_module;
 namespace mini {
 
 ModuleHandle::ModuleHandle(StringView name) noexcept
-    : m_Name(name)
+    : m_LibraryName(name)
 {
 }
 
@@ -23,9 +23,9 @@ ModuleHandle::~ModuleHandle() noexcept
             func();
         }
         catch (...) {
-            String msg = Format("exception occured while invoking "
-                                "AtExit callback {} on module {}",
-                                (void*)func, m_Name.Data());
+            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
+                                (void*)func, m_LibraryName);
+
             ENSURE(false, msg.Data()) {}
         }
     }
@@ -53,28 +53,18 @@ bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
     return true;
 }
 
-Module::Module() noexcept
-    : m_Handle()
-    , m_Interface(nullptr)
+String ModuleHandle::LibraryName() const noexcept
 {
+    return m_LibraryName;
 }
 
-Module::Module(StringView name)
-    : m_Handle(g_ModuleLoader.Load(name))
-    , m_Interface(m_Handle != nullptr ? m_Handle->GetInterface() : nullptr)
+SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
 {
-}
+    if (libName == StringView::Empty()) [[unlikely]] {
+        return SharedPtr<ModuleHandle>();
+    }
 
-void Module::Load(StringView name)
-{
-    m_Handle = g_ModuleLoader.Load(name);
-    m_Interface = m_Handle != nullptr ? m_Handle->GetInterface() : nullptr;
-}
-
-void Module::Unload() noexcept
-{
-    m_Handle.Reset();
-    m_Interface = nullptr;
+    return g_ModuleLoader.Load(libName);
 }
 
 bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle> handle)

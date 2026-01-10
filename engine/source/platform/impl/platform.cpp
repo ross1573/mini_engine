@@ -1,55 +1,51 @@
 module mini.platform;
 
+import :interface;
 import :log;
 
-namespace mini::platform {
+namespace mini {
 
-Interface::Interface() noexcept
+Platform::Platform() noexcept
 {
-    interface = this;
+    platform::interface = this;
 }
 
-Interface::~Interface() noexcept
+Platform::~Platform() noexcept
 {
     m_Window.Reset();
     m_Handle.Reset();
 
-    interface = nullptr;
+    platform::interface = nullptr;
 }
 
-void Interface::PollEvents()
+void Platform::PollEvents()
 {
     if (m_Handle != nullptr) {
         m_Handle->PollEvents();
     }
 }
 
-bool Interface::Initialize()
+bool Platform::Initialize()
 {
-    m_NativeModule.Load(options::platformModule);
+    m_NativeModule.Load(mini::options::platformModule);
     ENSURE(m_NativeModule.IsValid(), "failed to load platform module") return false;
 
-    Platform* platformInterface = m_NativeModule.GetInterface<Platform>();
-    ENSURE(platformInterface, "platform interface not implemented") return false;
-
-    Handle* handle = platformInterface->CreateHandle();
-    ENSURE(handle && handle->IsValid(), "failed to create platform handle") return false;
-
+    Handle* handle = m_NativeModule->CreateHandle();
+    ENSURE(handle && handle->IsValid(), "failed to create platform handle") {
+        return false;
+    }
     m_Handle = UniquePtr(handle);
-    Log("platform handle created");
+    platform::Log("platform handle created");
 
-    Window* window = platformInterface->CreateWindow();
-    ENSURE(window && window->IsValid(), "failed to create window handle") return false;
-
+    Window* window = m_NativeModule->CreateWindow();
+    ENSURE(window && window->IsValid(), "failed to create window handle") {
+        return false;
+    }
     m_Window = UniquePtr(window);
-    Log("platform window created");
+    platform::Log("platform window created");
 
     return true;
 }
-
-} // namespace mini::platform
-
-namespace mini {
 
 void Platform::AlertError(StringView const& msg)
 {
@@ -57,11 +53,6 @@ void Platform::AlertError(StringView const& msg)
     if (handle != nullptr) {
         handle->AlertError(msg);
     }
-}
-
-platform::Interface* Platform::Get() const noexcept
-{
-    return platform::interface;
 }
 
 } // namespace mini

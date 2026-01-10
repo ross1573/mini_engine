@@ -1,4 +1,4 @@
-add_module(mini.apple STATIC NO_MODULE_INTERFACE)
+add_module(mini.apple STATIC)
 
 enable_language(OBJCXX)
 

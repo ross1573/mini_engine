@@ -1,4 +1,6 @@
-add_module(mini.windows NO_MODULE_INTERFACE)
+add_module(mini.windows
+    ENTRY_INTERFACE mini::Windows
+)
 
 target_sources(mini.windows
 PUBLIC

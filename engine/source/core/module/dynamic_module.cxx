@@ -9,13 +9,11 @@ namespace mini {
 
 class DynamicModuleHandle final : public ModuleHandle {
 public:
-    typedef typename ModuleHandle::NativeHandle NativeHandle;
-    typedef typename ModuleHandle::Interface Interface;
-    typedef typename ModuleHandle::ConstInterface ConstInterface;
+    typedef typename ModuleHandle::NativeModule NativeModule;
 
 private:
-    NativeHandle m_NativeHandle;
-    UniquePtr<Interface> m_Interface;
+    NativeModule m_NativeHandle;
+    UniquePtr<ModuleInterface> m_Interface;
 
 public:
     DynamicModuleHandle(StringView);
@@ -24,16 +22,15 @@ public:
 
     bool IsValid() const noexcept final;
 
-    NativeHandle GetNativeHandle() noexcept final;
-    Interface* GetInterface() noexcept final;
-    ConstInterface* GetInterface() const noexcept final;
+    NativeModule NativeHandle() noexcept final;
+    ModuleInterface* GetInterface() const noexcept final;
 
     template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
-    FuncT GetFunction(NativeHandle, StringView);
+    FuncT GetFunction(NativeModule, StringView);
 };
 
 template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
-FuncT DynamicModuleHandle::GetFunction(NativeHandle handle, StringView name)
+FuncT DynamicModuleHandle::GetFunction(NativeModule handle, StringView name)
 {
     void* funcPtr = LoadFunction(handle, name);
     return reinterpret_cast<FuncT>(funcPtr);

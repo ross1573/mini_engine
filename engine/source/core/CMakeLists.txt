@@ -1,5 +1,6 @@
 add_module(mini.core 
-    NO_API_LOG 
+    NO_MODULE_LOG 
+    ENTRY_INTERFACE "mini::Core"
     ENTRY_IMPORT ":interface"
 )
 

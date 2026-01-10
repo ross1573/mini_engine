@@ -27,7 +27,7 @@ function (no_arg_test name)
     build_source_tree(test.${name})
 endfunction()
 
-add_module(mini.test SHARED NO_MODULE_INTERFACE)
+add_module(mini.test SHARED NO_MODULE_ENTRY)
 
 target_sources(mini.test
 PUBLIC

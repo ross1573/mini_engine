@@ -30,6 +30,11 @@ NativeModuleHandle LoadModule(StringView path)
     return dlopen(path.Data(), RTLD_NOW | RTLD_LOCAL);
 }
 
+NativeModuleHandle LoadMainProgram()
+{
+    return dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
+}
+
 void UnloadModule(NativeModuleHandle handle)
 {
     dlclose(handle);

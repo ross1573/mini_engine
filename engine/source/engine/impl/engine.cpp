@@ -8,75 +8,29 @@ import mini.core;
 import mini.platform;
 import mini.graphics;
 
-namespace mini::engine {
-
-Interface::Interface()
-{
-    interface = this;
-}
-
-Interface::~Interface() noexcept
-{
-    interface = nullptr;
-}
-
-bool Interface::Initialize()
-{
-    m_Platform.Load("platform");
-    m_Graphics.Load("graphics");
-
-    return m_Platform.IsValid() && m_Graphics.IsValid();
-}
-
-void Interface::Launch()
-{
-    ENSURE(m_Engine == nullptr, "another instance of engine is created") {
-        return;
-    }
-
-    platform::Interface* platform = m_Platform.GetInterface<platform::Interface>();
-    graphics::Interface* graphics = m_Graphics.GetInterface<graphics::Interface>();
-
-    m_Engine = UniquePtr(new Engine(platform, graphics));
-
-    platform->GetWindow()->Show();
-    platform->PollEvents();
-
-    m_Engine->Run();
-}
-
-void Interface::Shutdown()
-{
-    m_Engine->m_Running = false;
-    m_Engine.Reset();
-
-    std::exit(-1);
-}
-
-} // namespace mini::engine
-
 namespace mini {
 
-Engine::Engine(platform::Interface* platform, graphics::Interface* graphics)
-    : m_Running(false)
-    , m_Platform(platform)
-    , m_Graphics(graphics)
+Engine::Engine()
+    : m_Platform("platform")
+    , m_Graphics("graphics")
+    , m_Running(false)
 {
+    ASSERT(engine == nullptr, "another instance of engine is created");
+    engine = this;
 }
 
-Engine::~Engine()
+Engine::~Engine() noexcept
 {
-    ENSURE(m_Running == false, "engine is still running") {}
-
-    m_Platform = nullptr;
-    m_Graphics = nullptr;
+    ASSERT(m_Running == false, "engine is still running");
+    engine = nullptr;
 }
 
-void Engine::Run()
+void Engine::Launch()
 {
-    ENSURE(m_Running == false, "engine is already running") {
-        return;
-    }
+    ENSURE(m_Running == false, "engine is already running") return;
+
+    m_Platform->GetWindow()->Show();
+    m_Platform->PollEvents();
 
     m_Running = true;
     while (m_Running) {
@@ -96,11 +50,15 @@ void Engine::Run()
     }
 }
 
+void Engine::Shutdown()
+{
+    m_Running = false;
+}
+
 void Engine::Quit()
 {
-    Engine* engine = engine::interface->GetEngine();
     if (engine != nullptr) {
-        engine->m_Running = false;
+        engine->Shutdown();
     }
 }
 
@@ -109,7 +67,15 @@ void Engine::Abort(String const& msg)
     Platform::AlertError(msg);
     memory::DestructAt(&msg);
 
-    engine::interface->Shutdown();
+    engine->m_Running = false;
+    engine = nullptr;
+
+    std::exit(-1);
+}
+
+bool Engine::IsRunning() noexcept
+{
+    return engine != nullptr && engine->m_Running;
 }
 
 } // namespace mini

@@ -3,6 +3,7 @@ export module mini.core:static_module;
 import :type;
 import :unique_ptr;
 import :string_view;
+import :module_platform;
 import :module_system;
 import :module_loader;
 
@@ -10,15 +11,15 @@ namespace mini {
 
 class CORE_API StaticModuleHandle : public ModuleHandle {
 public:
-    typedef typename ModuleHandle::NativeHandle NativeHandle;
-    typedef typename ModuleHandle::Interface Interface;
-    typedef typename ModuleHandle::ConstInterface ConstInterface;
+    typedef typename ModuleHandle::NativeModule NativeModule;
 
 private:
-    UniquePtr<Interface> m_Interface;
+    UniquePtr<ModuleInterface> m_Interface;
+
+    static NativeModule m_ProgramHandle;
 
 public:
-    StaticModuleHandle(StringView name, Interface* interface) noexcept
+    StaticModuleHandle(StringView name, ModuleInterface* interface) noexcept
         : ModuleHandle(name)
         , m_Interface(interface)
     {
@@ -28,10 +29,11 @@ public:
 
     bool IsValid() const noexcept final { return true; }
 
-    NativeHandle GetNativeHandle() noexcept final { return nullptr; }
-    Interface* GetInterface() noexcept final { return m_Interface.Get(); }
-    ConstInterface* GetInterface() const noexcept final { return m_Interface.Get(); }
+    NativeModule NativeHandle() noexcept final { return m_ProgramHandle; }
+    ModuleInterface* GetInterface() const noexcept final { return m_Interface.Get(); }
 };
+
+StaticModuleHandle::NativeModule StaticModuleHandle::m_ProgramHandle = LoadMainProgram();
 
 export template <CallableWithReturnT<ModuleInterface*> FactoryT>
 class StaticModuleInitializer {

@@ -2,56 +2,36 @@ export module mini.platform;
 
 import mini.core;
 
+export import :interface;
 export import :window;
 export import :handle;
 
-namespace mini::platform {
+namespace mini {
 
-export class PLATFORM_API Interface final : public Module::Interface {
+export class PLATFORM_API Platform final : public ModuleInterface {
+public:
+    typedef platform::Interface Interface;
+    typedef platform::Handle Handle;
+    typedef platform::Window Window;
+
 private:
-    Module m_NativeModule;
+    Module<Interface> m_NativeModule;
     UniquePtr<Handle> m_Handle;
     UniquePtr<Window> m_Window;
 
 public:
-    Interface() noexcept;
-    ~Interface() noexcept final;
+    Platform() noexcept;
+    ~Platform() noexcept final;
 
     void PollEvents();
 
     Handle* GetHandle() const noexcept { return m_Handle.Get(); }
     Window* GetWindow() const noexcept { return m_Window.Get(); }
 
-private:
-    bool Initialize() final;
-};
-
-PLATFORM_API Interface* interface = nullptr;
-
-} // namespace mini::platform
-
-namespace mini {
-
-export class PLATFORM_API Platform : public Module::Interface {
-public:
-    typedef platform::Handle Handle;
-    typedef platform::Window Window;
-
-private:
-    friend class platform::Interface;
-
-public:
-    virtual ~Platform() override = default;
-
-    virtual Handle* CreateHandle() = 0;
-    virtual Window* CreateWindow() = 0;
-
     static void AlertError(StringView const&);
 
 protected:
-    Platform() noexcept = default;
-
-    platform::Interface* Get() const noexcept;
+    bool Initialize() final;
 };
 
 } // namespace mini

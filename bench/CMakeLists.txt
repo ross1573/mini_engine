@@ -33,9 +33,8 @@ function (no_arg_benchmark name)
 endfunction()
 
 add_module(mini.benchmark STATIC
-    NO_MODULE_INTERFACE
+    NO_MODULE_LOG
     NO_MODULE_ENTRY
-    NO_API_LOG
 )
 
 target_sources(mini.benchmark

@@ -30,6 +30,11 @@ NativeModuleHandle LoadModule(StringView path)
     return LoadLibraryA(path.Data());
 }
 
+NativeModuleHandle LoadMainProgramHandle()
+{
+    return GetModuleHandle(nullptr);
+}
+
 void UnloadModule(NativeModuleHandle handle)
 {
     FreeLibrary(handle);

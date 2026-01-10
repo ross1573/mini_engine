@@ -60,12 +60,6 @@ concept SameAsT = std::same_as<T, U>;
 export template <typename T, typename... Args>
 concept AnyOfT = AnyOfImpl<T, Args...>::value;
 
-export template <typename Base, typename Derived>
-concept BaseOfT = std::is_base_of_v<Base, Derived>;
-
-export template <typename Derived, typename Base>
-concept DerivedFromT = std::is_base_of_v<Base, Derived>;
-
 export template <typename From, typename To>
 concept ImplicitlyConvertibleToT = std::is_convertible_v<From, To>;
 
@@ -79,13 +73,22 @@ export template <typename T, typename U>
 concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
 
 export template <typename From, typename To>
-concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From*, To*>;
+concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> &&
+                            ConvertibleToT<From const volatile*, To const volatile*>;
 
 export template <typename T, typename U>
 concept AssignableFromT = std::assignable_from<T, U>;
 
 export template <typename T, typename U>
 concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
+
+export template <typename Base, typename Derived>
+concept BaseOfT = std::is_base_of_v<Base, Derived> &&
+                  ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
+
+export template <typename Derived, typename Base>
+concept DerivedFromT = std::is_base_of_v<Base, Derived> &&
+                       ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
 
 } // namespace mini
 

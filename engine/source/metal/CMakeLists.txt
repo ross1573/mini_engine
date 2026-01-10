@@ -1,4 +1,6 @@
-add_module(mini.metal)
+add_module(mini.metal
+    ENTRY_INTERFACE mini::Metal
+)
 
 target_sources(mini.metal
 PUBLIC
@@ -10,6 +12,7 @@ PUBLIC
         metal_render_context.cxx
 
 PRIVATE
+    impl/metal.cpp
     impl/metal_device.cpp
     impl/metal_swap_chain.cpp
     impl/metal_render_context.cpp
