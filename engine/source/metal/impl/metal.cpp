@@ -19,6 +19,11 @@ apple::Window* Metal::GetWindow() noexcept
     return static_cast<apple::Window*>(m_Platform->GetWindow());
 }
 
+metal::Device* Metal::GetDevice() noexcept
+{
+    return static_cast<metal::Device*>(m_Graphics->GetDevice());
+}
+
 metal::SwapChain* Metal::GetSwapChain() noexcept
 {
     return static_cast<metal::SwapChain*>(m_Graphics->GetSwapChain());

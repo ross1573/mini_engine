@@ -20,7 +20,7 @@ public:
     graphics::Device* CreateDevice() final { return new metal::Device(); }
 
     apple::Window* GetWindow() noexcept;
-
+    metal::Device* GetDevice() noexcept;
     metal::SwapChain* GetSwapChain() noexcept;
     metal::RenderContext* GetRenderContext() noexcept;
 };
