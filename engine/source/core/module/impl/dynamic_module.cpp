@@ -43,6 +43,7 @@ DynamicModuleHandle::~DynamicModuleHandle()
         return;
     }
 
+    InvokeExitCallbacks();
     m_Interface.Reset();
     UnloadModule(m_NativeHandle);
 }

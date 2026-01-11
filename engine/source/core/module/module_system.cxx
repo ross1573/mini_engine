@@ -40,7 +40,7 @@ private:
 
 public:
     ModuleHandle(StringView) noexcept;
-    virtual ~ModuleHandle() noexcept;
+    virtual ~ModuleHandle() noexcept = default;
 
     virtual bool IsValid() const noexcept = 0;
 
@@ -55,6 +55,8 @@ public:
 
 protected:
     ModuleHandle() noexcept = default;
+
+    void InvokeExitCallbacks() noexcept;
 };
 
 template <typename T>

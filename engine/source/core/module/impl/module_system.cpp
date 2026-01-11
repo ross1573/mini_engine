@@ -16,21 +16,6 @@ ModuleHandle::ModuleHandle(StringView name) noexcept
 {
 }
 
-ModuleHandle::~ModuleHandle() noexcept
-{
-    for (auto func : m_ExitCallback) {
-        try {
-            func();
-        }
-        catch (...) {
-            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
-                                (void*)func, m_LibraryName);
-
-            ENSURE(false, msg.Data()) {}
-        }
-    }
-}
-
 bool ModuleHandle::AtExit(CallbackFunc func) noexcept
 {
     auto iter = Find(m_ExitCallback.Begin(), m_ExitCallback.End(), func);
@@ -51,6 +36,21 @@ bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
 
     m_ExitCallback.RemoveAt(iter);
     return true;
+}
+
+void ModuleHandle::InvokeExitCallbacks() noexcept
+{
+    for (auto func : m_ExitCallback) {
+        try {
+            func();
+        }
+        catch (...) {
+            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
+                                (void*)func, m_LibraryName);
+
+            ENSURE(false, msg.Data()) {}
+        }
+    }
 }
 
 String ModuleHandle::LibraryName() const noexcept

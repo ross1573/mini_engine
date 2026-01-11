@@ -25,7 +25,7 @@ public:
     {
     }
 
-    ~StaticModuleHandle() noexcept = default;
+    ~StaticModuleHandle() noexcept { InvokeExitCallbacks(); }
 
     bool IsValid() const noexcept final { return true; }
 
