@@ -62,3 +62,5 @@ export import :clock;
 
 export import :algorithm_memory;
 export import :algorithm;
+
+export import :interface;

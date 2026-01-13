@@ -2,10 +2,12 @@ export module mini.core:module_system;
 
 import :type;
 import :utility_operation;
+import :memory_operation;
 import :array;
 import :string;
 import :string_view;
 import :deleter;
+import :unique_ptr;
 import :shared_ptr;
 import :module_platform;
 
@@ -29,34 +31,111 @@ protected:
     ModuleInterface& operator=(ModuleInterface&&) = delete;
 };
 
+struct CORE_API ModulePoilcy {
+public:
+    typedef void (*CallbackFunc)();
+    typedef bool (*ValidFunc)(NativeModuleHandle);
+    typedef void (*DeleteFunc)(NativeModuleHandle);
+
+    ValidFunc validator;
+    DeleteFunc deleter;
+};
+
 class CORE_API ModuleHandle {
 public:
     typedef NativeModuleHandle NativeModule;
-    typedef void (*CallbackFunc)();
+    typedef typename ModulePoilcy::CallbackFunc CallbackFunc;
+    typedef typename ModulePoilcy::ValidFunc ValidFunc;
+    typedef typename ModulePoilcy::DeleteFunc DeleteFunc;
 
-private:
-    Array<CallbackFunc> m_ExitCallback;
+protected:
+    ModulePoilcy const* m_Policy;
+    NativeModule m_NativeModule;
+    UniquePtr<ModuleInterface> m_Interface;
     String m_LibraryName;
+    Array<CallbackFunc> m_ExitCallback;
 
 public:
-    ModuleHandle(StringView) noexcept;
-    virtual ~ModuleHandle() noexcept = default;
+    ModuleHandle(ModulePoilcy const*, NativeModule, ModuleInterface*, StringView) noexcept;
+    ModuleHandle(ModuleHandle&&) noexcept = default;
+    ~ModuleHandle() noexcept;
 
-    virtual bool IsValid() const noexcept = 0;
+    bool IsValid() const noexcept;
 
     bool AtExit(CallbackFunc) noexcept;
     bool RemoveAtExit(CallbackFunc) noexcept;
 
     String LibraryName() const noexcept;
-    virtual NativeModule NativeHandle() noexcept = 0;
-    virtual ModuleInterface* GetInterface() const noexcept = 0;
+    NativeModule NativeHandle() noexcept;
+    ModuleInterface* GetInterface() const noexcept;
+
+    ModuleHandle& operator=(ModuleHandle&&) noexcept = default;
 
     static SharedPtr<ModuleHandle> Load(StringView);
+};
 
-protected:
-    ModuleHandle() noexcept = default;
+class DynamicModuleHandle : public ModuleHandle {
+public:
+    typedef typename ModuleHandle::NativeModule NativeModule;
+    typedef ModuleInterface* (*StartFunc)();
 
-    void InvokeExitCallbacks() noexcept;
+    inline static constexpr ModulePoilcy policy = ModulePoilcy{
+        .validator = [](NativeModule nativeModule) { return nativeModule != nullptr; },
+        .deleter = UnloadModule
+    };
+
+public:
+    DynamicModuleHandle(StringView name) noexcept
+        : ModuleHandle(&policy, nullptr, nullptr, name)
+    {
+        String path = BuildModulePath(name);
+        m_NativeModule = LoadModule(path);
+        if (m_NativeModule == nullptr) {
+            return;
+        }
+
+        StartFunc startFunc = GetFunction<ModuleInterface*>("__start_module");
+        if (startFunc == nullptr) {
+            return;
+        }
+
+        ModuleInterface* interface = nullptr;
+        try {
+            interface = startFunc();
+        }
+        catch (...) {
+        }
+
+        if (interface == nullptr) {
+            UnloadModule(m_NativeModule);
+            m_NativeModule = nullptr;
+            return;
+        }
+
+        m_Interface = UniquePtr(interface);
+    }
+
+    template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
+    FuncT GetFunction(StringView name)
+    {
+        void* funcPtr = LoadFunction(m_NativeModule, name);
+        return reinterpret_cast<FuncT>(funcPtr);
+    }
+};
+
+class StaticModuleHandle : public ModuleHandle {
+public:
+    typedef typename ModuleHandle::NativeModule NativeModule;
+
+    inline static NativeModule programHandle = LoadMainProgram();
+    inline static constexpr ModulePoilcy policy =
+        ModulePoilcy{ .validator = [](NativeModule) { return true; }, .deleter = nullptr };
+
+public:
+    StaticModuleHandle(StringView name, ModuleInterface* interface) noexcept
+        : ModuleHandle(&policy, programHandle, interface, name)
+    {
+    }
 };
 
 template <typename T>

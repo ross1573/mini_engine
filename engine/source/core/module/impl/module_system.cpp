@@ -7,13 +7,41 @@ import :weak_ptr;
 import :algorithm;
 import :module_system;
 import :module_loader;
-import :dynamic_module;
 
 namespace mini {
 
-ModuleHandle::ModuleHandle(StringView name) noexcept
-    : m_LibraryName(name)
+ModuleHandle::ModuleHandle(ModulePoilcy const* policy, NativeModule nativeModule,
+                           ModuleInterface* interface, StringView libraryName) noexcept
+    : m_Policy(policy)
+    , m_NativeModule(nativeModule)
+    , m_Interface(interface)
+    , m_LibraryName(libraryName)
 {
+}
+
+ModuleHandle::~ModuleHandle() noexcept
+{
+    for (auto callback : m_ExitCallback) {
+        try {
+            callback();
+        }
+        catch (...) {
+            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
+                                (void*)callback, m_LibraryName);
+
+            ENSURE(false, msg.Data()) {}
+        }
+    }
+
+    m_Interface.Reset();
+    m_LibraryName.Clear();
+    m_Policy->deleter(m_NativeModule);
+    m_NativeModule = nullptr;
+}
+
+bool ModuleHandle::IsValid() const noexcept
+{
+    return m_Policy->validator(m_NativeModule);
 }
 
 bool ModuleHandle::AtExit(CallbackFunc func) noexcept
@@ -38,24 +66,19 @@ bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
     return true;
 }
 
-void ModuleHandle::InvokeExitCallbacks() noexcept
-{
-    for (auto func : m_ExitCallback) {
-        try {
-            func();
-        }
-        catch (...) {
-            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
-                                (void*)func, m_LibraryName);
-
-            ENSURE(false, msg.Data()) {}
-        }
-    }
-}
-
 String ModuleHandle::LibraryName() const noexcept
 {
     return m_LibraryName;
+}
+
+ModuleHandle::NativeModule ModuleHandle::NativeHandle() noexcept
+{
+    return m_NativeModule;
+}
+
+ModuleInterface* ModuleHandle::GetInterface() const noexcept
+{
+    return m_Interface.Get();
 }
 
 SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
