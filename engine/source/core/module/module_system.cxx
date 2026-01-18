@@ -129,7 +129,7 @@ public:
 
     inline static NativeModule programHandle = LoadMainProgram();
     inline static constexpr ModulePoilcy policy =
-        ModulePoilcy{ .validator = [](NativeModule) { return true; }, .deleter = nullptr };
+        ModulePoilcy{ .validator = nullptr, .deleter = nullptr };
 
 public:
     StaticModuleHandle(StringView name, ModuleInterface* interface) noexcept

@@ -35,13 +35,17 @@ ModuleHandle::~ModuleHandle() noexcept
 
     m_Interface.Reset();
     m_LibraryName.Clear();
-    m_Policy->deleter(m_NativeModule);
+
+    if (m_Policy->deleter != nullptr) {
+        m_Policy->deleter(m_NativeModule);
+    }
+
     m_NativeModule = nullptr;
 }
 
 bool ModuleHandle::IsValid() const noexcept
 {
-    return m_Policy->validator(m_NativeModule);
+    return m_Policy->validator != nullptr && m_Policy->validator(m_NativeModule);
 }
 
 bool ModuleHandle::AtExit(CallbackFunc func) noexcept
