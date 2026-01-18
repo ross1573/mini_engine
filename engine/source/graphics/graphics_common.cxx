@@ -33,11 +33,9 @@ export GRAPHICS_API API ParseAPI(String const& str)
     char const* src = str.Data();
     if (std::regex_match(src, d3d12_regex)) {
         return API::D3D12;
-    }
-    else if (std::regex_match(src, metal_regex)) {
+    } else if (std::regex_match(src, metal_regex)) {
         return API::Metal;
-    }
-    else if (std::regex_match(src, vulkan_regex)) {
+    } else if (std::regex_match(src, vulkan_regex)) {
         return API::Vulkan;
     }
     return API::Null;
@@ -57,8 +55,7 @@ struct formatter<mini::graphics::API> : formatter<string_view> {
             case mini::graphics::API::Metal:  sv = string_view{ "metal" }; break;
             case mini::graphics::API::Vulkan: sv = string_view{ "vulkan" }; break;
 
-            case mini::graphics::API::Null: [[fallthrough]];
-            default:                        sv = string_view("null"); break;
+            default: sv = string_view("null"); break;
         }
 
         return formatter<string_view>::format(sv, ctx);

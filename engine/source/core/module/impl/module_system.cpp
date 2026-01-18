@@ -24,8 +24,7 @@ ModuleHandle::~ModuleHandle() noexcept
     for (auto callback : m_ExitCallback) {
         try {
             callback();
-        }
-        catch (...) {
+        } catch (...) {
             String msg = Format("exception occured while invoking AtExit callback {} on module {}",
                                 (void*)callback, m_LibraryName);
 

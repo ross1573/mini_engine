@@ -136,8 +136,7 @@ static constexpr int TestModify()
 
         que2.Assign(list);
         TEST_ENSURE(TestQueue(que2, Array<T>(list)) == 0);
-    }
-    else {
+    } else {
         que.Enqueue(ArgFactoryT{}(++arrcount));
         que.Enqueue(ArgFactoryT{}(++arrcount));
         arr.Push(ArgFactoryT{}(++veccount));

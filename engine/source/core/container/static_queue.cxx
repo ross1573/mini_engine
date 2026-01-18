@@ -259,8 +259,7 @@ constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
     if (frontCap >= count) {
         memory::DestructRange(begin, begin + count);
         m_Begin += count;
-    }
-    else {
+    } else {
         Ptr bufBegin = m_Buffer.Data();
         memory::DestructRange(begin, begin + frontCap);
         memory::DestructRange(bufBegin, bufBegin + count - frontCap);
@@ -283,8 +282,7 @@ constexpr void StaticQueue<T, N>::Clear()
 
     if (m_Begin < m_End) {
         memory::DestructRange(begin, end);
-    }
-    else {
+    } else {
         memory::DestructRange(begin, buf + (OffsetT)m_Buffer.Capacity());
         memory::DestructRange(buf, end);
     }
@@ -489,8 +487,7 @@ inline constexpr void StaticQueue<T, N>::EnqueueRangeWithSize(U first, U last, S
     if (backCap >= len) {
         memory::ConstructRange(end, first, last);
         m_End += len;
-    }
-    else {
+    } else {
         SizeT frontInsertCnt = len - backCap;
         Ptr begin = m_Buffer.Data();
 
@@ -513,8 +510,7 @@ inline constexpr void StaticQueue<T, N>::AssignRangeWithSize(U first, U last, Si
     if (len > m_Size) {
         memory::CopyRange(begin, first, first + size);
         memory::ConstructRange(begin + size, first + size, last);
-    }
-    else {
+    } else {
         memory::CopyRange(begin, first, last);
         memory::DestructRange(begin + (OffsetT)len, End());
     }
@@ -538,8 +534,7 @@ StaticQueue<T, N>::AssertValidOffset([[maybe_unused]] SizeT offset) const noexce
 
     if (m_Begin < m_End) {
         ASSERT(offset >= m_Begin && offset < m_End, "invalid offset");
-    }
-    else {
+    } else {
         ASSERT(offset < m_End || offset >= m_Begin && offset < m_Buffer.Capacity(),
                "invalid offset");
     }
@@ -567,8 +562,7 @@ inline constexpr bool operator==(StaticQueue<T, CapT> const& l,
 {
     if (l.Size() != r.Size()) {
         return false;
-    }
-    else if (l.Size() == 0) [[unlikely]] {
+    } else if (l.Size() == 0) [[unlikely]] {
         return true;
     }
 

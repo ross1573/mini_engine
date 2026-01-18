@@ -504,8 +504,7 @@ inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args
     if consteval {
         T* ptr = ::new T(ForwardArg<Args>(args)...);
         ret.AllocateBlock(ptr, alloc, DefaultDeleter<T>{});
-    }
-    else {
+    } else {
         ret.AllocateInplaceBlock(alloc, ForwardArg<Args>(args)...);
     }
 

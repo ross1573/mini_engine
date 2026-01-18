@@ -17,8 +17,7 @@ constexpr bool TimePointEqual(T const& x, U const& y)
 {
     if constexpr (TimePointT<U>) {
         return x.SinceEpoch() == y.SinceEpoch();
-    }
-    else {
+    } else {
         return x.SinceEpoch().Count() == y.time_since_epoch().count();
     }
 }

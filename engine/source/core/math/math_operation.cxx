@@ -24,11 +24,9 @@ export template <FloatingT T>
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
             return static_cast<T>(BUILTIN_FMINF(static_cast<float>(x), static_cast<float>(y)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+        } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
             return static_cast<T>(BUILTIN_FMIN(static_cast<double>(x), static_cast<double>(y)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+        } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
             return static_cast<T>(BUILTIN_FMINL(static_cast<long double>(x),
                                                 static_cast<long double>(y)));
         }
@@ -49,11 +47,9 @@ export template <FloatingT T>
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
             return static_cast<T>(BUILTIN_FMAXF(static_cast<float>(x), static_cast<float>(y)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+        } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
             return static_cast<T>(BUILTIN_FMAX(static_cast<double>(x), static_cast<double>(y)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+        } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
             return static_cast<T>(BUILTIN_FMAXL(static_cast<long double>(x),
                                                 static_cast<long double>(y)));
         }
@@ -72,11 +68,9 @@ export template <IntegralT T>
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(int) && ConvertibleWithT<T, int>) {
             return static_cast<T>(BUILTIN_ABS(static_cast<int>(num)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(long) && ConvertibleWithT<T, long>) {
+        } else if constexpr (sizeof(T) <= sizeof(long) && ConvertibleWithT<T, long>) {
             return static_cast<T>(BUILTIN_LABS(static_cast<long>(num)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(long long) && ConvertibleWithT<T, long long>) {
+        } else if constexpr (sizeof(T) <= sizeof(long long) && ConvertibleWithT<T, long long>) {
             return static_cast<T>(BUILTIN_LLABS(static_cast<long long>(num)));
         }
     }
@@ -94,11 +88,9 @@ export template <FloatingT T>
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
             return static_cast<T>(BUILTIN_FABSF(static_cast<float>(num)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+        } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
             return static_cast<T>(BUILTIN_FABS(static_cast<double>(num)));
-        }
-        else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+        } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
             return static_cast<T>(BUILTIN_FABSL(static_cast<long double>(num)));
         }
     }
@@ -111,15 +103,12 @@ export template <FloatingT T>
 {
     if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
         return static_cast<T>(BUILTIN_POWF(static_cast<float>(base), static_cast<float>(exp)));
-    }
-    else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+    } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
         return static_cast<T>(BUILTIN_POW(static_cast<double>(base), static_cast<double>(exp)));
-    }
-    else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+    } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
         return static_cast<T>(BUILTIN_POWL(static_cast<long double>(base),
                                            static_cast<long double>(exp)));
-    }
-    else {
+    } else {
         NEVER_CALLED("not supported on such type", T);
     }
 }
@@ -129,8 +118,7 @@ consteval auto PowIntResultTypeImpl()
 {
     if constexpr (SignedT<T>) {
         return OffsetT(0);
-    }
-    else {
+    } else {
         return SizeT(0);
     }
 }
@@ -159,14 +147,11 @@ export template <FloatingT T>
 {
     if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
         return static_cast<T>(BUILTIN_SQRTF(static_cast<float>(num)));
-    }
-    else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
+    } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
         return static_cast<T>(BUILTIN_SQRT(static_cast<double>(num)));
-    }
-    else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
+    } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
         return static_cast<T>(BUILTIN_SQRTL(static_cast<long double>(num)));
-    }
-    else {
+    } else {
         NEVER_CALLED("not supported on such type", T);
     }
 }
@@ -210,8 +195,7 @@ export template <IntegralT T, IntegralT U>
         if (ux > tmp) {
             uy = ux - tmp;
             ux = tmp;
-        }
-        else {
+        } else {
             uy = tmp - ux;
         }
     } while (uy != 0);

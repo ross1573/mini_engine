@@ -11,7 +11,7 @@ ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 PenaltyBreakAssignment: 20
 PenaltyBreakBeforeFirstCallParameter: 500
-# PenaltyBreakBeforeMemberAccess: 500
+PenaltyBreakBeforeMemberAccess: 500
 PenaltyBreakFirstLessLess: 80
 PenaltyBreakOpenParenthesis: 500
 PenaltyBreakScopeResolution: 100
@@ -31,8 +31,6 @@ Macros:
   - ASSERT(x, y)=(x)
   - VERIFY(x)=(x)
   - VERIFY(x, y)=(x)
-  - CONSEXPR_ASSERT(x)=(x)
-  - CONSEXPR_ASSERT(x, y)=(x)
 
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Right
@@ -68,7 +66,7 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseExpressionOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
-AllowShortEnumsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLambdasOnASingleLine: All
@@ -76,10 +74,10 @@ AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 BitFieldColonSpacing: Both
-BreakBeforeBraces: Stroustrup
+BreakBeforeBraces: WebKit
 BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Leave
-BreakAfterReturnType: Automatic
+BreakAfterReturnType: ExceptShortType
 BreakArrays: false
 BreakBeforeBinaryOperators: None
 BreakBeforeConceptDeclarations: Always
@@ -157,7 +155,7 @@ RawStringFormats:
 ReferenceAlignment: Pointer
 ReflowComments: true
 RemoveBracesLLVM: false
-# RemoveEmptyLinesInUnwrappedLines: true
+RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: false
 RequiresClausePosition: OwnLine

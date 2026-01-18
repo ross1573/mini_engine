@@ -77,8 +77,7 @@ struct Allocator {
         Ptr ptr = nullptr;
         if consteval {
             ptr = CONSTEXPR_ALLOC(T, size);
-        }
-        else {
+        } else {
             ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(size * sizeof(T) NOTHROW_T));
             VERIFY(ptr, "allocation failed. possible out-of-memory");
         }

@@ -102,8 +102,7 @@ public:
         ModuleInterface* interface = nullptr;
         try {
             interface = startFunc();
-        }
-        catch (...) {
+        } catch (...) {
         }
 
         if (interface == nullptr) {

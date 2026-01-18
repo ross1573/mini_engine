@@ -126,8 +126,7 @@ public:
 
         if constexpr (AtomicWaitableT<T>::value) {
             size = sizeof(T);
-        }
-        else {
+        } else {
             size = sizeof(AtomicContention);
         }
     }

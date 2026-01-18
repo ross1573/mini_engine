@@ -32,8 +32,7 @@ inline TimePoint<T> ClockNow() noexcept
     if (freq.QuadPart == _10MHz) {
         constexpr int64 multiplier = NanoSeconds::Period::denom / _10MHz;
         return TimePoint<T>(NanoSeconds(count.QuadPart * multiplier));
-    }
-    else if (freq.QuadPart == _24MHz) {
+    } else if (freq.QuadPart == _24MHz) {
         const int64 main = (count.QuadPart / _24MHz) * NanoSeconds::Period::denom;
         const int64 sub = (count.QuadPart % _24MHz) * NanoSeconds::Period::denom / _24MHz;
         return TimePoint<T>(NanoSeconds(main + sub));

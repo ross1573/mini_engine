@@ -126,8 +126,7 @@ void SwapChain::SetFullScreen(bool fullscreen)
 
     if (FAILED(m_SwapChain->SetFullscreenState(fullscreen, nullptr))) {
         LogError("Failed to set fullscreen state");
-    }
-    else {
+    } else {
         m_FullscreenDesc.Windowed = !fullscreen;
     }
 

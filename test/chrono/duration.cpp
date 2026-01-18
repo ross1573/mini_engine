@@ -13,8 +13,7 @@ constexpr bool DurationEqual(T const& x, U const& y)
 {
     if constexpr (DurationT<U>) {
         return x.Count() == y.Count();
-    }
-    else {
+    } else {
         return x.Count() == y.count();
     }
 }

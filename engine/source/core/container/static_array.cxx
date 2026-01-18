@@ -410,8 +410,7 @@ constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
     if (m_Size < size) {
         Value temp(ForwardArg<Args>(args)...);
         memory::ConstructRangeArgs(end, begin + size, temp);
-    }
-    else {
+    } else {
         memory::DestructRange(begin + size, end);
     }
 
@@ -609,8 +608,7 @@ inline constexpr void StaticArray<T, N>::AssignRangeWithSize(U first, U last, Si
     if (m_Size < len) {
         memory::CopyRange(begin, first, first + size);
         memory::ConstructRange(begin + size, first + size, last);
-    }
-    else {
+    } else {
         memory::CopyRange(begin, first, last);
         memory::DestructRange(begin + len, begin + size);
     }
@@ -645,8 +643,7 @@ inline constexpr void StaticArray<T, N>::InsertRangeWithSize(SizeT index, U firs
         memory::MoveConstructBackward(end + len, end - len, end);
         memory::MoveBackward(end, loc, end - len);
         memory::DestructRange(loc, loc + len);
-    }
-    else {
+    } else {
         memory::MoveConstructBackward(end + len, loc, end);
         memory::DestructRange(loc, end);
     }
@@ -691,11 +688,9 @@ inline constexpr bool operator==(StaticArray<T, CapT> const& l,
 {
     if (l.Size() != r.Size()) {
         return false;
-    }
-    else if (l.Data() == r.Data()) [[unlikely]] {
+    } else if (l.Data() == r.Data()) [[unlikely]] {
         return true;
-    }
-    else if (l.Size() == 0) [[unlikely]] {
+    } else if (l.Size() == 0) [[unlikely]] {
         return true;
     }
 

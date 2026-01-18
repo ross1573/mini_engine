@@ -21,8 +21,7 @@ inline constexpr bool AddOverflow(T const x, T const y, T* result)
 
     if (x > 0 && y > 0) {
         return *result <= 0;
-    }
-    else if (x < 0 && y < 0) {
+    } else if (x < 0 && y < 0) {
         return *result >= 0;
     }
 
@@ -44,8 +43,7 @@ inline constexpr bool SubOverflow(T const x, T const y, T* result)
 
     if (x <= 0 && y > 0) {
         return *result >= 0;
-    }
-    else if (x >= 0 && y < 0) {
+    } else if (x >= 0 && y < 0) {
         return *result <= 0;
     }
 

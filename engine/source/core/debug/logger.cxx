@@ -65,8 +65,7 @@ inline void Logger::Message(Level level, MessageContext context, Args&&... args)
     String log;
     if constexpr (sizeof...(args) == 0) {
         log.Append(context.message);
-    }
-    else {
+    } else {
 // another fucking msvc bug: https://developercommunity.visualstudio.com/t/11018040
 // fix of the issue may take some to be released
 #if !PLATFORM_WINDOWS

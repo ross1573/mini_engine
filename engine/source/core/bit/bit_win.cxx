@@ -57,8 +57,7 @@ inline constexpr uint32 _clzl(unsigned long x)
 {
     if constexpr (sizeof(unsigned long) == 4) {
         return _clz(x);
-    }
-    else if constexpr (sizeof(unsigned long) == 8) {
+    } else if constexpr (sizeof(unsigned long) == 8) {
         return _clzll(x);
     }
 
@@ -109,8 +108,7 @@ inline constexpr uint32 _ctzl(unsigned long x)
 {
     if constexpr (sizeof(unsigned long) == 4) {
         return _ctz(x);
-    }
-    else if constexpr (sizeof(unsigned long) == 8) {
+    } else if constexpr (sizeof(unsigned long) == 8) {
         return _ctzll(x);
     }
 

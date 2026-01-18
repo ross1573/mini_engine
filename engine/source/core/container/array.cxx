@@ -234,8 +234,7 @@ constexpr void Array<T, AllocT>::Push(Args&&... args)
 
     if (m_Size < capacity) {
         memory::ConstructAt(m_Buffer.Data() + m_Size, ForwardArg<Args>(args)...);
-    }
-    else {
+    } else {
         Buffer newBuf = m_Buffer.Increment(1);
         Ptr newBegin = newBuf.Data();
         Ptr begin = m_Buffer.Data();
@@ -282,8 +281,7 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
         memory::MoveBackward(end, loc, last);
         memory::DestructAt(loc);
         memory::ConstructAt(loc, MoveArg(temp));
-    }
-    else {
+    } else {
         Buffer newBuf = m_Buffer.Increment(1);
         Ptr newBegin = newBuf.Data();
         Ptr newLoc = newBegin + locDiff;
@@ -511,12 +509,10 @@ constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
             memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size, temp);
             memory::MoveConstructRange(newBegin, begin, begin + m_Size);
             SwapNewBuffer(newBuf);
-        }
-        else {
+        } else {
             memory::ConstructRangeArgs(begin + m_Size, begin + size, temp);
         }
-    }
-    else {
+    } else {
         memory::DestructRange(begin + size, begin + m_Size);
     }
 
@@ -758,13 +754,11 @@ inline constexpr void Array<T, AllocT>::AssignRangeWithSize(U first, U last, Siz
         if (m_Size < len) {
             memory::CopyRange(begin, first, first + size);
             memory::ConstructRange(begin + m_Size, first + size, last);
-        }
-        else {
+        } else {
             memory::CopyRange(begin, first, last);
             memory::DestructRange(begin + len, begin + size);
         }
-    }
-    else {
+    } else {
         Buffer newBuf = m_Buffer.Resize(len);
         memory::ConstructRange(newBuf.Data(), first, last);
         SwapNewBuffer(newBuf);
@@ -781,8 +775,7 @@ inline constexpr void Array<T, AllocT>::AppendRangeWithSize(U first, U last, Siz
     SizeT newSize = m_Size + len;
     if (newSize <= capacity) {
         memory::ConstructRange(m_Buffer.Data() + m_Size, first, last);
-    }
-    else {
+    } else {
         Buffer newBuf = m_Buffer.Increment(newSize - capacity);
         Ptr newBegin = newBuf.Data();
         Ptr begin = m_Buffer.Data();
@@ -812,16 +805,14 @@ inline constexpr void Array<T, AllocT>::InsertRangeWithSize(SizeT index, U first
             memory::MoveConstructBackward(end + len, middle, end);
             memory::MoveBackward(end, loc, middle);
             memory::DestructRange(loc, loc + len);
-        }
-        else {
+        } else {
             memory::MoveConstructBackward(end + len, loc, end);
             memory::DestructRange(loc, end);
         }
 
         m_Size = newSize;
         memory::ConstructRange(loc, first, last);
-    }
-    else {
+    } else {
         Buffer newBuf = m_Buffer.Increment(len);
         Ptr newBegin = newBuf.Data();
         Ptr begin = m_Buffer.Data();
@@ -862,8 +853,7 @@ inline constexpr bool operator==(Array<T, AllocT> const& l, Array<U, AllocU> con
 {
     if (l.Size() != r.Size()) {
         return false;
-    }
-    else if (l.Data() == r.Data()) [[unlikely]] {
+    } else if (l.Data() == r.Data()) [[unlikely]] {
         return true;
     }
 

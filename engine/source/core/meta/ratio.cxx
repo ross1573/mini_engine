@@ -61,8 +61,7 @@ consteval int64 CheckedAdd()
 
     if constexpr (X > 0 && Y > 0) {
         static_assert(result > 0, "integer add overflow");
-    }
-    else if constexpr (X < 0 && Y < 0) {
+    } else if constexpr (X < 0 && Y < 0) {
         static_assert(result < 0, "integer add overflow");
     }
 
@@ -78,8 +77,7 @@ consteval int64 CheckedSub()
 
     if constexpr (X <= 0 && Y > 0) {
         static_assert(result < 0, "integer sub overflow");
-    }
-    else if constexpr (X >= 0 && Y < 0) {
+    } else if constexpr (X >= 0 && Y < 0) {
         static_assert(result > 0, "integer sub overflow");
     }
 
@@ -184,8 +182,7 @@ consteval auto Compare(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
     constexpr int64 ry = y.num % y.denom;
     if constexpr (rx == 0 || ry == 0) {
         return rx <=> ry;
-    }
-    else {
+    } else {
         return Compare(Ratio<y.denom, ry>{}, Ratio<x.denom, rx>{});
     }
 }

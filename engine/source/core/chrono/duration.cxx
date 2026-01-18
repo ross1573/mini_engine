@@ -75,16 +75,13 @@ constexpr U DurationCast(Duration<T, PeriodT> const& from) noexcept
     constexpr auto period = RatioDivideT<PeriodT, typename U::Period>{};
     if constexpr (period.num == 1 && period.denom == 1) {
         return ToDuration(static_cast<typename ToDuration::Value>(from.Count()));
-    }
-    else if constexpr (period.num == 1) {
+    } else if constexpr (period.num == 1) {
         ResultT ticks = static_cast<ResultT>(from.Count()) / static_cast<ResultT>(period.denom);
         return ToDuration(static_cast<typename ToDuration::Value>(ticks));
-    }
-    else if constexpr (period.denom == 1) {
+    } else if constexpr (period.denom == 1) {
         ResultT ticks = static_cast<ResultT>(from.Count()) * static_cast<ResultT>(period.num);
         return ToDuration(static_cast<typename ToDuration::Value>(ticks));
-    }
-    else {
+    } else {
         ResultT ticks = static_cast<ResultT>(from.Count()) * static_cast<ResultT>(period.num) /
                         static_cast<ResultT>(period.denom);
         return ToDuration(static_cast<typename ToDuration::Value>(ticks));
@@ -329,8 +326,7 @@ constexpr U Round(Duration<T, PeriodT> const& duration) noexcept
 
     if (lowerDiff < upperDiff) {
         return lower;
-    }
-    else if (lowerDiff > upperDiff) {
+    } else if (lowerDiff > upperDiff) {
         return upper;
     }
 

@@ -16,8 +16,7 @@ inline constexpr T const* StringSearch(T const* str, T value) noexcept
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             return BUILTIN_STRCHR(reinterpret_cast<char const*>(str), char(value));
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return BUILTIN_WCSCHR(str, value);
         }
     }
@@ -32,8 +31,7 @@ inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexc
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             return BUILTIN_MEMCHR(str, reinterpret_cast<char>(value), count);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return BUILTIN_WMEMCHR(str, value, count);
         }
     }
@@ -54,8 +52,7 @@ inline constexpr SizeT StringLength(T const* str) noexcept
         if constexpr (AnyOfT<T, char, char8>) {
             auto len = BUILTIN_STRLEN(reinterpret_cast<char const*>(str));
             return static_cast<SizeT>(len);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return static_cast<SizeT>(BUILTIN_WCSLEN(str));
         }
     }
@@ -72,8 +69,7 @@ inline constexpr SizeT StringLength(T const* str, SizeT count) noexcept
         if constexpr (AnyOfT<T, char, char8>) {
             void* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
             return ptr == nullptr ? 0 : static_cast<SizeT>(static_cast<T const*>(ptr) - str);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             wchar const* end = BUILTIN_WMEMCHR(str, wchar(0), count);
             return end == nullptr ? 0 : static_cast<SizeT>(end - str);
         }
@@ -92,8 +88,7 @@ inline constexpr T* StringFill(T* dst, T value, SizeT count) noexcept
             void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int32>(value),
                                        static_cast<size_t>(count));
             return static_cast<T*>(ptr);
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return BUILTIN_WMEMSET(dst, value, static_cast<size_t>(count));
         }
     }
@@ -113,8 +108,7 @@ inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
             char const* l = reinterpret_cast<char const*>(s1);
             char const* r = reinterpret_cast<char const*>(s2);
             return static_cast<int32>(BUILTIN_STRCMP(l, r));
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return static_cast<int32>(BUILTIN_WCSCMP(s1, s2));
         }
     }
@@ -142,8 +136,7 @@ inline constexpr int32 StringCompare(T const* s1, T const* s2, SizeT count) noex
             char const* l = reinterpret_cast<char const*>(s1);
             char const* r = reinterpret_cast<char const*>(s2);
             return static_cast<int32>(BUILTIN_STRNCMP(l, r, count));
-        }
-        else if constexpr (SameAsT<T, wchar>) {
+        } else if constexpr (SameAsT<T, wchar>) {
             return static_cast<int32>(BUILTIN_WCSNCMP(s1, s2, count));
         }
     }

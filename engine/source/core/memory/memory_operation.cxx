@@ -33,11 +33,9 @@ inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
 {
     if constexpr (PtrT<T>) {
         return ele;
-    }
-    else if constexpr (IndirectAddressableT<T>) {
+    } else if constexpr (IndirectAddressableT<T>) {
         return ele.Address();
-    }
-    else {
+    } else {
         NEVER_CALLED("unknown type for address conversion", T);
     }
 }
@@ -187,8 +185,7 @@ inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
 
     if (static_cast<T const*>(dst) < src) {
         MemCopy(dst, src, len);
-    }
-    else {
+    } else {
         MemCopyBackward(dst + len, src + len, len);
     }
 }

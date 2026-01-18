@@ -33,8 +33,7 @@ inline constexpr void FormatTo(String& to, StringView msg, Args&&... args)
 
     try {
         fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
-    }
-    catch (fmt::format_error const& error) {
+    } catch (fmt::format_error const& error) {
         WriteFormatError(to, msg, error);
         return;
     }
@@ -50,8 +49,7 @@ inline constexpr String Format(StringView msg, Args&&... args)
 
     try {
         fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
-    }
-    catch (fmt::format_error const& error) {
+    } catch (fmt::format_error const& error) {
         String result;
         WriteFormatError(result, msg, error);
         return result;

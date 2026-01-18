@@ -66,8 +66,7 @@ using AtomicLock = uint32;
 #  define THREAD_FENCE(memorder)                                          \
       if (memorder == __ATOMIC_ACQUIRE || memorder == __ATOMIC_CONSUME) { \
           THREAD_FENCE_ACQUIRE_ASM();                                     \
-      }                                                                   \
-      else {                                                              \
+      } else {                                                            \
           THREAD_FENCE_ASM();                                             \
       }
 #endif // THREAD_FENCE
@@ -155,8 +154,7 @@ using AtomicLock = uint32;
 #  define ATOMIC_LOAD(size, pointer, result, memorder) \
       if (memorder == __ATOMIC_RELAXED) {              \
           VOLATILE_LOAD(size, pointer, result);        \
-      }                                                \
-      else {                                           \
+      } else {                                         \
           LOAD_ACQUIRE(size, pointer, result);         \
           SIGNAL_FENCE();                              \
       }
@@ -166,24 +164,20 @@ using AtomicLock = uint32;
 #  define ATOMIC_STORE(size, pointer, value, memorder) \
       if (memorder == __ATOMIC_RELAXED) {              \
           VOLATILE_STORE(size, pointer, value);        \
-      }                                                \
-      else if (memorder == __ATOMIC_RELEASE) {         \
+      } else if (memorder == __ATOMIC_RELEASE) {       \
           SIGNAL_FENCE();                              \
           VOLATILE_STORE(size, pointer, value);        \
-      }                                                \
-      else {                                           \
+      } else {                                         \
           STORE_SEQ_CST(size, pointer, value);         \
       }
 #elif ARCH_ARM64
 #  define ATOMIC_STORE(size, pointer, value, memorder) \
       if (memorder == __ATOMIC_RELAXED) {              \
           VOLATILE_STORE(size, pointer, value);        \
-      }                                                \
-      else if (memorder == __ATOMIC_RELEASE) {         \
+      } else if (memorder == __ATOMIC_RELEASE) {       \
           SIGNAL_FENCE();                              \
           STORE_RELEASE(size, pointer, value);         \
-      }                                                \
-      else {                                           \
+      } else {                                         \
           SIGNAL_FENCE();                              \
           STORE_RELEASE(size, pointer, value);         \
           THREAD_FENCE_ASM();                          \
@@ -457,24 +451,19 @@ inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desir
         }
 
         return result != 0;
-    }
-    else {
+    } else {
         T previous;
         T* prevPtr = memory::AddressOf(previous);
 
         if constexpr (size == 1) {
             ATOMIC_COMPARE_EXCHANGE(8, pointer, expected, desired, prevPtr, memorder);
-        }
-        else if constexpr (size == 2) {
+        } else if constexpr (size == 2) {
             ATOMIC_COMPARE_EXCHANGE(16, pointer, expected, desired, prevPtr, memorder);
-        }
-        else if constexpr (size == 4) {
+        } else if constexpr (size == 4) {
             ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, desired, prevPtr, memorder);
-        }
-        else if constexpr (size == 8) {
+        } else if constexpr (size == 8) {
             ATOMIC_COMPARE_EXCHANGE(64, pointer, expected, desired, prevPtr, memorder);
-        }
-        else {
+        } else {
             NEVER_CALLED("atomic type is not marked as unsupported", T);
         }
 
@@ -555,20 +544,15 @@ inline void __atomic_load(T const volatile* pointer, T* result, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_LOAD(8, pointer, result, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_LOAD(16, pointer, result, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_LOAD(32, pointer, result, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_LOAD(64, pointer, result, memorder);
-    }
-    else if constexpr (size == 16) {
+    } else if constexpr (size == 16) {
         ATOMIC_LOAD_128(pointer, result, memorder);
-    }
-    else {
+    } else {
         AtomicSpinLock lock(pointer);
         BUILTIN_MEMCPY(result, const_cast<T*>(pointer), size);
     }
@@ -617,20 +601,15 @@ inline void __atomic_store(T volatile* pointer, T* value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_STORE(8, pointer, value, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_STORE(16, pointer, value, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_STORE(32, pointer, value, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_STORE(64, pointer, value, memorder);
-    }
-    else if constexpr (size == 16) {
+    } else if constexpr (size == 16) {
         __atomic_store_16(pointer, *value, memorder);
-    }
-    else {
+    } else {
         AtomicSpinLock lock(pointer);
         BUILTIN_MEMCPY(const_cast<T*>(pointer), value, size);
     }
@@ -688,20 +667,15 @@ inline void __atomic_exchange(T volatile* pointer, T* value, T* result, int32 me
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_EXCHANGE(8, pointer, value, result, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_EXCHANGE(16, pointer, value, result, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_EXCHANGE_32(pointer, value, result, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_EXCHANGE(64, pointer, value, result, memorder);
-    }
-    else if constexpr (size == 16) {
+    } else if constexpr (size == 16) {
         *result = __atomic_exchange_16(pointer, *value, memorder);
-    }
-    else {
+    } else {
         AtomicSpinLock lock(pointer);
         BUILTIN_MEMCPY(result, const_cast<T*>(pointer), size);
         BUILTIN_MEMCPY(const_cast<T*>(pointer), value, size);
@@ -754,17 +728,13 @@ inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_ADD(8, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_FETCH_ADD(16, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
-    }
-    else {
+    } else {
         NEVER_CALLED("invalid integral operation", T);
     }
 
@@ -782,8 +752,7 @@ inline T __atomic_fetch_add(T volatile* pointer, OffsetT value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
     }
 
@@ -841,17 +810,13 @@ inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_ADD(8, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_FETCH_ADD(16, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
-    }
-    else {
+    } else {
         NEVER_CALLED("invalid integral operation", T);
     }
 
@@ -870,8 +835,7 @@ inline T __atomic_fetch_sub(T volatile* pointer, OffsetT value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
     }
 
@@ -924,17 +888,13 @@ inline T __atomic_fetch_and(T volatile* pointer, T value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_AND(8, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_FETCH_AND(16, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_FETCH_AND_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_AND(64, pointer, valuePtr, resultPtr, memorder);
-    }
-    else {
+    } else {
         NEVER_CALLED("invalid bitwise operation", T);
     }
 
@@ -987,17 +947,13 @@ inline T __atomic_fetch_or(T volatile* pointer, T value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_OR(8, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_FETCH_OR(16, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_FETCH_OR_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_OR(64, pointer, valuePtr, resultPtr, memorder);
-    }
-    else {
+    } else {
         NEVER_CALLED("invalid bitwise operation", T);
     }
 
@@ -1050,17 +1006,13 @@ inline T __atomic_fetch_xor(T volatile* pointer, T value, int32 memorder)
     constexpr SizeT size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_XOR(8, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 2) {
+    } else if constexpr (size == 2) {
         ATOMIC_FETCH_XOR(16, pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 4) {
+    } else if constexpr (size == 4) {
         ATOMIC_FETCH_XOR_32(pointer, valuePtr, resultPtr, memorder);
-    }
-    else if constexpr (size == 8) {
+    } else if constexpr (size == 8) {
         ATOMIC_FETCH_XOR(64, pointer, valuePtr, resultPtr, memorder);
-    }
-    else {
+    } else {
         NEVER_CALLED("invalid bitwise operation", T);
     }
 

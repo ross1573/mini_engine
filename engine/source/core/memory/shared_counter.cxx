@@ -120,8 +120,7 @@ inline constexpr void SharedCounter::Release(SizeT count) noexcept
     if (last == sub) {
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
         DeletePtr();
-    }
-    else {
+    } else {
         ASSERT(last > sub, "strong ref count is below zero");
     }
 
@@ -147,8 +146,7 @@ inline constexpr void SharedCounter::ReleaseWeak(SizeT count) noexcept
     if (last == sub) {
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
         DeleteSharedBlock();
-    }
-    else {
+    } else {
         ASSERT(last > sub, "weak ref count is below zero");
     }
 }
