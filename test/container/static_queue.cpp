@@ -191,11 +191,11 @@ int TestRandom()
         TEST_ENSURE(iter.Increment());
         TEST_ENSURE(iter.Decrement());
         TEST_ENSURE(iter.Finish());
-        TEST_ENSURE(!q.IsValidIterator(iter));
-        TEST_ENSURE(!q3.IsValidIterator(--iter));
-        TEST_ENSURE(q.IsValidIterator(iter));
-        TEST_ENSURE(!q.IsValidIndex(q.Size()));
-        TEST_ENSURE(q.IsValidIndex(q.Size() - 1));
+        TEST_ENSURE(!q.ValidIterator(iter));
+        TEST_ENSURE(!q3.ValidIterator(--iter));
+        TEST_ENSURE(q.ValidIterator(iter));
+        TEST_ENSURE(!q.ValidIndex(q.Size()));
+        TEST_ENSURE(q.ValidIndex(q.Size() - 1));
         TEST_ENSURE(iter.Finish());
         TEST_ENSURE(iter.Increment() == false);
         TEST_ENSURE(iter.Decrement());

@@ -23,7 +23,7 @@ Graphics::~Graphics() noexcept
 bool Graphics::Initialize()
 {
     m_CurrentModule.Load(mini::options::graphicsModule);
-    ENSURE(m_CurrentModule.IsValid(), "failed to load graphics module") {
+    ENSURE(m_CurrentModule.Valid(), "failed to load graphics module") {
         return false;
     }
 

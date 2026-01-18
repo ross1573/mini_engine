@@ -73,11 +73,11 @@ public:
 
     constexpr SizeT Capacity() const noexcept;
     constexpr SizeT Size() const noexcept;
-    constexpr bool IsEmpty() const noexcept;
+    constexpr bool Empty() const noexcept;
     constexpr bool IsFull() const noexcept;
-    constexpr bool IsValidIndex(SizeT) const noexcept;
-    constexpr bool IsValidIterator(ConstIterator) const noexcept;
-    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr bool ValidIndex(SizeT) const noexcept;
+    constexpr bool ValidIterator(ConstIterator) const noexcept;
+    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -233,7 +233,7 @@ inline constexpr T StaticQueue<T, N>::Dequeue()
 template <MovableT T, SizeT N>
 inline constexpr void StaticQueue<T, N>::RemoveFirst()
 {
-    if (IsEmpty()) [[unlikely]] {
+    if (Empty()) [[unlikely]] {
         return;
     }
 
@@ -245,7 +245,7 @@ inline constexpr void StaticQueue<T, N>::RemoveFirst()
 template <MovableT T, SizeT N>
 constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
 {
-    if (IsEmpty() || count == 0) [[unlikely]] {
+    if (Empty() || count == 0) [[unlikely]] {
         return;
     }
 
@@ -272,7 +272,7 @@ constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
 template <MovableT T, SizeT N>
 constexpr void StaticQueue<T, N>::Clear()
 {
-    if (IsEmpty()) [[unlikely]] {
+    if (Empty()) [[unlikely]] {
         return;
     }
 
@@ -399,7 +399,7 @@ inline constexpr SizeT StaticQueue<T, N>::Size() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticQueue<T, N>::IsEmpty() const noexcept
+inline constexpr bool StaticQueue<T, N>::Empty() const noexcept
 {
     return m_Size == 0;
 }
@@ -411,13 +411,13 @@ inline constexpr bool StaticQueue<T, N>::IsFull() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticQueue<T, N>::IsValidIndex(SizeT index) const noexcept
+inline constexpr bool StaticQueue<T, N>::ValidIndex(SizeT index) const noexcept
 {
     return index < m_Size;
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticQueue<T, N>::IsValidIterator(ConstIterator iter) const noexcept
+inline constexpr bool StaticQueue<T, N>::ValidIterator(ConstIterator iter) const noexcept
 {
     SizeT begin = (SizeT)m_Begin;
     SizeT end = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + m_Buffer.Capacity();
@@ -425,8 +425,8 @@ inline constexpr bool StaticQueue<T, N>::IsValidIterator(ConstIterator iter) con
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticQueue<T, N>::IsValidRange(ConstIterator begin,
-                                                      ConstIterator end) const noexcept
+inline constexpr bool StaticQueue<T, N>::ValidRange(ConstIterator begin,
+                                                    ConstIterator end) const noexcept
 {
     SizeT bufferBegin = (SizeT)m_Begin;
     SizeT bufferEnd = m_Begin < m_End ? (SizeT)m_End : (SizeT)m_End + m_Buffer.Capacity();
@@ -544,7 +544,7 @@ template <MovableT T, SizeT N>
 inline constexpr void
 StaticQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(IsValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator");
 }
 
 template <MovableT T, SizeT N>
@@ -552,7 +552,7 @@ inline constexpr void
 StaticQueue<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                     [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(IsValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end), "invalid range");
 }
 
 export template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>

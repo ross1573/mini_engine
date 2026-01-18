@@ -15,7 +15,7 @@ public:
     Application();
     virtual ~Application() noexcept;
 
-    bool IsValid() const noexcept;
+    bool Valid() const noexcept;
 
     void Launch();
     void PollEvents();
@@ -27,7 +27,7 @@ public:
     virtual void OnKeyDown(unsigned int keyCode) = 0;
 };
 
-inline bool Application::IsValid() const noexcept
+inline bool Application::Valid() const noexcept
 {
     return m_Application != nullptr;
 }

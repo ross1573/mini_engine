@@ -31,8 +31,8 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
     constexpr Ptr Address() const noexcept;
-    constexpr bool IsValid() const noexcept;
-    constexpr bool IsValidWith(CircularIterator const&) const noexcept;
+    constexpr bool Valid() const noexcept;
+    constexpr bool ValidWith(CircularIterator const&) const noexcept;
 
     constexpr bool Reset() noexcept;
     constexpr bool Finish() noexcept;
@@ -125,7 +125,7 @@ template <typename T, typename CircularT>
 inline constexpr bool
 CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
 {
-    return iter.m_Circular && iter.m_Circular->IsValidIterator(iter);
+    return iter.m_Circular && iter.m_Circular->ValidIterator(iter);
 }
 
 template <typename T, typename CircularT>
@@ -136,16 +136,16 @@ CircularIterator<T, CircularT>::Address() const noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::IsValid() const noexcept
+inline constexpr bool CircularIterator<T, CircularT>::Valid() const noexcept
 {
     return CheckIterator(*this);
 }
 
 template <typename T, typename CircularT>
 inline constexpr bool
-CircularIterator<T, CircularT>::IsValidWith(CircularIterator const& o) const noexcept
+CircularIterator<T, CircularT>::ValidWith(CircularIterator const& o) const noexcept
 {
-    return m_Circular && m_Circular->IsValidRange(*this, o);
+    return m_Circular && m_Circular->ValidRange(*this, o);
 }
 
 template <typename T, typename CircularT>

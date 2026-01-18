@@ -26,7 +26,7 @@ public:
     Window();
     ~Window() noexcept = default;
 
-    bool IsValid() const noexcept final;
+    bool Valid() const noexcept final;
 
     void Resize(RectInt const&) final;
     void Minimize() final;

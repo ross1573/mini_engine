@@ -16,7 +16,7 @@ public:
     Handle();
     ~Handle() noexcept = default;
 
-    bool IsValid() const noexcept final { return Base::IsValid(); }
+    bool Valid() const noexcept final { return Base::Valid(); }
 
     void PollEvents() final { Base::PollEvents(); }
     void AlertError(StringView const& msg) final { Base::AlertError(msg.Data()); }

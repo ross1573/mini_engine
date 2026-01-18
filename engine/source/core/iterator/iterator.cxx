@@ -17,8 +17,8 @@ concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
     requires PtrT<typename T::Ptr>;
     requires RefT<typename T::Ref>;
 
-    { i.IsValid() } -> ConvertibleToT<bool>;
-    { i.IsValidWith(j) } -> ConvertibleToT<bool>;
+    { i.Valid() } -> ConvertibleToT<bool>;
+    { i.ValidWith(j) } -> ConvertibleToT<bool>;
     { i.Increment() } -> ConvertibleToT<bool>;
 
     { i.Address() } -> SameAsT<typename T::Ptr>;

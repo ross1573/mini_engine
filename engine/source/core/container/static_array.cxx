@@ -92,11 +92,11 @@ public:
 
     consteval SizeT Capacity() const noexcept;
     constexpr SizeT Size() const noexcept;
-    constexpr bool IsEmpty() const noexcept;
+    constexpr bool Empty() const noexcept;
     constexpr bool IsFull() const noexcept;
-    constexpr bool IsValidIndex(SizeT) const noexcept;
-    constexpr bool IsValidIterator(ConstIterator) const noexcept;
-    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr bool ValidIndex(SizeT) const noexcept;
+    constexpr bool ValidIterator(ConstIterator) const noexcept;
+    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -318,7 +318,7 @@ inline constexpr void StaticArray<T, N>::InsertRange(ConstIterator iter, Initial
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveLast()
 {
-    if (IsEmpty()) [[unlikely]] {
+    if (Empty()) [[unlikely]] {
         return;
     }
 
@@ -329,7 +329,7 @@ inline constexpr void StaticArray<T, N>::RemoveLast()
 template <MovableT T, SizeT N>
 inline constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
 {
-    if (IsEmpty() || count == 0) [[unlikely]] {
+    if (Empty() || count == 0) [[unlikely]] {
         return;
     }
 
@@ -518,7 +518,7 @@ inline constexpr SizeT StaticArray<T, N>::Size() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticArray<T, N>::IsEmpty() const noexcept
+inline constexpr bool StaticArray<T, N>::Empty() const noexcept
 {
     return m_Size == 0;
 }
@@ -530,21 +530,21 @@ inline constexpr bool StaticArray<T, N>::IsFull() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticArray<T, N>::IsValidIndex(SizeT index) const noexcept
+inline constexpr bool StaticArray<T, N>::ValidIndex(SizeT index) const noexcept
 {
     return index < m_Size;
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticArray<T, N>::IsValidIterator(ConstIterator iter) const noexcept
+inline constexpr bool StaticArray<T, N>::ValidIterator(ConstIterator iter) const noexcept
 {
     SizeT index = static_cast<SizeT>(iter.m_Ptr - m_Buffer.Data());
     return index < m_Size;
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticArray<T, N>::IsValidRange(ConstIterator begin,
-                                                      ConstIterator end) const noexcept
+inline constexpr bool StaticArray<T, N>::ValidRange(ConstIterator begin,
+                                                    ConstIterator end) const noexcept
 {
     ConstPtr buffer = m_Buffer.Data();
     SizeT beginIdx = static_cast<SizeT>(begin.m_Ptr - buffer);
@@ -663,14 +663,14 @@ template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
-    ASSERT(IsValidIndex(index), "invalid index");
+    ASSERT(ValidIndex(index), "invalid index");
 }
 
 template <MovableT T, SizeT N>
 inline constexpr void
 StaticArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(IsValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator");
 }
 
 template <MovableT T, SizeT N>
@@ -678,7 +678,7 @@ inline constexpr void
 StaticArray<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                     [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(IsValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end), "invalid range");
 }
 
 export template <MovableT T, SizeT CapT, MovableT U, SizeT CapU>

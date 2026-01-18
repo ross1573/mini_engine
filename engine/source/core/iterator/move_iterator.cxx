@@ -27,8 +27,8 @@ public:
     constexpr T Base() && noexcept;
     constexpr Ptr Address() const noexcept;
 
-    constexpr bool IsValid() const;
-    constexpr bool IsValidWith(MoveIterator const&) const;
+    constexpr bool Valid() const;
+    constexpr bool ValidWith(MoveIterator const&) const;
     constexpr bool Increment();
     constexpr bool Decrement()
         requires BidrectionalIteratorT<T>;
@@ -106,15 +106,15 @@ inline constexpr MoveIterator<T>::Ptr MoveIterator<T>::Address() const noexcept
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::IsValid() const
+inline constexpr bool MoveIterator<T>::Valid() const
 {
-    return m_Iter.IsValid();
+    return m_Iter.Valid();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::IsValidWith(MoveIterator const& o) const
+inline constexpr bool MoveIterator<T>::ValidWith(MoveIterator const& o) const
 {
-    return m_Iter.IsValidWith(o.Base());
+    return m_Iter.ValidWith(o.Base());
 }
 
 template <ForwardIteratorT T>

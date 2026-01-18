@@ -14,7 +14,7 @@ public:
     Handle();
     ~Handle() noexcept = default;
 
-    bool IsValid() const noexcept final;
+    bool Valid() const noexcept final;
 
     void PollEvents() final;
     void AlertError(StringView const&) final;

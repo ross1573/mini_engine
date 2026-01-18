@@ -5,7 +5,7 @@ namespace mini {
 Metal::Metal() noexcept
     : m_Platform("platform")
 {
-    ASSERT(m_Platform.IsValid());
+    ASSERT(m_Platform.Valid());
     metal::interface = this;
 }
 

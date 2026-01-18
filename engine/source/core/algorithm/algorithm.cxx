@@ -9,7 +9,7 @@ namespace mini {
 template <ForwardIteratorT T>
 inline constexpr bool CheckDest(T dest)
 {
-    return dest.IsValid();
+    return dest.Valid();
 }
 
 template <ForwardIteratorT T>
@@ -17,12 +17,12 @@ inline constexpr bool CheckRange(T begin, T end)
 {
     if (begin == end) [[unlikely]] {
         return true;
-    } else if (!begin.IsValidWith(end)) [[unlikely]] {
+    } else if (!begin.ValidWith(end)) [[unlikely]] {
         return false;
     }
 
     if constexpr (BidrectionalIteratorT<T>) {
-        return (end - 1).IsValid();
+        return (end - 1).Valid();
     }
 
     return true;

@@ -16,7 +16,7 @@ public:
     Window(Application*);
     virtual ~Window();
 
-    bool IsValid() const noexcept;
+    bool Valid() const noexcept;
 
     void Show();
     void Hide();
@@ -34,7 +34,7 @@ public:
     virtual void WillClose() = 0;
 };
 
-inline bool Window::IsValid() const noexcept
+inline bool Window::Valid() const noexcept
 {
     return m_Window != nullptr;
 }

@@ -13,7 +13,7 @@ inline constexpr auto WriteFormatError(String& to, StringView const& msg,
                                        fmt::format_error const& error)
 {
     StringView errorMsg = error.what();
-    StringView pre = errorMsg.IsEmpty() ? "format failed" : "format failed with error: ";
+    StringView pre = errorMsg.Empty() ? "format failed" : "format failed with error: ";
     SizeT totalLen = to.Size() + msg.Size() + pre.Size() + errorMsg.Size() + 3;
 
     to.Reserve(totalLen);

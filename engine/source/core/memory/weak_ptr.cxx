@@ -37,7 +37,7 @@ public:
     constexpr WeakPtr(SharedPtr<U> const&) noexcept;
 
     constexpr SharedPtr<T> Lock() const noexcept;
-    constexpr bool IsValid() const noexcept;
+    constexpr bool Valid() const noexcept;
 
     constexpr void Reset() noexcept;
     constexpr void Swap(WeakPtr&) noexcept;
@@ -141,7 +141,7 @@ constexpr SharedPtr<T> WeakPtr<T>::Lock() const noexcept
 }
 
 template <NonRefT T>
-constexpr bool WeakPtr<T>::IsValid() const noexcept
+constexpr bool WeakPtr<T>::Valid() const noexcept
 {
     return m_Counter != nullptr && m_Counter->Count() != 0;
 }

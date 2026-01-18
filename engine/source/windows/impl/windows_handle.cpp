@@ -37,7 +37,7 @@ Handle::Handle()
     RegisterClassExA(&wcex);
 }
 
-bool Handle::IsValid() const noexcept
+bool Handle::Valid() const noexcept
 {
     return m_Instance != nullptr;
 }

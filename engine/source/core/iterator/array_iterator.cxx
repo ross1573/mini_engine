@@ -29,8 +29,8 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
     constexpr Ptr Address() const noexcept;
-    constexpr bool IsValid() const noexcept;
-    constexpr bool IsValidWith(ArrayIterator const&) const noexcept;
+    constexpr bool Valid() const noexcept;
+    constexpr bool ValidWith(ArrayIterator const&) const noexcept;
 
     constexpr bool Reset() noexcept;
     constexpr bool Finish() noexcept;
@@ -98,7 +98,7 @@ template <typename T, typename ArrayT>
 inline constexpr bool
 ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcept
 {
-    return iter.m_Array && iter.m_Array->IsValidIterator(iter);
+    return iter.m_Array && iter.m_Array->ValidIterator(iter);
 }
 
 template <typename T, typename ArrayT>
@@ -108,15 +108,15 @@ inline constexpr ArrayIterator<T, ArrayT>::Ptr ArrayIterator<T, ArrayT>::Address
 }
 
 template <typename T, typename ArrayT>
-inline constexpr bool ArrayIterator<T, ArrayT>::IsValid() const noexcept
+inline constexpr bool ArrayIterator<T, ArrayT>::Valid() const noexcept
 {
     return CheckIterator(*this);
 }
 
 template <typename T, typename ArrayT>
-inline constexpr bool ArrayIterator<T, ArrayT>::IsValidWith(ArrayIterator const& o) const noexcept
+inline constexpr bool ArrayIterator<T, ArrayT>::ValidWith(ArrayIterator const& o) const noexcept
 {
-    return m_Array && m_Array->IsValidRange(*this, o);
+    return m_Array && m_Array->ValidRange(*this, o);
 }
 
 template <typename T, typename ArrayT>

@@ -34,7 +34,7 @@ Window::Window()
     SetMenu(m_WindowHandle, 0);
 }
 
-bool Window::IsValid() const noexcept
+bool Window::Valid() const noexcept
 {
     return m_WindowHandle != nullptr;
 }

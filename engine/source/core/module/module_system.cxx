@@ -60,7 +60,7 @@ public:
     ModuleHandle(ModuleHandle&&) noexcept = default;
     ~ModuleHandle() noexcept;
 
-    bool IsValid() const noexcept;
+    bool Valid() const noexcept;
 
     bool AtExit(CallbackFunc) noexcept;
     bool RemoveAtExit(CallbackFunc) noexcept;
@@ -178,7 +178,7 @@ public:
     template <RelatedInterfaceToT<T> U>
     Module(Module<U>&&) noexcept;
 
-    bool IsValid() const noexcept;
+    bool Valid() const noexcept;
 
     template <UnboundAllocatorT AllocT>
     void Load(StringView, AllocT const&);
@@ -264,7 +264,7 @@ inline Module<T>::Module(Module<U>&& other) noexcept
 }
 
 template <ModuleInterfaceT T>
-inline bool Module<T>::IsValid() const noexcept
+inline bool Module<T>::Valid() const noexcept
 {
     return m_Handle != nullptr;
 }
@@ -375,7 +375,7 @@ inline Module<T>& Module<T>::operator=(Module<U>&& other) noexcept
 template <ModuleInterfaceT T>
 inline Module<T>::Interface* Module<T>::QueryInterface() const noexcept
 {
-    if (m_Handle.IsValid() == false) [[unlikely]] {
+    if (m_Handle.Valid() == false) [[unlikely]] {
         return nullptr;
     }
 

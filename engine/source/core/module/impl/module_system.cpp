@@ -42,7 +42,7 @@ ModuleHandle::~ModuleHandle() noexcept
     m_NativeModule = nullptr;
 }
 
-bool ModuleHandle::IsValid() const noexcept
+bool ModuleHandle::Valid() const noexcept
 {
     return m_Policy->validator != nullptr && m_Policy->validator(m_NativeModule);
 }
@@ -86,7 +86,7 @@ ModuleInterface* ModuleHandle::GetInterface() const noexcept
 
 SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
 {
-    if (libName == StringView::Empty()) [[unlikely]] {
+    if (libName.Empty()) [[unlikely]] {
         return SharedPtr<ModuleHandle>();
     }
 
@@ -114,7 +114,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
                [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
 
     if (weakRefIter != m_Modules.End()) {
-        if (weakRefIter->handle.IsValid()) {
+        if (weakRefIter->handle.Valid()) {
             return StaticCast<ModuleHandle>(weakRefIter->handle.Lock());
         }
 
@@ -122,7 +122,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
     }
 
     SharedPtr<ModuleHandle> handle = LoadHandle(name);
-    if (handle.IsValid() == false) {
+    if (handle.Valid() == false) {
         return nullptr;
     }
 
@@ -146,7 +146,7 @@ SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
     }
 
     SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
-    if (dynHandle->IsValid()) {
+    if (dynHandle->Valid()) {
         return StaticCast<ModuleHandle>(MoveArg(dynHandle));
     }
 
@@ -157,7 +157,7 @@ SizeT ModuleLoader::Count() const noexcept
 {
     SizeT count = 0;
     for (auto const& mod : m_Modules) {
-        if (mod.handle.IsValid()) ++count;
+        if (mod.handle.Valid()) ++count;
     }
 
     return count;

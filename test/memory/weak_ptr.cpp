@@ -42,13 +42,13 @@ int32 TestLock()
     {
         w.Lock();
     }
-    TEST_ENSURE(p.IsValid());
+    TEST_ENSURE(p.Valid());
 
     TEST_ENSURE(w2.Lock().Equals(p));
     {
         w2.Lock();
     }
-    TEST_ENSURE(p.IsValid());
+    TEST_ENSURE(p.Valid());
 
     p.Reset();
     TEST_ENSURE(w.Lock() == nullptr);
@@ -62,13 +62,13 @@ int32 TestValid()
     SharedPtr<Foo> p = MakeShared<Foo>("string");
     WeakPtr<Foo> w(p);
 
-    TEST_ENSURE(w.IsValid());
+    TEST_ENSURE(w.Valid());
 
     p.Reset();
-    TEST_ENSURE(!w.IsValid());
+    TEST_ENSURE(!w.Valid());
 
     WeakPtr<Foo> w2(w);
-    TEST_ENSURE(!w2.IsValid());
+    TEST_ENSURE(!w2.Valid());
 
     return 0;
 }
@@ -79,7 +79,7 @@ int32 TestReset()
     WeakPtr<Foo> w(p);
 
     w.Reset();
-    TEST_ENSURE(!w.IsValid());
+    TEST_ENSURE(!w.Valid());
     TEST_ENSURE(w.Lock() == nullptr);
 
     return 0;

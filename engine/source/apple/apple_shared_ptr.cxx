@@ -37,7 +37,7 @@ public:
     constexpr SharedPtr(NullptrT) noexcept;
 
     constexpr Ptr Get() const noexcept;
-    constexpr bool IsValid() const noexcept;
+    constexpr bool Valid() const noexcept;
 
     constexpr void Swap(SharedPtr&) noexcept;
     void Reset() noexcept;
@@ -164,7 +164,7 @@ inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::Get() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
-inline constexpr bool SharedPtr<T>::IsValid() const noexcept
+inline constexpr bool SharedPtr<T>::Valid() const noexcept
 {
     return m_Ptr != nullptr;
 }

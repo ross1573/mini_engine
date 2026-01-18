@@ -12,7 +12,7 @@ import :logger_platform;
 
 namespace mini {
 
-String LoggerBase::m_Identifier = StringView::Empty();
+String LoggerBase::m_Identifier = String();
 
 LoggerBase::LoggerBase(StringView category)
     : m_Category(category)
@@ -53,11 +53,11 @@ LoggerBase::LogLevel LoggerBase::GetLogType(byte level)
 
 StringView LoggerBase::InitializeIdentifier()
 {
-    if (m_Identifier.IsEmpty() == false) {
+    if (m_Identifier.Empty() == false) {
         return m_Identifier;
     }
 
-    String identifier = StringView::Empty();
+    String identifier;
     uint32 encoding = kCFStringEncodingUTF8;
     bool result;
 
@@ -84,7 +84,7 @@ StringView LoggerBase::InitializeIdentifier()
 init_finish:
     if (bundle != nullptr) CFRelease(bundle);
 
-    if (identifier.IsEmpty() == false) {
+    if (identifier.Empty() == false) {
         m_Identifier = MoveArg(identifier);
         return m_Identifier;
     }

@@ -35,7 +35,7 @@ public:
         requires ConvertibleToT<DelU, DelT>;
 
     constexpr Ptr Get() const noexcept;
-    constexpr bool IsValid() const noexcept;
+    constexpr bool Valid() const noexcept;
 
     constexpr Ptr Detach() noexcept;
     constexpr void Swap(UniquePtr&) noexcept;
@@ -132,7 +132,7 @@ inline constexpr UniquePtr<T, DelT>::Ptr UniquePtr<T, DelT>::Get() const noexcep
 }
 
 template <NonRefT T, DeleterT<T> DelT>
-inline constexpr bool UniquePtr<T, DelT>::IsValid() const noexcept
+inline constexpr bool UniquePtr<T, DelT>::Valid() const noexcept
 {
     return m_Ptr != nullptr;
 }

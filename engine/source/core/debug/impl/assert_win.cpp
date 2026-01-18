@@ -50,7 +50,7 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
     StringView exprView = expr;
     StringView msgView = msg;
 
-    if (msgView.IsEmpty()) {
+    if (msgView.Empty()) {
         assertLogger.Fatal("\n\nEnsure failed!\n"
                            "  Expression: {0}\n"
                            "  Function: {1}",

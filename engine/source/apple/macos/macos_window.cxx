@@ -16,7 +16,7 @@ public:
     Window(cocoa::Application*);
     ~Window() noexcept = default;
 
-    bool IsValid() const noexcept final { return Base::IsValid(); }
+    bool Valid() const noexcept final { return Base::Valid(); }
 
     void Resize(RectInt const& windowSize) final;
     void Minimize() final { Base::Minimize(); }

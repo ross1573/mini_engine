@@ -8,7 +8,7 @@ export class PLATFORM_API Window {
 public:
     virtual ~Window() noexcept = default;
 
-    virtual bool IsValid() const noexcept = 0;
+    virtual bool Valid() const noexcept = 0;
 
     virtual void Resize(RectInt const&) = 0;
     virtual void Minimize() = 0;

@@ -67,10 +67,10 @@ public:
     constexpr ConstRef At(SizeT) const;
 
     constexpr SizeT Size() const noexcept;
-    constexpr bool IsEmpty() const noexcept;
-    constexpr bool IsValidIndex(SizeT) const noexcept;
-    constexpr bool IsValidIterator(ConstIterator) const noexcept;
-    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr bool Empty() const noexcept;
+    constexpr bool ValidIndex(SizeT) const noexcept;
+    constexpr bool ValidIterator(ConstIterator) const noexcept;
+    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr ConstRef operator[](SizeT) const;
 
@@ -80,8 +80,6 @@ public:
     constexpr operator std::basic_string_view<T>() const noexcept;
 
     constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
-
-    static constexpr BasicStringView Empty() noexcept;
 
 private:
     BasicStringView(NullptrT) = delete;
@@ -274,27 +272,27 @@ inline constexpr SizeT BasicStringView<T>::Size() const noexcept
 }
 
 template <CharT T>
-inline constexpr bool BasicStringView<T>::IsEmpty() const noexcept
+inline constexpr bool BasicStringView<T>::Empty() const noexcept
 {
     return m_Size == 0;
 }
 
 template <CharT T>
-inline constexpr bool BasicStringView<T>::IsValidIndex(SizeT index) const noexcept
+inline constexpr bool BasicStringView<T>::ValidIndex(SizeT index) const noexcept
 {
     return index < m_Size;
 }
 
 template <CharT T>
-inline constexpr bool BasicStringView<T>::IsValidIterator(ConstIterator iter) const noexcept
+inline constexpr bool BasicStringView<T>::ValidIterator(ConstIterator iter) const noexcept
 {
     SizeT index = static_cast<SizeT>(iter.Address() - m_Data);
     return index < m_Size;
 }
 
 template <CharT T>
-inline constexpr bool BasicStringView<T>::IsValidRange(ConstIterator begin,
-                                                       ConstIterator end) const noexcept
+inline constexpr bool BasicStringView<T>::ValidRange(ConstIterator begin,
+                                                     ConstIterator end) const noexcept
 {
     SizeT beginIdx = static_cast<SizeT>(begin.Address() - m_Data);
     SizeT endIdx = static_cast<SizeT>(end.Address() - m_Data);
@@ -358,23 +356,17 @@ inline constexpr std::basic_string_view<T> ToStdStringView(BasicStringView<T> co
 }
 
 template <CharT T>
-inline constexpr BasicStringView<T> BasicStringView<T>::Empty() noexcept
-{
-    return empty;
-}
-
-template <CharT T>
 inline constexpr void
 BasicStringView<T>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
-    ASSERT(IsValidIndex(index));
+    ASSERT(ValidIndex(index));
 }
 
 template <CharT T>
 inline constexpr void
 BasicStringView<T>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(IsValidIterator(iter));
+    ASSERT(ValidIterator(iter));
 }
 
 template <CharT T>
@@ -382,7 +374,7 @@ inline constexpr void
 BasicStringView<T>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                      [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(IsValidRange(begin, end));
+    ASSERT(ValidRange(begin, end));
 }
 
 export template <CharT T>

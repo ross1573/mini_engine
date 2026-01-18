@@ -25,8 +25,8 @@ public:
 
     constexpr Ptr Address() const noexcept;
 
-    constexpr bool IsValid() const noexcept;
-    constexpr bool IsValidWith(PtrIterator const&) const noexcept;
+    constexpr bool Valid() const noexcept;
+    constexpr bool ValidWith(PtrIterator const&) const noexcept;
     constexpr bool Increment() noexcept;
     constexpr bool Decrement() noexcept;
     constexpr bool Advance(OffsetT) noexcept;
@@ -89,13 +89,13 @@ inline constexpr PtrIterator<T>::Ptr PtrIterator<T>::Address() const noexcept
 }
 
 template <PtrT T>
-inline constexpr bool PtrIterator<T>::IsValid() const noexcept
+inline constexpr bool PtrIterator<T>::Valid() const noexcept
 {
     return true;
 }
 
 template <PtrT T>
-inline constexpr bool PtrIterator<T>::IsValidWith(PtrIterator const&) const noexcept
+inline constexpr bool PtrIterator<T>::ValidWith(PtrIterator const&) const noexcept
 {
     return true;
 }

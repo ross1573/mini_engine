@@ -180,10 +180,10 @@ public:
 
     constexpr SizeT Size() const noexcept;
     constexpr SizeT Capacity() const noexcept;
-    constexpr bool IsEmpty() const noexcept;
-    constexpr bool IsValidIndex(SizeT) const noexcept;
-    constexpr bool IsValidIterator(ConstIterator) const noexcept;
-    constexpr bool IsValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr bool Empty() const noexcept;
+    constexpr bool ValidIndex(SizeT) const noexcept;
+    constexpr bool ValidIterator(ConstIterator) const noexcept;
+    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Ref operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
@@ -216,7 +216,7 @@ private:
     void Insert(SizeT, NullptrT, SizeT) = delete;
     BasicString& operator=(NullptrT) = delete;
 
-    constexpr bool IsLarge() const noexcept;
+    constexpr bool LargeCapacity() const noexcept;
     constexpr void SetSizeWithNullTerminator(SizeT) noexcept;
     constexpr void DestroyBuffer();
     constexpr void ResizeWithAlloc(SizeT, Value, SizeT);
@@ -263,7 +263,7 @@ inline constexpr BasicString<T, AllocT>::BasicString() noexcept
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::~BasicString()
 {
-    if (IsLarge()) {
+    if (LargeCapacity()) {
         m_Storage.l.buffer.Deallocate(m_Alloc);
         m_Storage.l.size = 0;
     }
@@ -287,7 +287,7 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other)
     : m_Alloc{}
 {
-    if (other.IsLarge() && m_Alloc != other.m_Alloc) {
+    if (other.LargeCapacity() && m_Alloc != other.m_Alloc) {
         InitWithCopy(other);
     } else {
         InitWithMove(MoveArg(other));
@@ -298,7 +298,7 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other, AllocT const& alloc)
     : m_Alloc(alloc)
 {
-    if (other.IsLarge() && m_Alloc != other.m_Alloc) {
+    if (other.LargeCapacity() && m_Alloc != other.m_Alloc) {
         InitWithCopy(other);
     } else {
         InitWithMove(MoveArg(other));
@@ -773,7 +773,7 @@ template <CharT T, AllocatorT<T> AllocT>
 [[no_inline]] constexpr void BasicString<T, AllocT>::ResizeWithAlloc(SizeT size, Value ch,
                                                                      SizeT oldSize)
 {
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(size + 1, m_Alloc);
         Ptr buffer = newBuffer.Data();
         memory::MemCopy(buffer, m_Storage.s.buffer.Data(), oldSize);
@@ -797,7 +797,7 @@ inline constexpr void BasicString<T, AllocT>::Reserve(SizeT size)
         return;
     }
 
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer buffer(size + 1, m_Alloc);
         memory::MemCopy(buffer.Data(), m_Storage.s.buffer.Data(), m_Storage.s.size);
         SwitchToLarge(MoveArg(buffer), m_Storage.s.size);
@@ -818,7 +818,7 @@ inline constexpr void BasicString<T, AllocT>::Shrink()
         return;
     }
 
-    if (!IsLarge()) [[unlikely]] {
+    if (!LargeCapacity()) [[unlikely]] {
         return;
     }
 
@@ -928,49 +928,49 @@ inline constexpr BasicString<T, AllocT>::ConstRef BasicString<T, AllocT>::At(Siz
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Ptr BasicString<T, AllocT>::Data() noexcept
 {
-    return IsLarge() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
+    return LargeCapacity() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::ConstPtr BasicString<T, AllocT>::Data() const noexcept
 {
-    return IsLarge() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
+    return LargeCapacity() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr SizeT BasicString<T, AllocT>::Size() const noexcept
 {
-    return IsLarge() ? m_Storage.l.size : m_Storage.s.size;
+    return LargeCapacity() ? m_Storage.l.size : m_Storage.s.size;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr SizeT BasicString<T, AllocT>::Capacity() const noexcept
 {
-    return IsLarge() ? (m_Storage.l.buffer.Capacity() - 1) : SmallCapacity;
+    return LargeCapacity() ? (m_Storage.l.buffer.Capacity() - 1) : SmallCapacity;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsEmpty() const noexcept
+inline constexpr bool BasicString<T, AllocT>::Empty() const noexcept
 {
-    return IsLarge() ? m_Storage.l.size == 0 : m_Storage.s.size == 0;
+    return LargeCapacity() ? m_Storage.l.size == 0 : m_Storage.s.size == 0;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsValidIndex(SizeT index) const noexcept
+inline constexpr bool BasicString<T, AllocT>::ValidIndex(SizeT index) const noexcept
 {
     return index < Size();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsValidIterator(ConstIterator iter) const noexcept
+inline constexpr bool BasicString<T, AllocT>::ValidIterator(ConstIterator iter) const noexcept
 {
     SizeT index = static_cast<SizeT>(iter.Address() - Data());
     return index < Size();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsValidRange(ConstIterator begin,
-                                                           ConstIterator end) const noexcept
+inline constexpr bool BasicString<T, AllocT>::ValidRange(ConstIterator begin,
+                                                         ConstIterator end) const noexcept
 {
     ConstPtr buffer = Data();
     SizeT size = Size();
@@ -1032,7 +1032,7 @@ inline constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator+=(Valu
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr bool BasicString<T, AllocT>::IsLarge() const noexcept
+inline constexpr bool BasicString<T, AllocT>::LargeCapacity() const noexcept
 {
     if consteval {
         return m_Storage.l.layout == 1;
@@ -1045,7 +1045,7 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::SetSizeWithNullTerminator(SizeT size) noexcept
 {
     Ptr buffer = nullptr;
-    if (IsLarge()) {
+    if (LargeCapacity()) {
         m_Storage.l.size = size;
         buffer = m_Storage.l.buffer.Data();
     } else {
@@ -1059,7 +1059,7 @@ inline constexpr void BasicString<T, AllocT>::SetSizeWithNullTerminator(SizeT si
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::DestroyBuffer()
 {
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         return;
     }
 
@@ -1133,7 +1133,7 @@ inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& ot
         memory::ConstructAt(&m_Storage.l);
     }
 
-    if (other.IsLarge()) {
+    if (other.LargeCapacity()) {
         SizeT size = other.m_Storage.l.size;
         memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
         memory::MemCopy(m_Storage.l.buffer.Data(), other.m_Storage.l.buffer.Data(), size + 1);
@@ -1218,7 +1218,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPtr ptr, Siz
 template <CharT T, AllocatorT<T> AllocT>
 [[no_inline]] constexpr void BasicString<T, AllocT>::AssignWithAlloc(ConstPtr ptr, SizeT len)
 {
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(len + 1, m_Alloc);
         memory::MemCopy(newBuffer.Data(), ptr, len);
         SwitchToLarge(MoveArg(newBuffer), len);
@@ -1250,7 +1250,7 @@ inline constexpr void BasicString<T, AllocT>::AppendWithRange(Iter begin, Iter e
         memory::CopyRange(Data() + oldSize, begin, end);
         SetSizeWithNullTerminator(newSize);
     } else {
-        if (!IsLarge()) {
+        if (!LargeCapacity()) {
             LargeBuffer newBuffer(newSize + 1, m_Alloc);
             Ptr buffer = newBuffer.Data();
             memory::MemCopy(buffer, m_Storage.s.buffer.Data(), oldSize);
@@ -1293,7 +1293,7 @@ template <CharT T, AllocatorT<T> AllocT>
     SizeT newSize = oldSize + len;
     Ptr oldBuffer = Data();
 
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(newSize + 1, m_Alloc);
         Ptr buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, oldSize);
@@ -1330,7 +1330,7 @@ template <CharT T, AllocatorT<T> AllocT>
 {
     SizeT newSize = oldSize + size;
 
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(newSize + 1, m_Alloc);
         memory::MemCopy(newBuffer.Data(), m_Storage.s.buffer.Data(), oldSize);
         SwitchToLarge(MoveArg(newBuffer), newSize);
@@ -1374,7 +1374,7 @@ template <CharT T, AllocatorT<T> AllocT>
     Ptr oldBuffer = Data();
     Ptr loc = oldBuffer + index;
 
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(newSize + 1, m_Alloc);
         Ptr buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, index);
@@ -1416,7 +1416,7 @@ template <CharT T, AllocatorT<T> AllocT>
 {
     SizeT newSize = oldSize + size;
 
-    if (!IsLarge()) {
+    if (!LargeCapacity()) {
         LargeBuffer newBuffer(newSize + 1, m_Alloc);
         Ptr buffer = newBuffer.Data();
         Ptr oldBuffer = m_Storage.s.buffer.Data();
@@ -1455,7 +1455,7 @@ inline constexpr void BasicString<T, AllocT>::InsertWithRange(SizeT index, Iter 
         memory::MemCopy(loc, temp.Data(), size);
         SetSizeWithNullTerminator(newSize);
     } else {
-        if (!IsLarge()) {
+        if (!LargeCapacity()) {
             LargeBuffer newBuffer(newSize + 1, m_Alloc);
             Ptr buffer = newBuffer.Data();
             memory::MemCopy(buffer, oldBuffer, index);
@@ -1524,14 +1524,14 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void
 BasicString<T, AllocT>::AssertValidIndex([[maybe_unused]] SizeT index) const noexcept
 {
-    ASSERT(IsValidIndex(index), "invalid index");
+    ASSERT(ValidIndex(index), "invalid index");
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void
 BasicString<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(IsValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator");
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1539,7 +1539,7 @@ inline constexpr void
 BasicString<T, AllocT>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                          [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(IsValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end), "invalid range");
 }
 
 export template <CharT T, AllocatorT<T> AllocT>
