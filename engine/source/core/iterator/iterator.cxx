@@ -13,18 +13,18 @@ concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
                            !ConvertibleToT<SizeT, T> &&              //
                            requires(T i, T const j, SizeT const n)   //
 {
-    requires !RefT<typename T::Value>;
-    requires PtrT<typename T::Ptr>;
-    requires RefT<typename T::Ref>;
+    requires !ReferenceT<typename T::Value>;
+    requires PointerT<typename T::Pointer>;
+    requires ReferenceT<typename T::Reference>;
 
     { i.Valid() } -> ConvertibleToT<bool>;
     { i.ValidWith(j) } -> ConvertibleToT<bool>;
     { i.Increment() } -> ConvertibleToT<bool>;
 
-    { i.Address() } -> SameAsT<typename T::Ptr>;
-    { i.operator->() } -> SameAsT<typename T::Ptr>;
+    { i.Address() } -> SameAsT<typename T::Pointer>;
+    { i.operator->() } -> SameAsT<typename T::Pointer>;
 
-    { *i } -> SameAsT<typename T::Ref>;
+    { *i } -> SameAsT<typename T::Reference>;
     { ++i } -> SameAsT<T &>;
     { i++ } -> SameAsT<T>;
 };
@@ -51,7 +51,7 @@ concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> && //
     { j - n } -> SameAsT<T>;
     { n + j } -> SameAsT<T>;
     { j - i } -> SameAsT<OffsetT>;
-    { j[n] } -> SameAsT<typename T::Ref>;
+    { j[n] } -> SameAsT<typename T::Reference>;
 };
 
 export template <typename T, typename U>
@@ -127,8 +127,8 @@ export template <mini::ForwardIteratorT T>
 struct iterator_traits<T> {
     typedef std::forward_iterator_tag iterator_category;
     typedef typename T::Value value_type;
-    typedef typename T::Ptr pointer;
-    typedef typename T::Ref reference;
+    typedef typename T::Pointer pointer;
+    typedef typename T::Reference reference;
     typedef mini::OffsetT difference_type;
 };
 
@@ -136,8 +136,8 @@ export template <mini::BidrectionalIteratorT T>
 struct iterator_traits<T> {
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef typename T::Value value_type;
-    typedef typename T::Ptr pointer;
-    typedef typename T::Ref reference;
+    typedef typename T::Pointer pointer;
+    typedef typename T::Reference reference;
     typedef mini::OffsetT difference_type;
 };
 
@@ -145,8 +145,8 @@ export template <mini::RandomAccessIteratorT T>
 struct iterator_traits<T> {
     typedef std::random_access_iterator_tag iterator_category;
     typedef typename T::Value value_type;
-    typedef typename T::Ptr pointer;
-    typedef typename T::Ref reference;
+    typedef typename T::Pointer pointer;
+    typedef typename T::Reference reference;
     typedef mini::OffsetT difference_type;
 };
 

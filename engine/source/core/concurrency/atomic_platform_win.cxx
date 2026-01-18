@@ -741,7 +741,7 @@ inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
     return result;
 }
 
-export template <PtrT T>
+export template <PointerT T>
 inline T __atomic_fetch_add(T volatile* pointer, OffsetT value, int32 memorder)
     requires(!FunctionPtrT<T>)
 {
@@ -823,7 +823,7 @@ inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
     return result;
 }
 
-export template <PtrT T>
+export template <PointerT T>
 inline T __atomic_fetch_sub(T volatile* pointer, OffsetT value, int32 memorder)
     requires(!FunctionPtrT<T>)
 {

@@ -103,11 +103,11 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
 
 private:
-    Ptr m_Ptr;
+    Pointer m_Ptr;
     SharedCounter* m_Counter;
 
 public:
@@ -122,9 +122,9 @@ public:
     template <PtrConvertibleToT<T> U>
     explicit constexpr SharedPtr(U*) noexcept;
     template <NonRefT U>
-    constexpr SharedPtr(SharedPtr<U> const&, Ptr) noexcept;
+    constexpr SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
     template <NonRefT U>
-    constexpr SharedPtr(SharedPtr<U>&&, Ptr) noexcept;
+    constexpr SharedPtr(SharedPtr<U>&&, Pointer) noexcept;
 
     template <typename DelT = UnboundDeleter, typename AllocT = UnboundAllocator>
     constexpr SharedPtr(NullptrT, DelT = {}, AllocT = {}) noexcept;
@@ -134,7 +134,7 @@ public:
     constexpr SharedPtr(U*, DelT&&, AllocT const&)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
-    constexpr Ptr Get() const noexcept;
+    constexpr Pointer Get() const noexcept;
     constexpr bool Valid() const noexcept;
 
     constexpr void Swap(SharedPtr&) noexcept;
@@ -153,10 +153,10 @@ public:
     template <NonRefT U>
     constexpr bool OwnerEquals(SharedPtr<U> const&) const noexcept;
 
-    constexpr Ptr operator->() const noexcept;
-    constexpr Ref operator*() const noexcept;
+    constexpr Pointer operator->() const noexcept;
+    constexpr Reference operator*() const noexcept;
     explicit constexpr operator bool() const noexcept;
-    explicit constexpr operator Ptr() const noexcept;
+    explicit constexpr operator Pointer() const noexcept;
 
     constexpr SharedPtr& operator=(NullptrT) noexcept;
     constexpr SharedPtr& operator=(SharedPtr const&) noexcept;
@@ -244,7 +244,7 @@ inline constexpr SharedPtr<T>::SharedPtr(U* ptr) noexcept
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Ptr ptr) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Pointer ptr) noexcept
     : m_Ptr(ptr)
     , m_Counter(other.m_Counter)
 {
@@ -254,7 +254,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Ptr ptr) noe
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Ptr ptr) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
     : m_Ptr(ptr)
     , m_Counter(other.m_Counter)
 {
@@ -286,7 +286,7 @@ inline constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del, AllocT const& alloc
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::Get() const noexcept
+inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 {
     return m_Ptr;
 }
@@ -364,13 +364,13 @@ inline constexpr bool SharedPtr<T>::OwnerEquals(SharedPtr<U> const& o) const noe
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::operator->() const noexcept
+inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
     return m_Ptr;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Ref SharedPtr<T>::operator*() const noexcept
+inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
     return *m_Ptr;
 }
@@ -382,7 +382,7 @@ inline constexpr SharedPtr<T>::operator bool() const noexcept
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::operator Ptr() const noexcept
+inline constexpr SharedPtr<T>::operator Pointer() const noexcept
 {
     return m_Ptr;
 }

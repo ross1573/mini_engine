@@ -14,11 +14,11 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
 
 protected:
-    Ptr m_Ptr;
+    Pointer m_Ptr;
     ArrayT* m_Array;
 
 public:
@@ -28,7 +28,7 @@ public:
     constexpr ArrayIterator(ArrayIterator<U, ArrayU> const&) noexcept
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
-    constexpr Ptr Address() const noexcept;
+    constexpr Pointer Address() const noexcept;
     constexpr bool Valid() const noexcept;
     constexpr bool ValidWith(ArrayIterator const&) const noexcept;
 
@@ -38,9 +38,9 @@ public:
     constexpr bool Decrement() noexcept;
     constexpr bool Advance(OffsetT) noexcept;
 
-    constexpr Ptr operator->() const noexcept;
-    constexpr Ref operator*() const noexcept;
-    constexpr Ref operator[](OffsetT) const noexcept;
+    constexpr Pointer operator->() const noexcept;
+    constexpr Reference operator*() const noexcept;
+    constexpr Reference operator[](OffsetT) const noexcept;
 
     constexpr ArrayIterator& operator++() noexcept;
     constexpr ArrayIterator& operator--() noexcept;
@@ -56,7 +56,7 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
 protected:
-    constexpr ArrayIterator(Ptr, ArrayT*) noexcept;
+    constexpr ArrayIterator(Pointer, ArrayT*) noexcept;
     constexpr bool CheckIterator(ArrayIterator const&) const noexcept;
 };
 
@@ -68,7 +68,7 @@ inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator() noexcept
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Ptr ptr, ArrayT* base) noexcept
+inline constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Pointer ptr, ArrayT* base) noexcept
     : m_Ptr(ptr)
     , m_Array(base)
 {
@@ -102,7 +102,8 @@ ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcep
 }
 
 template <typename T, typename ArrayT>
-inline constexpr ArrayIterator<T, ArrayT>::Ptr ArrayIterator<T, ArrayT>::Address() const noexcept
+inline constexpr ArrayIterator<T, ArrayT>::Pointer
+ArrayIterator<T, ArrayT>::Address() const noexcept
 {
     return m_Ptr;
 }

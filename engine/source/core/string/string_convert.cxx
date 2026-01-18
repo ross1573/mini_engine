@@ -21,8 +21,8 @@ template <CharT T, AllocatorT<T> AllocT>
 class BasicStringConvert {
 public:
     typedef typename BasicString<T, AllocT>::Value Value;
-    typedef typename BasicString<T, AllocT>::Ptr Ptr;
-    typedef typename BasicString<T, AllocT>::Ref Ref;
+    typedef typename BasicString<T, AllocT>::Pointer Pointer;
+    typedef typename BasicString<T, AllocT>::Reference Reference;
     typedef typename BasicString<T, AllocT>::ConstPtr ConstPtr;
 
 private:

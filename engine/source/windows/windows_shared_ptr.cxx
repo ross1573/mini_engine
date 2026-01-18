@@ -13,8 +13,8 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
 
 private:
     T* m_Ptr;
@@ -31,12 +31,12 @@ public:
     template <PtrConvertibleToT<T> U>
     explicit SharedPtr(U*) noexcept;
     template <DerivedFromT<IUnknown> U>
-    SharedPtr(SharedPtr<U> const&, Ptr) noexcept;
+    SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
     template <DerivedFromT<IUnknown> U>
-    constexpr SharedPtr(SharedPtr<U>&&, Ptr) noexcept;
+    constexpr SharedPtr(SharedPtr<U>&&, Pointer) noexcept;
     constexpr SharedPtr(NullptrT) noexcept;
 
-    constexpr Ptr Get() const noexcept;
+    constexpr Pointer Get() const noexcept;
     constexpr bool Valid() const noexcept;
 
     constexpr void Swap(SharedPtr&) noexcept;
@@ -48,11 +48,11 @@ public:
     constexpr bool Equals(SharedPtr<U> const&) const noexcept
         requires DerivedFromT<U, IUnknown> && EqualityComparableWithT<T*, U*>;
 
-    constexpr Ptr operator->() const noexcept;
-    constexpr Ref operator*() const noexcept;
-    constexpr Ptr* operator&() noexcept;
+    constexpr Pointer operator->() const noexcept;
+    constexpr Reference operator*() const noexcept;
+    constexpr Pointer* operator&() noexcept;
     explicit constexpr operator bool() const noexcept;
-    constexpr operator Ptr() const noexcept; // TODO: this should be explicit..
+    constexpr operator Pointer() const noexcept; // TODO: this should be explicit..
 
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
@@ -132,7 +132,7 @@ inline SharedPtr<T>::SharedPtr(U* ptr) noexcept
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U>
-inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Ptr ptr) noexcept
+inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Pointer ptr) noexcept
     : m_Ptr(ptr)
 {
     if (m_Ptr) {
@@ -143,7 +143,7 @@ inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Ptr ptr) noexcept
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Ptr ptr) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
     : m_Ptr(ptr)
 {
     other.m_Ptr = nullptr;
@@ -158,7 +158,7 @@ inline constexpr SharedPtr<T>::SharedPtr(NullptrT) noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::Get() const noexcept
+inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 {
     return m_Ptr;
 }
@@ -174,7 +174,7 @@ template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr void SharedPtr<T>::Swap(SharedPtr& o) noexcept
 {
-    Ptr tmp = m_Ptr;
+    Pointer tmp = m_Ptr;
     m_Ptr = o.m_Ptr;
     o.m_Ptr = tmp;
 }
@@ -216,7 +216,7 @@ inline constexpr bool SharedPtr<T>::Equals(SharedPtr<U> const& other) const noex
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::operator->() const noexcept
+inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
     ASSERT(m_Ptr, "nullpointer deference");
     return m_Ptr;
@@ -224,7 +224,7 @@ inline constexpr SharedPtr<T>::Ptr SharedPtr<T>::operator->() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::Ref SharedPtr<T>::operator*() const noexcept
+inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
     ASSERT(m_Ptr, "nullpointer deference");
     return *m_Ptr;
@@ -232,7 +232,7 @@ inline constexpr SharedPtr<T>::Ref SharedPtr<T>::operator*() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::Ptr* SharedPtr<T>::operator&() noexcept
+inline constexpr SharedPtr<T>::Pointer* SharedPtr<T>::operator&() noexcept
 {
     return &m_Ptr;
 }
@@ -246,7 +246,7 @@ inline constexpr SharedPtr<T>::operator bool() const noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::operator Ptr() const noexcept
+inline constexpr SharedPtr<T>::operator Pointer() const noexcept
 {
     return m_Ptr;
 }

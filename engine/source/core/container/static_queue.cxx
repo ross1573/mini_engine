@@ -21,8 +21,8 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
     typedef T const ConstValue;
     typedef T const* ConstPtr;
     typedef T const& ConstRef;
@@ -58,28 +58,28 @@ public:
     constexpr void RemoveFirst(SizeT);
     constexpr void Clear();
 
-    constexpr Ptr Data() noexcept;
+    constexpr Pointer Data() noexcept;
     constexpr ConstPtr Data() const noexcept;
     constexpr Iterator Begin() noexcept;
     constexpr ConstIterator Begin() const noexcept;
     constexpr Iterator End() noexcept;
     constexpr ConstIterator End() const noexcept;
-    constexpr Ref First();
+    constexpr Reference First();
     constexpr ConstRef First() const;
-    constexpr Ref Last();
+    constexpr Reference Last();
     constexpr ConstRef Last() const;
-    constexpr Ref At(SizeT);
+    constexpr Reference At(SizeT);
     constexpr ConstRef At(SizeT) const;
 
     constexpr SizeT Capacity() const noexcept;
     constexpr SizeT Size() const noexcept;
     constexpr bool Empty() const noexcept;
-    constexpr bool IsFull() const noexcept;
+    constexpr bool Full() const noexcept;
     constexpr bool ValidIndex(SizeT) const noexcept;
     constexpr bool ValidIterator(ConstIterator) const noexcept;
     constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
-    constexpr Ref operator[](SizeT);
+    constexpr Reference operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
 
     constexpr StaticQueue& operator=(StaticQueue const&);
@@ -222,7 +222,7 @@ inline constexpr void StaticQueue<T, N>::Assign(InitializerList<T> init)
 template <MovableT T, SizeT N>
 inline constexpr T StaticQueue<T, N>::Dequeue()
 {
-    Ptr begin = m_Buffer.Data() + m_Begin;
+    Pointer begin = m_Buffer.Data() + m_Begin;
     T ele = MoveArg(*begin);
     memory::DestructAt(begin);
     m_Begin = (m_Begin + 1) % m_Buffer.Capacity();
@@ -254,13 +254,13 @@ constexpr void StaticQueue<T, N>::RemoveFirst(SizeT count)
         count = oldSize;
     }
 
-    Ptr begin = m_Buffer.Data() + m_Begin;
+    Pointer begin = m_Buffer.Data() + m_Begin;
     SizeT frontCap = m_Buffer.Capacity() - m_Begin;
     if (frontCap >= count) {
         memory::DestructRange(begin, begin + count);
         m_Begin += count;
     } else {
-        Ptr bufBegin = m_Buffer.Data();
+        Pointer bufBegin = m_Buffer.Data();
         memory::DestructRange(begin, begin + frontCap);
         memory::DestructRange(bufBegin, bufBegin + count - frontCap);
         m_Begin = count - frontCap;
@@ -276,9 +276,9 @@ constexpr void StaticQueue<T, N>::Clear()
         return;
     }
 
-    Ptr buf = m_Buffer.Data();
-    Ptr begin = buf + m_Begin;
-    Ptr end = buf + m_End;
+    Pointer buf = m_Buffer.Data();
+    Pointer begin = buf + m_Begin;
+    Pointer end = buf + m_End;
 
     if (m_Begin < m_End) {
         memory::DestructRange(begin, end);
@@ -293,7 +293,7 @@ constexpr void StaticQueue<T, N>::Clear()
 }
 
 template <MovableT T, SizeT N>
-inline constexpr StaticQueue<T, N>::Ptr StaticQueue<T, N>::Data() noexcept
+inline constexpr StaticQueue<T, N>::Pointer StaticQueue<T, N>::Data() noexcept
 {
     return m_Buffer.Data();
 }
@@ -405,7 +405,7 @@ inline constexpr bool StaticQueue<T, N>::Empty() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticQueue<T, N>::IsFull() const noexcept
+inline constexpr bool StaticQueue<T, N>::Full() const noexcept
 {
     return m_Size == m_Buffer.Capacity();
 }
@@ -481,7 +481,7 @@ template <typename U>
 inline constexpr void StaticQueue<T, N>::EnqueueRangeWithSize(U first, U last, SizeT len)
 {
     AssertValidCapacity(m_Size + len);
-    Ptr end = m_Buffer.Data() + m_End;
+    Pointer end = m_Buffer.Data() + m_End;
     SizeT backCap = m_Buffer.Capacity() - m_End;
 
     if (backCap >= len) {
@@ -489,7 +489,7 @@ inline constexpr void StaticQueue<T, N>::EnqueueRangeWithSize(U first, U last, S
         m_End += len;
     } else {
         SizeT frontInsertCnt = len - backCap;
-        Ptr begin = m_Buffer.Data();
+        Pointer begin = m_Buffer.Data();
 
         memory::ConstructRange(end, first, first + (OffsetT)backCap);
         memory::ConstructRange(begin, first + (OffsetT)backCap, last);

@@ -13,8 +13,8 @@ private:
 
 public:
     typedef typename T::Value Value;
-    typedef typename T::Ptr Ptr;
-    typedef RemoveRefT<typename T::Ref>&& Ref;
+    typedef typename T::Pointer Pointer;
+    typedef RemoveRefT<typename T::Reference>&& Reference;
 
 protected:
     T m_Iter;
@@ -25,7 +25,7 @@ public:
 
     constexpr T const& Base() const& noexcept;
     constexpr T Base() && noexcept;
-    constexpr Ptr Address() const noexcept;
+    constexpr Pointer Address() const noexcept;
 
     constexpr bool Valid() const;
     constexpr bool ValidWith(MoveIterator const&) const;
@@ -35,9 +35,9 @@ public:
     constexpr bool Advance(OffsetT)
         requires RandomAccessIteratorT<T>;
 
-    constexpr Ptr operator->() const;
-    constexpr Ref operator*() const;
-    constexpr Ref operator[](OffsetT) const
+    constexpr Pointer operator->() const;
+    constexpr Reference operator*() const;
+    constexpr Reference operator[](OffsetT) const
         requires RandomAccessIteratorT<T>;
 
     constexpr MoveIterator& operator++();
@@ -100,7 +100,7 @@ inline constexpr T MoveIterator<T>::Base() && noexcept
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Ptr MoveIterator<T>::Address() const noexcept
+inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::Address() const noexcept
 {
     return m_Iter.Address();
 }
@@ -138,22 +138,22 @@ inline constexpr bool MoveIterator<T>::Advance(OffsetT s)
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Ptr MoveIterator<T>::operator->() const
+inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::operator->() const
 {
     return m_Iter.operator->();
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Ref MoveIterator<T>::operator*() const
+inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator*() const
 {
-    return static_cast<Ref>(*m_Iter);
+    return static_cast<Reference>(*m_Iter);
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Ref MoveIterator<T>::operator[](OffsetT n) const
+inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator[](OffsetT n) const
     requires RandomAccessIteratorT<T>
 {
-    return static_cast<Ref>(m_Iter[n]);
+    return static_cast<Reference>(m_Iter[n]);
 }
 
 template <ForwardIteratorT T>

@@ -21,8 +21,8 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
     typedef T const ConstValue;
     typedef T const* ConstPtr;
     typedef T const& ConstRef;
@@ -77,28 +77,28 @@ public:
         requires ConstructibleFromT<T, Args...>;
     constexpr void Clear();
 
-    constexpr Ptr Data() noexcept;
+    constexpr Pointer Data() noexcept;
     constexpr ConstPtr Data() const noexcept;
     constexpr Iterator Begin() noexcept;
     constexpr ConstIterator Begin() const noexcept;
     constexpr Iterator End() noexcept;
     constexpr ConstIterator End() const noexcept;
-    constexpr Ref First();
+    constexpr Reference First();
     constexpr ConstRef First() const;
-    constexpr Ref Last();
+    constexpr Reference Last();
     constexpr ConstRef Last() const;
-    constexpr Ref At(SizeT);
+    constexpr Reference At(SizeT);
     constexpr ConstRef At(SizeT) const;
 
     consteval SizeT Capacity() const noexcept;
     constexpr SizeT Size() const noexcept;
     constexpr bool Empty() const noexcept;
-    constexpr bool IsFull() const noexcept;
+    constexpr bool Full() const noexcept;
     constexpr bool ValidIndex(SizeT) const noexcept;
     constexpr bool ValidIterator(ConstIterator) const noexcept;
     constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
-    constexpr Ref operator[](SizeT);
+    constexpr Reference operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
 
     constexpr StaticArray& operator=(StaticArray const&);
@@ -142,8 +142,8 @@ inline constexpr StaticArray<T, N>::StaticArray(StaticArray const& other)
 template <MovableT T, SizeT N>
 inline constexpr StaticArray<T, N>::StaticArray(StaticArray&& other) noexcept
 {
-    Ptr otherBegin = other.m_Buffer.Data();
-    Ptr otherEnd = otherBegin + other.m_Size;
+    Pointer otherBegin = other.m_Buffer.Data();
+    Pointer otherEnd = otherBegin + other.m_Size;
 
     memory::MoveConstructRange(m_Buffer.Data(), otherBegin, otherEnd);
     memory::DestructRange(otherBegin, otherEnd);
@@ -197,10 +197,10 @@ constexpr void StaticArray<T, N>::Insert(ConstIterator iter, Args&&... args)
     }
 
     AssertValidCapacity(m_Size + 1);
-    Ptr begin = m_Buffer.Data();
-    Ptr loc = begin + locDiff;
-    Ptr end = begin + (OffsetT)m_Size;
-    Ptr last = end - 1;
+    Pointer begin = m_Buffer.Data();
+    Pointer loc = begin + locDiff;
+    Pointer end = begin + (OffsetT)m_Size;
+    Pointer last = end - 1;
 
     // without the copy, invalid reference can get copied
     Value temp(ForwardArg<Args>(args)...);
@@ -334,7 +334,7 @@ inline constexpr void StaticArray<T, N>::RemoveLast(SizeT count)
     }
 
     SizeT removeCnt = m_Size < count ? (SizeT)m_Size : count;
-    Ptr end = m_Buffer.Data() + m_Size;
+    Pointer end = m_Buffer.Data() + m_Size;
 
     memory::DestructRange(end - removeCnt, end);
     m_Size -= count;
@@ -356,9 +356,9 @@ constexpr void StaticArray<T, N>::RemoveAt(ConstIterator iter)
     }
 
     AssertValidIterator(iter);
-    Ptr begin = m_Buffer.Data();
-    Ptr loc = begin + locDiff;
-    Ptr end = begin + (OffsetT)m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer loc = begin + locDiff;
+    Pointer end = begin + (OffsetT)m_Size;
 
     memory::MoveRange(loc, loc + 1, end);
     memory::DestructAt(end - 1);
@@ -385,9 +385,9 @@ constexpr void StaticArray<T, N>::RemoveRange(ConstIterator first, ConstIterator
 
     AssertValidRange(first, last);
     Iterator iterBegin = Begin();
-    Ptr begin = m_Buffer.Data();
-    Ptr end = begin + m_Size;
-    Ptr loc = begin + (first - iterBegin);
+    Pointer begin = m_Buffer.Data();
+    Pointer end = begin + m_Size;
+    Pointer loc = begin + (first - iterBegin);
 
     memory::MoveRange(loc, loc + distance, end);
     memory::DestructRange(end - distance, end);
@@ -404,8 +404,8 @@ constexpr void StaticArray<T, N>::Resize(SizeT size, Args&&... args)
     }
 
     AssertValidCapacity(size);
-    Ptr begin = m_Buffer.Data();
-    Ptr end = begin + m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer end = begin + m_Size;
 
     if (m_Size < size) {
         Value temp(ForwardArg<Args>(args)...);
@@ -424,15 +424,15 @@ inline constexpr void StaticArray<T, N>::Clear()
         return;
     }
 
-    Ptr begin = m_Buffer.Data();
-    Ptr end = begin + m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer end = begin + m_Size;
 
     memory::DestructRange(begin, end);
     m_Size = 0;
 }
 
 template <MovableT T, SizeT N>
-inline constexpr StaticArray<T, N>::Ptr StaticArray<T, N>::Data() noexcept
+inline constexpr StaticArray<T, N>::Pointer StaticArray<T, N>::Data() noexcept
 {
     return m_Buffer.Data();
 }
@@ -524,7 +524,7 @@ inline constexpr bool StaticArray<T, N>::Empty() const noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr bool StaticArray<T, N>::IsFull() const noexcept
+inline constexpr bool StaticArray<T, N>::Full() const noexcept
 {
     return (SizeT)m_Size == m_Buffer.Capacity();
 }
@@ -603,7 +603,7 @@ inline constexpr void StaticArray<T, N>::AssignRangeWithSize(U first, U last, Si
     AssertValidCapacity(len);
 
     OffsetT size = (OffsetT)m_Size;
-    Ptr begin = m_Buffer.Data();
+    Pointer begin = m_Buffer.Data();
 
     if (m_Size < len) {
         memory::CopyRange(begin, first, first + size);
@@ -635,9 +635,9 @@ inline constexpr void StaticArray<T, N>::InsertRangeWithSize(SizeT index, U firs
     AssertValidCapacity(newSize);
     AssertValidIndex(index);
 
-    Ptr begin = m_Buffer.Data();
-    Ptr loc = begin + index;
-    Ptr end = begin + (OffsetT)m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer loc = begin + index;
+    Pointer end = begin + (OffsetT)m_Size;
 
     if (static_cast<SizeT>(end - loc) > len) {
         memory::MoveConstructBackward(end + len, end - len, end);

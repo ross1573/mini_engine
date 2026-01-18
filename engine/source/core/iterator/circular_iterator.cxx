@@ -14,13 +14,13 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
 
 protected:
     SizeT m_Offset;
     SizeT m_Capacity;
-    Ptr m_Begin;
+    Pointer m_Begin;
     CircularT* m_Circular;
 
 public:
@@ -30,7 +30,7 @@ public:
     constexpr CircularIterator(CircularIterator<U, CircularU> const&) noexcept
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
-    constexpr Ptr Address() const noexcept;
+    constexpr Pointer Address() const noexcept;
     constexpr bool Valid() const noexcept;
     constexpr bool ValidWith(CircularIterator const&) const noexcept;
 
@@ -40,9 +40,9 @@ public:
     constexpr bool Decrement() noexcept;
     constexpr bool Advance(OffsetT) noexcept;
 
-    constexpr Ptr operator->() const noexcept;
-    constexpr Ref operator*() const noexcept;
-    constexpr Ref operator[](OffsetT) const noexcept;
+    constexpr Pointer operator->() const noexcept;
+    constexpr Reference operator*() const noexcept;
+    constexpr Reference operator[](OffsetT) const noexcept;
 
     constexpr CircularIterator& operator++() noexcept;
     constexpr CircularIterator& operator--() noexcept;
@@ -58,7 +58,7 @@ public:
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
 protected:
-    constexpr CircularIterator(SizeT, SizeT, Ptr, CircularT*) noexcept;
+    constexpr CircularIterator(SizeT, SizeT, Pointer, CircularT*) noexcept;
     constexpr bool CheckIterator(CircularIterator const&) const noexcept;
 
     template <typename U, typename CircularU, typename Y, typename CircularY>
@@ -87,7 +87,8 @@ inline constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, SizeT cap, Ptr begin,
+inline constexpr CircularIterator<T, CircularT>::CircularIterator(SizeT idx, SizeT cap,
+                                                                  Pointer begin,
                                                                   CircularT* base) noexcept
     : m_Offset(idx)
     , m_Capacity(cap)
@@ -129,7 +130,7 @@ CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) cons
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::Ptr
+inline constexpr CircularIterator<T, CircularT>::Pointer
 CircularIterator<T, CircularT>::Address() const noexcept
 {
     return m_Begin + (m_Offset % m_Capacity);

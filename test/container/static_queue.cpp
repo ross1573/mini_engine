@@ -186,8 +186,8 @@ int TestRandom()
         q.Assign(q.Begin(), q.End());
 
         iter = q.Begin();
-        TEST_ENSURE(!q.IsEmpty());
-        TEST_ENSURE(!q.IsFull());
+        TEST_ENSURE(!q.Empty());
+        TEST_ENSURE(!q.Full());
         TEST_ENSURE(iter.Increment());
         TEST_ENSURE(iter.Decrement());
         TEST_ENSURE(iter.Finish());

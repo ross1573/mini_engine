@@ -11,10 +11,10 @@ import :type_traits;
 namespace mini {
 
 export template <typename T>
-concept PtrT = std::is_pointer_v<T>;
+concept PointerT = std::is_pointer_v<T>;
 
 export template <typename T>
-concept RefT = std::is_reference_v<T>;
+concept ReferenceT = std::is_reference_v<T>;
 
 export template <typename T>
 concept ArrT = std::is_array_v<T>;
@@ -26,10 +26,10 @@ export template <typename T>
 concept FunctionPtrT = std::is_function_v<RemovePtrT<T>>;
 
 export template <typename T>
-concept NonPtrT = !PtrT<T>;
+concept NonPtrT = !PointerT<T>;
 
 export template <typename T>
-concept NonRefT = !RefT<T>;
+concept NonRefT = !ReferenceT<T>;
 
 export template <typename T>
 concept NonArrT = !ArrT<T>;

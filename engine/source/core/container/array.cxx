@@ -18,8 +18,8 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
     typedef T const ConstValue;
     typedef T const* ConstPtr;
     typedef T const& ConstRef;
@@ -85,17 +85,17 @@ public:
     constexpr void Clear();
     constexpr void Swap(Array&) noexcept;
 
-    constexpr Ptr Data() noexcept;
+    constexpr Pointer Data() noexcept;
     constexpr ConstPtr Data() const noexcept;
     constexpr Iterator Begin() noexcept;
     constexpr ConstIterator Begin() const noexcept;
     constexpr Iterator End() noexcept;
     constexpr ConstIterator End() const noexcept;
-    constexpr Ref First();
+    constexpr Reference First();
     constexpr ConstRef First() const;
-    constexpr Ref Last();
+    constexpr Reference Last();
     constexpr ConstRef Last() const;
-    constexpr Ref At(SizeT);
+    constexpr Reference At(SizeT);
     constexpr ConstRef At(SizeT) const;
 
     constexpr SizeT Size() const noexcept;
@@ -105,7 +105,7 @@ public:
     constexpr bool ValidIterator(ConstIterator) const noexcept;
     constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
-    constexpr Ref operator[](SizeT);
+    constexpr Reference operator[](SizeT);
     constexpr ConstRef operator[](SizeT) const;
 
     constexpr Array& operator=(Array const&)
@@ -236,8 +236,8 @@ constexpr void Array<T, AllocT>::Push(Args&&... args)
         memory::ConstructAt(m_Buffer.Data() + m_Size, ForwardArg<Args>(args)...);
     } else {
         Buffer newBuf = m_Buffer.Increment(1);
-        Ptr newBegin = newBuf.Data();
-        Ptr begin = m_Buffer.Data();
+        Pointer newBegin = newBuf.Data();
+        Pointer begin = m_Buffer.Data();
 
         memory::ConstructAt(newBegin + m_Size, ForwardArg<Args>(args)...);
         memory::MoveConstructBackward(newBegin + m_Size, begin, begin + m_Size);
@@ -272,10 +272,10 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
     if (m_Size < capacity) {
         // without the copy, invalid reference can get copied
         Value temp(ForwardArg<Args>(args)...);
-        Ptr begin = m_Buffer.Data();
-        Ptr loc = begin + locDiff;
-        Ptr end = begin + m_Size;
-        Ptr last = end - 1;
+        Pointer begin = m_Buffer.Data();
+        Pointer loc = begin + locDiff;
+        Pointer end = begin + m_Size;
+        Pointer last = end - 1;
 
         memory::ConstructAt(end, MoveArg(*last));
         memory::MoveBackward(end, loc, last);
@@ -283,10 +283,10 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
         memory::ConstructAt(loc, MoveArg(temp));
     } else {
         Buffer newBuf = m_Buffer.Increment(1);
-        Ptr newBegin = newBuf.Data();
-        Ptr newLoc = newBegin + locDiff;
-        Ptr begin = m_Buffer.Data();
-        Ptr loc = begin + locDiff;
+        Pointer newBegin = newBuf.Data();
+        Pointer newLoc = newBegin + locDiff;
+        Pointer begin = m_Buffer.Data();
+        Pointer loc = begin + locDiff;
 
         memory::ConstructAt(newLoc, ForwardArg<Args>(args)...);
         memory::MoveConstructRange(newBegin, begin, loc);
@@ -429,7 +429,7 @@ inline constexpr void Array<T, AllocT>::RemoveLast(SizeT count)
     }
 
     SizeT removeCnt = m_Size < count ? m_Size : count;
-    Ptr end = m_Buffer.Data() + m_Size;
+    Pointer end = m_Buffer.Data() + m_Size;
     memory::DestructRange(end - removeCnt, end);
     m_Size -= removeCnt;
 }
@@ -450,9 +450,9 @@ constexpr void Array<T, AllocT>::RemoveAt(ConstIterator iter)
     }
 
     AssertValidIterator(iter);
-    Ptr begin = m_Buffer.Data();
-    Ptr loc = begin + locDiff;
-    Ptr end = begin + m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer loc = begin + locDiff;
+    Pointer end = begin + m_Size;
 
     memory::MoveRange(loc, loc + 1, end);
     memory::DestructAt(end - 1);
@@ -479,9 +479,9 @@ constexpr void Array<T, AllocT>::RemoveRange(ConstIterator first, ConstIterator 
 
     AssertValidRange(first, last);
     Iterator iterBegin = Begin();
-    Ptr begin = m_Buffer.Data();
-    Ptr end = begin + m_Size;
-    Ptr loc = begin + (first - iterBegin);
+    Pointer begin = m_Buffer.Data();
+    Pointer end = begin + m_Size;
+    Pointer loc = begin + (first - iterBegin);
 
     memory::MoveRange(loc, loc + distance, end);
     memory::DestructRange(end - distance, end);
@@ -497,14 +497,14 @@ constexpr void Array<T, AllocT>::Resize(SizeT size, Args&&... args)
         return;
     }
 
-    Ptr begin(m_Buffer.Data());
+    Pointer begin(m_Buffer.Data());
 
     if (m_Size < size) {
         Value temp(ForwardArg<Args>(args)...);
 
         if (m_Buffer.Capacity() < size) {
             Buffer newBuf = m_Buffer.Resize(size);
-            Ptr newBegin(newBuf.Data());
+            Pointer newBegin(newBuf.Data());
 
             memory::ConstructRangeArgs(newBegin + m_Size, newBegin + size, temp);
             memory::MoveConstructRange(newBegin, begin, begin + m_Size);
@@ -527,8 +527,8 @@ inline constexpr void Array<T, AllocT>::Reserve(SizeT size)
     }
 
     Buffer newBuf = m_Buffer.Resize(size);
-    Ptr newBegin(newBuf.Data());
-    Ptr oldBegin(m_Buffer.Data());
+    Pointer newBegin(newBuf.Data());
+    Pointer oldBegin(m_Buffer.Data());
 
     memory::MoveConstructRange(newBegin, oldBegin, oldBegin + m_Size);
     SwapNewBuffer(newBuf);
@@ -542,8 +542,8 @@ inline constexpr void Array<T, AllocT>::Shrink()
     }
 
     Buffer newBuf = m_Buffer.Resize(m_Size);
-    Ptr newBegin(newBuf.Data());
-    Ptr oldBegin(m_Buffer.Data());
+    Pointer newBegin(newBuf.Data());
+    Pointer oldBegin(m_Buffer.Data());
 
     memory::MoveConstructRange(newBegin, oldBegin, oldBegin + m_Size);
     SwapNewBuffer(newBuf);
@@ -556,8 +556,8 @@ inline constexpr void Array<T, AllocT>::Clear()
         return;
     }
 
-    Ptr begin = m_Buffer.Data();
-    Ptr end = begin + m_Size;
+    Pointer begin = m_Buffer.Data();
+    Pointer end = begin + m_Size;
 
     memory::DestructRange(begin, end);
     m_Size = 0;
@@ -571,7 +571,7 @@ inline constexpr void Array<T, AllocT>::Swap(Array& other) noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-inline constexpr Array<T, AllocT>::Ptr Array<T, AllocT>::Data() noexcept
+inline constexpr Array<T, AllocT>::Pointer Array<T, AllocT>::Data() noexcept
 {
     return m_Buffer.Data();
 }
@@ -737,7 +737,7 @@ inline constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(InitializerList<T
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buf)
 {
-    Ptr begin(m_Buffer.Data());
+    Pointer begin(m_Buffer.Data());
     m_Buffer.Swap(buf);
     memory::DestructRange(begin, begin + m_Size);
 }
@@ -748,7 +748,7 @@ inline constexpr void Array<T, AllocT>::AssignRangeWithSize(U first, U last, Siz
 {
     OffsetT size = (OffsetT)m_Size;
     SizeT capacity = m_Buffer.Capacity();
-    Ptr begin = m_Buffer.Data();
+    Pointer begin = m_Buffer.Data();
 
     if (capacity > len) {
         if (m_Size < len) {
@@ -777,8 +777,8 @@ inline constexpr void Array<T, AllocT>::AppendRangeWithSize(U first, U last, Siz
         memory::ConstructRange(m_Buffer.Data() + m_Size, first, last);
     } else {
         Buffer newBuf = m_Buffer.Increment(newSize - capacity);
-        Ptr newBegin = newBuf.Data();
-        Ptr begin = m_Buffer.Data();
+        Pointer newBegin = newBuf.Data();
+        Pointer begin = m_Buffer.Data();
 
         memory::ConstructBackward(newBegin + newSize, first, last);
         memory::MoveConstructBackward(newBegin + m_Size, begin, begin + m_Size);
@@ -796,12 +796,12 @@ inline constexpr void Array<T, AllocT>::InsertRangeWithSize(SizeT index, U first
     SizeT newSize = m_Size + len;
 
     if (newSize <= capacity) {
-        Ptr begin = m_Buffer.Data();
-        Ptr loc = begin + index;
-        Ptr end = begin + m_Size;
+        Pointer begin = m_Buffer.Data();
+        Pointer loc = begin + index;
+        Pointer end = begin + m_Size;
 
         if (static_cast<SizeT>(end - loc) > len) {
-            Ptr middle = begin + m_Size - len;
+            Pointer middle = begin + m_Size - len;
             memory::MoveConstructBackward(end + len, middle, end);
             memory::MoveBackward(end, loc, middle);
             memory::DestructRange(loc, loc + len);
@@ -814,8 +814,8 @@ inline constexpr void Array<T, AllocT>::InsertRangeWithSize(SizeT index, U first
         memory::ConstructRange(loc, first, last);
     } else {
         Buffer newBuf = m_Buffer.Increment(len);
-        Ptr newBegin = newBuf.Data();
-        Ptr begin = m_Buffer.Data();
+        Pointer newBegin = newBuf.Data();
+        Pointer begin = m_Buffer.Data();
 
         memory::ConstructRange(newBegin + index, first, last);
         memory::MoveConstructRange(newBegin, begin, begin + index);

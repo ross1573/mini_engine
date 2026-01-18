@@ -96,13 +96,13 @@ public:
         requires FloatingT<Value>;
 
     Value FetchAdd(OffsetT, MemoryOrder) noexcept
-        requires(PtrT<Value> && !FunctionPtrT<T>);
+        requires(PointerT<Value> && !FunctionPtrT<T>);
     Value FetchAdd(OffsetT, MemoryOrder) volatile noexcept
-        requires(PtrT<Value> && !FunctionPtrT<T>);
+        requires(PointerT<Value> && !FunctionPtrT<T>);
     Value FetchSub(OffsetT, MemoryOrder) noexcept
-        requires(PtrT<Value> && !FunctionPtrT<T>);
+        requires(PointerT<Value> && !FunctionPtrT<T>);
     Value FetchSub(OffsetT, MemoryOrder) volatile noexcept
-        requires(PtrT<Value> && !FunctionPtrT<T>);
+        requires(PointerT<Value> && !FunctionPtrT<T>);
 
     void Wait(Value, MemoryOrder) const noexcept;
     void Wait(Value, MemoryOrder) const volatile noexcept;
@@ -401,7 +401,7 @@ inline Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) vola
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset, MemoryOrder order) noexcept
-    requires(PtrT<Value> && !FunctionPtrT<T>)
+    requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
     return __atomic_fetch_add(memory::AddressOf(m_Value.value), offset * diff,
@@ -410,7 +410,7 @@ inline Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset, MemoryOrder order) n
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset, MemoryOrder order) volatile noexcept
-    requires(PtrT<Value> && !FunctionPtrT<T>)
+    requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
     return __atomic_fetch_add(memory::AddressOf(m_Value.value), offset * diff,
@@ -419,7 +419,7 @@ inline Atomic<T>::Value Atomic<T>::FetchAdd(OffsetT offset, MemoryOrder order) v
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::FetchSub(OffsetT offset, MemoryOrder order) noexcept
-    requires(PtrT<Value> && !FunctionPtrT<T>)
+    requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
     return __atomic_fetch_sub(memory::AddressOf(m_Value.value), offset * diff,
@@ -428,7 +428,7 @@ inline Atomic<T>::Value Atomic<T>::FetchSub(OffsetT offset, MemoryOrder order) n
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::FetchSub(OffsetT offset, MemoryOrder order) volatile noexcept
-    requires(PtrT<Value> && !FunctionPtrT<T>)
+    requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     OffsetT diff = static_cast<OffsetT>(sizeof(RemovePtrT<Value>));
     return __atomic_fetch_sub(memory::AddressOf(m_Value.value), offset * diff,

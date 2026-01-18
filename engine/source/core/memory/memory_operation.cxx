@@ -13,11 +13,11 @@ namespace mini::memory {
 
 template <typename T>
 concept IndirectAddressableT = requires(T ele) {
-    { ele.Address() } -> PtrT;
+    { ele.Address() } -> PointerT;
 };
 
 export template <typename T>
-concept AddressableT = PtrT<T> || IndirectAddressableT<T>;
+concept AddressableT = PointerT<T> || IndirectAddressableT<T>;
 
 export template <typename T>
 concept DereferencableT = requires(T ele) { *ele; };
@@ -31,7 +31,7 @@ inline constexpr void* MakeVoidPtr(T* ptr)
 export template <AddressableT T>
 inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
 {
-    if constexpr (PtrT<T>) {
+    if constexpr (PointerT<T>) {
         return ele;
     } else if constexpr (IndirectAddressableT<T>) {
         return ele.Address();
@@ -49,7 +49,7 @@ inline constexpr decltype(auto) AddressOf(T& ele)
 template <typename T, typename U>
 consteval bool IsTriviallyOperatable()
 {
-    if constexpr (PtrT<T> && PtrT<U>) {
+    if constexpr (PointerT<T> && PointerT<U>) {
         using ValueT = RemoveConstT<RemovePtrT<T>>;
         using ValueU = RemoveConstT<RemovePtrT<U>>;
 
@@ -62,7 +62,7 @@ consteval bool IsTriviallyOperatable()
     return false;
 }
 
-export template <PtrT T, PtrT U>
+export template <PointerT T, PointerT U>
 inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 {
     if consteval {
@@ -72,7 +72,7 @@ inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
     return (begin <= ptr) && (end > ptr);
 }
 
-export template <PtrT T, PtrT U>
+export template <PointerT T, PointerT U>
 inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 {
     if consteval {

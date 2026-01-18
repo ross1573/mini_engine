@@ -16,11 +16,11 @@ private:
 
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
 
 private:
-    Ptr m_Ptr;
+    Pointer m_Ptr;
     SharedCounter* m_Counter;
 
 public:

@@ -27,8 +27,8 @@ template <CharT T>
 class BasicStringView {
 public:
     typedef T Value;
-    typedef T* Ptr;
-    typedef T& Ref;
+    typedef T* Pointer;
+    typedef T& Reference;
     typedef T const ConstValue;
     typedef T const* ConstPtr;
     typedef T const& ConstRef;
@@ -47,8 +47,8 @@ public:
     constexpr BasicStringView(ConstPtr) noexcept;
     constexpr BasicStringView(ConstPtr, SizeT) noexcept;
 
-    constexpr void Copy(Ptr, SizeT, SizeT) const noexcept;
-    constexpr void Copy(Ptr, ConstIterator, ConstIterator) const noexcept;
+    constexpr void Copy(Pointer, SizeT, SizeT) const noexcept;
+    constexpr void Copy(Pointer, ConstIterator, ConstIterator) const noexcept;
     constexpr BasicStringView SubFirst(SizeT) const noexcept;
     constexpr BasicStringView SubLast(SizeT) const noexcept;
     constexpr BasicStringView SubString(SizeT, SizeT) const noexcept;
@@ -132,7 +132,8 @@ inline constexpr BasicStringView<T>::BasicStringView(ConstPtr ptr, SizeT len) no
 }
 
 template <CharT T>
-inline constexpr void BasicStringView<T>::Copy(Ptr dest, SizeT start, SizeT count) const noexcept
+inline constexpr void BasicStringView<T>::Copy(Pointer dest, SizeT start,
+                                               SizeT count) const noexcept
 {
     if (dest == nullptr) [[unlikely]] {
         return;
@@ -145,7 +146,7 @@ inline constexpr void BasicStringView<T>::Copy(Ptr dest, SizeT start, SizeT coun
 }
 
 template <CharT T>
-inline constexpr void BasicStringView<T>::Copy(Ptr dest, ConstIterator begin,
+inline constexpr void BasicStringView<T>::Copy(Pointer dest, ConstIterator begin,
                                                ConstIterator end) const noexcept
 {
     if (dest == nullptr) [[unlikely]] {
