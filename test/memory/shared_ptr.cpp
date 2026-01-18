@@ -7,16 +7,16 @@ using namespace mini::test;
 
 static constexpr bool ConstexprSharedPtr()
 {
-    SharedPtr<ConstexprFoo> p(new ConstexprFoo("string"));
-    SharedPtr<ConstexprFoo> p2(p);
+    SharedPtr<ConstexprObject> p(new ConstexprObject("string"));
+    SharedPtr<ConstexprObject> p2(p);
     {
-        SharedPtr<ConstexprFoo> p3(p);
+        SharedPtr<ConstexprObject> p3(p);
     }
 
-    SharedPtr<ConstexprFoo> p4 = MakeShared<ConstexprFoo>("string");
-    SharedPtr<ConstexprFoo> p5(p4);
+    SharedPtr<ConstexprObject> p4 = MakeShared<ConstexprObject>("string");
+    SharedPtr<ConstexprObject> p5(p4);
     {
-        SharedPtr<ConstexprFoo> p6(p4);
+        SharedPtr<ConstexprObject> p6(p4);
     }
 
     return (p.Equals(p2) && p.OwnerEquals(p2)) && (p4.Equals(p5) && p4.OwnerEquals(p5));
@@ -28,27 +28,27 @@ int main()
     static_assert(ConstexprSharedPtr());
 #endif
 
-    SharedPtr<Foo> p;
-    SharedPtr<Foo> p2(nullptr);
-    SharedPtr<Foo> p3(nullptr, mini::DefaultDeleter<Foo>{});
-    SharedPtr<Foo> p4(nullptr, [](NullptrT) {});
-    SharedPtr<Foo> p5(nullptr, [](NullptrT) {}, mini::Allocator<NullptrT>{});
-    SharedPtr<Foo> p6(new Foo("string1"));
-    SharedPtr<Foo> p7(new Foo("string2"), FooDel{});
-    SharedPtr<Foo> p10 = MakeShared<Foo>("string5");
+    SharedPtr<TestObject> p;
+    SharedPtr<TestObject> p2(nullptr);
+    SharedPtr<TestObject> p3(nullptr, mini::DefaultDeleter<TestObject>{});
+    SharedPtr<TestObject> p4(nullptr, [](NullptrT) {});
+    SharedPtr<TestObject> p5(nullptr, [](NullptrT) {}, mini::Allocator<NullptrT>{});
+    SharedPtr<TestObject> p6(new TestObject("string1"));
+    SharedPtr<TestObject> p7(new TestObject("string2"), FooDel{});
+    SharedPtr<TestObject> p10 = MakeShared<TestObject>("string5");
     SharedPtr<BasicString<char>> p11(&p7->str, [](auto) {});
     SharedPtr<BasicString<char>> p12(p7, &p7->str);
 
     {
-        auto alloc = FooAlloc{};
-        SharedPtr<Foo> p8(new Foo("string3"), FooDel{}, alloc);
-        SharedPtr<Foo> p9 = AllocateShared<Foo>(alloc, "string4");
+        auto alloc = TestAlloc{};
+        SharedPtr<TestObject> p8(new TestObject("string3"), FooDel{}, alloc);
+        SharedPtr<TestObject> p9 = AllocateShared<TestObject>(alloc, "string4");
     }
     InitializeCounter();
     {
-        SharedPtr<Foo> f1(new Foo("String"));
-        SharedPtr<Foo> f2(f1);
-        SharedPtr<Foo> f3 = f2;
+        SharedPtr<TestObject> f1(new TestObject("String"));
+        SharedPtr<TestObject> f2(f1);
+        SharedPtr<TestObject> f3 = f2;
         f3.Reset();
         f3.Swap(f2);
 
@@ -57,8 +57,8 @@ int main()
         TEST_ENSURE((p2 == p3) && (p3 == p4) && (p4 == p5));
         TEST_ENSURE(f1 == f3);
 
-        TEST_ENSURE(p7 == StaticCast<Foo const>(p7));
-        TEST_ENSURE(p7.Equals(ReinterpretCast<Foo>(p12)));
+        TEST_ENSURE(p7 == StaticCast<TestObject const>(p7));
+        TEST_ENSURE(p7.Equals(ReinterpretCast<TestObject>(p12)));
         TEST_ENSURE(p7.OwnerEquals(p12));
     }
 

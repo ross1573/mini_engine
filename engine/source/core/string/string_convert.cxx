@@ -23,7 +23,7 @@ public:
     typedef typename BasicString<T, AllocT>::Value Value;
     typedef typename BasicString<T, AllocT>::Pointer Pointer;
     typedef typename BasicString<T, AllocT>::Reference Reference;
-    typedef typename BasicString<T, AllocT>::ConstPtr ConstPtr;
+    typedef typename BasicString<T, AllocT>::ConstPointer ConstPointer;
 
 private:
     BasicString<T, AllocT> m_Data;
@@ -45,7 +45,7 @@ public:
     constexpr BasicStringConvert(BasicStringView<U>);
 
     constexpr SizeT Size() const noexcept;
-    constexpr ConstPtr Data() const noexcept;
+    constexpr ConstPointer Data() const noexcept;
 
     constexpr BasicString<T, AllocT> ToString() const;
     constexpr operator BasicString<T, AllocT>() const;
@@ -107,7 +107,7 @@ inline constexpr SizeT BasicStringConvert<T, AllocT>::Size() const noexcept
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicStringConvert<T, AllocT>::ConstPtr
+inline constexpr BasicStringConvert<T, AllocT>::ConstPointer
 BasicStringConvert<T, AllocT>::Data() const noexcept
 {
     return m_Data.Data();

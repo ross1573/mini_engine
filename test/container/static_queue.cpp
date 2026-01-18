@@ -19,22 +19,23 @@ using namespace mini::test;
         return __VA_ARGS__(str);                                            \
     });
 
-FACTORY(UniquePtrF, MakeUnique<ConstexprFoo>);
-FACTORY(StdUniquePtrF, std::make_unique<ConstexprFoo>);
-FACTORY(ConstexprFooF, ConstexprFoo);
-FACTORY(FooF, Foo);
+FACTORY(UniquePtrF, MakeUnique<ConstexprObject>);
+FACTORY(StdUniquePtrF, std::make_unique<ConstexprObject>);
+FACTORY(ConstexprFooF, ConstexprObject);
+FACTORY(FooF, TestObject);
 FACTORY(FooArgF);
 
 [[maybe_unused]] static constexpr void QueueConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<int, 1>::Iterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<int*, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<Foo, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<Foo*, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<TestObject, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<TestObject*, 1>::Iterator);
 
-    TEST_RANGE_BASED_FOR_SUPPORT(StaticQueue<Foo, 1>);
+    TEST_RANGE_BASED_FOR_SUPPORT(StaticQueue<TestObject, 1>);
 
-    static_assert(sizeof(StaticQueue<Foo, 1>::Iterator) == alignof(void*) * 2 + sizeof(SizeT) * 2);
+    static_assert(sizeof(StaticQueue<TestObject, 1>::Iterator) ==
+                  alignof(void*) * 2 + sizeof(SizeT) * 2);
 }
 
 template <typename T, SizeT CapN>
@@ -164,7 +165,7 @@ static constexpr int TestModify()
 
 int TestRandom()
 {
-    StaticQueue<Foo, 8> q;
+    StaticQueue<TestObject, 8> q;
     {
         static_assert(q.Capacity() == 8);
 
@@ -206,13 +207,13 @@ int TestRandom()
         TEST_ENSURE(++iter == q.End());
     }
 
-    Array<Foo> arr(8);
+    Array<TestObject> arr(8);
     {
         arr.Push(Format("hello world! {}", 0));
         arr.Push(Format("hello world! {}", 1));
         arr.Push(Format("hello world! {}", 2));
 
-        Array<Foo> arr2(arr);
+        Array<TestObject> arr2(arr);
         arr.Append(arr.Begin(), arr.End());
         arr.RemoveRange(arr.Begin(), arr.Begin() + 3);
         arr.Append(arr2.Begin(), arr2.End());
@@ -233,18 +234,18 @@ int main()
     using VecF = decltype([](int c) { return Vector2Int(c, c); });
 
     TEST_ENSURE((TestCtor<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestCtor<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestCtor<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestCtor<ConstexprFoo, ConstexprFooF>() == 0));
-    TEST_ENSURE((TestCtor<Foo, FooF>() == 0));
+    TEST_ENSURE((TestCtor<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestCtor<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestCtor<ConstexprObject, ConstexprFooF>() == 0));
+    TEST_ENSURE((TestCtor<TestObject, FooF>() == 0));
     TEST_QUEUE(TestCtor, int, IntF);
     TEST_QUEUE(TestCtor, Vector2Int, VecF);
 
     TEST_ENSURE((TestModify<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestModify<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestModify<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestModify<ConstexprFoo, ConstexprFooF>() == 0));
-    TEST_ENSURE((TestModify<Foo, FooF>() == 0));
+    TEST_ENSURE((TestModify<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestModify<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestModify<ConstexprObject, ConstexprFooF>() == 0));
+    TEST_ENSURE((TestModify<TestObject, FooF>() == 0));
     TEST_QUEUE(TestModify, int, IntF);
     TEST_QUEUE(TestModify, Vector2Int, VecF);
 

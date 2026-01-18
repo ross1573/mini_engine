@@ -24,8 +24,8 @@ public:
     typedef T* Pointer;
     typedef T& Reference;
     typedef T const ConstValue;
-    typedef T const* ConstPtr;
-    typedef T const& ConstRef;
+    typedef T const* ConstPointer;
+    typedef T const& ConstReference;
     typedef ArrayIterator<Value, StaticArray> Iterator;
     typedef ArrayIterator<ConstValue, StaticArray const> ConstIterator;
 
@@ -78,17 +78,17 @@ public:
     constexpr void Clear();
 
     constexpr Pointer Data() noexcept;
-    constexpr ConstPtr Data() const noexcept;
+    constexpr ConstPointer Data() const noexcept;
     constexpr Iterator Begin() noexcept;
     constexpr ConstIterator Begin() const noexcept;
     constexpr Iterator End() noexcept;
     constexpr ConstIterator End() const noexcept;
     constexpr Reference First();
-    constexpr ConstRef First() const;
+    constexpr ConstReference First() const;
     constexpr Reference Last();
-    constexpr ConstRef Last() const;
+    constexpr ConstReference Last() const;
     constexpr Reference At(SizeT);
-    constexpr ConstRef At(SizeT) const;
+    constexpr ConstReference At(SizeT) const;
 
     consteval SizeT Capacity() const noexcept;
     constexpr SizeT Size() const noexcept;
@@ -99,7 +99,7 @@ public:
     constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Reference operator[](SizeT);
-    constexpr ConstRef operator[](SizeT) const;
+    constexpr ConstReference operator[](SizeT) const;
 
     constexpr StaticArray& operator=(StaticArray const&);
     constexpr StaticArray& operator=(StaticArray&&) noexcept;
@@ -438,7 +438,7 @@ inline constexpr StaticArray<T, N>::Pointer StaticArray<T, N>::Data() noexcept
 }
 
 template <MovableT T, SizeT N>
-inline constexpr StaticArray<T, N>::ConstPtr StaticArray<T, N>::Data() const noexcept
+inline constexpr StaticArray<T, N>::ConstPointer StaticArray<T, N>::Data() const noexcept
 {
     return m_Buffer.Data();
 }
@@ -546,7 +546,7 @@ template <MovableT T, SizeT N>
 inline constexpr bool StaticArray<T, N>::ValidRange(ConstIterator begin,
                                                     ConstIterator end) const noexcept
 {
-    ConstPtr buffer = m_Buffer.Data();
+    ConstPointer buffer = m_Buffer.Data();
     SizeT beginIdx = static_cast<SizeT>(begin.m_Ptr - buffer);
     SizeT endIdx = static_cast<SizeT>(end.m_Ptr - buffer);
     return (beginIdx < m_Size) && (endIdx < m_Size + 1);

@@ -16,27 +16,27 @@ static constexpr bool ConstexprWeakPtr()
 
 int32 TestCtor()
 {
-    SharedPtr<Foo> p = MakeShared<Foo>("string");
-    WeakPtr<Foo> w(p);
-    WeakPtr<Foo> w2(p);
+    SharedPtr<TestObject> p = MakeShared<TestObject>("string");
+    WeakPtr<TestObject> w(p);
+    WeakPtr<TestObject> w2(p);
 
-    TEST_ENSURE(WeakPtr<Foo>(w).OwnerEquals(w));
-    TEST_ENSURE(WeakPtr<Foo>(p).OwnerEquals(w));
-    TEST_ENSURE(WeakPtr<Foo>(MoveArg(w2)).OwnerEquals(w));
+    TEST_ENSURE(WeakPtr<TestObject>(w).OwnerEquals(w));
+    TEST_ENSURE(WeakPtr<TestObject>(p).OwnerEquals(w));
+    TEST_ENSURE(WeakPtr<TestObject>(MoveArg(w2)).OwnerEquals(w));
 
     w2 = p;
 
-    TEST_ENSURE(WeakPtr<const Foo>(w).OwnerEquals(w));
-    TEST_ENSURE(WeakPtr<const Foo>(MoveArg(w2)).OwnerEquals(w));
+    TEST_ENSURE(WeakPtr<const TestObject>(w).OwnerEquals(w));
+    TEST_ENSURE(WeakPtr<const TestObject>(MoveArg(w2)).OwnerEquals(w));
 
     return 0;
 }
 
 int32 TestLock()
 {
-    SharedPtr<Foo> p = MakeShared<Foo>("string");
-    WeakPtr<Foo> w(p);
-    WeakPtr<Foo> w2 = w;
+    SharedPtr<TestObject> p = MakeShared<TestObject>("string");
+    WeakPtr<TestObject> w(p);
+    WeakPtr<TestObject> w2 = w;
 
     TEST_ENSURE(w.Lock().Equals(p));
     {
@@ -59,15 +59,15 @@ int32 TestLock()
 
 int32 TestValid()
 {
-    SharedPtr<Foo> p = MakeShared<Foo>("string");
-    WeakPtr<Foo> w(p);
+    SharedPtr<TestObject> p = MakeShared<TestObject>("string");
+    WeakPtr<TestObject> w(p);
 
     TEST_ENSURE(w.Valid());
 
     p.Reset();
     TEST_ENSURE(!w.Valid());
 
-    WeakPtr<Foo> w2(w);
+    WeakPtr<TestObject> w2(w);
     TEST_ENSURE(!w2.Valid());
 
     return 0;
@@ -75,8 +75,8 @@ int32 TestValid()
 
 int32 TestReset()
 {
-    SharedPtr<Foo> p = MakeShared<Foo>("string");
-    WeakPtr<Foo> w(p);
+    SharedPtr<TestObject> p = MakeShared<TestObject>("string");
+    WeakPtr<TestObject> w(p);
 
     w.Reset();
     TEST_ENSURE(!w.Valid());
@@ -87,9 +87,9 @@ int32 TestReset()
 
 int32 TestSwap()
 {
-    SharedPtr<Foo> p = MakeShared<Foo>("string");
-    WeakPtr<Foo> w(p);
-    WeakPtr<Foo> w2;
+    SharedPtr<TestObject> p = MakeShared<TestObject>("string");
+    WeakPtr<TestObject> w(p);
+    WeakPtr<TestObject> w2;
 
     w.Swap(w2);
     TEST_ENSURE(w.Lock() == nullptr);

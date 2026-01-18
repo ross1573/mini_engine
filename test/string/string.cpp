@@ -51,10 +51,10 @@ static constexpr int TestCtor()
     TEST_ENSURE(BasicString<T>(BasicString<T>(CStr::s), alloc) == CStr::s);
     TEST_ENSURE(BasicString<T>(BasicString<T>(CStr::l)) == CStr::l);
     TEST_ENSURE(BasicString<T>(BasicString<T>(CStr::l), alloc) == CStr::l);
-    TEST_ENSURE(BasicString<T>(MakeLRef(BasicString<T>(CStr::s))) == CStr::s);
-    TEST_ENSURE(BasicString<T>(MakeLRef(BasicString<T>(CStr::s)), alloc) == CStr::s);
-    TEST_ENSURE(BasicString<T>(MakeLRef(BasicString<T>(CStr::l))) == CStr::l);
-    TEST_ENSURE(BasicString<T>(MakeLRef(BasicString<T>(CStr::l)), alloc) == CStr::l);
+    TEST_ENSURE(BasicString<T>(MakeLvalueReference(BasicString<T>(CStr::s))) == CStr::s);
+    TEST_ENSURE(BasicString<T>(MakeLvalueReference(BasicString<T>(CStr::s)), alloc) == CStr::s);
+    TEST_ENSURE(BasicString<T>(MakeLvalueReference(BasicString<T>(CStr::l))) == CStr::l);
+    TEST_ENSURE(BasicString<T>(MakeLvalueReference(BasicString<T>(CStr::l)), alloc) == CStr::l);
 
     TEST_ENSURE(BasicString<T>(CStr::s) == CStr::s);
     TEST_ENSURE(BasicString<T>(CStr::s, alloc) == CStr::s);

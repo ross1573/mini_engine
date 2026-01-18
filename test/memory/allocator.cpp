@@ -6,28 +6,28 @@ using namespace mini;
 using namespace mini::test;
 
 template <typename U>
-inline auto RebindAllocator(Allocator<Foo>);
+inline auto RebindAllocator(Allocator<TestObject>);
 
 template <>
-inline auto RebindAllocator<Foo>(Allocator<Foo>)
+inline auto RebindAllocator<TestObject>(Allocator<TestObject>)
 {
-    return FooAlloc{};
+    return TestAlloc{};
 }
 
 int main()
 {
-    auto&& r = RebindAllocator<Foo>(Allocator<Foo>{});
-    auto&& r2 = RebindAllocator<ConstexprFoo>(Allocator<ConstexprFoo>{});
-    auto&& r3 = RebindAllocator<Foo>(FooAlloc{});
+    auto&& r = RebindAllocator<TestObject>(Allocator<TestObject>{});
+    auto&& r2 = RebindAllocator<ConstexprObject>(Allocator<ConstexprObject>{});
+    auto&& r3 = RebindAllocator<TestObject>(TestAlloc{});
 
-    static_assert(AllocatorT<Allocator<Foo>, Foo>);
+    static_assert(AllocatorT<Allocator<TestObject>, TestObject>);
     static_assert(AllocatorT<Allocator<int>, int>);
-    static_assert(RebindableWithT<Allocator<Foo>, Foo>);
-    static_assert(SameAsT<FooAlloc&&, decltype(r)>);
-    static_assert(SameAsT<FooAlloc&&, decltype(r3)>);
-    static_assert(SameAsT<Allocator<ConstexprFoo>&&, decltype(r2)>);
+    static_assert(RebindableWithT<Allocator<TestObject>, TestObject>);
+    static_assert(SameAsT<TestAlloc&&, decltype(r)>);
+    static_assert(SameAsT<TestAlloc&&, decltype(r3)>);
+    static_assert(SameAsT<Allocator<ConstexprObject>&&, decltype(r2)>);
 
-    static_assert(Allocator<Foo>{} == Allocator<int>{});
+    static_assert(Allocator<TestObject>{} == Allocator<int>{});
 
     return 0;
 }

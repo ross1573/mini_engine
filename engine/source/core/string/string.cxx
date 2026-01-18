@@ -53,8 +53,8 @@ public:
     typedef T* Pointer;
     typedef T& Reference;
     typedef T const ConstValue;
-    typedef T const* ConstPtr;
-    typedef T const& ConstRef;
+    typedef T const* ConstPointer;
+    typedef T const& ConstReference;
     using Iterator = ArrayIterator<Value, BasicString>;
     using ConstIterator = ArrayIterator<ConstValue, BasicString const>;
 
@@ -166,17 +166,17 @@ public:
     constexpr void Swap(BasicString&);
 
     constexpr Pointer Data() noexcept;
-    constexpr ConstPtr Data() const noexcept;
+    constexpr ConstPointer Data() const noexcept;
     constexpr Iterator Begin() noexcept;
     constexpr ConstIterator Begin() const noexcept;
     constexpr Iterator End() noexcept;
     constexpr ConstIterator End() const noexcept;
     constexpr Reference First();
-    constexpr ConstRef First() const;
+    constexpr ConstReference First() const;
     constexpr Reference Last();
-    constexpr ConstRef Last() const;
+    constexpr ConstReference Last() const;
     constexpr Reference At(SizeT);
-    constexpr ConstRef At(SizeT) const;
+    constexpr ConstReference At(SizeT) const;
 
     constexpr SizeT Size() const noexcept;
     constexpr SizeT Capacity() const noexcept;
@@ -186,7 +186,7 @@ public:
     constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
 
     constexpr Reference operator[](SizeT);
-    constexpr ConstRef operator[](SizeT) const;
+    constexpr ConstReference operator[](SizeT) const;
 
     constexpr BasicString& operator=(BasicString const&);
     constexpr BasicString& operator=(BasicString&&);
@@ -223,28 +223,28 @@ private:
     constexpr void SwitchToLarge(LargeBuffer&&, SizeT);
     constexpr LargeBuffer SwitchToSmall(Pointer, SizeT);
     template <StringLikeT<T> U>
-    constexpr ConstPtr GetViewData(U const&, SizeT);
+    constexpr ConstPointer GetViewData(U const&, SizeT);
 
     constexpr void InitEmpty();
     constexpr void InitWithCopy(BasicString const&);
     constexpr void InitWithMove(BasicString&&) noexcept;
     constexpr Pointer InitWithSize(SizeT);
 
-    constexpr void AssignWithAlloc(ConstPtr, SizeT);
-    constexpr void AssignWithSource(ConstPtr, SizeT);
+    constexpr void AssignWithAlloc(ConstPointer, SizeT);
+    constexpr void AssignWithSource(ConstPointer, SizeT);
     constexpr void AssignWithMove(BasicString&&) noexcept;
 
     template <ForwardIteratableByT<T> Iter>
     constexpr void AppendWithRange(Iter, Iter, SizeT);
-    constexpr void AppendWithSource(ConstPtr, SizeT);
-    constexpr void AppendWithAlloc(ConstPtr, SizeT, SizeT);
+    constexpr void AppendWithSource(ConstPointer, SizeT);
+    constexpr void AppendWithAlloc(ConstPointer, SizeT, SizeT);
     constexpr void AppendWithAlloc(SizeT, SizeT);
     constexpr Pointer AppendWithSize(SizeT);
 
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertWithRange(SizeT, Iter, Iter, SizeT);
-    constexpr void InsertWithSource(SizeT, ConstPtr, SizeT);
-    constexpr void InsertWithAlloc(SizeT, ConstPtr, SizeT, SizeT);
+    constexpr void InsertWithSource(SizeT, ConstPointer, SizeT);
+    constexpr void InsertWithAlloc(SizeT, ConstPointer, SizeT, SizeT);
     constexpr void InsertWithAlloc(SizeT, SizeT, SizeT);
     constexpr Pointer InsertWithSize(SizeT, SizeT);
 
@@ -368,7 +368,7 @@ template <StringViewLikeT<T, AllocT> U>
 inline constexpr BasicString<T, AllocT>::BasicString(U const& src, SizeT size, AllocT const& alloc)
     : m_Alloc(alloc)
 {
-    ConstPtr data = GetViewData(src, size);
+    ConstPointer data = GetViewData(src, size);
     Pointer loc = InitWithSize(size);
     memory::MemCopy(loc, data, size);
 }
@@ -400,7 +400,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
 inline constexpr void BasicString<T, AllocT>::Assign(U const& src, SizeT size)
 {
-    ConstPtr data = GetViewData(src, size);
+    ConstPointer data = GetViewData(src, size);
     AssignWithSource(data, size);
 }
 
@@ -456,7 +456,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
 inline constexpr void BasicString<T, AllocT>::Append(U const& src, SizeT size)
 {
-    ConstPtr data = GetViewData(src, size);
+    ConstPointer data = GetViewData(src, size);
     AppendWithSource(data, size);
 }
 
@@ -526,7 +526,7 @@ inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, U const& src, 
         return;
     }
 
-    ConstPtr data = GetViewData(src, len);
+    ConstPointer data = GetViewData(src, len);
 
     AssertValidIndex(index);
     InsertWithSource(index, data, len);
@@ -590,7 +590,7 @@ inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, U const
         return;
     }
 
-    ConstPtr data = GetViewData(src, len);
+    ConstPointer data = GetViewData(src, len);
 
     AssertValidIterator(iter);
     InsertWithSource(index, data, len);
@@ -889,7 +889,7 @@ inline constexpr BasicString<T, AllocT>::Reference BasicString<T, AllocT>::First
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::ConstRef BasicString<T, AllocT>::First() const
+inline constexpr BasicString<T, AllocT>::ConstReference BasicString<T, AllocT>::First() const
 {
     AssertValidIndex(0);
     return *Data();
@@ -904,7 +904,7 @@ inline constexpr BasicString<T, AllocT>::Reference BasicString<T, AllocT>::Last(
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::ConstRef BasicString<T, AllocT>::Last() const
+inline constexpr BasicString<T, AllocT>::ConstReference BasicString<T, AllocT>::Last() const
 {
     SizeT size = Size();
     AssertValidIndex(size - 1);
@@ -919,7 +919,8 @@ inline constexpr BasicString<T, AllocT>::Reference BasicString<T, AllocT>::At(Si
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::ConstRef BasicString<T, AllocT>::At(SizeT index) const
+inline constexpr BasicString<T, AllocT>::ConstReference
+BasicString<T, AllocT>::At(SizeT index) const
 {
     AssertValidIndex(index);
     return *(Data() + index);
@@ -932,7 +933,7 @@ inline constexpr BasicString<T, AllocT>::Pointer BasicString<T, AllocT>::Data() 
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::ConstPtr BasicString<T, AllocT>::Data() const noexcept
+inline constexpr BasicString<T, AllocT>::ConstPointer BasicString<T, AllocT>::Data() const noexcept
 {
     return LargeCapacity() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
 }
@@ -972,7 +973,7 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool BasicString<T, AllocT>::ValidRange(ConstIterator begin,
                                                          ConstIterator end) const noexcept
 {
-    ConstPtr buffer = Data();
+    ConstPointer buffer = Data();
     SizeT size = Size();
     SizeT beginIdx = static_cast<SizeT>(begin.Address() - buffer);
     SizeT endIdx = static_cast<SizeT>(end.Address() - buffer);
@@ -987,7 +988,7 @@ inline constexpr BasicString<T, AllocT>::Reference BasicString<T, AllocT>::opera
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::ConstRef
+inline constexpr BasicString<T, AllocT>::ConstReference
 BasicString<T, AllocT>::operator[](SizeT index) const
 {
     AssertValidIndex(index);
@@ -1098,8 +1099,8 @@ BasicString<T, AllocT>::SwitchToSmall(Pointer ptr, SizeT size)
 
 template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
-constexpr BasicString<T, AllocT>::ConstPtr BasicString<T, AllocT>::GetViewData(U const& src,
-                                                                               SizeT size)
+constexpr BasicString<T, AllocT>::ConstPointer BasicString<T, AllocT>::GetViewData(U const& src,
+                                                                                   SizeT size)
 {
     if constexpr (ExplicitlyConvertibleToT<U, T const*>) {
         BasicStringView<T> view(static_cast<T const*>(src), size);
@@ -1199,7 +1200,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPtr ptr, SizeT len)
+inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPointer ptr, SizeT len)
 {
     if consteval {
         AssignWithAlloc(ptr, len);
@@ -1216,7 +1217,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPtr ptr, Siz
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-[[no_inline]] constexpr void BasicString<T, AllocT>::AssignWithAlloc(ConstPtr ptr, SizeT len)
+[[no_inline]] constexpr void BasicString<T, AllocT>::AssignWithAlloc(ConstPointer ptr, SizeT len)
 {
     if (!LargeCapacity()) {
         LargeBuffer newBuffer(len + 1, m_Alloc);
@@ -1267,7 +1268,7 @@ inline constexpr void BasicString<T, AllocT>::AppendWithRange(Iter begin, Iter e
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::AppendWithSource(ConstPtr ptr, SizeT len)
+inline constexpr void BasicString<T, AllocT>::AppendWithSource(ConstPointer ptr, SizeT len)
 {
     if consteval {
         AppendWithAlloc(ptr, len, Size());
@@ -1287,7 +1288,7 @@ inline constexpr void BasicString<T, AllocT>::AppendWithSource(ConstPtr ptr, Siz
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-[[no_inline]] constexpr void BasicString<T, AllocT>::AppendWithAlloc(ConstPtr ptr, SizeT len,
+[[no_inline]] constexpr void BasicString<T, AllocT>::AppendWithAlloc(ConstPointer ptr, SizeT len,
                                                                      SizeT oldSize)
 {
     SizeT newSize = oldSize + len;
@@ -1344,7 +1345,8 @@ template <CharT T, AllocatorT<T> AllocT>
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, ConstPtr ptr, SizeT len)
+inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, ConstPointer ptr,
+                                                               SizeT len)
 {
     SizeT oldSize = Size();
     SizeT newSize = oldSize + len;
@@ -1367,7 +1369,7 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-[[no_inline]] constexpr void BasicString<T, AllocT>::InsertWithAlloc(SizeT index, ConstPtr ptr,
+[[no_inline]] constexpr void BasicString<T, AllocT>::InsertWithAlloc(SizeT index, ConstPointer ptr,
                                                                      SizeT len, SizeT oldSize)
 {
     SizeT newSize = oldSize + len;
@@ -1551,7 +1553,7 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
         return false;
     }
 
-    using Pointer = BasicString<T, AllocT>::ConstPtr;
+    using Pointer = BasicString<T, AllocT>::ConstPointer;
     Pointer lbuf = l.Data();
     Pointer rbuf = r.Data();
 
@@ -1572,8 +1574,8 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
         return false;
     }
 
-    typename BasicString<T, AllocT>::ConstPtr lbuf = l.Data();
-    typename BasicString<U, AllocU>::ConstPtr rbuf = r.Data();
+    typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
+    typename BasicString<U, AllocU>::ConstPointer rbuf = r.Data();
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 
@@ -1586,7 +1588,7 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
         return false;
     }
 
-    typename BasicString<T, AllocT>::ConstPtr lbuf = l.Data();
+    typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
     typename std::basic_string<T, StdAllocT>::const_pointer rbuf = r.data();
 
     if (lbuf == rbuf) [[unlikely]] {
@@ -1606,7 +1608,7 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l,
         return false;
     }
 
-    typename BasicString<T, AllocT>::ConstPtr lbuf = l.Data();
+    typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
     typename std::basic_string<T, StdAllocU>::const_pointer rbuf = r.data();
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }

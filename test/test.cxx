@@ -31,13 +31,13 @@ TEST_API inline auto millisecondsCast = [](auto diff) -> SizeT {
 };
 
 template <typename T>
-inline constexpr RemoveRefT<T>& MakeLRef(T&& value)
+inline constexpr RemoveRefT<T>& MakeLvalueReference(T&& value)
 {
     return static_cast<RemoveRefT<T>&>(value);
 }
 
 template <typename T>
-inline constexpr RemoveRefT<T>&& MakeRRef(T&& value)
+inline constexpr RemoveRefT<T>&& MakeRvalueReference(T&& value)
 {
     return static_cast<RemoveRefT<T>&&>(value);
 }
@@ -88,66 +88,66 @@ struct DebugAlloc : public Allocator<T> {
 
 // clang-format off
 
-struct TEST_API Foo {
+struct TEST_API TestObject {
     BasicString<char> str;
     uint64 a[16];
 
-    Foo() : a{0, } { ++ctor; }
-    Foo(BasicString<char> const& s) : str(s), a{1, } { ++ctor; }
-    Foo(BasicString<char>&& s) : str(MoveArg(s)), a{1, } { ++ctor; }
-    Foo(Foo const& o) : str(o.str), a{o.a[0], } { ++copyCtor; }
-    Foo(Foo&& o) noexcept
+    TestObject() : a{0, } { ++ctor; }
+    TestObject(BasicString<char> const& s) : str(s), a{1, } { ++ctor; }
+    TestObject(BasicString<char>&& s) : str(MoveArg(s)), a{1, } { ++ctor; }
+    TestObject(TestObject const& o) : str(o.str), a{o.a[0], } { ++copyCtor; }
+    TestObject(TestObject&& o) noexcept
         : str(Exchange(o.str, {})), a{1, } 
     { ++moveCtor; }
 
-    ~Foo() { ++dtor; }
+    ~TestObject() { ++dtor; }
 
-    Foo& operator=(Foo const& o)
+    TestObject& operator=(TestObject const& o)
     {
         ++copyAssign;
         str = o.str;
         return *this;
     }
 
-    Foo& operator=(Foo&& o) noexcept
+    TestObject& operator=(TestObject&& o) noexcept
     {
         ++moveAssign;
         str = MoveArg(o.str);
         return *this;
     }
 
-    bool operator==(Foo const& o) const noexcept { return str == o.str; }
+    bool operator==(TestObject const& o) const noexcept { return str == o.str; }
 };
 
-struct TEST_API ConstexprFoo {
+struct TEST_API ConstexprObject {
     BasicString<char> str;
 
-    constexpr ConstexprFoo() = default;
-    constexpr ConstexprFoo(BasicString<char> const& s) : str(s) {}
-    constexpr ConstexprFoo(BasicString<char>&& s) : str(MoveArg(s)) {}
+    constexpr ConstexprObject() = default;
+    constexpr ConstexprObject(BasicString<char> const& s) : str(s) {}
+    constexpr ConstexprObject(BasicString<char>&& s) : str(MoveArg(s)) {}
 
-    constexpr bool operator==(ConstexprFoo const& o) const noexcept { return str == o.str; }
+    constexpr bool operator==(ConstexprObject const& o) const noexcept { return str == o.str; }
 };
 
-struct TEST_API FooAlloc {
-    typedef Foo Value;
-    typedef Foo* Ptr;
-    typedef Foo const* ConstPtr;
+struct TEST_API TestAlloc {
+    typedef TestObject Value;
+    typedef TestObject* Pointer;
+    typedef TestObject const* ConstPointer;
 
-    BasicString<char> str = "FooAlloc";
+    BasicString<char> str = "TestAlloc";
     Debug debug;
 
     template <typename U>
     DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
-    AllocationResult<Foo> Allocate(SizeT s) { return Allocator<Foo>{}.Allocate(s); }
-    AllocationResult<Foo> Increment(SizeT o, SizeT s) { return Allocator<Foo>{}.Increment(o, s); }
+    AllocationResult<TestObject> Allocate(SizeT s) { return Allocator<TestObject>{}.Allocate(s); }
+    AllocationResult<TestObject> Increment(SizeT o, SizeT s) { return Allocator<TestObject>{}.Increment(o, s); }
 
-    void Deallocate(Ptr ptr, SizeT s) { Allocator<Foo>{}.Deallocate(ptr, s); }
+    void Deallocate(Pointer ptr, SizeT s) { Allocator<TestObject>{}.Deallocate(ptr, s); }
 };
 
 struct TEST_API FooDel {
-    void operator()(Foo* ptr) { delete ptr; }
+    void operator()(TestObject* ptr) { delete ptr; }
 };
 
 // clang-format on

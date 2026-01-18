@@ -35,7 +35,7 @@ export template <typename T>
 concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename T::Pointer loc) {
     requires !ReferenceT<typename T::Value>;
     requires PointerT<typename T::Pointer>;
-    requires PointerT<typename T::ConstPtr>;
+    requires PointerT<typename T::ConstPointer>;
 
     { alloc.Allocate(s) } -> SameAsT<AllocationResult<typename T::Value>>;
     { alloc.Increment(s, s) } -> SameAsT<AllocationResult<typename T::Value>>;
@@ -70,7 +70,7 @@ export template <typename T>
 struct Allocator {
     typedef T Value;
     typedef T* Pointer;
-    typedef T const* ConstPtr;
+    typedef T const* ConstPointer;
 
     [[nodiscard]] inline constexpr AllocationResult<T> Allocate(SizeT size) const noexcept
     {
@@ -139,7 +139,7 @@ export struct UnboundAllocator {
 public:
     typedef void Value;
     typedef void* Pointer;
-    typedef void const* ConstPtr;
+    typedef void const* ConstPointer;
 
     template <typename T>
     AllocationResult<void> Allocate(T&&) const noexcept
@@ -194,7 +194,7 @@ struct allocator_traits<T<ValueT>> {
     typedef typename AllocT::Value value_type;
     typedef typename AllocT::Pointer pointer;
     typedef typename mini::UnboundAllocator::Pointer void_pointer;
-    typedef typename mini::UnboundAllocator::ConstPtr const_void_pointer;
+    typedef typename mini::UnboundAllocator::ConstPointer const_void_pointer;
 
     static constexpr pointer allocate(AllocT& alloc, size_type n)
     {

@@ -20,22 +20,22 @@ using namespace mini::test;
         return __VA_ARGS__(str);                                            \
     });
 
-FACTORY(UniquePtrF, MakeUnique<ConstexprFoo>);
-FACTORY(StdUniquePtrF, std::make_unique<ConstexprFoo>);
-FACTORY(ConstexprFooF, ConstexprFoo);
-FACTORY(FooF, Foo);
+FACTORY(UniquePtrF, MakeUnique<ConstexprObject>);
+FACTORY(StdUniquePtrF, std::make_unique<ConstexprObject>);
+FACTORY(ConstexprFooF, ConstexprObject);
+FACTORY(FooF, TestObject);
 FACTORY(FooArgF);
 
 [[maybe_unused]] static constexpr void StaticArrayConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<int, 1>::Iterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<int*, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<Foo, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<Foo*, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<TestObject, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticArray<TestObject*, 1>::Iterator);
 
-    TEST_RANGE_BASED_FOR_SUPPORT(StaticArray<Foo, 1>);
+    TEST_RANGE_BASED_FOR_SUPPORT(StaticArray<TestObject, 1>);
 
-    static_assert(sizeof(StaticArray<Foo, 1>::Iterator) == alignof(void*) * 2);
+    static_assert(sizeof(StaticArray<TestObject, 1>::Iterator) == alignof(void*) * 2);
 }
 
 template <typename T, SizeT CapN, typename StdAllocT>
@@ -273,42 +273,42 @@ int main()
     using VecF = decltype([](int c) { return Vector2Int(c, c); });
 
     TEST_ENSURE((TestCtor<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestCtor<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestCtor<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestCtor<ConstexprFoo, ConstexprFooF>() == 0));
-    TEST_ENSURE((TestCtor<Foo, FooF>() == 0));
+    TEST_ENSURE((TestCtor<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestCtor<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestCtor<ConstexprObject, ConstexprFooF>() == 0));
+    TEST_ENSURE((TestCtor<TestObject, FooF>() == 0));
     TEST_ARRAY(TestCtor, int, IntF);
     TEST_ARRAY(TestCtor, Vector2Int, VecF);
 
     TEST_ENSURE((TestPush<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestPush<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestPush<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestPush<ConstexprFoo, ConstexprFooF, FooArgF>() == 0));
-    TEST_ENSURE((TestPush<Foo, FooF, FooArgF>() == 0));
+    TEST_ENSURE((TestPush<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestPush<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestPush<ConstexprObject, ConstexprFooF, FooArgF>() == 0));
+    TEST_ENSURE((TestPush<TestObject, FooF, FooArgF>() == 0));
     TEST_ARRAY(TestPush, int, IntF);
     TEST_ARRAY(TestPush, Vector2Int, VecF);
 
     TEST_ENSURE((TestInsert<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestInsert<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestInsert<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestInsert<ConstexprFoo, ConstexprFooF, FooArgF>() == 0));
-    TEST_ENSURE((TestInsert<Foo, FooF, FooArgF>() == 0));
+    TEST_ENSURE((TestInsert<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestInsert<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestInsert<ConstexprObject, ConstexprFooF, FooArgF>() == 0));
+    TEST_ENSURE((TestInsert<TestObject, FooF, FooArgF>() == 0));
     TEST_ARRAY(TestInsert, int, IntF);
     TEST_ARRAY(TestInsert, Vector2Int, VecF);
 
     TEST_ENSURE((TestRemove<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestRemove<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestRemove<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestRemove<ConstexprFoo, ConstexprFooF>() == 0));
-    TEST_ENSURE((TestRemove<Foo, FooF>() == 0));
+    TEST_ENSURE((TestRemove<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestRemove<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestRemove<ConstexprObject, ConstexprFooF>() == 0));
+    TEST_ENSURE((TestRemove<TestObject, FooF>() == 0));
     TEST_ARRAY(TestRemove, int, IntF);
     TEST_ARRAY(TestRemove, Vector2Int, VecF);
 
     TEST_ENSURE((TestModify<int*, IntPtrF>() == 0));
-    TEST_ENSURE((TestModify<std::unique_ptr<ConstexprFoo>, StdUniquePtrF>() == 0));
-    TEST_ENSURE((TestModify<UniquePtr<ConstexprFoo>, UniquePtrF>() == 0));
-    TEST_ENSURE((TestModify<ConstexprFoo, ConstexprFooF>() == 0));
-    TEST_ENSURE((TestModify<Foo, FooF>() == 0));
+    TEST_ENSURE((TestModify<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));
+    TEST_ENSURE((TestModify<UniquePtr<ConstexprObject>, UniquePtrF>() == 0));
+    TEST_ENSURE((TestModify<ConstexprObject, ConstexprFooF>() == 0));
+    TEST_ENSURE((TestModify<TestObject, FooF>() == 0));
     TEST_ARRAY(TestModify, int, IntF);
     TEST_ARRAY(TestModify, Vector2Int, VecF);
 }
