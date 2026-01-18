@@ -74,7 +74,7 @@ void Engine::Abort(String const& msg)
     engine->m_Running = false;
 }
 
-bool Engine::IsRunning() noexcept
+bool Engine::Running() noexcept
 {
     return engine != nullptr && engine->m_Running;
 }

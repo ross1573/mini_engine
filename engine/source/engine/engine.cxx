@@ -20,7 +20,7 @@ public:
     static void Quit();
     static void Abort(String const& = "");
 
-    static bool IsRunning() noexcept;
+    static bool Running() noexcept;
 };
 
 ENGINE_API Engine* engine = nullptr;
