@@ -88,7 +88,7 @@ public:
     inline constexpr void Allocate(SizeT size) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
-        AllocResult<T> buffer = m_Alloc.Allocate(size);
+        AllocationResult<T> buffer = m_Alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
     }
@@ -103,14 +103,14 @@ public:
     [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocResult<T> newBuffer = m_Alloc.Increment(m_Capacity, size);
+        AllocationResult<T> newBuffer = m_Alloc.Increment(m_Capacity, size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
     }
 
     [[nodiscard]] inline constexpr DynamicBuffer Resize(SizeT size) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocResult<T> newBuffer = m_Alloc.Allocate(size);
+        AllocationResult<T> newBuffer = m_Alloc.Allocate(size);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_Alloc);
     }
 

@@ -13,12 +13,12 @@ public:
     inline constexpr void operator()(T* ptr) { delete ptr; }
 };
 
-export struct DummyDeleter {
+export struct UnboundDeleter {
 public:
     template <typename T>
     constexpr void operator()(T&&)
     {
-        NEVER_CALLED("dummy deleter should not be called");
+        NEVER_CALLED("UnboundDeleter should not be called");
     }
 };
 

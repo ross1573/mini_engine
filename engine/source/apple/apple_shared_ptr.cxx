@@ -319,7 +319,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noe
     return *this;
 }
 
-template <NonRefT T, UnbindedAllocatorT AllocT, typename... Args>
+template <NonRefT T, UnboundAllocatorT AllocT, typename... Args>
 SharedPtr<T> AllocateShared(AllocT const&, Args&&...)
     requires DerivedFromT<T, NS::Object>
 {

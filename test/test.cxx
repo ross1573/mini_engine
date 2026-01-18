@@ -132,6 +132,7 @@ struct TEST_API ConstexprFoo {
 struct TEST_API FooAlloc {
     typedef Foo Value;
     typedef Foo* Ptr;
+    typedef Foo const* ConstPtr;
 
     BasicString<char> str = "FooAlloc";
     Debug debug;
@@ -139,8 +140,8 @@ struct TEST_API FooAlloc {
     template <typename U>
     DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
-    AllocResult<Foo> Allocate(SizeT s) { return Allocator<Foo>{}.Allocate(s); }
-    AllocResult<Foo> Increment(SizeT o, SizeT s) { return Allocator<Foo>{}.Increment(o, s); }
+    AllocationResult<Foo> Allocate(SizeT s) { return Allocator<Foo>{}.Allocate(s); }
+    AllocationResult<Foo> Increment(SizeT o, SizeT s) { return Allocator<Foo>{}.Increment(o, s); }
 
     void Deallocate(Ptr ptr, SizeT s) { Allocator<Foo>{}.Deallocate(ptr, s); }
 };

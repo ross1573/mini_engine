@@ -50,7 +50,7 @@ public:
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
         ASSERT(m_Buffer == nullptr, "buffer should be deallocated first");
-        AllocResult<T> buffer = alloc.Allocate(size);
+        AllocationResult<T> buffer = alloc.Allocate(size);
         m_Buffer = buffer.pointer;
         m_Capacity = buffer.capacity;
         memory::BeginLifetime(m_Buffer, m_Buffer + m_Capacity);
@@ -69,7 +69,7 @@ public:
     [[nodiscard]] inline constexpr TrivialBuffer Increment(SizeT size, AllocT const& alloc) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocResult<T> newBuffer = alloc.Increment(m_Capacity, size);
+        AllocationResult<T> newBuffer = alloc.Increment(m_Capacity, size);
         return TrivialBuffer(newBuffer.pointer, newBuffer.capacity);
     }
 
@@ -77,7 +77,7 @@ public:
     [[nodiscard]] inline constexpr TrivialBuffer Resize(SizeT size, AllocT const& alloc) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocResult<T> newBuffer = alloc.Allocate(size);
+        AllocationResult<T> newBuffer = alloc.Allocate(size);
         return TrivialBuffer(newBuffer.pointer, newBuffer.capacity);
     }
 

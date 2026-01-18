@@ -172,7 +172,7 @@ public:
     Module(Module&&) noexcept = default;
 
     explicit Module(StringView);
-    template <UnbindedAllocatorT AllocT>
+    template <UnboundAllocatorT AllocT>
     Module(StringView, AllocT const&);
     template <RelatedInterfaceToT<T> U>
     Module(Module<U> const&) noexcept;
@@ -181,7 +181,7 @@ public:
 
     bool IsValid() const noexcept;
 
-    template <UnbindedAllocatorT AllocT>
+    template <UnboundAllocatorT AllocT>
     void Load(StringView, AllocT const&);
     void Load(StringView);
     void Release() noexcept;
@@ -237,7 +237,7 @@ inline Module<T>::~Module() noexcept
 }
 
 template <ModuleInterfaceT T>
-template <UnbindedAllocatorT AllocT>
+template <UnboundAllocatorT AllocT>
 inline Module<T>::Module(StringView name, AllocT const& alloc)
     : m_Handle(Handle::Load(name), alloc)
     , m_Interface(QueryInterface())
@@ -271,7 +271,7 @@ inline bool Module<T>::IsValid() const noexcept
 }
 
 template <ModuleInterfaceT T>
-template <UnbindedAllocatorT AllocT>
+template <UnboundAllocatorT AllocT>
 inline void Module<T>::Load(StringView name, AllocT const& alloc)
 {
     m_Handle.Reset(Handle::Load(name), DefaultDeleter<Handle>{}, alloc);
