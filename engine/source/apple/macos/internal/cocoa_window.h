@@ -9,8 +9,8 @@ namespace mini::cocoa {
 
 class Window {
 protected:
-    NSWindow* m_Window;
-    NSView* m_View;
+    NSWindow* m_window;
+    NSView* m_view;
 
 public:
     Window(Application*);
@@ -36,7 +36,7 @@ public:
 
 inline bool Window::Valid() const noexcept
 {
-    return m_Window != nullptr;
+    return m_window != nullptr;
 }
 
 } // namespace mini::cocoa

@@ -49,11 +49,11 @@ public:
     typedef typename ModulePoilcy::DeleteFunc DeleteFunc;
 
 protected:
-    ModulePoilcy const* m_Policy;
-    NativeModule m_NativeModule;
-    UniquePtr<ModuleInterface> m_Interface;
-    String m_LibraryName;
-    Array<CallbackFunc> m_ExitCallback;
+    ModulePoilcy const* m_policy;
+    NativeModule m_nativeModule;
+    UniquePtr<ModuleInterface> m_interface;
+    String m_libraryName;
+    Array<CallbackFunc> m_exitCallback;
 
 public:
     ModuleHandle(ModulePoilcy const*, NativeModule, ModuleInterface*, StringView) noexcept;
@@ -89,8 +89,8 @@ public:
         : ModuleHandle(&policy, nullptr, nullptr, name)
     {
         String path = BuildModulePath(name);
-        m_NativeModule = LoadModule(path);
-        if (m_NativeModule == nullptr) {
+        m_nativeModule = LoadModule(path);
+        if (m_nativeModule == nullptr) {
             return;
         }
 
@@ -106,18 +106,18 @@ public:
         }
 
         if (interface == nullptr) {
-            UnloadModule(m_NativeModule);
-            m_NativeModule = nullptr;
+            UnloadModule(m_nativeModule);
+            m_nativeModule = nullptr;
             return;
         }
 
-        m_Interface = UniquePtr(interface);
+        m_interface = UniquePtr(interface);
     }
 
     template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
     FuncT GetFunction(StringView name)
     {
-        void* funcPtr = LoadFunction(m_NativeModule, name);
+        void* funcPtr = LoadFunction(m_nativeModule, name);
         return reinterpret_cast<FuncT>(funcPtr);
     }
 };
@@ -161,8 +161,8 @@ public:
     typedef T* InterfacePtr;
 
 private:
-    SharedPtr<Handle> m_Handle;
-    Interface* m_Interface;
+    SharedPtr<Handle> m_handle;
+    Interface* m_interface;
 
 public:
     Module() noexcept;
@@ -214,172 +214,172 @@ private:
 
 template <ModuleInterfaceT T>
 inline Module<T>::Module() noexcept
-    : m_Handle()
-    , m_Interface(nullptr)
+    : m_handle()
+    , m_interface(nullptr)
 {
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::Module(StringView name)
-    : m_Handle(Handle::Load(name))
-    , m_Interface(QueryInterface())
+    : m_handle(Handle::Load(name))
+    , m_interface(QueryInterface())
 {
-    if (m_Interface == nullptr) [[unlikely]] {
-        m_Handle.Reset();
+    if (m_interface == nullptr) [[unlikely]] {
+        m_handle.Reset();
     }
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::~Module() noexcept
 {
-    m_Interface = nullptr;
+    m_interface = nullptr;
 }
 
 template <ModuleInterfaceT T>
 template <UnboundAllocatorT AllocT>
 inline Module<T>::Module(StringView name, AllocT const& alloc)
-    : m_Handle(Handle::Load(name), alloc)
-    , m_Interface(QueryInterface())
+    : m_handle(Handle::Load(name), alloc)
+    , m_interface(QueryInterface())
 {
-    if (m_Interface == nullptr) [[unlikely]] {
-        m_Handle.Reset();
+    if (m_interface == nullptr) [[unlikely]] {
+        m_handle.Reset();
     }
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 inline Module<T>::Module(Module<U> const& other) noexcept
-    : m_Handle(other.m_Handle)
-    , m_Interface(static_cast<U>(other.m_Interface))
+    : m_handle(other.m_handle)
+    , m_interface(static_cast<U>(other.m_interface))
 {
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 inline Module<T>::Module(Module<U>&& other) noexcept
-    : m_Handle(MoveArg(other.m_Handle))
+    : m_handle(MoveArg(other.m_handle))
 {
-    m_Interface = static_cast<U>(other.m_Interface);
-    other.m_Interface = nullptr;
+    m_interface = static_cast<U>(other.m_interface);
+    other.m_interface = nullptr;
 }
 
 template <ModuleInterfaceT T>
 inline bool Module<T>::Valid() const noexcept
 {
-    return m_Handle != nullptr;
+    return m_handle != nullptr;
 }
 
 template <ModuleInterfaceT T>
 template <UnboundAllocatorT AllocT>
 inline void Module<T>::Load(StringView name, AllocT const& alloc)
 {
-    m_Handle.Reset(Handle::Load(name), DefaultDeleter<Handle>{}, alloc);
-    m_Interface = QueryInterface();
+    m_handle.Reset(Handle::Load(name), DefaultDeleter<Handle>{}, alloc);
+    m_interface = QueryInterface();
 
-    if (m_Interface == nullptr) [[unlikely]] {
-        m_Handle.Reset();
+    if (m_interface == nullptr) [[unlikely]] {
+        m_handle.Reset();
     }
 }
 
 template <ModuleInterfaceT T>
 inline void Module<T>::Load(StringView name)
 {
-    m_Handle = Handle::Load(name);
-    m_Interface = QueryInterface();
+    m_handle = Handle::Load(name);
+    m_interface = QueryInterface();
 
-    if (m_Interface == nullptr) [[unlikely]] {
-        m_Handle.Reset();
+    if (m_interface == nullptr) [[unlikely]] {
+        m_handle.Reset();
     }
 }
 
 template <ModuleInterfaceT T>
 inline void Module<T>::Release() noexcept
 {
-    m_Handle.Reset();
-    m_Interface = nullptr;
+    m_handle.Reset();
+    m_interface = nullptr;
 }
 
 template <ModuleInterfaceT T>
 inline bool Module<T>::AtExit(CallbackFunc func) noexcept
 {
-    return m_Handle != nullptr ? m_Handle->AtExit(func) : false;
+    return m_handle != nullptr ? m_handle->AtExit(func) : false;
 }
 
 template <ModuleInterfaceT T>
 inline bool Module<T>::RemoveAtExit(CallbackFunc func) noexcept
 {
-    return m_Handle != nullptr ? m_Handle->RemoveAtExit(func) : false;
+    return m_handle != nullptr ? m_handle->RemoveAtExit(func) : false;
 }
 
 template <ModuleInterfaceT T>
 inline String Module<T>::LibraryName() const noexcept
 {
-    return m_Handle != nullptr ? m_Handle->LibraryName() : String();
+    return m_handle != nullptr ? m_handle->LibraryName() : String();
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::InterfacePtr Module<T>::GetInterface() const noexcept
 {
-    return m_Interface;
+    return m_interface;
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::NativeModule Module<T>::NativeHandle() const noexcept
 {
-    return m_Handle != nullptr ? m_Handle->NativeHandle() : nullptr;
+    return m_handle != nullptr ? m_handle->NativeHandle() : nullptr;
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 bool Module<T>::Equals(Module<U> const& other) const noexcept
 {
-    return m_Handle.OwnerEquals(other) && m_Interface == other.m_Interface;
+    return m_handle.OwnerEquals(other) && m_interface == other.m_interface;
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 bool Module<T>::HandleEquals(Module<U> const& other) const noexcept
 {
-    return m_Handle.OwnerEquals(other);
+    return m_handle.OwnerEquals(other);
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::InterfaceRef Module<T>::operator*() const noexcept
 {
-    return *m_Interface;
+    return *m_interface;
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::InterfacePtr Module<T>::operator->() const noexcept
 {
-    return m_Interface;
+    return m_interface;
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 inline Module<T>& Module<T>::operator=(Module<U> const& other) noexcept
 {
-    m_Handle = other.m_Handle;
-    m_Interface = static_cast<T>(other.m_Interface);
+    m_handle = other.m_handle;
+    m_interface = static_cast<T>(other.m_interface);
 }
 
 template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 inline Module<T>& Module<T>::operator=(Module<U>&& other) noexcept
 {
-    m_Handle = MoveArg(other.m_Handle);
-    m_Interface = static_cast<T>(other.m_Interface);
-    other.m_Interface = nullptr;
+    m_handle = MoveArg(other.m_handle);
+    m_interface = static_cast<T>(other.m_interface);
+    other.m_interface = nullptr;
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::Interface* Module<T>::QueryInterface() const noexcept
 {
-    if (m_Handle.Valid() == false) [[unlikely]] {
+    if (m_handle.Valid() == false) [[unlikely]] {
         return nullptr;
     }
 
-    return dynamic_cast<Interface*>(m_Handle->GetInterface());
+    return dynamic_cast<Interface*>(m_handle->GetInterface());
 }
 
 template <ModuleInterfaceT T, ModuleInterfaceT U>

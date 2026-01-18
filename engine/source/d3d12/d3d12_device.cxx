@@ -9,13 +9,13 @@ export namespace mini::d3d12 {
 
 class Device final : public graphics::Device {
 private:
-    SharedPtr<IDXGIFactory4> m_Factory;
-    SharedPtr<IDXGIAdapter> m_Adapter;
-    SharedPtr<ID3D12Device> m_Device;
+    SharedPtr<IDXGIFactory4> m_factory;
+    SharedPtr<IDXGIAdapter> m_adapter;
+    SharedPtr<ID3D12Device> m_device;
 
-    DescriptorAllocator m_RTVAllocator;
-    DescriptorAllocator m_DSVAllocator;
-    DescriptorAllocator m_SRVAllocator;
+    DescriptorAllocator m_rTVAllocator;
+    DescriptorAllocator m_dSVAllocator;
+    DescriptorAllocator m_sRVAllocator;
 
 public:
     Device();
@@ -27,9 +27,9 @@ public:
     graphics::RenderContext* CreateRenderContext() final;
 
     graphics::API GetAPI() const final { return graphics::API::D3D12; }
-    IDXGIFactory4* GetDXGIFactory() const { return m_Factory; }
-    IDXGIAdapter* GetDXGIAdapter() const { return m_Adapter; }
-    ID3D12Device* GetD3D12Device() const { return m_Device; }
+    IDXGIFactory4* GetDXGIFactory() const { return m_factory; }
+    IDXGIAdapter* GetDXGIAdapter() const { return m_adapter; }
+    ID3D12Device* GetD3D12Device() const { return m_device; }
 
 private:
     void CreateDevice(D3D_FEATURE_LEVEL = D3D_FEATURE_LEVEL_11_0);

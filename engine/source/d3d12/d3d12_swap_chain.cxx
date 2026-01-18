@@ -19,18 +19,18 @@ export class SwapChain final : public graphics::SwapChain {
 private:
     static constexpr uint8 MaxBuffer = SwapChain::MaxBackBuffer;
 
-    SharedPtr<IDXGISwapChain3> m_SwapChain;
-    StaticArray<SwapChainBuffer, MaxBuffer> m_Buffers;
+    SharedPtr<IDXGISwapChain3> m_swapChain;
+    StaticArray<SwapChainBuffer, MaxBuffer> m_buffers;
 
-    DXGI_SWAP_CHAIN_DESC1 m_SwapChainDesc;
-    DXGI_SAMPLE_DESC m_SampleDesc;
-    DXGI_SWAP_CHAIN_FULLSCREEN_DESC m_FullscreenDesc;
-    D3D12_RENDER_TARGET_VIEW_DESC m_RTVDesc;
+    DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc;
+    DXGI_SAMPLE_DESC m_sampleDesc;
+    DXGI_SWAP_CHAIN_FULLSCREEN_DESC m_fullscreenDesc;
+    D3D12_RENDER_TARGET_VIEW_DESC m_rTVDesc;
 
-    uint8 m_Index;
-    uint8 m_VSync;
-    uint32 m_Width;
-    uint32 m_Height;
+    uint8 m_index;
+    uint8 m_vSync;
+    uint32 m_width;
+    uint32 m_height;
 
 public:
     SwapChain();
@@ -40,11 +40,11 @@ public:
     void SetVSync(uint8) final;
     void SetFullScreen(bool) final;
 
-    SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_Buffers[m_Index]; }
-    Vector2Int GetBackBufferSize() const final { return Vector2Int(m_Width, m_Height); }
-    uint8 GetBackBufferCount() const final { return (uint8)m_Buffers.Size(); }
-    uint8 GetVSync() const final { return m_VSync; }
-    bool GetFullScreen() const final { return !m_FullscreenDesc.Windowed; }
+    SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_buffers[m_index]; }
+    Vector2Int GetBackBufferSize() const final { return Vector2Int(m_width, m_height); }
+    uint8 GetBackBufferCount() const final { return (uint8)m_buffers.Size(); }
+    uint8 GetVSync() const final { return m_vSync; }
+    bool GetFullScreen() const final { return !m_fullscreenDesc.Windowed; }
 
 protected:
     bool Initialize() final;

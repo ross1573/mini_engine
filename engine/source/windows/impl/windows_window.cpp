@@ -10,14 +10,14 @@ import mini.platform;
 namespace mini::windows {
 
 Window::Window()
-    : m_WindowHandle(nullptr)
-    , m_Rect{}
-    , m_IsShowing(false)
-    , m_State(Default)
+    : m_windowHandle(nullptr)
+    , m_rect{}
+    , m_isShowing(false)
+    , m_state(Default)
 {
     auto className = options::name;
     auto titleName = options::title;
-    m_Rect = RectInt(options::x, options::y, options::width, options::height);
+    m_rect = RectInt(options::x, options::y, options::width, options::height);
 
     HINSTANCE instance = interface->GetHandle()->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
@@ -27,22 +27,22 @@ Window::Window()
         style |= WS_THICKFRAME;
     }
 
-    m_WindowHandle = CreateWindowExA(styleEx, className, titleName, style, m_Rect.x, m_Rect.y,
-                                     m_Rect.width, m_Rect.height, nullptr, nullptr, instance,
+    m_windowHandle = CreateWindowExA(styleEx, className, titleName, style, m_rect.x, m_rect.y,
+                                     m_rect.width, m_rect.height, nullptr, nullptr, instance,
                                      nullptr);
 
-    SetMenu(m_WindowHandle, 0);
+    SetMenu(m_windowHandle, 0);
 }
 
 bool Window::Valid() const noexcept
 {
-    return m_WindowHandle != nullptr;
+    return m_windowHandle != nullptr;
 }
 
 void Window::Resize(RectInt const& rect)
 {
-    m_Rect = rect;
-    SetWindowPos(m_WindowHandle, nullptr, m_Rect.x, m_Rect.y, m_Rect.width, m_Rect.height, 0);
+    m_rect = rect;
+    SetWindowPos(m_windowHandle, nullptr, m_rect.x, m_rect.y, m_rect.width, m_rect.height, 0);
 }
 
 void Window::Minimize()
@@ -51,8 +51,8 @@ void Window::Minimize()
         return;
     }
 
-    ShowWindow(m_WindowHandle, SW_MINIMIZE);
-    m_State = Minimized;
+    ShowWindow(m_windowHandle, SW_MINIMIZE);
+    m_state = Minimized;
 }
 
 void Window::Maximize()
@@ -61,28 +61,28 @@ void Window::Maximize()
         return;
     }
 
-    ShowWindow(m_WindowHandle, SW_MAXIMIZE);
-    m_State = Maximized;
+    ShowWindow(m_windowHandle, SW_MAXIMIZE);
+    m_state = Maximized;
 }
 
 void Window::Show()
 {
-    if (m_IsShowing) {
+    if (m_isShowing) {
         return;
     }
 
-    ShowWindow(m_WindowHandle, SW_SHOWDEFAULT);
-    m_IsShowing = true;
+    ShowWindow(m_windowHandle, SW_SHOWDEFAULT);
+    m_isShowing = true;
 }
 
 void Window::Hide()
 {
-    if (!m_IsShowing) {
+    if (!m_isShowing) {
         return;
     }
 
-    ShowWindow(m_WindowHandle, SW_HIDE);
-    m_IsShowing = false;
+    ShowWindow(m_windowHandle, SW_HIDE);
+    m_isShowing = false;
 }
 
 } // namespace mini::windows

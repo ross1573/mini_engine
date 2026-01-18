@@ -17,7 +17,7 @@ public:
     typedef T& Reference;
 
 private:
-    T* m_Ptr;
+    T* m_ptr;
 
 public:
     constexpr SharedPtr() noexcept;
@@ -65,7 +65,7 @@ public:
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::SharedPtr() noexcept
-    : m_Ptr(nullptr)
+    : m_ptr(nullptr)
 {
 }
 
@@ -73,38 +73,38 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline SharedPtr<T>::~SharedPtr() noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
-        m_Ptr = nullptr;
+    if (m_ptr) {
+        m_ptr->release();
+        m_ptr = nullptr;
     }
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
-    : m_Ptr(other.m_Ptr)
+    : m_ptr(other.m_ptr)
 {
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
-    : m_Ptr(other.m_Ptr)
+    : m_ptr(other.m_ptr)
 {
-    other.m_Ptr = nullptr;
+    other.m_ptr = nullptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
-    : m_Ptr(static_cast<T*>(other.m_Ptr))
+    : m_ptr(static_cast<T*>(other.m_ptr))
 {
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 }
 
@@ -112,19 +112,19 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 template <PtrConvertibleToT<T> U>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
-    : m_Ptr(static_cast<T*>(other.m_Ptr))
+    : m_ptr(static_cast<T*>(other.m_ptr))
 {
-    other.m_Ptr = nullptr;
+    other.m_ptr = nullptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>::SharedPtr(U* ptr) noexcept
-    : m_Ptr(static_cast<T*>(ptr))
+    : m_ptr(static_cast<T*>(ptr))
 {
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 }
 
@@ -132,10 +132,10 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 template <DerivedFromT<NS::Object> U>
 inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Pointer ptr) noexcept
-    : m_Ptr(ptr)
+    : m_ptr(ptr)
 {
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 }
 
@@ -143,15 +143,15 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 template <DerivedFromT<NS::Object> U>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
-    : m_Ptr(ptr)
+    : m_ptr(ptr)
 {
-    other.m_Ptr = nullptr;
+    other.m_ptr = nullptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::SharedPtr(NullptrT) noexcept
-    : m_Ptr(nullptr)
+    : m_ptr(nullptr)
 {
 }
 
@@ -159,32 +159,32 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 {
-    return m_Ptr;
+    return m_ptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr bool SharedPtr<T>::Valid() const noexcept
 {
-    return m_Ptr != nullptr;
+    return m_ptr != nullptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr void SharedPtr<T>::Swap(SharedPtr& other) noexcept
 {
-    Pointer tmp = m_Ptr;
-    m_Ptr = other.m_Ptr;
-    other.m_Ptr = tmp;
+    Pointer tmp = m_ptr;
+    m_ptr = other.m_ptr;
+    other.m_ptr = tmp;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline void SharedPtr<T>::Reset() noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
-        m_Ptr = nullptr;
+    if (m_ptr) {
+        m_ptr->release();
+        m_ptr = nullptr;
     }
 }
 
@@ -193,14 +193,14 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline void SharedPtr<T>::Reset(U* ptr) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
+    if (m_ptr) {
+        m_ptr->release();
     }
 
-    m_Ptr = static_cast<T*>(ptr);
+    m_ptr = static_cast<T*>(ptr);
 
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 }
 
@@ -210,51 +210,51 @@ template <NonRefT U>
 inline constexpr bool SharedPtr<T>::Equals(SharedPtr<U> const& other) const noexcept
     requires DerivedFromT<U, NS::Object> && EqualityComparableWithT<T*, U*>
 {
-    return m_Ptr == other.m_Ptr;
+    return m_ptr == other.m_ptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
-    ASSERT(m_Ptr, "null pointer deference");
-    return m_Ptr;
+    ASSERT(m_ptr, "null pointer deference");
+    return m_ptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
-    ASSERT(m_Ptr, "null pointer deference");
-    return *m_Ptr;
+    ASSERT(m_ptr, "null pointer deference");
+    return *m_ptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::operator bool() const noexcept
 {
-    return m_Ptr != nullptr;
+    return m_ptr != nullptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>::operator Pointer() const noexcept
 {
-    return m_Ptr;
+    return m_ptr;
 }
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
+    if (m_ptr) {
+        m_ptr->release();
     }
 
-    m_Ptr = other.m_Ptr;
+    m_ptr = other.m_ptr;
 
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 
     return *this;
@@ -264,12 +264,12 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
+    if (m_ptr) {
+        m_ptr->release();
     }
 
-    m_Ptr = other.m_Ptr;
-    other.m_Ptr = nullptr;
+    m_ptr = other.m_ptr;
+    other.m_ptr = nullptr;
 
     return *this;
 }
@@ -279,14 +279,14 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
+    if (m_ptr) {
+        m_ptr->release();
     }
 
-    m_Ptr = static_cast<T*>(other.m_Ptr);
+    m_ptr = static_cast<T*>(other.m_ptr);
 
-    if (m_Ptr) {
-        m_Ptr->retain();
+    if (m_ptr) {
+        m_ptr->retain();
     }
 
     return *this;
@@ -296,9 +296,9 @@ template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
-        m_Ptr = nullptr;
+    if (m_ptr) {
+        m_ptr->release();
+        m_ptr = nullptr;
     }
 
     return *this;
@@ -309,12 +309,12 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noexcept
 {
-    if (m_Ptr) {
-        m_Ptr->release();
+    if (m_ptr) {
+        m_ptr->release();
     }
 
-    m_Ptr = static_cast<T*>(other.m_Ptr);
-    other.m_Ptr = nullptr;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    other.m_ptr = nullptr;
 
     return *this;
 }

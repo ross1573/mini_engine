@@ -1,13 +1,13 @@
 #import "cocoa_delegate.h"
 
 @implementation CocoaView {
-    mini::cocoa::Application* m_Delegate;
+    mini::cocoa::Application* m_delegate;
 }
 
 - (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate frameRect:(NSRect)frameRect
 {
     if (self = [super initWithFrame:frameRect]) {
-        m_Delegate = delegate;
+        m_delegate = delegate;
     }
 
     return self;
@@ -30,7 +30,7 @@
 
 - (void)keyDown:(NSEvent*)event
 {
-    m_Delegate->OnKeyDown([event keyCode]);
+    m_delegate->OnKeyDown([event keyCode]);
     [self interpretKeyEvents:[NSArray arrayWithObject:event]];
 }
 

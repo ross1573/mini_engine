@@ -3,9 +3,9 @@ module mini.metal;
 namespace mini {
 
 Metal::Metal() noexcept
-    : m_Platform("platform")
+    : m_platform("platform")
 {
-    ASSERT(m_Platform.Valid());
+    ASSERT(m_platform.Valid());
     metal::interface = this;
 }
 
@@ -16,22 +16,22 @@ Metal::~Metal() noexcept
 
 apple::Window* Metal::GetWindow() noexcept
 {
-    return static_cast<apple::Window*>(m_Platform->GetWindow());
+    return static_cast<apple::Window*>(m_platform->GetWindow());
 }
 
 metal::Device* Metal::GetDevice() noexcept
 {
-    return static_cast<metal::Device*>(m_Graphics->GetDevice());
+    return static_cast<metal::Device*>(m_graphics->GetDevice());
 }
 
 metal::SwapChain* Metal::GetSwapChain() noexcept
 {
-    return static_cast<metal::SwapChain*>(m_Graphics->GetSwapChain());
+    return static_cast<metal::SwapChain*>(m_graphics->GetSwapChain());
 }
 
 metal::RenderContext* Metal::GetRenderContext() noexcept
 {
-    return static_cast<metal::RenderContext*>(m_Graphics->GetRenderContext());
+    return static_cast<metal::RenderContext*>(m_graphics->GetRenderContext());
 }
 
 } // namespace mini

@@ -28,8 +28,8 @@ private:
     typedef typename Array<ModuleWeakRef>::Iterator WeakRefIterator;
 
     // TODO: use hash map instead
-    Array<ModuleRef> m_Uninitialized;
-    Array<ModuleWeakRef> m_Modules;
+    Array<ModuleRef> m_uninitialized;
+    Array<ModuleWeakRef> m_modules;
 
 public:
     bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
@@ -41,6 +41,6 @@ private:
     SharedPtr<ModuleHandle> LoadHandle(StringView);
 };
 
-CORE_API ModuleLoader g_ModuleLoader = ModuleLoader();
+CORE_API ModuleLoader g_moduleLoader = ModuleLoader();
 
 } // namespace mini

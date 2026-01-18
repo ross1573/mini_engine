@@ -20,8 +20,8 @@ public:
     typedef T& Reference;
 
 private:
-    Pointer m_Ptr;
-    SharedCounter* m_Counter;
+    Pointer m_ptr;
+    SharedCounter* m_counter;
 
 public:
     constexpr WeakPtr() noexcept;
@@ -62,69 +62,69 @@ public:
 
 template <NonRefT T>
 inline constexpr WeakPtr<T>::WeakPtr() noexcept
-    : m_Ptr(nullptr)
-    , m_Counter(nullptr)
+    : m_ptr(nullptr)
+    , m_counter(nullptr)
 {
 }
 
 template <NonRefT T>
 inline constexpr WeakPtr<T>::~WeakPtr() noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
-        m_Counter = nullptr;
-        m_Ptr = nullptr;
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
+        m_counter = nullptr;
+        m_ptr = nullptr;
     }
 }
 
 template <NonRefT T>
 inline constexpr WeakPtr<T>::WeakPtr(WeakPtr const& other) noexcept
-    : m_Ptr(other.m_Ptr)
-    , m_Counter(other.m_Counter)
+    : m_ptr(other.m_ptr)
+    , m_counter(other.m_counter)
 {
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 }
 
 template <NonRefT T>
 inline constexpr WeakPtr<T>::WeakPtr(WeakPtr&& other) noexcept
-    : m_Ptr(other.m_Ptr)
-    , m_Counter(other.m_Counter)
+    : m_ptr(other.m_ptr)
+    , m_counter(other.m_counter)
 {
-    other.m_Ptr = nullptr;
-    other.m_Counter = nullptr;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline constexpr WeakPtr<T>::WeakPtr(WeakPtr<U> const& other) noexcept
-    : m_Ptr(static_cast<T*>(other.m_Ptr))
-    , m_Counter(other.m_Counter)
+    : m_ptr(static_cast<T*>(other.m_ptr))
+    , m_counter(other.m_counter)
 {
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline constexpr WeakPtr<T>::WeakPtr(WeakPtr<U>&& other) noexcept
-    : m_Ptr(static_cast<T*>(other.m_Ptr))
-    , m_Counter(other.m_Counter)
+    : m_ptr(static_cast<T*>(other.m_ptr))
+    , m_counter(other.m_counter)
 {
-    other.m_Ptr = nullptr;
-    other.m_Counter = nullptr;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 inline constexpr WeakPtr<T>::WeakPtr(SharedPtr<U> const& other) noexcept
-    : m_Ptr(static_cast<T*>(other.m_Ptr))
-    , m_Counter(other.m_Counter)
+    : m_ptr(static_cast<T*>(other.m_ptr))
+    , m_counter(other.m_counter)
 {
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 }
 
@@ -132,9 +132,9 @@ template <NonRefT T>
 constexpr SharedPtr<T> WeakPtr<T>::Lock() const noexcept
 {
     SharedPtr<T> result;
-    result.m_Counter = m_Counter != nullptr ? m_Counter->Lock() : nullptr;
-    if (result.m_Counter) {
-        result.m_Ptr = m_Ptr;
+    result.m_counter = m_counter != nullptr ? m_counter->Lock() : nullptr;
+    if (result.m_counter) {
+        result.m_ptr = m_ptr;
     }
 
     return result;
@@ -143,24 +143,24 @@ constexpr SharedPtr<T> WeakPtr<T>::Lock() const noexcept
 template <NonRefT T>
 constexpr bool WeakPtr<T>::Valid() const noexcept
 {
-    return m_Counter != nullptr && m_Counter->Count() != 0;
+    return m_counter != nullptr && m_counter->Count() != 0;
 }
 
 template <NonRefT T>
 constexpr void WeakPtr<T>::Reset() noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
-        m_Counter = nullptr;
-        m_Ptr = nullptr;
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
+        m_counter = nullptr;
+        m_ptr = nullptr;
     }
 }
 
 template <NonRefT T>
 constexpr void WeakPtr<T>::Swap(WeakPtr& other) noexcept
 {
-    mini::Swap(m_Ptr, other.m_Ptr);
-    mini::Swap(m_Counter, other.m_Counter);
+    mini::Swap(m_ptr, other.m_ptr);
+    mini::Swap(m_counter, other.m_counter);
 }
 
 template <NonRefT T>
@@ -168,7 +168,7 @@ template <NonRefT U>
 constexpr bool WeakPtr<T>::OwnerEquals(WeakPtr<U> const& other) const noexcept
     requires EqualityComparableWithT<T*, U*>
 {
-    return m_Counter == other.m_Counter;
+    return m_counter == other.m_counter;
 }
 
 template <NonRefT T>
@@ -176,21 +176,21 @@ template <NonRefT U>
 constexpr bool WeakPtr<T>::OwnerEquals(SharedPtr<U> const& other) const noexcept
     requires EqualityComparableWithT<T*, U*>
 {
-    return m_Counter == other.m_Counter;
+    return m_counter == other.m_counter;
 }
 
 template <NonRefT T>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr const& other) noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
     }
 
-    m_Ptr = other.m_Ptr;
-    m_Counter = other.m_Counter;
+    m_ptr = other.m_ptr;
+    m_counter = other.m_counter;
 
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 
     return *this;
@@ -199,14 +199,14 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr const& other) noexcept
 template <NonRefT T>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr&& other) noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
     }
 
-    m_Ptr = other.m_Ptr;
-    m_Counter = other.m_Counter;
-    other.m_Ptr = nullptr;
-    other.m_Counter = nullptr;
+    m_ptr = other.m_ptr;
+    m_counter = other.m_counter;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 
     return *this;
 }
@@ -215,15 +215,15 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U> const& other) noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
     }
 
-    m_Ptr = static_cast<T*>(other.m_Ptr);
-    m_Counter = other.m_Counter;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    m_counter = other.m_counter;
 
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 
     return *this;
@@ -233,14 +233,14 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
     }
 
-    m_Ptr = static_cast<T*>(other.m_Ptr);
-    m_Counter = other.m_Counter;
-    other.m_Ptr = nullptr;
-    other.m_Counter = nullptr;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    m_counter = other.m_counter;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 
     return *this;
 }
@@ -249,15 +249,15 @@ template <NonRefT T>
 template <PtrConvertibleToT<T> U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(SharedPtr<U> const& other) noexcept
 {
-    if (m_Counter != nullptr) {
-        m_Counter->ReleaseWeak();
+    if (m_counter != nullptr) {
+        m_counter->ReleaseWeak();
     }
 
-    m_Ptr = static_cast<T*>(other.m_Ptr);
-    m_Counter = other.m_Counter;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    m_counter = other.m_counter;
 
-    if (m_Counter != nullptr) {
-        m_Counter->RetainWeak();
+    if (m_counter != nullptr) {
+        m_counter->RetainWeak();
     }
 
     return *this;

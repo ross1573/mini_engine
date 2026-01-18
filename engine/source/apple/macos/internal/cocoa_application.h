@@ -8,8 +8,8 @@ namespace mini::cocoa {
 
 class Application {
 protected:
-    NSAutoreleasePool* m_AutoReleasePool;
-    NSApplication* m_Application;
+    NSAutoreleasePool* m_autoReleasePool;
+    NSApplication* m_application;
 
 public:
     Application();
@@ -29,7 +29,7 @@ public:
 
 inline bool Application::Valid() const noexcept
 {
-    return m_Application != nullptr;
+    return m_application != nullptr;
 }
 
 } // namespace mini::cocoa

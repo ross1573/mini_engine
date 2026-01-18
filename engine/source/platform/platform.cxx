@@ -15,9 +15,9 @@ public:
     typedef platform::Window Window;
 
 private:
-    Module<Interface> m_NativeModule;
-    UniquePtr<Handle> m_Handle;
-    UniquePtr<Window> m_Window;
+    Module<Interface> m_nativeModule;
+    UniquePtr<Handle> m_handle;
+    UniquePtr<Window> m_window;
 
 public:
     Platform() noexcept;
@@ -25,8 +25,8 @@ public:
 
     void PollEvents();
 
-    Handle* GetHandle() const noexcept { return m_Handle.Get(); }
-    Window* GetWindow() const noexcept { return m_Window.Get(); }
+    Handle* GetHandle() const noexcept { return m_handle.Get(); }
+    Window* GetWindow() const noexcept { return m_window.Get(); }
 
     static void AlertError(StringView const&);
 

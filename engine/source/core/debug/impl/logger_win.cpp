@@ -11,15 +11,15 @@ import :logger_platform;
 namespace mini {
 
 LoggerBase::LoggerBase(StringView category)
-    : m_Category(category)
+    : m_category(category)
 {
 }
 
 void LoggerBase::PrintMessage(byte, StringView msg)
 {
-    String log(4 + m_Category.Size() + msg.Size());
+    String log(4 + m_category.Size() + msg.Size());
     log.Push('[');
-    log.Append(m_Category);
+    log.Append(m_category);
     log.Append("] ", 2);
     log.Append(msg);
     log.Push('\n');

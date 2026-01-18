@@ -20,25 +20,25 @@
 @end
 
 @implementation CocoaWindowDelegate {
-    mini::cocoa::Window* m_Delegate;
+    mini::cocoa::Window* m_delegate;
 }
 
 - (instancetype)initWithDelegate:(mini::cocoa::Window*)delegate
 {
     if (self = [super init]) {
-        m_Delegate = delegate;
+        m_delegate = delegate;
     }
     return self;
 }
 
 - (BOOL)windowShouldClose:(NSWindow*)window
 {
-    return m_Delegate->ShouldClose();
+    return m_delegate->ShouldClose();
 }
 
 - (void)windowWillClose:(NSNotification*)notification
 {
-    m_Delegate->WillClose();
+    m_delegate->WillClose();
 }
 
 - (NSSize)windowWillResize:(NSWindow*)sender toSize:(NSSize)frameSize
@@ -51,8 +51,8 @@
 namespace mini::cocoa {
 
 Window::Window(mini::cocoa::Application* application)
-    : m_Window(nullptr)
-    , m_View(nullptr)
+    : m_window(nullptr)
+    , m_view(nullptr)
 {
     auto x = options::x;
     auto y = options::y;
@@ -70,67 +70,66 @@ Window::Window(mini::cocoa::Application* application)
     windowRect.origin.y = (screen.frame.size.height / 2) - (windowRect.size.height / 2);
 
     CocoaWindowDelegate* windowDelegate = [[CocoaWindowDelegate alloc] initWithDelegate:this];
-    m_View = [[CocoaView alloc] initWithDelegate:application frameRect:windowRect];
-    m_Window = [[CocoaWindow alloc] initWithContentRect:windowRect
+    m_view = [[CocoaView alloc] initWithDelegate:application frameRect:windowRect];
+    m_window = [[CocoaWindow alloc] initWithContentRect:windowRect
                                               styleMask:mask
                                                 backing:NSBackingStoreBuffered
                                                   defer:NO
                                                  screen:screen];
 
-    m_Window.releasedWhenClosed = NO;
-    m_Window.minSize = NSMakeSize(640, 360);
-    m_Window.delegate = windowDelegate;
-    m_Window.contentView = m_View;
+    m_window.releasedWhenClosed = NO;
+    m_window.minSize = NSMakeSize(640, 360);
+    m_window.delegate = windowDelegate;
+    m_window.contentView = m_view;
 
-    [m_Window makeFirstResponder:m_View];
+    [m_window makeFirstResponder:m_view];
     [windowDelegate release];
     SetFullScreen(fullScreen);
 }
 
 Window::~Window()
 {
-    m_Window = nullptr;
-    m_View = nullptr;
+    m_window = nullptr;
+    m_view = nullptr;
 }
 
 void Window::Minimize()
 {
     if (IsMinimized()) {
-        [m_Window deminiaturize:nil];
-    }
-    else {
-        [m_Window performMiniaturize:nil];
+        [m_window deminiaturize:nil];
+    } else {
+        [m_window performMiniaturize:nil];
     }
 }
 
 void Window::Maximize()
 {
-    [m_Window zoom:nil];
+    [m_window zoom:nil];
 }
 
 void Window::Show()
 {
-    [m_Window makeKeyAndOrderFront:nil];
+    [m_window makeKeyAndOrderFront:nil];
 }
 
 void Window::Hide()
 {
-    [m_Window orderOut:nil];
+    [m_window orderOut:nil];
 }
 
 bool Window::IsMinimized() const
 {
-    return m_Window.miniaturized;
+    return m_window.miniaturized;
 }
 
 bool Window::IsMaximized() const
 {
-    return m_Window.zoomed;
+    return m_window.zoomed;
 }
 
 bool Window::IsFullScreen() const
 {
-    return m_Window.styleMask & NSWindowStyleMaskFullScreen;
+    return m_window.styleMask & NSWindowStyleMaskFullScreen;
 }
 
 void Window::SetFullScreen(bool active)
@@ -139,13 +138,13 @@ void Window::SetFullScreen(bool active)
         return;
     }
 
-    [m_Window toggleFullScreen:m_Window];
+    [m_window toggleFullScreen:m_window];
 }
 
 void Window::SetMetalLayer(CA::MetalLayer* layer)
 {
-    m_View.wantsLayer = YES;
-    m_View.layer = (__bridge CAMetalLayer*)layer;
+    m_view.wantsLayer = YES;
+    m_view.layer = (__bridge CAMetalLayer*)layer;
 }
 
 } // namespace mini::cocoa

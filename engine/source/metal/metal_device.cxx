@@ -7,7 +7,7 @@ namespace mini::metal {
 
 export class METAL_API Device final : public graphics::Device {
 private:
-    SharedPtr<MTL::Device> m_Device;
+    SharedPtr<MTL::Device> m_device;
 
 public:
     Device();
@@ -18,7 +18,7 @@ public:
     graphics::RenderContext* CreateRenderContext() final;
 
     graphics::API GetAPI() const final { return graphics::API::Metal; }
-    MTL::Device* GetMTLDevice() const { return m_Device.Get(); }
+    MTL::Device* GetMTLDevice() const { return m_device.Get(); }
 };
 
 } // namespace mini::metal

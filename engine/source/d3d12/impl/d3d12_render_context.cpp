@@ -9,11 +9,11 @@ import :command_queue;
 namespace mini::d3d12 {
 
 RenderContext::RenderContext(ID3D12Device* device)
-    : m_Device(device)
-    , m_CommandQueue(nullptr)
-    , m_CurrentBuffer()
-    , m_CommandAllocator(nullptr)
-    , m_CommandList(nullptr)
+    : m_device(device)
+    , m_commandQueue(nullptr)
+    , m_currentBuffer()
+    , m_commandAllocator(nullptr)
+    , m_commandList(nullptr)
 {
 }
 
@@ -27,26 +27,26 @@ bool RenderContext::Initialize()
     ID3D12Device* device = interface->GetDevice()->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_CommandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
+    m_commandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
 
-    VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_CommandAllocator)));
-    VERIFY(device->CreateCommandList(0, type, m_CommandAllocator, nullptr,
-                                     IID_PPV_ARGS(&m_CommandList)));
+    VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_commandAllocator)));
+    VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr,
+                                     IID_PPV_ARGS(&m_commandList)));
 
-    m_CommandList->Close();
+    m_commandList->Close();
     return true;
 }
 
 void RenderContext::BeginRender()
 {
-    m_CommandQueue->WaitForFence(m_CommandQueue->GetCurrentFence());
-    m_CurrentBuffer = interface->GetSwapChain()->GetCurrentBuffer();
+    m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());
+    m_currentBuffer = interface->GetSwapChain()->GetCurrentBuffer();
 
-    VERIFY(m_CommandAllocator->Reset(), "failed to reset command allocator");
-    VERIFY(m_CommandList->Reset(m_CommandAllocator, nullptr), "failed to reset command list");
+    VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
+    VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
 
     D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-    transition.pResource = m_CurrentBuffer->resource;
+    transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -56,16 +56,16 @@ void RenderContext::BeginRender()
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
 
-    D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_CurrentBuffer->descriptor.offset;
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_currentBuffer->descriptor.offset;
 
-    m_CommandList->ResourceBarrier(1, &barrier);
-    m_CommandList->ClearRenderTargetView(cpuOffset, Color::Clear().data, 0, nullptr);
+    m_commandList->ResourceBarrier(1, &barrier);
+    m_commandList->ClearRenderTargetView(cpuOffset, Color::Clear().data, 0, nullptr);
 }
 
 void RenderContext::EndRender()
 {
     D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-    transition.pResource = m_CurrentBuffer->resource;
+    transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -75,7 +75,7 @@ void RenderContext::EndRender()
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
 
-    m_CommandList->ResourceBarrier(1, &barrier);
+    m_commandList->ResourceBarrier(1, &barrier);
 }
 
 void RenderContext::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
@@ -88,23 +88,23 @@ void RenderContext::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
     d3dViewport.MinDepth = minZ;
     d3dViewport.MaxDepth = maxZ;
 
-    m_CommandList->RSSetViewports(1, &d3dViewport);
+    m_commandList->RSSetViewports(1, &d3dViewport);
 }
 
 void RenderContext::SetScissorRect(RectInt const& rect)
 {
-    m_CommandList->RSSetScissorRects(1, reinterpret_cast<D3D12_RECT const*>(&rect));
+    m_commandList->RSSetScissorRects(1, reinterpret_cast<D3D12_RECT const*>(&rect));
 }
 
 void RenderContext::WaitForIdle()
 {
-    m_CommandQueue->WaitForIdle();
+    m_commandQueue->WaitForIdle();
 }
 
 void RenderContext::Execute()
 {
-    m_CommandList->Close();
-    m_CommandQueue->ExecuteCommandList(m_CommandList);
+    m_commandList->Close();
+    m_commandQueue->ExecuteCommandList(m_commandList);
 }
 
 } // namespace mini::d3d12

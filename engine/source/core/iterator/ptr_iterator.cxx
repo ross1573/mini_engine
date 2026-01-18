@@ -17,7 +17,7 @@ public:
     typedef Value& Reference;
 
 protected:
-    Pointer m_Ptr;
+    Pointer m_ptr;
 
 public:
     constexpr PtrIterator() noexcept;
@@ -55,13 +55,13 @@ public:
 
 template <PointerT T>
 inline constexpr PtrIterator<T>::PtrIterator() noexcept
-    : m_Ptr(nullptr)
+    : m_ptr(nullptr)
 {
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>::PtrIterator(Pointer p) noexcept
-    : m_Ptr(p)
+    : m_ptr(p)
 {
 }
 
@@ -69,7 +69,7 @@ template <PointerT T>
 template <PointerT U>
 inline constexpr PtrIterator<T>::PtrIterator(PtrIterator<U> const& o) noexcept
     requires ConvertibleToT<U, T>
-    : m_Ptr(o.m_Ptr)
+    : m_ptr(o.m_ptr)
 {
 }
 
@@ -78,14 +78,14 @@ template <PointerT U>
 inline constexpr PtrIterator<T>& PtrIterator<T>::operator=(PtrIterator<U> const& o) noexcept
     requires ConvertibleToT<U, T>
 {
-    m_Ptr = o.m_Ptr;
+    m_ptr = o.m_ptr;
     return *this;
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>::Pointer PtrIterator<T>::Address() const noexcept
 {
-    return m_Ptr;
+    return m_ptr;
 }
 
 template <PointerT T>
@@ -103,67 +103,67 @@ inline constexpr bool PtrIterator<T>::ValidWith(PtrIterator const&) const noexce
 template <PointerT T>
 inline constexpr bool PtrIterator<T>::Increment() noexcept
 {
-    ++m_Ptr;
+    ++m_ptr;
     return true;
 }
 
 template <PointerT T>
 inline constexpr bool PtrIterator<T>::Decrement() noexcept
 {
-    --m_Ptr;
+    --m_ptr;
     return true;
 }
 
 template <PointerT T>
 inline constexpr bool PtrIterator<T>::Advance(OffsetT s) noexcept
 {
-    m_Ptr += s;
+    m_ptr += s;
     return true;
 }
 
 template <PointerT T>
 inline constexpr RemovePtrT<T>* PtrIterator<T>::operator->() const noexcept
 {
-    return m_Ptr;
+    return m_ptr;
 }
 
 template <PointerT T>
 inline constexpr RemovePtrT<T>& PtrIterator<T>::operator*() const noexcept
 {
-    return *m_Ptr;
+    return *m_ptr;
 }
 
 template <PointerT T>
 inline constexpr RemovePtrT<T>& PtrIterator<T>::operator[](OffsetT o) const noexcept
 {
-    return *(m_Ptr + o);
+    return *(m_ptr + o);
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>& PtrIterator<T>::operator++() noexcept
 {
-    ++m_Ptr;
+    ++m_ptr;
     return *this;
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>& PtrIterator<T>::operator--() noexcept
 {
-    --m_Ptr;
+    --m_ptr;
     return *this;
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>& PtrIterator<T>::operator+=(OffsetT d) noexcept
 {
-    m_Ptr += d;
+    m_ptr += d;
     return *this;
 }
 
 template <PointerT T>
 inline constexpr PtrIterator<T>& PtrIterator<T>::operator-=(OffsetT d) noexcept
 {
-    m_Ptr -= d;
+    m_ptr -= d;
     return *this;
 }
 

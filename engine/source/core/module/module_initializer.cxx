@@ -18,7 +18,7 @@ public:
     {
         ModuleInterface* interface = FactoryT{}();
         SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, interface);
-        g_ModuleLoader.RegisterUninitialized(name, StaticCast<ModuleHandle>(MoveArg(handle)));
+        g_moduleLoader.RegisterUninitialized(name, StaticCast<ModuleHandle>(MoveArg(handle)));
     }
 };
 

@@ -8,8 +8,8 @@ namespace mini::metal {
 
 export class METAL_API SwapChain final : public graphics::SwapChain {
 private:
-    SharedPtr<CA::MetalLayer> m_Layer;
-    SharedPtr<CA::MetalDrawable> m_Drawable;
+    SharedPtr<CA::MetalLayer> m_layer;
+    SharedPtr<CA::MetalDrawable> m_drawable;
 
 public:
     SwapChain(MTL::Device*);
@@ -28,7 +28,7 @@ public:
     bool GetFullScreen() const final;
 
     CA::MetalDrawable* GetCurrentDrawable();
-    CA::MetalLayer* GetMetalLayer() { return m_Layer.Get(); }
+    CA::MetalLayer* GetMetalLayer() { return m_layer.Get(); }
 };
 
 } // namespace mini::metal

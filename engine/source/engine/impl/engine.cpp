@@ -11,7 +11,7 @@ import mini.graphics;
 namespace mini {
 
 Engine::Engine()
-    : m_Running(false)
+    : m_running(false)
 {
     ASSERT(engine == nullptr, "another instance of engine is created");
     engine = this;
@@ -19,13 +19,13 @@ Engine::Engine()
 
 Engine::~Engine() noexcept
 {
-    ASSERT(m_Running == false, "engine is still running");
+    ASSERT(m_running == false, "engine is still running");
     engine = nullptr;
 }
 
 void Engine::Launch()
 {
-    ENSURE(m_Running == false, "engine is already running") return;
+    ENSURE(m_running == false, "engine is already running") return;
 
     Module<Platform> platform("platform");
     Module<Graphics> graphics("graphics");
@@ -33,8 +33,8 @@ void Engine::Launch()
     platform->GetWindow()->Show();
     platform->PollEvents();
 
-    m_Running = true;
-    while (m_Running) {
+    m_running = true;
+    while (m_running) {
         graphics->BeginFrame();
         {
             platform::Window* window = platform->GetWindow();
@@ -53,7 +53,7 @@ void Engine::Launch()
 
 void Engine::Shutdown()
 {
-    m_Running = false;
+    m_running = false;
 }
 
 void Engine::Quit()
@@ -71,12 +71,12 @@ void Engine::Abort(String const& msg)
     }
 
     Platform::AlertError(msg);
-    engine->m_Running = false;
+    engine->m_running = false;
 }
 
 bool Engine::Running() noexcept
 {
-    return engine != nullptr && engine->m_Running;
+    return engine != nullptr && engine->m_running;
 }
 
 } // namespace mini

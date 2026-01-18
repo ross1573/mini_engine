@@ -5,13 +5,13 @@
 #endif
 
 @implementation CocoaApplicationDelegate {
-    mini::cocoa::Application* m_Delegate;
+    mini::cocoa::Application* m_delegate;
 }
 
 - (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate
 {
     if (self = [super init]) {
-        m_Delegate = delegate;
+        m_delegate = delegate;
     }
 
     return self;
@@ -19,12 +19,12 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification
 {
-    m_Delegate->ApplicationWillFinishLaunching((__bridge NS::Notification*)notification);
+    m_delegate->ApplicationWillFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
-    m_Delegate->ApplicationDidFinishLaunching((__bridge NS::Notification*)notification);
+    m_delegate->ApplicationDidFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 @end
@@ -140,25 +140,25 @@ NSMenuItem* CreateWindowMenu()
 namespace mini::cocoa {
 
 Application::Application()
-    : m_AutoReleasePool(nullptr)
-    , m_Application(nullptr)
+    : m_autoReleasePool(nullptr)
+    , m_application(nullptr)
 {
-    m_Application = [NSApplication sharedApplication];
-    m_AutoReleasePool = [[NSAutoreleasePool alloc] init];
+    m_application = [NSApplication sharedApplication];
+    m_autoReleasePool = [[NSAutoreleasePool alloc] init];
 
     @autoreleasepool {
-        m_Application.mainMenu = [[NSMenu alloc] init];
-        [m_Application.mainMenu addItem:CreateAboutMenu()];
-        [m_Application.mainMenu addItem:CreateWindowMenu()];
+        m_application.mainMenu = [[NSMenu alloc] init];
+        [m_application.mainMenu addItem:CreateAboutMenu()];
+        [m_application.mainMenu addItem:CreateWindowMenu()];
 
-        m_Application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:this];
+        m_application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:this];
     }
 }
 
 Application::~Application() noexcept
 {
-    [m_Application release];
-    [m_AutoReleasePool release];
+    [m_application release];
+    [m_autoReleasePool release];
 #if DEBUG
     [NSAutoreleasePool showPools];
 #endif
@@ -167,7 +167,7 @@ Application::~Application() noexcept
 void Application::Launch()
 {
     if (![[NSRunningApplication currentApplication] isFinishedLaunching]) {
-        [m_Application finishLaunching];
+        [m_application finishLaunching];
     }
 }
 
@@ -175,7 +175,7 @@ void Application::PollEvents()
 {
     @autoreleasepool {
         while (true) {
-            NSEvent* event = [m_Application nextEventMatchingMask:NSEventMaskAny
+            NSEvent* event = [m_application nextEventMatchingMask:NSEventMaskAny
                                                         untilDate:[NSDate distantPast]
                                                            inMode:NSDefaultRunLoopMode
                                                           dequeue:YES];
@@ -184,7 +184,7 @@ void Application::PollEvents()
                 break;
             }
 
-            [m_Application sendEvent:event];
+            [m_application sendEvent:event];
         }
     } // autoreleasepool
 }

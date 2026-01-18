@@ -260,12 +260,12 @@ using AtomicLock = uint32;
 #endif
 
 constexpr SizeT lockTableSize = 1 << 8;
-CORE_API AtomicLock g_AtomicLockTable[lockTableSize];
+CORE_API AtomicLock g_atomicLockTable[lockTableSize];
 
 template <typename T>
 struct AtomicSpinLock {
 private:
-    AtomicLock* m_Lock;
+    AtomicLock* m_lock;
 
 public:
     AtomicSpinLock(T const volatile* pointer) noexcept
@@ -274,10 +274,10 @@ public:
         SizeT hash = intptr >> 6;
         hash ^= hash >> 16;
         hash &= (lockTableSize - 1);
-        m_Lock = reinterpret_cast<AtomicLock*>(&g_AtomicLockTable[hash]);
+        m_lock = reinterpret_cast<AtomicLock*>(&g_atomicLockTable[hash]);
 
-        while (EXCHANGE_ACQUIRE(m_Lock, 1) != 0) {
-            auto volatilePtr = reinterpret_cast<int const volatile*>(m_Lock);
+        while (EXCHANGE_ACQUIRE(m_lock, 1) != 0) {
+            auto volatilePtr = reinterpret_cast<int const volatile*>(m_lock);
             while (__iso_volatile_load32(volatilePtr) != 0) {
                 PAUSE();
             }
@@ -287,7 +287,7 @@ public:
     ~AtomicSpinLock() noexcept
     {
         AtomicLock const value = 0;
-        STORE_RELEASE(32, m_Lock, &value);
+        STORE_RELEASE(32, m_lock, &value);
     }
 };
 

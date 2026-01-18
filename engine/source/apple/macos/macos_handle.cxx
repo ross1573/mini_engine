@@ -32,7 +32,7 @@ protected:
 
 NSApplication* Handle::GetNSApplication() const noexcept
 {
-    return m_Application;
+    return m_application;
 }
 
 } // namespace mini::macos

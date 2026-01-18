@@ -25,7 +25,7 @@ public:
     typedef typename Duration::Period Period;
 
 private:
-    Duration m_Duration;
+    Duration m_duration;
 
 public:
     constexpr TimePoint() noexcept;
@@ -45,40 +45,40 @@ public:
 
 template <DurationT T>
 constexpr TimePoint<T>::TimePoint() noexcept
-    : m_Duration(0)
+    : m_duration(0)
 {
 }
 
 template <DurationT T>
 constexpr TimePoint<T>::TimePoint(Duration const& duration) noexcept
-    : m_Duration(duration)
+    : m_duration(duration)
 {
 }
 
 template <DurationT T>
 template <DurationT U>
 constexpr TimePoint<T>::TimePoint(TimePoint<U> const& other) noexcept
-    : m_Duration(DurationCast<T>(other.m_Duration))
+    : m_duration(DurationCast<T>(other.m_duration))
 {
 }
 
 template <DurationT T>
 constexpr TimePoint<T>::Duration TimePoint<T>::SinceEpoch() const noexcept
 {
-    return m_Duration;
+    return m_duration;
 }
 
 template <DurationT T>
 constexpr TimePoint<T>& TimePoint<T>::operator+=(Duration const& duration) noexcept
 {
-    m_Duration += duration;
+    m_duration += duration;
     return *this;
 }
 
 template <DurationT T>
 constexpr TimePoint<T>& TimePoint<T>::operator-=(Duration const& duration) noexcept
 {
-    m_Duration -= duration;
+    m_duration -= duration;
     return *this;
 }
 

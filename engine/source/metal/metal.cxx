@@ -11,7 +11,7 @@ namespace mini {
 
 export class METAL_API Metal final : public graphics::Interface {
 private:
-    Module<Platform> m_Platform;
+    Module<Platform> m_platform;
 
 public:
     Metal() noexcept;

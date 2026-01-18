@@ -8,7 +8,7 @@ namespace mini::memory {
 template <typename T, SizeT CapacityN, SizeT AlignN = alignof(T)>
 class StaticBuffer {
 protected:
-    alignas(AlignN) byte m_Buffer[sizeof(T) * CapacityN];
+    alignas(AlignN) byte m_buffer[sizeof(T) * CapacityN];
 
 public:
     constexpr StaticBuffer() = default;
@@ -23,7 +23,7 @@ public:
 private:
     inline T* Address() const noexcept
     {
-        return reinterpret_cast<T*>(const_cast<byte*>(&m_Buffer[0]));
+        return reinterpret_cast<T*>(const_cast<byte*>(&m_buffer[0]));
     }
 
     StaticBuffer(StaticBuffer const&) = delete;
@@ -35,7 +35,7 @@ private:
 template <TrivialT T, SizeT CapacityN, SizeT AlignN>
 class StaticBuffer<T, CapacityN, AlignN> {
 protected:
-    alignas(AlignN) T m_Buffer[CapacityN];
+    alignas(AlignN) T m_buffer[CapacityN];
 
 public:
     constexpr StaticBuffer() = default;
@@ -48,7 +48,7 @@ public:
     inline constexpr SizeT Capacity() const noexcept { return CapacityN; }
 
 private:
-    inline constexpr T const* Address() const noexcept { return &m_Buffer[0]; }
+    inline constexpr T const* Address() const noexcept { return &m_buffer[0]; }
 };
 
 template <UnsignedT T, SizeT CapacityN>

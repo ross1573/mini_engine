@@ -8,7 +8,7 @@ namespace mini::windows {
 
 export class WINDOWS_API Handle final : public platform::Handle {
 private:
-    HINSTANCE m_Instance;
+    HINSTANCE m_instance;
 
 public:
     Handle();
@@ -20,7 +20,7 @@ public:
     void AlertError(StringView const&) final;
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 
-    HINSTANCE GetHINSTANCE() const { return m_Instance; }
+    HINSTANCE GetHINSTANCE() const { return m_instance; }
 };
 
 } // namespace mini::windows

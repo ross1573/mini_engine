@@ -7,7 +7,7 @@ namespace mini {
 
 class CORE_API LoggerBase {
 private:
-    String m_Category;
+    String m_category;
 
 protected:
     LoggerBase(StringView);

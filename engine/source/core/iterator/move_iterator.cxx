@@ -17,7 +17,7 @@ public:
     typedef RemoveRefT<typename T::Reference>&& Reference;
 
 protected:
-    T m_Iter;
+    T m_iter;
 
 public:
     constexpr MoveIterator() noexcept = default;
@@ -66,7 +66,7 @@ public:
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>::MoveIterator(T iter)
-    : m_Iter(iter)
+    : m_iter(iter)
 {
 }
 
@@ -74,7 +74,7 @@ template <ForwardIteratorT T>
 template <ForwardIteratorT U>
 inline constexpr MoveIterator<T>::MoveIterator(MoveIterator<U> const& o)
     requires ConvertibleToT<U const&, T>
-    : m_Iter(o.m_Iter)
+    : m_iter(o.m_iter)
 {
 }
 
@@ -83,83 +83,83 @@ template <ForwardIteratorT U>
 inline constexpr MoveIterator<T>& MoveIterator<T>::operator=(MoveIterator<U> const& o)
     requires ConvertibleToT<U const&, T>
 {
-    m_Iter = o.m_Iter;
+    m_iter = o.m_iter;
     return *this;
 }
 
 template <ForwardIteratorT T>
 inline constexpr T const& MoveIterator<T>::Base() const& noexcept
 {
-    return m_Iter;
+    return m_iter;
 }
 
 template <ForwardIteratorT T>
 inline constexpr T MoveIterator<T>::Base() && noexcept
 {
-    return MoveArg(m_Iter);
+    return MoveArg(m_iter);
 }
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::Address() const noexcept
 {
-    return m_Iter.Address();
+    return m_iter.Address();
 }
 
 template <ForwardIteratorT T>
 inline constexpr bool MoveIterator<T>::Valid() const
 {
-    return m_Iter.Valid();
+    return m_iter.Valid();
 }
 
 template <ForwardIteratorT T>
 inline constexpr bool MoveIterator<T>::ValidWith(MoveIterator const& o) const
 {
-    return m_Iter.ValidWith(o.Base());
+    return m_iter.ValidWith(o.Base());
 }
 
 template <ForwardIteratorT T>
 inline constexpr bool MoveIterator<T>::Increment()
 {
-    return m_Iter.Increment();
+    return m_iter.Increment();
 }
 
 template <ForwardIteratorT T>
 inline constexpr bool MoveIterator<T>::Decrement()
     requires BidrectionalIteratorT<T>
 {
-    return m_Iter.Decrement();
+    return m_iter.Decrement();
 }
 
 template <ForwardIteratorT T>
 inline constexpr bool MoveIterator<T>::Advance(OffsetT s)
     requires RandomAccessIteratorT<T>
 {
-    return m_Iter.Advance(s);
+    return m_iter.Advance(s);
 }
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::operator->() const
 {
-    return m_Iter.operator->();
+    return m_iter.operator->();
 }
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator*() const
 {
-    return static_cast<Reference>(*m_Iter);
+    return static_cast<Reference>(*m_iter);
 }
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator[](OffsetT n) const
     requires RandomAccessIteratorT<T>
 {
-    return static_cast<Reference>(m_Iter[n]);
+    return static_cast<Reference>(m_iter[n]);
 }
 
 template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>& MoveIterator<T>::operator++()
 {
-    ++m_Iter;
+    ++m_iter;
     return *this;
 }
 
@@ -175,7 +175,7 @@ template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>& MoveIterator<T>::operator--()
     requires BidrectionalIteratorT<T>
 {
-    --m_Iter;
+    --m_iter;
     return *this;
 }
 
@@ -192,7 +192,7 @@ template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>& MoveIterator<T>::operator+=(OffsetT n)
     requires RandomAccessIteratorT<T>
 {
-    m_Iter += n;
+    m_iter += n;
     return *this;
 }
 
@@ -200,7 +200,7 @@ template <ForwardIteratorT T>
 inline constexpr MoveIterator<T>& MoveIterator<T>::operator-=(OffsetT n)
     requires RandomAccessIteratorT<T>
 {
-    m_Iter -= n;
+    m_iter -= n;
     return *this;
 }
 

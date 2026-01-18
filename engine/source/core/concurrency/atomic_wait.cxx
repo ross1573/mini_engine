@@ -106,7 +106,7 @@ public:
 // So, we're assuming that 64 is big enough for our use case.
 // This implementation might get some perf issues with server station setup.
 constexpr SizeT contentionTableSize = 1 << 6;
-CORE_API AtomicEntry g_AtomicContentionTable[contentionTableSize];
+CORE_API AtomicEntry g_atomicContentionTable[contentionTableSize];
 
 template <typename T>
 struct AtomicWaitableContext {
@@ -122,7 +122,7 @@ public:
         SizeT hash = intptr >> 6;
         hash ^= hash >> 16;
         hash &= (contentionTableSize - 1);
-        entry = &g_AtomicContentionTable[hash];
+        entry = &g_atomicContentionTable[hash];
 
         if constexpr (AtomicWaitableT<T>::value) {
             size = sizeof(T);

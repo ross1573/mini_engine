@@ -12,68 +12,68 @@ Graphics::Graphics() noexcept
 
 Graphics::~Graphics() noexcept
 {
-    m_RenderContext.Reset();
-    m_SwapChain.Reset();
-    m_Device.Reset();
+    m_renderContext.Reset();
+    m_swapChain.Reset();
+    m_device.Reset();
 
-    m_CurrentAPI = API::Null;
+    m_currentAPI = API::Null;
     graphics::interface = nullptr;
 }
 
 bool Graphics::Initialize()
 {
-    m_CurrentModule.Load(mini::options::graphicsModule);
-    ENSURE(m_CurrentModule.Valid(), "failed to load graphics module") {
+    m_currentModule.Load(mini::options::graphicsModule);
+    ENSURE(m_currentModule.Valid(), "failed to load graphics module") {
         return false;
     }
 
-    String moduleName = m_CurrentModule.LibraryName();
-    ENSURE(m_CurrentModule.GetInterface(), "module does not implement mini::graphics::Interface") {
+    String moduleName = m_currentModule.LibraryName();
+    ENSURE(m_currentModule.GetInterface(), "module does not implement mini::graphics::Interface") {
         return false;
     }
     graphics::Log("{} module loaded", moduleName);
 
-    Device* device = m_CurrentModule->CreateDevice();
+    Device* device = m_currentModule->CreateDevice();
     ENSURE(device, "failed to create graphic device") {
         return false;
     }
     graphics::Log("{} device created", moduleName);
 
-    m_Device = UniquePtr(device);
-    m_CurrentAPI = m_Device->GetAPI();
+    m_device = UniquePtr(device);
+    m_currentAPI = m_device->GetAPI();
 
-    ENSURE(m_CurrentAPI != API::Null, "unknown api") return false;
-    ENSURE(m_Device->Initialize(), "failed to initialize graphics device") {
+    ENSURE(m_currentAPI != API::Null, "unknown api") return false;
+    ENSURE(m_device->Initialize(), "failed to initialize graphics device") {
         return false;
     }
-    graphics::Log("{} device initialized", m_CurrentAPI);
+    graphics::Log("{} device initialized", m_currentAPI);
 
-    m_RenderContext = UniquePtr(m_Device->CreateRenderContext());
-    ENSURE(m_RenderContext && m_RenderContext->Initialize(), "Failed to create render context") {
+    m_renderContext = UniquePtr(m_device->CreateRenderContext());
+    ENSURE(m_renderContext && m_renderContext->Initialize(), "Failed to create render context") {
         return false;
     }
-    graphics::Log("{} render context initialized", m_CurrentAPI);
+    graphics::Log("{} render context initialized", m_currentAPI);
 
-    m_SwapChain = UniquePtr(m_Device->CreateSwapChain());
-    ENSURE(m_SwapChain && m_SwapChain->Initialize(), "Failed to create swap chain") {
+    m_swapChain = UniquePtr(m_device->CreateSwapChain());
+    ENSURE(m_swapChain && m_swapChain->Initialize(), "Failed to create swap chain") {
         return false;
     }
-    graphics::Log("{} swap chain initialized", m_CurrentAPI);
+    graphics::Log("{} swap chain initialized", m_currentAPI);
 
     return true;
 }
 
 void Graphics::BeginFrame()
 {
-    m_RenderContext->BeginRender();
+    m_renderContext->BeginRender();
 }
 
 void Graphics::EndFrame()
 {
-    m_RenderContext->EndRender();
-    m_RenderContext->Execute();
+    m_renderContext->EndRender();
+    m_renderContext->Execute();
 
-    m_SwapChain->Present();
+    m_swapChain->Present();
 }
 
 bool Graphics::IsDeviceCurrent() noexcept

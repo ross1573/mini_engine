@@ -15,14 +15,14 @@ GRAPHICS_API Graphics* interface = nullptr;
 
 export class GRAPHICS_API Interface : public ModuleInterface {
 protected:
-    Graphics* m_Graphics;
+    Graphics* m_graphics;
 
 public:
     virtual Device* CreateDevice() = 0;
 
 protected:
-    Interface() noexcept { m_Graphics = interface; }
-    ~Interface() noexcept { m_Graphics = nullptr; }
+    Interface() noexcept { m_graphics = interface; }
+    ~Interface() noexcept { m_graphics = nullptr; }
 };
 
 } // namespace mini::graphics

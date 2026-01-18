@@ -26,7 +26,7 @@ public:
     typedef typename BasicString<T, AllocT>::ConstPointer ConstPointer;
 
 private:
-    BasicString<T, AllocT> m_Data;
+    BasicString<T, AllocT> m_data;
 
 public:
     constexpr BasicStringConvert(BasicStringConvert&&) noexcept = default;
@@ -75,7 +75,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(U const* src)
-    : m_Data{}
+    : m_data{}
 {
     BasicStringView<U> view = src;
     Convert(view);
@@ -85,7 +85,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(BasicString<U> const& src)
-    : m_Data{}
+    : m_data{}
 {
     BasicStringView<U> view = src;
     Convert(view);
@@ -95,7 +95,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 inline constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(BasicStringView<U> src)
-    : m_Data{}
+    : m_data{}
 {
     Convert(src);
 }
@@ -103,45 +103,45 @@ inline constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(BasicStringVi
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr SizeT BasicStringConvert<T, AllocT>::Size() const noexcept
 {
-    return m_Data.Size();
+    return m_data.Size();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicStringConvert<T, AllocT>::ConstPointer
 BasicStringConvert<T, AllocT>::Data() const noexcept
 {
-    return m_Data.Data();
+    return m_data.Data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() const
 {
-    return m_Data;
+    return m_data;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() const
 {
-    return m_Data;
+    return m_data;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicStringConvert<T, AllocT>::operator BasicStringView<T>() const noexcept
 {
-    return static_cast<BasicStringView<T>>(m_Data);
+    return static_cast<BasicStringView<T>>(m_data);
 }
 
 #if !(MSVC)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() && noexcept
 {
-    return MoveArg(m_Data);
+    return MoveArg(m_data);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() && noexcept
 {
-    return MoveArg(m_Data);
+    return MoveArg(m_data);
 }
 #endif
 
@@ -158,8 +158,8 @@ inline constexpr void BasicStringConvert<T, AllocT>::Convert(BasicStringView<U> 
     U const* end = str.Data() + str.Size();
 
     SizeT size = (SizeT)utf::ConvertLength(begin, end, Value(0));
-    m_Data.Resize(size);
-    T* dst = m_Data.Data();
+    m_data.Resize(size);
+    T* dst = m_data.Data();
 
     utf::Convert(begin, end, dst, dst + size);
 }

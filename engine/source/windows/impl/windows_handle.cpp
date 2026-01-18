@@ -16,8 +16,8 @@ Handle::Handle()
 {
     auto className = options::name;
 
-    m_Instance = GetModuleHandle(nullptr);
-    ASSERT(m_Instance);
+    m_instance = GetModuleHandle(nullptr);
+    ASSERT(m_instance);
 
     WNDCLASSEX wcex = {
         .cbSize = sizeof(WNDCLASSEX),
@@ -25,8 +25,8 @@ Handle::Handle()
         .lpfnWndProc = WndProc,
         .cbClsExtra = 0,
         .cbWndExtra = 0,
-        .hInstance = m_Instance,
-        .hIcon = LoadIconA(m_Instance, MAKEINTRESOURCE(IDI_DIRECTX12)),
+        .hInstance = m_instance,
+        .hIcon = LoadIconA(m_instance, MAKEINTRESOURCE(IDI_DIRECTX12)),
         .hCursor = LoadCursorA(nullptr, IDC_ARROW),
         .hbrBackground = (HBRUSH)(COLOR_WINDOW + 1),
         .lpszMenuName = MAKEINTRESOURCE(IDC_DIRECTX12),
@@ -39,7 +39,7 @@ Handle::Handle()
 
 bool Handle::Valid() const noexcept
 {
-    return m_Instance != nullptr;
+    return m_instance != nullptr;
 }
 
 void Handle::PollEvents()

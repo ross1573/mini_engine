@@ -18,12 +18,12 @@ Windows::~Windows() noexcept
 
 windows::Handle* Windows::GetHandle() noexcept
 {
-    return static_cast<windows::Handle*>(m_Platform->GetHandle());
+    return static_cast<windows::Handle*>(m_platform->GetHandle());
 }
 
 windows::Window* Windows::GetWindow() noexcept
 {
-    return static_cast<windows::Window*>(m_Platform->GetWindow());
+    return static_cast<windows::Window*>(m_platform->GetWindow());
 }
 
 platform::Handle* Windows::CreateHandle()

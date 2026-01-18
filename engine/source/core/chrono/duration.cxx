@@ -32,7 +32,7 @@ public:
     typedef PeriodT Period;
 
 private:
-    T m_Ticks;
+    T m_ticks;
 
 public:
     constexpr Duration() noexcept = default;
@@ -92,7 +92,7 @@ template <ArithmeticT T, RatioT PeriodT>
 template <ConvertibleToT<T> U>
 constexpr Duration<T, PeriodT>::Duration(U value) noexcept
     requires(FloatingT<T> || !FloatingT<U>)
-    : m_Ticks(value)
+    : m_ticks(value)
 {
 }
 
@@ -100,14 +100,14 @@ template <ArithmeticT T, RatioT PeriodT>
 template <ArithmeticT U, RatioT PeriodU>
 constexpr Duration<T, PeriodT>::Duration(Duration<U, PeriodU> const& other) noexcept
     requires(FloatingT<T> || (!FloatingT<U> && RatioDivideT<PeriodU, PeriodT>::denom == 1))
-    : m_Ticks(DurationCast<Duration<T, PeriodT>>(other).Count())
+    : m_ticks(DurationCast<Duration<T, PeriodT>>(other).Count())
 {
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>::Value Duration<T, PeriodT>::Count() const noexcept
 {
-    return m_Ticks;
+    return m_ticks;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
@@ -119,74 +119,74 @@ constexpr CommonT<Duration<T, PeriodT>> Duration<T, PeriodT>::operator+() const 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr CommonT<Duration<T, PeriodT>> Duration<T, PeriodT>::operator-() const noexcept
 {
-    return Duration(-m_Ticks);
+    return Duration(-m_ticks);
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT> Duration<T, PeriodT>::operator++(int) noexcept
 {
-    return Duration(m_Ticks++);
+    return Duration(m_ticks++);
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT> Duration<T, PeriodT>::operator--(int) noexcept
 {
-    return Duration(m_Ticks--);
+    return Duration(m_ticks--);
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator++() noexcept
 {
-    ++m_Ticks;
+    ++m_ticks;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator--() noexcept
 {
-    --m_Ticks;
+    --m_ticks;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator+=(Duration const& other) noexcept
 {
-    m_Ticks += other.m_Ticks;
+    m_ticks += other.m_ticks;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator-=(Duration const& other) noexcept
 {
-    m_Ticks -= other.m_Ticks;
+    m_ticks -= other.m_ticks;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator%=(Duration const& other) noexcept
 {
-    m_Ticks %= other.m_Ticks;
+    m_ticks %= other.m_ticks;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator*=(Value const& value) noexcept
 {
-    m_Ticks *= value;
+    m_ticks *= value;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator/=(Value const& value) noexcept
 {
-    m_Ticks /= value;
+    m_ticks /= value;
     return *this;
 }
 
 template <ArithmeticT T, RatioT PeriodT>
 constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator%=(Value const& value) noexcept
 {
-    m_Ticks %= value;
+    m_ticks %= value;
     return *this;
 }
 

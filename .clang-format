@@ -1,6 +1,6 @@
 ---
 LineEnding: LF
-BasedOnStyle: LLVM
+BasedOnStyle: WebKit
 UseTab: Never
 ColumnLimit: 100
 IndentWidth: 4

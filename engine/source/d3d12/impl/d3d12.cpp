@@ -10,7 +10,7 @@ import :swap_chain;
 namespace mini {
 
 D3D12::D3D12() noexcept
-    : m_Windows("windows")
+    : m_windows("windows")
 {
     d3d12::interface = this;
 }
@@ -27,22 +27,22 @@ graphics::Device* D3D12::CreateDevice()
 
 windows::Window* D3D12::GetWindow() noexcept
 {
-    return static_cast<windows::Window*>(m_Windows->GetWindow());
+    return static_cast<windows::Window*>(m_windows->GetWindow());
 }
 
 d3d12::Device* D3D12::GetDevice() noexcept
 {
-    return static_cast<d3d12::Device*>(m_Graphics->GetDevice());
+    return static_cast<d3d12::Device*>(m_graphics->GetDevice());
 }
 
 d3d12::SwapChain* D3D12::GetSwapChain() noexcept
 {
-    return static_cast<d3d12::SwapChain*>(m_Graphics->GetSwapChain());
+    return static_cast<d3d12::SwapChain*>(m_graphics->GetSwapChain());
 }
 
 d3d12::RenderContext* D3D12::GetRenderContext() noexcept
 {
-    return static_cast<d3d12::RenderContext*>(m_Graphics->GetRenderContext());
+    return static_cast<d3d12::RenderContext*>(m_graphics->GetRenderContext());
 }
 
 } // namespace mini

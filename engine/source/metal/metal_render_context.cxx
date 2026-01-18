@@ -8,15 +8,15 @@ namespace mini::metal {
 
 export class METAL_API RenderContext final : public graphics::RenderContext {
 private:
-    SharedPtr<NS::AutoreleasePool> m_AutoReleasePool;
-    SharedPtr<MTL::CommandQueue> m_CmdQueue;
+    SharedPtr<NS::AutoreleasePool> m_autoReleasePool;
+    SharedPtr<MTL::CommandQueue> m_cmdQueue;
 
-    MTL::CommandBuffer* m_CmdBuffer;
-    MTL::RenderCommandEncoder* m_CmdEncoder;
-    CA::MetalDrawable* m_Drawable;
+    MTL::CommandBuffer* m_cmdBuffer;
+    MTL::RenderCommandEncoder* m_cmdEncoder;
+    CA::MetalDrawable* m_drawable;
 
-    SharedPtr<MTL::SharedEvent> m_Event;
-    uint64 m_EventValue;
+    SharedPtr<MTL::SharedEvent> m_event;
+    uint64 m_eventValue;
 
 public:
     RenderContext(MTL::Device*);
@@ -31,7 +31,7 @@ public:
     void SetViewport(Rect const&, float32, float32) final;
     void SetScissorRect(RectInt const&) final;
 
-    MTL::CommandQueue* GetMTLCommandQueue() { return m_CmdQueue.Get(); }
+    MTL::CommandQueue* GetMTLCommandQueue() { return m_cmdQueue.Get(); }
 };
 
 } // namespace mini::metal

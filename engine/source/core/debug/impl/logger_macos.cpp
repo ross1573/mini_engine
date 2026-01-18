@@ -12,29 +12,29 @@ import :logger_platform;
 
 namespace mini {
 
-String LoggerBase::m_Identifier = String();
+String LoggerBase::m_identifier = String();
 
 LoggerBase::LoggerBase(StringView category)
-    : m_Category(category)
-    , m_Logger(nullptr)
+    : m_category(category)
+    , m_logger(nullptr)
 {
 }
 
 LoggerBase::~LoggerBase()
 {
-    os_release(m_Logger);
+    os_release(m_logger);
 }
 
 void LoggerBase::PrintMessage(byte level, StringView msg)
 {
     // delay initialization of the logger until first message has been fetched
-    if (m_Logger == nullptr) {
+    if (m_logger == nullptr) {
         StringView identifier = InitializeIdentifier();
-        m_Logger = os_log_create(identifier.Data(), m_Category.Data());
+        m_logger = os_log_create(identifier.Data(), m_category.Data());
     }
 
     LogLevel type = GetLogType(level);
-    os_log_with_type(m_Logger, type, "%s", msg.Data());
+    os_log_with_type(m_logger, type, "%s", msg.Data());
 }
 
 LoggerBase::LogLevel LoggerBase::GetLogType(byte level)
@@ -53,8 +53,8 @@ LoggerBase::LogLevel LoggerBase::GetLogType(byte level)
 
 StringView LoggerBase::InitializeIdentifier()
 {
-    if (m_Identifier.Empty() == false) {
-        return m_Identifier;
+    if (m_identifier.Empty() == false) {
+        return m_identifier;
     }
 
     String identifier;
@@ -85,8 +85,8 @@ init_finish:
     if (bundle != nullptr) CFRelease(bundle);
 
     if (identifier.Empty() == false) {
-        m_Identifier = MoveArg(identifier);
-        return m_Identifier;
+        m_identifier = MoveArg(identifier);
+        return m_identifier;
     }
 
     return ENGINE_PROJECT_NAME;

@@ -8,23 +8,23 @@ import :swap_chain;
 namespace mini::metal {
 
 SwapChain::SwapChain(MTL::Device* device)
-    : m_Layer(TransferShared(CA::MetalLayer::layer()))
-    , m_Drawable(nullptr)
+    : m_layer(TransferShared(CA::MetalLayer::layer()))
+    , m_drawable(nullptr)
 {
-    ASSERT(m_Layer, "failed to retrieve MetalLayer object");
+    ASSERT(m_layer, "failed to retrieve MetalLayer object");
 
-    m_Layer->setDevice(device);
+    m_layer->setDevice(device);
 }
 
 bool SwapChain::Initialize()
 {
-    interface->GetWindow()->SetMetalLayer(m_Layer.Get());
+    interface->GetWindow()->SetMetalLayer(m_layer.Get());
     return true;
 }
 
 void SwapChain::Present()
 {
-    m_Drawable.Reset();
+    m_drawable.Reset();
 }
 
 void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width, [[maybe_unused]] uint32 height,
@@ -52,13 +52,13 @@ bool SwapChain::GetFullScreen() const
 
 CA::MetalDrawable* SwapChain::GetCurrentDrawable()
 {
-    if (m_Drawable != nullptr) {
-        return m_Drawable.Get();
+    if (m_drawable != nullptr) {
+        return m_drawable.Get();
     }
 
-    m_Drawable.Reset(m_Layer->nextDrawable());
-    ASSERT(m_Drawable, "failed to retrieve next drawable");
-    return m_Drawable.Get();
+    m_drawable.Reset(m_layer->nextDrawable());
+    ASSERT(m_drawable, "failed to retrieve next drawable");
+    return m_drawable.Get();
 }
 
 } // namespace mini::metal

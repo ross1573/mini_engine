@@ -8,7 +8,7 @@ namespace mini {
 
 export class ENGINE_API Engine final : public ModuleInterface {
 private:
-    bool m_Running;
+    bool m_running;
 
 public:
     Engine();

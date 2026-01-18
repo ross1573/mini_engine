@@ -9,21 +9,21 @@ import :swap_chain;
 namespace mini::metal {
 
 RenderContext::RenderContext(MTL::Device* device)
-    : m_AutoReleasePool(nullptr)
-    , m_CmdQueue(nullptr)
-    , m_CmdBuffer(nullptr)
-    , m_Event(nullptr)
-    , m_EventValue(0)
+    : m_autoReleasePool(nullptr)
+    , m_cmdQueue(nullptr)
+    , m_cmdBuffer(nullptr)
+    , m_event(nullptr)
+    , m_eventValue(0)
 {
     ASSERT(device);
 
-    m_CmdQueue = TransferShared(device->newCommandQueue());
-    m_Event = TransferShared(device->newSharedEvent());
+    m_cmdQueue = TransferShared(device->newCommandQueue());
+    m_event = TransferShared(device->newSharedEvent());
 }
 
 bool RenderContext::Initialize()
 {
-    ENSURE(m_CmdQueue, "failed to create MTLCommandQueue") {
+    ENSURE(m_cmdQueue, "failed to create MTLCommandQueue") {
         return false;
     }
 
@@ -32,13 +32,13 @@ bool RenderContext::Initialize()
 
 void RenderContext::BeginRender()
 {
-    m_Event->waitUntilSignaledValue(m_EventValue, ~uint64(0));
+    m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
 
-    m_AutoReleasePool = TransferShared(NS::AutoreleasePool::alloc()->init());
-    m_CmdBuffer = m_CmdQueue->commandBuffer();
-    m_Drawable = interface->GetSwapChain()->GetCurrentDrawable();
+    m_autoReleasePool = TransferShared(NS::AutoreleasePool::alloc()->init());
+    m_cmdBuffer = m_cmdQueue->commandBuffer();
+    m_drawable = interface->GetSwapChain()->GetCurrentDrawable();
 
-    MTL::Texture* texture = m_Drawable->texture();
+    MTL::Texture* texture = m_drawable->texture();
     MTL::RenderPassDescriptor* renderPass = MTL::RenderPassDescriptor::renderPassDescriptor();
     MTL::RenderPassColorAttachmentDescriptor* clearColorAttachment =
         renderPass->colorAttachments()->object(0);
@@ -52,7 +52,7 @@ void RenderContext::BeginRender()
     clearColorAttachment->setClearColor(clearColor);
     clearColorAttachment->clearColor();
 
-    m_CmdEncoder = m_CmdBuffer->renderCommandEncoder(renderPass);
+    m_cmdEncoder = m_cmdBuffer->renderCommandEncoder(renderPass);
 }
 
 void RenderContext::EndRender()
@@ -65,17 +65,17 @@ void RenderContext::WaitForIdle()
 
 void RenderContext::Execute()
 {
-    m_CmdEncoder->endEncoding();
-    m_CmdBuffer->presentDrawable(m_Drawable);
+    m_cmdEncoder->endEncoding();
+    m_cmdBuffer->presentDrawable(m_drawable);
 
-    m_EventValue++;
-    m_CmdBuffer->encodeSignalEvent(m_Event.Get(), m_EventValue);
-    m_CmdBuffer->commit();
+    m_eventValue++;
+    m_cmdBuffer->encodeSignalEvent(m_event.Get(), m_eventValue);
+    m_cmdBuffer->commit();
 
-    m_Drawable = nullptr;
-    m_CmdEncoder = nullptr;
-    m_CmdBuffer = nullptr;
-    m_AutoReleasePool.Reset();
+    m_drawable = nullptr;
+    m_cmdEncoder = nullptr;
+    m_cmdBuffer = nullptr;
+    m_autoReleasePool.Reset();
 }
 
 void RenderContext::SetViewport(Rect const&, float32, float32)

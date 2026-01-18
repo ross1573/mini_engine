@@ -14,10 +14,10 @@ private:
     typedef os_log_t Logger;
     typedef os_log_type_t LogLevel;
 
-    String m_Category;
-    Logger m_Logger;
+    String m_category;
+    Logger m_logger;
 
-    static CORE_API String m_Identifier;
+    static CORE_API String m_identifier;
 
 protected:
     LoggerBase(StringView);

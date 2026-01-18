@@ -12,36 +12,36 @@ Platform::Platform() noexcept
 
 Platform::~Platform() noexcept
 {
-    m_Window.Reset();
-    m_Handle.Reset();
+    m_window.Reset();
+    m_handle.Reset();
 
     platform::interface = nullptr;
 }
 
 void Platform::PollEvents()
 {
-    if (m_Handle != nullptr) {
-        m_Handle->PollEvents();
+    if (m_handle != nullptr) {
+        m_handle->PollEvents();
     }
 }
 
 bool Platform::Initialize()
 {
-    m_NativeModule.Load(mini::options::platformModule);
-    ENSURE(m_NativeModule.Valid(), "failed to load platform module") return false;
+    m_nativeModule.Load(mini::options::platformModule);
+    ENSURE(m_nativeModule.Valid(), "failed to load platform module") return false;
 
-    Handle* handle = m_NativeModule->CreateHandle();
+    Handle* handle = m_nativeModule->CreateHandle();
     ENSURE(handle && handle->Valid(), "failed to create platform handle") {
         return false;
     }
-    m_Handle = UniquePtr(handle);
+    m_handle = UniquePtr(handle);
     platform::Log("platform handle created");
 
-    Window* window = m_NativeModule->CreateWindow();
+    Window* window = m_nativeModule->CreateWindow();
     ENSURE(window && window->Valid(), "failed to create window handle") {
         return false;
     }
-    m_Window = UniquePtr(window);
+    m_window = UniquePtr(window);
     platform::Log("platform window created");
 
     return true;

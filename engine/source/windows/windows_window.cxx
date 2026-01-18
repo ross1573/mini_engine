@@ -13,14 +13,14 @@ enum WindowState : uint8 {
 
 export class WINDOWS_API Window final : public platform::Window {
 private:
-    HWND m_WindowHandle;
+    HWND m_windowHandle;
 
-    RectInt m_Rect;
+    RectInt m_rect;
     uint32 width;
     uint32 height;
 
-    bool m_IsShowing;
-    WindowState m_State;
+    bool m_isShowing;
+    WindowState m_state;
 
 public:
     Window();
@@ -34,11 +34,11 @@ public:
     void Show() final;
     void Hide() final;
 
-    RectInt GetSize() const final { return m_Rect; }
-    bool IsMinimized() const final { return m_State == Minimized; }
-    bool IsMaximized() const final { return m_State == Maximized; }
+    RectInt GetSize() const final { return m_rect; }
+    bool IsMinimized() const final { return m_state == Minimized; }
+    bool IsMaximized() const final { return m_state == Maximized; }
 
-    HWND GetHWND() const { return m_WindowHandle; }
+    HWND GetHWND() const { return m_windowHandle; }
 };
 
 } // namespace mini::windows

@@ -90,8 +90,8 @@ private:
         LargeStorage l;
     };
 
-    [[emptyable_address]] AllocT m_Alloc;
-    Storage m_Storage;
+    [[emptyable_address]] AllocT m_alloc;
+    Storage m_storage;
 
     static_assert(SmallCapacity < 128, "small capacity should not excced 127");
     static_assert(sizeof(LargeStorage) == sizeof(SmallStorage));
@@ -255,7 +255,7 @@ private:
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString() noexcept
-    : m_Alloc{}
+    : m_alloc{}
 {
     InitEmpty();
 }
@@ -264,30 +264,30 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::~BasicString()
 {
     if (LargeCapacity()) {
-        m_Storage.l.buffer.Deallocate(m_Alloc);
-        m_Storage.l.size = 0;
+        m_storage.l.buffer.Deallocate(m_alloc);
+        m_storage.l.size = 0;
     }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString const& other)
-    : m_Alloc{}
+    : m_alloc{}
 {
     InitWithCopy(other);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString const& other, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     InitWithCopy(other);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other)
-    : m_Alloc{}
+    : m_alloc{}
 {
-    if (other.LargeCapacity() && m_Alloc != other.m_Alloc) {
+    if (other.LargeCapacity() && m_alloc != other.m_alloc) {
         InitWithCopy(other);
     } else {
         InitWithMove(MoveArg(other));
@@ -296,9 +296,9 @@ inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other)
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
-    if (other.LargeCapacity() && m_Alloc != other.m_Alloc) {
+    if (other.LargeCapacity() && m_alloc != other.m_alloc) {
         InitWithCopy(other);
     } else {
         InitWithMove(MoveArg(other));
@@ -307,39 +307,39 @@ inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other, AllocT
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(AllocT const& alloc) noexcept
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     InitEmpty();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(AllocT&& alloc) noexcept
-    : m_Alloc(MoveArg(alloc))
+    : m_alloc(MoveArg(alloc))
 {
     InitEmpty();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(SizeT capacity, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     if consteval {
-        memory::ConstructAt(&m_Storage.l);
-        m_Storage.l.buffer.Allocate(capacity + 1, m_Alloc);
-        m_Storage.l.layout = 1;
+        memory::ConstructAt(&m_storage.l);
+        m_storage.l.buffer.Allocate(capacity + 1, m_alloc);
+        m_storage.l.layout = 1;
         SetSizeWithNullTerminator(0);
         return;
     }
 
     if (capacity > SmallCapacity) {
-        memory::ConstructAt(&m_Storage.l.buffer, capacity + 1, m_Alloc);
-        m_Storage.l.buffer.Data()[0] = Value(0);
-        m_Storage.l.layout = 1;
-        m_Storage.l.size = 0;
+        memory::ConstructAt(&m_storage.l.buffer, capacity + 1, m_alloc);
+        m_storage.l.buffer.Data()[0] = Value(0);
+        m_storage.l.layout = 1;
+        m_storage.l.size = 0;
     } else {
-        m_Storage.s.buffer.Data()[0] = Value(0);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = 0;
+        m_storage.s.buffer.Data()[0] = Value(0);
+        m_storage.s.layout = 0;
+        m_storage.s.size = 0;
     }
 }
 
@@ -347,7 +347,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <typename U>
 inline constexpr BasicString<T, AllocT>::BasicString(U ch, SizeT size, AllocT const& alloc)
     requires AnyOfT<U, Value, ConstValue>
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     Pointer loc = InitWithSize(size);
     memory::StringFill(loc, ch, size);
@@ -356,7 +356,7 @@ inline constexpr BasicString<T, AllocT>::BasicString(U ch, SizeT size, AllocT co
 template <CharT T, AllocatorT<T> AllocT>
 template <StringViewLikeT<T, AllocT> U>
 inline constexpr BasicString<T, AllocT>::BasicString(U const& src, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     BasicStringView<T> view = src;
     Pointer loc = InitWithSize(view.Size());
@@ -366,7 +366,7 @@ inline constexpr BasicString<T, AllocT>::BasicString(U const& src, AllocT const&
 template <CharT T, AllocatorT<T> AllocT>
 template <StringViewLikeT<T, AllocT> U>
 inline constexpr BasicString<T, AllocT>::BasicString(U const& src, SizeT size, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     ConstPointer data = GetViewData(src, size);
     Pointer loc = InitWithSize(size);
@@ -376,7 +376,7 @@ inline constexpr BasicString<T, AllocT>::BasicString(U const& src, SizeT size, A
 template <CharT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr BasicString<T, AllocT>::BasicString(Iter begin, Iter end, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     SizeT size = Distance(begin, end);
     if (size == 0) [[unlikely]] {
@@ -407,7 +407,7 @@ inline constexpr void BasicString<T, AllocT>::Assign(U const& src, SizeT size)
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Assign(BasicString&& other)
 {
-    if (m_Alloc == other.m_Alloc) [[likely]] {
+    if (m_alloc == other.m_alloc) [[likely]] {
         AssignWithMove(MoveArg(other));
     } else {
         AssignWithSource(other.Data(), other.Size());
@@ -418,7 +418,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
 inline constexpr void BasicString<T, AllocT>::Assign(Iter begin, Iter end)
 {
-    BasicString temp(begin, end, m_Alloc);
+    BasicString temp(begin, end, m_alloc);
     AssignWithMove(MoveArg(temp));
 }
 
@@ -774,19 +774,19 @@ template <CharT T, AllocatorT<T> AllocT>
                                                                      SizeT oldSize)
 {
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(size + 1, m_Alloc);
+        LargeBuffer newBuffer(size + 1, m_alloc);
         Pointer buffer = newBuffer.Data();
-        memory::MemCopy(buffer, m_Storage.s.buffer.Data(), oldSize);
+        memory::MemCopy(buffer, m_storage.s.buffer.Data(), oldSize);
         memory::StringFill(buffer + oldSize, ch, size - oldSize);
         SwitchToLarge(MoveArg(newBuffer), size);
     } else {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Resize(size + 1, m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Resize(size + 1, m_alloc);
         Pointer buffer = newBuffer.Data();
-        memory::MemCopy(buffer, m_Storage.l.buffer.Data(), oldSize);
+        memory::MemCopy(buffer, m_storage.l.buffer.Data(), oldSize);
         memory::StringFill(buffer + oldSize, ch, size - oldSize);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
-        m_Storage.l.buffer.Data()[size] = Value(0);
-        m_Storage.l.size = size;
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
+        m_storage.l.buffer.Data()[size] = Value(0);
+        m_storage.l.size = size;
     }
 }
 
@@ -798,13 +798,13 @@ inline constexpr void BasicString<T, AllocT>::Reserve(SizeT size)
     }
 
     if (!LargeCapacity()) {
-        LargeBuffer buffer(size + 1, m_Alloc);
-        memory::MemCopy(buffer.Data(), m_Storage.s.buffer.Data(), m_Storage.s.size);
-        SwitchToLarge(MoveArg(buffer), m_Storage.s.size);
+        LargeBuffer buffer(size + 1, m_alloc);
+        memory::MemCopy(buffer.Data(), m_storage.s.buffer.Data(), m_storage.s.size);
+        SwitchToLarge(MoveArg(buffer), m_storage.s.size);
     } else {
-        LargeBuffer buffer = m_Storage.l.buffer.Resize(size + 1, m_Alloc);
-        memory::MemCopy(buffer.Data(), m_Storage.l.buffer.Data(), m_Storage.l.size + 1);
-        m_Storage.l.buffer.Assign(MoveArg(buffer), m_Alloc);
+        LargeBuffer buffer = m_storage.l.buffer.Resize(size + 1, m_alloc);
+        memory::MemCopy(buffer.Data(), m_storage.l.buffer.Data(), m_storage.l.size + 1);
+        m_storage.l.buffer.Assign(MoveArg(buffer), m_alloc);
     }
 }
 
@@ -812,9 +812,9 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Shrink()
 {
     if consteval {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Resize(Size() + 1, m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Resize(Size() + 1, m_alloc);
         memory::MemCopy(newBuffer.Data(), Data(), Size() + 1);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
         return;
     }
 
@@ -822,17 +822,17 @@ inline constexpr void BasicString<T, AllocT>::Shrink()
         return;
     }
 
-    SizeT size = m_Storage.l.size;
+    SizeT size = m_storage.l.size;
     if (size <= SmallCapacity) {
-        Pointer buffer = m_Storage.l.buffer.Data();
-        memory::MemCopy(m_Storage.s.buffer.Data(), buffer, size + 1);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = static_cast<byte>(size);
-        m_Alloc.Deallocate(buffer, size);
+        Pointer buffer = m_storage.l.buffer.Data();
+        memory::MemCopy(m_storage.s.buffer.Data(), buffer, size + 1);
+        m_storage.s.layout = 0;
+        m_storage.s.size = static_cast<byte>(size);
+        m_alloc.Deallocate(buffer, size);
     } else {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Resize(size + 1, m_Alloc);
-        memory::MemCopy(newBuffer.Data(), m_Storage.l.buffer.Data(), size + 1);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Resize(size + 1, m_alloc);
+        memory::MemCopy(newBuffer.Data(), m_storage.l.buffer.Data(), size + 1);
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
     }
 }
 
@@ -846,14 +846,14 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::Swap(BasicString& other)
 {
     if consteval {
-        SizeT size = m_Storage.l.size;
-        m_Storage.l.buffer.Swap(other.m_Storage.l.buffer);
-        m_Storage.l.size = other.m_Storage.l.size;
-        other.m_Storage.l.size = size;
+        SizeT size = m_storage.l.size;
+        m_storage.l.buffer.Swap(other.m_storage.l.buffer);
+        m_storage.l.size = other.m_storage.l.size;
+        other.m_storage.l.size = size;
         return;
     }
 
-    mini::Swap(m_Storage, other.m_Storage);
+    mini::Swap(m_storage, other.m_storage);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -929,31 +929,31 @@ BasicString<T, AllocT>::At(SizeT index) const
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Pointer BasicString<T, AllocT>::Data() noexcept
 {
-    return LargeCapacity() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
+    return LargeCapacity() ? m_storage.l.buffer.Data() : m_storage.s.buffer.Data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::ConstPointer BasicString<T, AllocT>::Data() const noexcept
 {
-    return LargeCapacity() ? m_Storage.l.buffer.Data() : m_Storage.s.buffer.Data();
+    return LargeCapacity() ? m_storage.l.buffer.Data() : m_storage.s.buffer.Data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr SizeT BasicString<T, AllocT>::Size() const noexcept
 {
-    return LargeCapacity() ? m_Storage.l.size : m_Storage.s.size;
+    return LargeCapacity() ? m_storage.l.size : m_storage.s.size;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr SizeT BasicString<T, AllocT>::Capacity() const noexcept
 {
-    return LargeCapacity() ? (m_Storage.l.buffer.Capacity() - 1) : SmallCapacity;
+    return LargeCapacity() ? (m_storage.l.buffer.Capacity() - 1) : SmallCapacity;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool BasicString<T, AllocT>::Empty() const noexcept
 {
-    return LargeCapacity() ? m_Storage.l.size == 0 : m_Storage.s.size == 0;
+    return LargeCapacity() ? m_storage.l.size == 0 : m_storage.s.size == 0;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1036,10 +1036,10 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr bool BasicString<T, AllocT>::LargeCapacity() const noexcept
 {
     if consteval {
-        return m_Storage.l.layout == 1;
+        return m_storage.l.layout == 1;
     }
 
-    return m_Storage.s.layout == 1;
+    return m_storage.s.layout == 1;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1047,11 +1047,11 @@ inline constexpr void BasicString<T, AllocT>::SetSizeWithNullTerminator(SizeT si
 {
     Pointer buffer = nullptr;
     if (LargeCapacity()) {
-        m_Storage.l.size = size;
-        buffer = m_Storage.l.buffer.Data();
+        m_storage.l.size = size;
+        buffer = m_storage.l.buffer.Data();
     } else {
-        m_Storage.s.size = static_cast<byte>(size);
-        buffer = m_Storage.s.buffer.Data();
+        m_storage.s.size = static_cast<byte>(size);
+        buffer = m_storage.s.buffer.Data();
     }
 
     buffer[size] = Value(0);
@@ -1064,36 +1064,36 @@ inline constexpr void BasicString<T, AllocT>::DestroyBuffer()
         return;
     }
 
-    m_Storage.l.buffer.Deallocate(m_Alloc);
+    m_storage.l.buffer.Deallocate(m_alloc);
 
     if consteval {
-        m_Storage.l.buffer.Allocate(1, m_Alloc);
+        m_storage.l.buffer.Allocate(1, m_alloc);
         SetSizeWithNullTerminator(0);
     } else {
-        m_Storage.s.buffer.Data()[0] = Value(0);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = static_cast<byte>(0);
+        m_storage.s.buffer.Data()[0] = Value(0);
+        m_storage.s.layout = 0;
+        m_storage.s.size = static_cast<byte>(0);
     }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::SwitchToLarge(LargeBuffer&& buffer, SizeT size)
 {
-    memory::ConstructAt(&m_Storage.l.buffer, MoveArg(buffer));
-    m_Storage.l.buffer.Data()[size] = Value(0);
-    m_Storage.l.layout = 1;
-    m_Storage.l.size = size;
+    memory::ConstructAt(&m_storage.l.buffer, MoveArg(buffer));
+    m_storage.l.buffer.Data()[size] = Value(0);
+    m_storage.l.layout = 1;
+    m_storage.l.size = size;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::LargeBuffer
 BasicString<T, AllocT>::SwitchToSmall(Pointer ptr, SizeT size)
 {
-    LargeBuffer tmpBuffer(MoveArg(m_Storage.l.buffer));
-    memory::MemCopy(m_Storage.s.buffer.Data(), ptr, size);
-    m_Storage.s.buffer.Data()[size] = Value(0);
-    m_Storage.s.layout = 0;
-    m_Storage.s.size = static_cast<byte>(size);
+    LargeBuffer tmpBuffer(MoveArg(m_storage.l.buffer));
+    memory::MemCopy(m_storage.s.buffer.Data(), ptr, size);
+    m_storage.s.buffer.Data()[size] = Value(0);
+    m_storage.s.layout = 0;
+    m_storage.s.size = static_cast<byte>(size);
     return tmpBuffer;
 }
 
@@ -1116,14 +1116,14 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitEmpty()
 {
     if consteval {
-        memory::ConstructAt(&m_Storage.l);
-        m_Storage.l.buffer.Allocate(1, m_Alloc);
-        m_Storage.l.layout = 1;
+        memory::ConstructAt(&m_storage.l);
+        m_storage.l.buffer.Allocate(1, m_alloc);
+        m_storage.l.layout = 1;
         SetSizeWithNullTerminator(0);
     } else {
-        m_Storage.s.buffer.Data()[0] = Value(0);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = 0;
+        m_storage.s.buffer.Data()[0] = Value(0);
+        m_storage.s.layout = 0;
+        m_storage.s.size = 0;
     }
 }
 
@@ -1131,17 +1131,17 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitWithCopy(BasicString const& other)
 {
     if consteval {
-        memory::ConstructAt(&m_Storage.l);
+        memory::ConstructAt(&m_storage.l);
     }
 
     if (other.LargeCapacity()) {
-        SizeT size = other.m_Storage.l.size;
-        memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
-        memory::MemCopy(m_Storage.l.buffer.Data(), other.m_Storage.l.buffer.Data(), size + 1);
-        m_Storage.l.layout = 1;
-        m_Storage.l.size = size;
+        SizeT size = other.m_storage.l.size;
+        memory::ConstructAt(&m_storage.l.buffer, size + 1, m_alloc);
+        memory::MemCopy(m_storage.l.buffer.Data(), other.m_storage.l.buffer.Data(), size + 1);
+        m_storage.l.layout = 1;
+        m_storage.l.size = size;
     } else {
-        m_Storage = other.m_Storage;
+        m_storage = other.m_storage;
     }
 }
 
@@ -1149,15 +1149,15 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::InitWithMove(BasicString&& other) noexcept
 {
     if consteval {
-        memory::ConstructAt(&m_Storage.l);
-        m_Storage.l.buffer.Assign(MoveArg(other.m_Storage.l.buffer), m_Alloc);
-        m_Storage.l.layout = 1;
-        m_Storage.l.size = other.m_Storage.l.size;
+        memory::ConstructAt(&m_storage.l);
+        m_storage.l.buffer.Assign(MoveArg(other.m_storage.l.buffer), m_alloc);
+        m_storage.l.layout = 1;
+        m_storage.l.size = other.m_storage.l.size;
         other.DestroyBuffer();
         return;
     }
 
-    m_Storage = other.m_Storage;
+    m_storage = other.m_storage;
     other.InitEmpty();
 }
 
@@ -1165,24 +1165,24 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::Pointer BasicString<T, AllocT>::InitWithSize(SizeT size)
 {
     if consteval {
-        memory::ConstructAt(&m_Storage.l);
-        m_Storage.l.buffer.Allocate(size + 1, m_Alloc);
-        m_Storage.l.layout = 1;
+        memory::ConstructAt(&m_storage.l);
+        m_storage.l.buffer.Allocate(size + 1, m_alloc);
+        m_storage.l.layout = 1;
         SetSizeWithNullTerminator(size);
-        return m_Storage.l.buffer.Data();
+        return m_storage.l.buffer.Data();
     }
 
     if (size > SmallCapacity) {
-        memory::ConstructAt(&m_Storage.l.buffer, size + 1, m_Alloc);
-        m_Storage.l.buffer.Data()[size] = Value(0);
-        m_Storage.l.layout = 1;
-        m_Storage.l.size = size;
-        return m_Storage.l.buffer.Data();
+        memory::ConstructAt(&m_storage.l.buffer, size + 1, m_alloc);
+        m_storage.l.buffer.Data()[size] = Value(0);
+        m_storage.l.layout = 1;
+        m_storage.l.size = size;
+        return m_storage.l.buffer.Data();
     } else {
-        m_Storage.s.buffer.Data()[size] = Value(0);
-        m_Storage.s.layout = 0;
-        m_Storage.s.size = static_cast<byte>(size);
-        return m_Storage.s.buffer.Data();
+        m_storage.s.buffer.Data()[size] = Value(0);
+        m_storage.s.layout = 0;
+        m_storage.s.size = static_cast<byte>(size);
+        return m_storage.s.buffer.Data();
     }
 }
 
@@ -1190,13 +1190,13 @@ template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssignWithMove(BasicString&& other) noexcept
 {
     if consteval {
-        m_Storage.l.buffer.Assign(MoveArg(other.m_Storage.l.buffer), m_Alloc);
-        m_Storage.l.size = other.m_Storage.l.size;
+        m_storage.l.buffer.Assign(MoveArg(other.m_storage.l.buffer), m_alloc);
+        m_storage.l.size = other.m_storage.l.size;
         other.DestroyBuffer();
         return;
     }
 
-    mini::Swap(m_Storage, other.m_Storage);
+    mini::Swap(m_storage, other.m_storage);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
@@ -1220,23 +1220,23 @@ template <CharT T, AllocatorT<T> AllocT>
 [[no_inline]] constexpr void BasicString<T, AllocT>::AssignWithAlloc(ConstPointer ptr, SizeT len)
 {
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(len + 1, m_Alloc);
+        LargeBuffer newBuffer(len + 1, m_alloc);
         memory::MemCopy(newBuffer.Data(), ptr, len);
         SwitchToLarge(MoveArg(newBuffer), len);
     } else {
         Pointer buffer;
-        if (m_Storage.l.buffer.Capacity() < len) {
-            LargeBuffer newBuffer = m_Storage.l.buffer.Resize(len + 1, m_Alloc);
+        if (m_storage.l.buffer.Capacity() < len) {
+            LargeBuffer newBuffer = m_storage.l.buffer.Resize(len + 1, m_alloc);
             buffer = newBuffer.Data();
             memory::MemCopy(buffer, ptr, len);
-            m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
+            m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
         } else {
-            buffer = m_Storage.l.buffer.Data();
+            buffer = m_storage.l.buffer.Data();
             memory::MemCopy(buffer, ptr, len);
         }
 
         buffer[len] = Value(0);
-        m_Storage.l.size = len;
+        m_storage.l.size = len;
     }
 }
 
@@ -1252,17 +1252,17 @@ inline constexpr void BasicString<T, AllocT>::AppendWithRange(Iter begin, Iter e
         SetSizeWithNullTerminator(newSize);
     } else {
         if (!LargeCapacity()) {
-            LargeBuffer newBuffer(newSize + 1, m_Alloc);
+            LargeBuffer newBuffer(newSize + 1, m_alloc);
             Pointer buffer = newBuffer.Data();
-            memory::MemCopy(buffer, m_Storage.s.buffer.Data(), oldSize);
+            memory::MemCopy(buffer, m_storage.s.buffer.Data(), oldSize);
             memory::CopyRange(buffer + oldSize, begin, end);
             SwitchToLarge(MoveArg(newBuffer), newSize);
         } else {
-            LargeBuffer newBuffer = m_Storage.l.buffer.Increment(size, m_Alloc);
+            LargeBuffer newBuffer = m_storage.l.buffer.Increment(size, m_alloc);
             Pointer buffer = newBuffer.Data();
-            memory::MemCopy(buffer, m_Storage.l.buffer.Data(), oldSize);
+            memory::MemCopy(buffer, m_storage.l.buffer.Data(), oldSize);
             memory::CopyRange(buffer + oldSize, begin, end);
-            m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
+            m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
         }
     }
 }
@@ -1295,19 +1295,19 @@ template <CharT T, AllocatorT<T> AllocT>
     Pointer oldBuffer = Data();
 
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(newSize + 1, m_Alloc);
+        LargeBuffer newBuffer(newSize + 1, m_alloc);
         Pointer buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, oldSize);
         memory::MemCopy(buffer + oldSize, ptr, len);
         SwitchToLarge(MoveArg(newBuffer), newSize);
     } else {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Increment(len, m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Increment(len, m_alloc);
         Pointer buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, oldSize);
         memory::MemCopy(buffer + oldSize, ptr, len);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
-        m_Storage.l.buffer.Data()[newSize] = Value(0);
-        m_Storage.l.size = newSize;
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
+        m_storage.l.buffer.Data()[newSize] = Value(0);
+        m_storage.l.size = newSize;
     }
 }
 
@@ -1322,7 +1322,7 @@ inline constexpr BasicString<T, AllocT>::Pointer BasicString<T, AllocT>::AppendW
         return Data() + oldSize;
     } else {
         AppendWithAlloc(size, oldSize);
-        return m_Storage.l.buffer.Data() + oldSize;
+        return m_storage.l.buffer.Data() + oldSize;
     }
 }
 
@@ -1332,15 +1332,15 @@ template <CharT T, AllocatorT<T> AllocT>
     SizeT newSize = oldSize + size;
 
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(newSize + 1, m_Alloc);
-        memory::MemCopy(newBuffer.Data(), m_Storage.s.buffer.Data(), oldSize);
+        LargeBuffer newBuffer(newSize + 1, m_alloc);
+        memory::MemCopy(newBuffer.Data(), m_storage.s.buffer.Data(), oldSize);
         SwitchToLarge(MoveArg(newBuffer), newSize);
     } else {
-        LargeBuffer buffer = m_Storage.l.buffer.Increment(size, m_Alloc);
-        memory::MemCopy(buffer.Data(), m_Storage.l.buffer.Data(), oldSize);
-        m_Storage.l.buffer.Assign(MoveArg(buffer), m_Alloc);
-        m_Storage.l.buffer.Data()[newSize] = Value(0);
-        m_Storage.l.size = newSize;
+        LargeBuffer buffer = m_storage.l.buffer.Increment(size, m_alloc);
+        memory::MemCopy(buffer.Data(), m_storage.l.buffer.Data(), oldSize);
+        m_storage.l.buffer.Assign(MoveArg(buffer), m_alloc);
+        m_storage.l.buffer.Data()[newSize] = Value(0);
+        m_storage.l.size = newSize;
     }
 }
 
@@ -1356,7 +1356,7 @@ inline constexpr void BasicString<T, AllocT>::InsertWithSource(SizeT index, Cons
         Pointer loc = oldBuffer + index;
 
         if (memory::IsPtrOverlapping(ptr, oldBuffer, oldBuffer + oldSize)) {
-            BasicString temp(ptr, len, m_Alloc);
+            BasicString temp(ptr, len, m_alloc);
             ptr = temp.Data();
         }
 
@@ -1377,20 +1377,20 @@ template <CharT T, AllocatorT<T> AllocT>
     Pointer loc = oldBuffer + index;
 
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(newSize + 1, m_Alloc);
+        LargeBuffer newBuffer(newSize + 1, m_alloc);
         Pointer buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, index);
         memory::MemCopy(buffer + index + len, loc, oldSize - index + 1);
         memory::MemCopy(buffer + index, ptr, len);
         SwitchToLarge(MoveArg(newBuffer), newSize);
     } else {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Increment(len, m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Increment(len, m_alloc);
         Pointer buffer = newBuffer.Data();
         memory::MemCopy(buffer, oldBuffer, index);
         memory::MemCopy(buffer + index + len, loc, oldSize - index + 1);
         memory::MemCopy(buffer + index, ptr, len);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
-        m_Storage.l.size = newSize;
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
+        m_storage.l.size = newSize;
     }
 }
 
@@ -1408,7 +1408,7 @@ inline constexpr BasicString<T, AllocT>::Pointer BasicString<T, AllocT>::InsertW
         return loc;
     } else {
         InsertWithAlloc(index, size, oldSize);
-        return m_Storage.l.buffer.Data() + index;
+        return m_storage.l.buffer.Data() + index;
     }
 }
 
@@ -1419,23 +1419,23 @@ template <CharT T, AllocatorT<T> AllocT>
     SizeT newSize = oldSize + size;
 
     if (!LargeCapacity()) {
-        LargeBuffer newBuffer(newSize + 1, m_Alloc);
+        LargeBuffer newBuffer(newSize + 1, m_alloc);
         Pointer buffer = newBuffer.Data();
-        Pointer oldBuffer = m_Storage.s.buffer.Data();
+        Pointer oldBuffer = m_storage.s.buffer.Data();
 
         memory::MemCopy(buffer, oldBuffer, index);
         memory::MemCopy(buffer + index + size, oldBuffer + index, oldSize - index);
         SwitchToLarge(MoveArg(newBuffer), newSize);
     } else {
-        LargeBuffer newBuffer = m_Storage.l.buffer.Increment(size, m_Alloc);
+        LargeBuffer newBuffer = m_storage.l.buffer.Increment(size, m_alloc);
         Pointer buffer = newBuffer.Data();
-        Pointer oldBuffer = m_Storage.l.buffer.Data();
+        Pointer oldBuffer = m_storage.l.buffer.Data();
 
         memory::MemCopy(buffer, oldBuffer, index);
         memory::MemCopy(buffer + index + size, oldBuffer + index, oldSize - index);
-        m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
-        m_Storage.l.buffer.Data()[newSize] = Value(0);
-        m_Storage.l.size = newSize;
+        m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
+        m_storage.l.buffer.Data()[newSize] = Value(0);
+        m_storage.l.size = newSize;
     }
 }
 
@@ -1450,7 +1450,7 @@ inline constexpr void BasicString<T, AllocT>::InsertWithRange(SizeT index, Iter 
     Pointer loc = oldBuffer + index;
 
     if (newSize <= Capacity()) {
-        BasicString temp(size, m_Alloc);
+        BasicString temp(size, m_alloc);
         Pointer buffer = temp.Data();
         memory::CopyRange(buffer, begin, end);
         memory::MemMove(loc + size, loc, oldSize - index);
@@ -1458,21 +1458,21 @@ inline constexpr void BasicString<T, AllocT>::InsertWithRange(SizeT index, Iter 
         SetSizeWithNullTerminator(newSize);
     } else {
         if (!LargeCapacity()) {
-            LargeBuffer newBuffer(newSize + 1, m_Alloc);
+            LargeBuffer newBuffer(newSize + 1, m_alloc);
             Pointer buffer = newBuffer.Data();
             memory::MemCopy(buffer, oldBuffer, index);
             memory::MemCopy(buffer + index + size, loc, oldSize - index);
             memory::CopyRange(buffer + index, begin, end);
             SwitchToLarge(MoveArg(newBuffer), newSize);
         } else {
-            LargeBuffer newBuffer = m_Storage.l.buffer.Increment(size, m_Alloc);
+            LargeBuffer newBuffer = m_storage.l.buffer.Increment(size, m_alloc);
             Pointer buffer = newBuffer.Data();
             memory::MemCopy(buffer, oldBuffer, index);
             memory::MemCopy(buffer + index + size, loc, oldSize - index);
             memory::CopyRange(buffer + index, begin, end);
-            m_Storage.l.buffer.Assign(MoveArg(newBuffer), m_Alloc);
-            m_Storage.l.buffer.Data()[newSize] = Value(0);
-            m_Storage.l.size = newSize;
+            m_storage.l.buffer.Assign(MoveArg(newBuffer), m_alloc);
+            m_storage.l.buffer.Data()[newSize] = Value(0);
+            m_storage.l.size = newSize;
         }
     }
 }
@@ -1481,7 +1481,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <typename TraitsT, typename StdAllocT>
 inline constexpr BasicString<T, AllocT>::
     BasicString(std::basic_string<T, TraitsT, StdAllocT> const& other, AllocT const& alloc)
-    : m_Alloc(alloc)
+    : m_alloc(alloc)
 {
     SizeT size = static_cast<SizeT>(other.size());
     Pointer buffer = InitWithSize(size);

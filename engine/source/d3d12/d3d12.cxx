@@ -13,7 +13,7 @@ namespace mini {
 
 export class D3D12_API D3D12 final : public graphics::Interface {
 private:
-    Module<Windows> m_Windows;
+    Module<Windows> m_windows;
 
 public:
     D3D12() noexcept;

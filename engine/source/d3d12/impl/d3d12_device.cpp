@@ -11,29 +11,29 @@ import :render_context;
 namespace mini::d3d12 {
 
 Device::Device()
-    : m_Factory(nullptr)
-    , m_Adapter(nullptr)
-    , m_Device(nullptr)
-    , m_RTVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 256)
-    , m_DSVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024)
-    , m_SRVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024)
+    : m_factory(nullptr)
+    , m_adapter(nullptr)
+    , m_device(nullptr)
+    , m_rTVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 256)
+    , m_dSVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024)
+    , m_sRVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024)
 {
 }
 
 bool Device::Initialize()
 {
-    ASSERT(m_Factory == nullptr, "DXGIFactory not released");
+    ASSERT(m_factory == nullptr, "DXGIFactory not released");
 
     uint32 debugFlag = options::debugLayer ? DXGI_CREATE_FACTORY_DEBUG : 0;
 
-    VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_Factory)));
+    VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_factory)));
 
     if (debugFlag) {
         EnableDebugLayer();
     }
 
     CreateDevice();
-    ENSURE(m_Device, "D3D12 device not created") {
+    ENSURE(m_device, "D3D12 device not created") {
         return false;
     }
 
@@ -41,9 +41,9 @@ bool Device::Initialize()
         SetDebugLayerInfo();
     }
 
-    ENSURE(m_RTVAllocator.Initialize(m_Device)) return false;
-    ENSURE(m_DSVAllocator.Initialize(m_Device)) return false;
-    ENSURE(m_SRVAllocator.Initialize(m_Device)) return false;
+    ENSURE(m_rTVAllocator.Initialize(m_device)) return false;
+    ENSURE(m_dSVAllocator.Initialize(m_device)) return false;
+    ENSURE(m_sRVAllocator.Initialize(m_device)) return false;
 
     return true;
 }
@@ -55,18 +55,18 @@ graphics::SwapChain* Device::CreateSwapChain()
 
 graphics::RenderContext* Device::CreateRenderContext()
 {
-    return new RenderContext(m_Device.Get());
+    return new RenderContext(m_device.Get());
 }
 
 void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
 {
-    buffer.descriptor = m_RTVAllocator.Allocate();
-    m_Device->CreateRenderTargetView(buffer.resource, buffer.rtvDesc, buffer.descriptor.offset);
+    buffer.descriptor = m_rTVAllocator.Allocate();
+    m_device->CreateRenderTargetView(buffer.resource, buffer.rtvDesc, buffer.descriptor.offset);
 }
 
 void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 {
-    ASSERT(m_Device == nullptr);
+    ASSERT(m_device == nullptr);
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
     D3D_FEATURE_LEVEL selectedLevel{};
@@ -77,7 +77,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     int32 levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);
     int32 levelIdx = 0;
 
-    for (; levelIdx < levelCount && m_Device == nullptr; ++levelIdx) {
+    for (; levelIdx < levelCount && m_device == nullptr; ++levelIdx) {
         selectedLevel = featureLevels[levelIdx];
         if (selectedLevel < minimum) {
             LogError("unable to find DirectX12 supported hardware");
@@ -89,7 +89,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         SharedPtr<ID3D12Device> device = nullptr;
 
         for (uint32 idx = 0;; ++idx, adapter.Reset(), device.Reset()) {
-            if (FAILED(m_Factory->EnumAdapters(idx, &adapter))) {
+            if (FAILED(m_factory->EnumAdapters(idx, &adapter))) {
                 break;
             }
 
@@ -103,13 +103,13 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
                 continue;
             }
 
-            m_Adapter = MoveArg(adapter);
-            m_Device = MoveArg(device);
+            m_adapter = MoveArg(adapter);
+            m_device = MoveArg(device);
             break;
         }
     }
 
-    if (m_Device == nullptr) {
+    if (m_device == nullptr) {
         LogError("failed creating D3D12 device");
         return;
     }
@@ -125,7 +125,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     }
 
     DXGI_ADAPTER_DESC adapterDesc{};
-    m_Adapter->GetDesc(&adapterDesc);
+    m_adapter->GetDesc(&adapterDesc);
 
     const auto desc = StringConvert(adapterDesc.Description);
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
@@ -174,7 +174,7 @@ void Device::SetDebugLayerInfo()
                                 D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
                                 D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
 
-    SharedPtr<ID3D12InfoQueue> infoQueue = DynamicCast<ID3D12InfoQueue>(m_Device);
+    SharedPtr<ID3D12InfoQueue> infoQueue = DynamicCast<ID3D12InfoQueue>(m_device);
     ENSURE(infoQueue, "failed to set debug layer info.") {
         return;
     }

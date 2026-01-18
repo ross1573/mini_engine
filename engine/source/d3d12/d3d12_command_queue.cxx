@@ -8,15 +8,15 @@ export namespace mini::d3d12 {
 
 class CommandQueue {
 private:
-    SharedPtr<ID3D12CommandQueue> m_CommandQueue;
-    SharedPtr<ID3D12Fence> m_Fence;
+    SharedPtr<ID3D12CommandQueue> m_commandQueue;
+    SharedPtr<ID3D12Fence> m_fence;
 
-    graphics::CommandType m_QueueType;
-    D3D12_COMMAND_QUEUE_DESC m_QueueDesc;
+    graphics::CommandType m_queueType;
+    D3D12_COMMAND_QUEUE_DESC m_queueDesc;
 
-    HANDLE m_FenceHandle;
-    uint64 m_FenceValue;
-    uint64 m_LastCompeletedFence;
+    HANDLE m_fenceHandle;
+    uint64 m_fenceValue;
+    uint64 m_lastCompeletedFence;
 
 public:
     CommandQueue(ID3D12Device*, graphics::CommandType);
@@ -28,9 +28,9 @@ public:
 
     uint64 ExecuteCommandList(ID3D12CommandList*);
 
-    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_CommandQueue; }
-    HANDLE GetFenceHandle() const { return m_FenceHandle; }
-    uint64 GetCurrentFence() const { return m_FenceValue; }
+    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_commandQueue; }
+    HANDLE GetFenceHandle() const { return m_fenceHandle; }
+    uint64 GetCurrentFence() const { return m_fenceValue; }
 };
 
 } // namespace mini::d3d12

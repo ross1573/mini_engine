@@ -35,8 +35,8 @@ public:
     using ConstIterator = ArrayIterator<ConstValue, BasicStringView const>;
 
 private:
-    ConstPointer m_Data;
-    SizeT m_Size;
+    ConstPointer m_data;
+    SizeT m_size;
 
     static constexpr T empty[1] = { '\0' };
 
@@ -93,15 +93,15 @@ private:
 
 template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView() noexcept
-    : m_Data(empty)
-    , m_Size(0)
+    : m_data(empty)
+    , m_size(0)
 {
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(BasicStringView const& other) noexcept
-    : m_Data(other.m_Data)
-    , m_Size(other.m_Size)
+    : m_data(other.m_data)
+    , m_size(other.m_size)
 {
 }
 
@@ -109,26 +109,26 @@ template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(ConstPointer ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = empty;
-        m_Size = 0;
+        m_data = empty;
+        m_size = 0;
         return;
     }
 
-    m_Data = ptr;
-    m_Size = memory::StringLength(ptr);
+    m_data = ptr;
+    m_size = memory::StringLength(ptr);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::BasicStringView(ConstPointer ptr, SizeT len) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = empty;
-        m_Size = 0;
+        m_data = empty;
+        m_size = 0;
         return;
     }
 
-    m_Data = ptr;
-    m_Size = len;
+    m_data = ptr;
+    m_size = len;
 }
 
 template <CharT T>
@@ -140,9 +140,9 @@ inline constexpr void BasicStringView<T>::Copy(Pointer dest, SizeT start,
     }
 
     AssertValidIndex(start);
-    SizeT end = m_Size - start;
+    SizeT end = m_size - start;
     SizeT len = end < count ? end : count;
-    memory::MemCopy(dest, m_Data + start, len);
+    memory::MemCopy(dest, m_data + start, len);
 }
 
 template <CharT T>
@@ -160,15 +160,15 @@ inline constexpr void BasicStringView<T>::Copy(Pointer dest, ConstIterator begin
 template <CharT T>
 inline constexpr BasicStringView<T> BasicStringView<T>::SubFirst(SizeT count) const noexcept
 {
-    SizeT len = m_Size < count ? m_Size : count;
-    return BasicStringView(m_Data, len);
+    SizeT len = m_size < count ? m_size : count;
+    return BasicStringView(m_data, len);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T> BasicStringView<T>::SubLast(SizeT count) const noexcept
 {
-    SizeT len = m_Size < count ? m_Size : count;
-    return BasicStringView(m_Data + m_Size - len, len);
+    SizeT len = m_size < count ? m_size : count;
+    return BasicStringView(m_data + m_size - len, len);
 }
 
 template <CharT T>
@@ -176,9 +176,9 @@ inline constexpr BasicStringView<T> BasicStringView<T>::SubString(SizeT start,
                                                                   SizeT count) const noexcept
 {
     AssertValidIndex(start);
-    SizeT end = m_Size - start;
+    SizeT end = m_size - start;
     SizeT len = end < count ? end : count;
-    return BasicStringView(m_Data + start, len);
+    return BasicStringView(m_data + start, len);
 }
 
 template <CharT T>
@@ -192,112 +192,112 @@ inline constexpr BasicStringView<T> BasicStringView<T>::SubString(ConstIterator 
 template <CharT T>
 inline constexpr void BasicStringView<T>::RemoveFirst()
 {
-    if (m_Size != 0) [[likely]] {
-        ++m_Data;
-        --m_Size;
+    if (m_size != 0) [[likely]] {
+        ++m_data;
+        --m_size;
     }
 }
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::RemoveFirst(SizeT count)
 {
-    if (m_Size < count) [[unlikely]] {
-        count = m_Size;
+    if (m_size < count) [[unlikely]] {
+        count = m_size;
     }
 
-    m_Data += count;
-    m_Size -= count;
+    m_data += count;
+    m_size -= count;
 }
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::RemoveLast()
 {
-    if (m_Size != 0) [[likely]] {
-        --m_Size;
+    if (m_size != 0) [[likely]] {
+        --m_size;
     }
 }
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::RemoveLast(SizeT count)
 {
-    if (m_Size < count) [[unlikely]] {
-        count = m_Size;
+    if (m_size < count) [[unlikely]] {
+        count = m_size;
     }
 
-    m_Size -= count;
+    m_size -= count;
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstPointer BasicStringView<T>::Data() const noexcept
 {
-    return m_Data;
+    return m_data;
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstIterator BasicStringView<T>::Begin() const noexcept
 {
-    return ConstIterator(m_Data, this);
+    return ConstIterator(m_data, this);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstIterator BasicStringView<T>::End() const noexcept
 {
-    return ConstIterator(m_Data + m_Size, this);
+    return ConstIterator(m_data + m_size, this);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstReference BasicStringView<T>::First() const
 {
     AssertValidIndex(0);
-    return *m_Data;
+    return *m_data;
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstReference BasicStringView<T>::Last() const
 {
-    AssertValidIndex(m_Size - 1);
-    return *(m_Data + m_Size - 1);
+    AssertValidIndex(m_size - 1);
+    return *(m_data + m_size - 1);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::ConstReference BasicStringView<T>::At(SizeT index) const
 {
     AssertValidIndex(index);
-    return *(m_Data + index);
+    return *(m_data + index);
 }
 
 template <CharT T>
 inline constexpr SizeT BasicStringView<T>::Size() const noexcept
 {
-    return m_Size;
+    return m_size;
 }
 
 template <CharT T>
 inline constexpr bool BasicStringView<T>::Empty() const noexcept
 {
-    return m_Size == 0;
+    return m_size == 0;
 }
 
 template <CharT T>
 inline constexpr bool BasicStringView<T>::ValidIndex(SizeT index) const noexcept
 {
-    return index < m_Size;
+    return index < m_size;
 }
 
 template <CharT T>
 inline constexpr bool BasicStringView<T>::ValidIterator(ConstIterator iter) const noexcept
 {
-    SizeT index = static_cast<SizeT>(iter.Address() - m_Data);
-    return index < m_Size;
+    SizeT index = static_cast<SizeT>(iter.Address() - m_data);
+    return index < m_size;
 }
 
 template <CharT T>
 inline constexpr bool BasicStringView<T>::ValidRange(ConstIterator begin,
                                                      ConstIterator end) const noexcept
 {
-    SizeT beginIdx = static_cast<SizeT>(begin.Address() - m_Data);
-    SizeT endIdx = static_cast<SizeT>(end.Address() - m_Data);
-    return (beginIdx < m_Size) && (endIdx <= m_Size);
+    SizeT beginIdx = static_cast<SizeT>(begin.Address() - m_data);
+    SizeT endIdx = static_cast<SizeT>(end.Address() - m_data);
+    return (beginIdx < m_size) && (endIdx <= m_size);
 }
 
 template <CharT T>
@@ -305,15 +305,15 @@ inline constexpr BasicStringView<T>::ConstReference
 BasicStringView<T>::operator[](SizeT index) const
 {
     AssertValidIndex(index);
-    return *(m_Data + index);
+    return *(m_data + index);
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>&
 BasicStringView<T>::operator=(BasicStringView const& other) noexcept
 {
-    m_Data = other.m_Data;
-    m_Size = other.m_Size;
+    m_data = other.m_data;
+    m_size = other.m_size;
     return *this;
 }
 
@@ -321,28 +321,28 @@ template <CharT T>
 inline constexpr BasicStringView<T>& BasicStringView<T>::operator=(ConstPointer ptr) noexcept
 {
     if (ptr == nullptr) [[unlikely]] {
-        m_Data = empty;
-        m_Size = 0;
+        m_data = empty;
+        m_size = 0;
         return *this;
     }
 
-    m_Data = ptr;
-    m_Size = memory::StringLength(ptr);
+    m_data = ptr;
+    m_size = memory::StringLength(ptr);
     return *this;
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::
     BasicStringView(std::basic_string_view<T> const& other) noexcept
-    : m_Data(other.data())
-    , m_Size(static_cast<SizeT>(other.size()))
+    : m_data(other.data())
+    , m_size(static_cast<SizeT>(other.size()))
 {
 }
 
 template <CharT T>
 inline constexpr BasicStringView<T>::operator std::basic_string_view<T>() const noexcept
 {
-    return std::basic_string_view<T>(m_Data, m_Size);
+    return std::basic_string_view<T>(m_data, m_size);
 }
 
 export template <CharT T>

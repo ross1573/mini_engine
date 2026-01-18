@@ -18,10 +18,10 @@ public:
     typedef D3D12_GPU_DESCRIPTOR_HANDLE GPUOffsetT;
 
 private:
-    SharedPtr<ID3D12DescriptorHeap> m_Heap;
-    CPUOffsetT m_CpuHeapStart;
-    uint32 m_IncrementSize;
-    uint32 m_CurrentIndex;
+    SharedPtr<ID3D12DescriptorHeap> m_heap;
+    CPUOffsetT m_cpuHeapStart;
+    uint32 m_incrementSize;
+    uint32 m_currentIndex;
 
 public:
     DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&&, uint32);
@@ -40,10 +40,10 @@ public:
     typedef D3D12_DESCRIPTOR_HEAP_DESC HeapDescT;
 
 private:
-    SharedPtr<ID3D12Device> m_Device;
-    Array<DescriptorHeap> m_HeapList;
-    HeapDescT m_HeapDesc;
-    uint32 m_IncrementSize;
+    SharedPtr<ID3D12Device> m_device;
+    Array<DescriptorHeap> m_heapList;
+    HeapDescT m_heapDesc;
+    uint32 m_incrementSize;
 
 public:
     DescriptorAllocator(HeapTypeT, uint32);
@@ -53,7 +53,7 @@ public:
     Descriptor Allocate();
     void Deallocate(Descriptor);
 
-    uint32 GetIncrementalSize() const { return m_IncrementSize; }
+    uint32 GetIncrementalSize() const { return m_incrementSize; }
 
 private:
     bool AllocateHeap();

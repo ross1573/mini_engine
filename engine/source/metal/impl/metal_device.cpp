@@ -8,13 +8,13 @@ import :render_context;
 namespace mini::metal {
 
 Device::Device()
-    : m_Device(TransferShared(MTL::CreateSystemDefaultDevice()))
+    : m_device(TransferShared(MTL::CreateSystemDefaultDevice()))
 {
 }
 
 bool Device::Initialize()
 {
-    ENSURE(m_Device, "Metal device not created") {
+    ENSURE(m_device, "Metal device not created") {
         return false;
     }
 
@@ -23,12 +23,12 @@ bool Device::Initialize()
 
 graphics::SwapChain* Device::CreateSwapChain()
 {
-    return new SwapChain(m_Device.Get());
+    return new SwapChain(m_device.Get());
 }
 
 graphics::RenderContext* Device::CreateRenderContext()
 {
-    return new RenderContext(m_Device.Get());
+    return new RenderContext(m_device.Get());
 }
 
 } // namespace mini::metal

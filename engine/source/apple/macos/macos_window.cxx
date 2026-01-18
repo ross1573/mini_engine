@@ -31,7 +31,7 @@ public:
     void SetFullScreen(bool active) final { Base::SetFullScreen(active); }
     void SetMetalLayer(CA::MetalLayer* layer) final { Base::SetMetalLayer(layer); }
     RectInt GetSize() const final { return RectInt::Zero(); }
-    NSWindow* GetNSWindow() { return m_Window; }
+    NSWindow* GetNSWindow() { return m_window; }
 
 private:
     bool ShouldClose() final { return true; }

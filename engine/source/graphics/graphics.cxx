@@ -20,12 +20,12 @@ public:
     typedef graphics::RenderContext RenderContext;
 
 private:
-    API m_CurrentAPI;
-    Module<Interface> m_CurrentModule;
+    API m_currentAPI;
+    Module<Interface> m_currentModule;
 
-    UniquePtr<Device> m_Device;
-    UniquePtr<SwapChain> m_SwapChain;
-    UniquePtr<RenderContext> m_RenderContext;
+    UniquePtr<Device> m_device;
+    UniquePtr<SwapChain> m_swapChain;
+    UniquePtr<RenderContext> m_renderContext;
 
 public:
     Graphics() noexcept;
@@ -34,12 +34,12 @@ public:
     void BeginFrame();
     void EndFrame();
 
-    API GetCurrentAPI() const noexcept { return m_CurrentAPI; }
-    Module<Interface> GetCurrentModule() const noexcept { return m_CurrentModule; }
+    API GetCurrentAPI() const noexcept { return m_currentAPI; }
+    Module<Interface> GetCurrentModule() const noexcept { return m_currentModule; }
 
-    Device* GetDevice() const noexcept { return m_Device.Get(); }
-    SwapChain* GetSwapChain() const noexcept { return m_SwapChain.Get(); }
-    RenderContext* GetRenderContext() const noexcept { return m_RenderContext.Get(); }
+    Device* GetDevice() const noexcept { return m_device.Get(); }
+    SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }
+    RenderContext* GetRenderContext() const noexcept { return m_renderContext.Get(); }
 
     static void ChangeResolution(uint32, uint32, bool);
 
