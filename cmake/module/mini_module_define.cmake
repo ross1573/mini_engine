@@ -6,18 +6,18 @@ function (module_compile_defintions name)
     set_target_properties(${name} PROPERTIES MODULE_DEFINITIONS "${module_definitions}")
 endfunction()
 
-function (generate_define_header target)
-    set(args PREFIX API)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
-
-    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
+function (_write_module_definitions target prefix api file_path)
+    generate_api_name(${target} API ${api} PREFIX ${prefix})
 
     string(APPEND parsed_list "#ifndef ${api_upper}_DEFINE_H\n")
     string(APPEND parsed_list "#define ${api_upper}_DEFINE_H\n\n")
 
     get_target_property(module_definitions ${target} MODULE_DEFINITIONS)
     get_property(target_definitions GLOBAL PROPERTY MODULE_DEFINITIONS)
-    list(APPEND target_definitions ${module_definitions})
+
+    if (module_definitions)
+        list(APPEND target_definitions ${module_definitions})
+    endif()
 
     foreach (definition ${target_definitions})
         # special case on new line
@@ -47,6 +47,21 @@ function (generate_define_header target)
 
     string(APPEND parsed_list "\n#endif // ${api_upper}_DEFINE_H")
 
+    file(GENERATE
+        OUTPUT "${file_path}"
+        CONTENT "${parsed_list}"
+        TARGET "${target}"
+        FILE_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+        NEWLINE_STYLE LF
+    )
+endfunction()
+
+function (generate_define_header target)
+    set(args PREFIX API)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
+
+    generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
+
     set(file_name "${target}.define.generated.h")
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (is_multi_config)
@@ -55,17 +70,18 @@ function (generate_define_header target)
         set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
     endif()
 
-    file(GENERATE
-        OUTPUT "${file_path}/${file_name}"
-        CONTENT "${parsed_list}"
-        TARGET "${target}"
-        FILE_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
-        NEWLINE_STYLE LF
-    )
-
     target_precompile_headers(${target} PRIVATE "${file_path}/${file_name}")
     target_sources(${target} PRIVATE
         FILE_SET generated_define TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
         FILES "${file_path}/${file_name}"
+    )
+
+    cmake_language(EVAL CODE
+        "cmake_language(DEFER CALL _write_module_definitions
+            [[${target}]]
+            [[${prefix}]]
+            [[${api}]]
+            [[${file_path}/${file_name}]]
+        )"
     )
 endfunction()

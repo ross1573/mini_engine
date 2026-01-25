@@ -1,9 +1,9 @@
 include(mini_util)
 include(module/mini_module_api)
 include(module/mini_module_define)
+include(module/mini_module_source)
 include(module/mini_module_entry)
 include(module/mini_module_log)
-include(module/mini_module_source)
 
 macro (set_module_defines name)
     set(module_defines
@@ -49,6 +49,22 @@ function (add_module name)
     add_library(${name} ${type})
     generate_api_name(${name} PREFIX ${arg_PREFIX} API ${arg_API})
 
+    if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
+        set(arg_INTERFACE "")
+    endif()
+    
+    target_include_directories(${name} 
+    PRIVATE 
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+
+    set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
+    set_target_properties(${name} PROPERTIES 
+        FOLDER module
+        OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
+        INTERFACE "${arg_INTERFACE}"
+    )
+
     if (NOT arg_NO_API_HEADER)
         generate_api_header(${name} PRIVATE 
             PREFIX ${prefix}
@@ -65,17 +81,12 @@ function (add_module name)
 
     if (NOT arg_NO_DEFINE_HEADER)
         set_module_defines(${name})
-        cmake_language(EVAL CODE "
-            cmake_language(DEFER CALL generate_define_header [[${name}]]
-                API [[${api}]]
-                PREFIX [[${prefix}]]
-            )"
+        generate_define_header(${name}
+            PREFIX ${prefix}
+            API ${api}
         )
     endif()
 
-    if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
-        set(arg_INTERFACE "")
-    endif()
     if (NOT arg_NO_MODULE_ENTRY)
         cmake_language(EVAL CODE "
             cmake_language(DEFER CALL generate_module_entry [[${name}]]
@@ -86,16 +97,7 @@ function (add_module name)
         )
     endif()
 
-    target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
     cmake_language(EVAL CODE
         "cmake_language(DEFER CALL build_source_tree [[${name}]])"
-    )
-
-    set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
-    set_target_properties(${name} PROPERTIES 
-        FOLDER module
-        OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
-        INTERFACE "${arg_INTERFACE}"
     )
 endfunction()

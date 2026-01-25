@@ -2,7 +2,7 @@ include (module/mini_module_api)
 
 function (generate_static_init target)
     set(args PREFIX API INITIALIZE CLEANUP)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
