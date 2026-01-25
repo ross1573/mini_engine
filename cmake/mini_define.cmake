@@ -1,5 +1,5 @@
-macro (add_module_definitions)
-    list(APPEND COMPILE_DEFINITIONS ${ARGV} "\n")
+macro (module_global_definitions)
+    set_property(GLOBAL APPEND PROPERTY MODULE_DEFINITIONS ${ARGV} "\n")
 endmacro()
 
 if (WIN32)
@@ -40,30 +40,30 @@ else()
     message(FATAL_ERROR "unsupproted compiler: " ${CMAKE_CXX_COMPILER_ID})
 endif()
 
-add_module_definitions(
+module_global_definitions(
     ENGINE_PROJECT_NAME="${ENGINE_PROJECT_NAME}"
     ENGINE_PROJECT_VERSION="${ENGINE_PROJECT_VERSION}"
 )
 
-add_module_definitions(
+module_global_definitions(
     DEBUG=$<IF:$<CONFIG:Debug>,true,false>
 )
 
 # handle compiler specific definition here
-add_module_definitions(
+module_global_definitions(
     CLANG=$<IF:$<BOOL:${CLANG}>,true,false>
     GNUC=$<IF:$<BOOL:${GNUC}>,true,false>
     MSVC=$<IF:$<BOOL:${MSVC}>,true,false>
     APPLE_CLANG=$<IF:$<BOOL:${APPLE_CLANG}>,true,false>
 )
 
-add_module_definitions(
+module_global_definitions(
     PLATFORM_WINDOWS=$<IF:$<PLATFORM_ID:Windows>,true,false>
     PLATFORM_MACOS=$<IF:$<PLATFORM_ID:Darwin>,true,false>
     PLATFORM_LINUX=$<IF:$<PLATFORM_ID:Linux>,true,false>
 )
 
-add_module_definitions(
+module_global_definitions(
     ARCH_ARM64=$<IF:$<BOOL:${ARM64}>,true,false>
     ARCH_X86=$<IF:$<BOOL:${X86}>,true,false>
     ARCH_X86_64=$<IF:$<BOOL:${X86_64}>,true,false>
@@ -71,7 +71,7 @@ add_module_definitions(
 )
 
 if (MSVC)
-    add_module_definitions(
+    module_global_definitions(
         force_inline=msvc::forceinline
         no_inline=msvc::noinline
         emptyable_address=msvc::no_unique_address
@@ -80,7 +80,7 @@ if (MSVC)
         "diagnose_error(cond, msg)"
     )
 elseif (CLANG)
-    add_module_definitions(
+    module_global_definitions(
         force_inline=clang::always_inline
         no_inline=clang::noinline
         emptyable_address=no_unique_address

@@ -50,7 +50,5 @@ PUBLIC
     benchmark::benchmark
 )
 
-build_source_tree(mini.benchmark)
-
 add_subdirectory(string)
 add_subdirectory(concurrency)

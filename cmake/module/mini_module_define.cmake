@@ -1,17 +1,25 @@
 include(module/mini_module_api)
 
+function (module_compile_defintions name)
+    get_target_property(module_definitions ${name} MODULE_DEFINITIONS)
+    list(APPEND module_definitions "${ARGN}")
+    set_target_properties(${name} PROPERTIES MODULE_DEFINITIONS "${module_definitions}")
+endfunction()
+
 function (generate_define_header target)
     set(args PREFIX API)
-    set(multiVal "DEFINITIONS")
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "${multiVal}")
+    cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
 
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
     string(APPEND parsed_list "#ifndef ${api_upper}_DEFINE_H\n")
     string(APPEND parsed_list "#define ${api_upper}_DEFINE_H\n\n")
-    list(APPEND COMPILE_DEFINITIONS ${arg_DEFINITIONS})
 
-    foreach (definition ${COMPILE_DEFINITIONS})
+    get_target_property(module_definitions ${target} MODULE_DEFINITIONS)
+    get_property(target_definitions GLOBAL PROPERTY MODULE_DEFINITIONS)
+    list(APPEND target_definitions ${module_definitions})
+
+    foreach (definition ${target_definitions})
         # special case on new line
         if (definition STREQUAL "\n")
             string(APPEND parsed_list "\n")

@@ -45,4 +45,3 @@ PRIVATE
 )
 
 copy_d3d12(mini.d3d12)
-build_source_tree(mini.d3d12)

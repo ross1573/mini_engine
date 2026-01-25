@@ -37,5 +37,3 @@ PRIVATE
     "-framework Foundation"
     "-framework QuartzCore"
 )
-
-build_source_tree(mini.metal)

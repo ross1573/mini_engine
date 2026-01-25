@@ -48,8 +48,6 @@ else()
     target_link_options(mini.test PUBLIC -fsanitize=address)
 endif()
 
-build_source_tree(mini.test)
-
 add_subdirectory(bit)
 add_subdirectory(memory)
 add_subdirectory(math)

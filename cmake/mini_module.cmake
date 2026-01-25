@@ -5,7 +5,7 @@ include(module/mini_module_entry)
 include(module/mini_module_log)
 include(module/mini_module_source)
 
-macro (set_module_defines)
+macro (set_module_defines name)
     set(module_defines
         MODULE_NAME="${name}"
         MODULE_PREFIX="${prefix}"
@@ -16,17 +16,11 @@ macro (set_module_defines)
         "\n"
         ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
     )
-endmacro()
 
-macro (parse_module_type)
-    if (${ARGC} GREATER 1)
-        list(GET ARGN 0 first_arg)
-        string(TOUPPER ${first_arg} ${first_arg})
-        
-        if (${first_arg} MATCHES "^STATIC$|^SHARED$")
-            set(type ${first_arg})
-        endif()
-    endif()
+    set_target_properties(${name} 
+    PROPERTIES 
+        MODULE_DEFINITIONS "${module_defines}"
+    )
 endmacro()
 
 function (add_module name)
@@ -42,19 +36,18 @@ function (add_module name)
         "INTERFACE"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
-    parse_module_type()
+    
+    if (${ARGC} GREATER 1)
+        list(GET ARGN 0 first_arg)
+        string(TOUPPER ${first_arg} ${first_arg})
+        
+        if (${first_arg} MATCHES "^STATIC$|^SHARED$")
+            set(type ${first_arg})
+        endif()
+    endif()
 
     add_library(${name} ${type})
     generate_api_name(${name} PREFIX ${arg_PREFIX} API ${arg_API})
-
-    if (NOT arg_NO_DEFINE_HEADER)
-        set_module_defines()
-        generate_define_header(${name}
-            API ${api}
-            PREFIX ${prefix}
-            DEFINITIONS ${module_defines}
-        )
-    endif()
 
     if (NOT arg_NO_API_HEADER)
         generate_api_header(${name} PRIVATE 
@@ -70,24 +63,39 @@ function (add_module name)
         )
     endif()
 
-    if (NOT arg_NO_MODULE_ENTRY)
-        if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
-            set(arg_INTERFACE "")
-        endif()
+    if (NOT arg_NO_DEFINE_HEADER)
+        set_module_defines(${name})
+        cmake_language(EVAL CODE "
+            cmake_language(DEFER CALL generate_define_header [[${name}]]
+                API [[${api}]]
+                PREFIX [[${prefix}]]
+            )"
+        )
+    endif()
 
-        generate_module_entry(${name} 
-            API ${api}
-            PREFIX ${prefix}
-            INTERFACE ${arg_INTERFACE}
+    if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
+        set(arg_INTERFACE "")
+    endif()
+    if (NOT arg_NO_MODULE_ENTRY)
+        cmake_language(EVAL CODE "
+            cmake_language(DEFER CALL generate_module_entry [[${name}]]
+                API [[${api}]]
+                PREFIX [[${prefix}]]
+                INTERFACE [[${arg_INTERFACE}]]
+            )"
         )
     endif()
 
     target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-    set_target_properties(${name} PROPERTIES 
-        FOLDER module
-        OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
+    cmake_language(EVAL CODE
+        "cmake_language(DEFER CALL build_source_tree [[${name}]])"
     )
 
     set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
+    set_target_properties(${name} PROPERTIES 
+        FOLDER module
+        OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
+        INTERFACE "${arg_INTERFACE}"
+    )
 endfunction()

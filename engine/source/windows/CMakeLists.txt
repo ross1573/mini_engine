@@ -37,5 +37,3 @@ target_precompile_headers(mini.windows
 PRIVATE
     windows_include.h
 )
-
-build_source_tree(mini.windows)

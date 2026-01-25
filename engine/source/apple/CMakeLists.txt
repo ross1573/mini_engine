@@ -35,6 +35,4 @@ PUBLIC
     include/
 )
 
-build_source_tree(mini.apple)
-
 add_subdirectory(macos)

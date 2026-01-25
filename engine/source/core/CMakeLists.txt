@@ -225,5 +225,3 @@ endif()
 if (MSVC)
     target_compile_options(mini.core PRIVATE /wd4582)
 endif()
-
-build_source_tree(mini.core)

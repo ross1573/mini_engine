@@ -74,7 +74,7 @@ public:
     static SharedPtr<ModuleHandle> Load(StringView);
 };
 
-class DynamicModuleHandle : public ModuleHandle {
+class CORE_API DynamicModuleHandle : public ModuleHandle {
 public:
     typedef typename ModuleHandle::NativeModule NativeModule;
     typedef ModuleInterface* (*StartFunc)();
@@ -122,7 +122,7 @@ public:
     }
 };
 
-class StaticModuleHandle : public ModuleHandle {
+class CORE_API StaticModuleHandle : public ModuleHandle {
 public:
     typedef typename ModuleHandle::NativeModule NativeModule;
 

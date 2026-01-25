@@ -56,5 +56,3 @@ PROPERTIES
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
     set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT mini.launcher)
 endif()
-
-build_source_tree(mini.launcher)
