@@ -1,5 +1,5 @@
 add_module(mini.platform
-    ENTRY_INTERFACE mini::Platform
+    INTERFACE mini::Platform
 )
 
 target_sources(mini.platform

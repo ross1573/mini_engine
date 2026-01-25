@@ -1,6 +1,9 @@
 include(mini_util)
-include(mini_module_generate)
-include(mini_module_source)
+include(module/mini_module_api)
+include(module/mini_module_define)
+include(module/mini_module_entry)
+include(module/mini_module_log)
+include(module/mini_module_source)
 
 macro (set_module_defines)
     set(module_defines
@@ -36,14 +39,13 @@ function (add_module name)
     set(args
         "PREFIX" 
         "API"
-        "ENTRY_INTERFACE"
-        "ENTRY_IMPORT"
+        "INTERFACE"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
     parse_module_type()
 
     add_library(${name} ${type})
-    generate_api_name(${name} API ${arg_API} PREFIX ${arg_PREFIX})
+    generate_api_name(${name} PREFIX ${arg_PREFIX} API ${arg_API})
 
     if (NOT arg_NO_DEFINE_HEADER)
         set_module_defines()
@@ -55,21 +57,28 @@ function (add_module name)
     endif()
 
     if (NOT arg_NO_API_HEADER)
-        generate_api_header(${name} PRIVATE API ${api} PREFIX ${prefix})
+        generate_api_header(${name} PRIVATE 
+            PREFIX ${prefix}
+            API ${api}
+        )
     endif()
 
     if (NOT arg_NO_API_LOG)
-        generate_module_log(${name})
+        generate_module_log(${name} 
+            PREFIX ${prefix}
+            API ${api}
+        )
     endif()
 
     if (NOT arg_NO_MODULE_ENTRY)
-        if (NOT DEFINED arg_ENTRY_INTERFACE OR arg_ENTRY_INTERFACE STREQUAL "")
-            set(arg_ENTRY_INTERFACE "")
+        if (NOT DEFINED arg_INTERFACE OR arg_INTERFACE STREQUAL "")
+            set(arg_INTERFACE "")
         endif()
 
-        generate_module_entry(${name}
-            INTERFACE ${arg_ENTRY_INTERFACE}
-            IMPORT ${arg_ENTRY_IMPORT}
+        generate_module_entry(${name} 
+            API ${api}
+            PREFIX ${prefix}
+            INTERFACE ${arg_INTERFACE}
         )
     endif()
 

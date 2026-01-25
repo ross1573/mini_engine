@@ -1,7 +1,7 @@
 include(${ENGINE_EXTERNAL_DIR}/d3d12/d3d12.cmake)
 
 add_module(mini.d3d12
-    ENTRY_INTERFACE mini::D3D12
+    INTERFACE mini::D3D12
 )
 
 target_sources(mini.d3d12

@@ -30,7 +30,7 @@ void MiniClock()
     mini::Clock::TimePoint end = mini::Clock::Now();
     mini::Clock::Duration diff = end - start;
 
-    mini::test::logger.Log("[{}ms] Elapsed: {}ns", MilliSecT, diff.Count());
+    mini::test::Log("[{}ms] Elapsed: {}ns", MilliSecT, diff.Count());
     static_assert(mini::SameAsT<decltype(diff), mini::NanoSeconds>);
 }
 
@@ -46,7 +46,7 @@ void StdClock()
     auto end = std::chrono::high_resolution_clock::now();
     auto diff = end - start;
 
-    mini::test::logger.Log("[{}ms] Standard Elapsed: {}ns", MilliSecT, diff.count());
+    mini::test::Log("[{}ms] Standard Elapsed: {}ns", MilliSecT, diff.count());
     static_assert(mini::SameAsT<decltype(diff), std::chrono::nanoseconds>);
 }
 

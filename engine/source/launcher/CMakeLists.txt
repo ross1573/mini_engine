@@ -1,3 +1,6 @@
+include(module/mini_module_define)
+include(module/mini_module_static)
+
 if (WIN32)
     add_executable(mini.launcher WIN32 windows/win_main.cpp)
 elseif (APPLE)

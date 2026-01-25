@@ -1,5 +1,5 @@
 add_module(mini.macos
-    ENTRY_INTERFACE mini::Macos
+    INTERFACE mini::Macos
 )
 
 target_sources(mini.macos

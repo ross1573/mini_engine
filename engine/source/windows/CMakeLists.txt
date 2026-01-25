@@ -1,5 +1,5 @@
 add_module(mini.windows
-    ENTRY_INTERFACE mini::Windows
+    INTERFACE mini::Windows
 )
 
 target_sources(mini.windows

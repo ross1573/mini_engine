@@ -1,5 +1,5 @@
 add_module(mini.graphics
-    ENTRY_INTERFACE mini::Graphics
+    INTERFACE mini::Graphics
 )
 
 target_sources(mini.graphics

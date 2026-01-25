@@ -53,8 +53,8 @@ export import :atomic_platform_wait;
 export import :atomic;
 export import :mutex;
 
-export import :static_module;
 export import :module_system;
+export import :module_initializer;
 
 export import :duration;
 export import :time_point;

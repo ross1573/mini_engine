@@ -16,7 +16,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(-Wno-everything -Wno-dev)
 endif()
 
-include(Fmt)
+include(external/Fmt)
 
 add_subdirectory(convert_utf)
 set_external(convert_utf)

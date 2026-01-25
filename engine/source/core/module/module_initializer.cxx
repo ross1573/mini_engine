@@ -1,4 +1,4 @@
-export module mini.core:static_module;
+export module mini.core:module_initializer;
 
 import :type;
 import :string_view;

@@ -1,7 +1,6 @@
 add_module(mini.core 
     NO_MODULE_LOG 
-    ENTRY_INTERFACE "mini::Core"
-    ENTRY_IMPORT ":interface"
+    NO_MODULE_ENTRY
 )
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
@@ -195,6 +194,7 @@ PUBLIC
 
 PRIVATE
     $<$<PLATFORM_ID:Windows>:internal/min_windows.h>
+    interface.cpp
 )
 
 target_precompile_headers(mini.core 

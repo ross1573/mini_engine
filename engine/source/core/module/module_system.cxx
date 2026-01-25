@@ -157,12 +157,12 @@ public:
     typedef typename Handle::NativeModule NativeModule;
     typedef typename Handle::CallbackFunc CallbackFunc;
     typedef T Interface;
-    typedef T& InterfaceRef;
-    typedef T* InterfacePtr;
+    typedef T& InterfaceReference;
+    typedef T* InterfacePointer;
 
 private:
     SharedPtr<Handle> m_handle;
-    Interface* m_interface;
+    InterfacePointer m_interface;
 
 public:
     Module() noexcept;
@@ -189,7 +189,7 @@ public:
     bool RemoveAtExit(CallbackFunc) noexcept;
 
     String LibraryName() const noexcept;
-    InterfacePtr GetInterface() const noexcept;
+    InterfacePointer GetInterface() const noexcept;
     NativeModule NativeHandle() const noexcept;
 
     template <RelatedInterfaceToT<T> U>
@@ -197,8 +197,8 @@ public:
     template <RelatedInterfaceToT<T> U>
     bool HandleEquals(Module<U> const&) const noexcept;
 
-    InterfaceRef operator*() const noexcept;
-    InterfacePtr operator->() const noexcept;
+    InterfaceReference operator*() const noexcept;
+    InterfacePointer operator->() const noexcept;
 
     Module& operator=(Module const&) noexcept = default;
     Module& operator=(Module&&) noexcept = default;
@@ -250,7 +250,7 @@ template <ModuleInterfaceT T>
 template <RelatedInterfaceToT<T> U>
 inline Module<T>::Module(Module<U> const& other) noexcept
     : m_handle(other.m_handle)
-    , m_interface(static_cast<U>(other.m_interface))
+    , m_interface(static_cast<U*>(other.m_interface))
 {
 }
 
@@ -259,7 +259,7 @@ template <RelatedInterfaceToT<T> U>
 inline Module<T>::Module(Module<U>&& other) noexcept
     : m_handle(MoveArg(other.m_handle))
 {
-    m_interface = static_cast<U>(other.m_interface);
+    m_interface = static_cast<U*>(other.m_interface);
     other.m_interface = nullptr;
 }
 
@@ -318,7 +318,7 @@ inline String Module<T>::LibraryName() const noexcept
 }
 
 template <ModuleInterfaceT T>
-inline Module<T>::InterfacePtr Module<T>::GetInterface() const noexcept
+inline Module<T>::InterfacePointer Module<T>::GetInterface() const noexcept
 {
     return m_interface;
 }
@@ -344,13 +344,13 @@ bool Module<T>::HandleEquals(Module<U> const& other) const noexcept
 }
 
 template <ModuleInterfaceT T>
-inline Module<T>::InterfaceRef Module<T>::operator*() const noexcept
+inline Module<T>::InterfaceReference Module<T>::operator*() const noexcept
 {
     return *m_interface;
 }
 
 template <ModuleInterfaceT T>
-inline Module<T>::InterfacePtr Module<T>::operator->() const noexcept
+inline Module<T>::InterfacePointer Module<T>::operator->() const noexcept
 {
     return m_interface;
 }

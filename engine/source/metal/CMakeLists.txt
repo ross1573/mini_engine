@@ -1,5 +1,5 @@
 add_module(mini.metal
-    ENTRY_INTERFACE mini::Metal
+    INTERFACE mini::Metal
 )
 
 target_sources(mini.metal

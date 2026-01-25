@@ -1,5 +1,5 @@
 add_module(mini.engine
-    ENTRY_INTERFACE mini::Engine
+    INTERFACE mini::Engine
 )
 
 target_sources(mini.engine
