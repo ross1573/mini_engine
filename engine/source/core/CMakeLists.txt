@@ -193,7 +193,7 @@ PUBLIC
         core.cxx
 
 PRIVATE
-    $<$<PLATFORM_ID:Windows>:internal/min_windows.h>
+    $<$<PLATFORM_ID:Windows>:internal/win_include.h>
     interface.cpp
 )
 
@@ -207,6 +207,8 @@ target_include_directories(mini.core
 PUBLIC
     debug/include
     include/
+
+PRIVATE
     internal/
 )
 

@@ -1,6 +1,6 @@
 module;
 
-#include "internal/min_windows.h"
+#include "win_include.h"
 
 export module mini.core:module_platform;
 
