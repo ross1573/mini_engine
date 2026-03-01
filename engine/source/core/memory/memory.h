@@ -8,15 +8,8 @@
 #define CONSTEXPR_DESTRUCT_AT  std::destroy_at
 
 // TODO: only compiler can do constexpr (de)allocate
-#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{}.allocate(x)
-#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{}.deallocate(x, size)
-
-// TODO: MSVC throws an error when compiling with nothrow tag
-#if MSVC // clang-format off
-#  define NOTHROW_T
-#else
-#  define NOTHROW_T ,std::nothrow_t{}
-#endif // clang-format on
+#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{ }.allocate(x)
+#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{ }.deallocate(x, size)
 
 #if HAS_BUILTIN(__builtin_addressof)
 #  define BUILTIN_ADDRESS_OF __builtin_addressof

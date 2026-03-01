@@ -26,10 +26,10 @@ export template <typename T>
 struct Allocator;
 
 template <typename AllocT>
-struct IsDefaultAlloc : FalseT {};
+struct IsDefaultAlloc : FalseT { };
 
 template <typename T>
-struct IsDefaultAlloc<Allocator<T>> : TrueT {};
+struct IsDefaultAlloc<Allocator<T>> : TrueT { };
 
 export template <typename T>
 concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename T::Pointer loc) {
@@ -74,15 +74,19 @@ struct Allocator {
 
     [[nodiscard]] inline constexpr AllocationResult<T> Allocate(SizeT size) const noexcept
     {
-        Pointer ptr = nullptr;
         if consteval {
-            ptr = CONSTEXPR_ALLOC(T, size);
-        } else {
-            ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(size * sizeof(T) NOTHROW_T));
-            VERIFY(ptr, "allocation failed. possible out-of-memory");
+            Pointer ptr = CONSTEXPR_ALLOC(T, size);
+            return { .pointer = ptr, .capacity = size };
         }
 
-        return { .pointer = ptr, .capacity = size };
+        try {
+            Pointer ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(size * sizeof(T)));
+            return { .pointer = ptr, .capacity = size };
+        } catch (...) {
+            ASSERT(true, "allocation failed. possible out-of-memory");
+        }
+
+        return { .pointer = nullptr, .capacity = size };
     }
 
     [[nodiscard]] inline constexpr AllocationResult<T> Increment(SizeT oldCap,
@@ -104,7 +108,11 @@ struct Allocator {
             return;
         }
 
-        BUILTIN_OPERATOR_DELETE(memory::MakeVoidPtr(loc) NOTHROW_T);
+        try {
+            BUILTIN_OPERATOR_DELETE(memory::MakeVoidPtr(loc));
+        } catch (...) {
+            ASSERT(true, "deallocation failed");
+        }
     }
 };
 
@@ -126,7 +134,7 @@ export template <typename U, typename T>
 inline constexpr mini::Allocator<U> RebindAllocator(T const&)
     requires IsDefaultAlloc<T>::value
 {
-    return mini::Allocator<U>{};
+    return mini::Allocator<U>{ };
 }
 
 export template <typename T, typename U>
@@ -163,7 +171,7 @@ public:
 export template <typename U>
 inline constexpr Allocator<U> RebindAllocator(UnboundAllocator)
 {
-    return mini::Allocator<U>{};
+    return mini::Allocator<U>{ };
 }
 
 export inline constexpr bool operator==(UnboundAllocator const&, UnboundAllocator const&)
@@ -210,12 +218,12 @@ struct allocator_traits<T<ValueT>> {
                                                                                   size_type n)
     {
         mini::AllocationResult<ValueT> result = alloc.Allocate(n);
-        return { .ptr = result.pointer, .count = n };
+        return { .ptr = result.pointer, .count = result.capacity };
     }
 
     static constexpr void deallocate(AllocT& alloc, pointer ptr, size_type n)
     {
-        alloc.deallocate(ptr, n);
+        alloc.Deallocate(ptr, n);
     }
 
     template <typename U, typename... Args>
