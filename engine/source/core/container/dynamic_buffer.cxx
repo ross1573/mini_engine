@@ -40,7 +40,7 @@ public:
     }
 
     inline constexpr DynamicBuffer(DynamicBuffer&& other) noexcept
-        : m_alloc{}
+        : m_alloc{ }
         , m_capacity(Exchange(other.m_capacity, SizeT(0)))
         , m_buffer(Exchange(other.m_buffer, nullptr))
     {
@@ -55,7 +55,7 @@ public:
     }
 
     inline constexpr DynamicBuffer(SizeT capacity) noexcept(NoThrowAllocatorT<AllocT, T>)
-        : m_alloc{}
+        : m_alloc{ }
         , m_capacity(0)
         , m_buffer(nullptr)
     {
@@ -103,7 +103,10 @@ public:
     [[nodiscard]] inline constexpr DynamicBuffer Increment(SizeT size) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocationResult<T> newBuffer = m_alloc.Increment(m_capacity, size);
+        SizeT capacity = m_capacity < size ? m_capacity + size : m_capacity << 1;
+        ASSERT(capacity != 0, "invalid capacity on buffer increment");
+
+        AllocationResult<T> newBuffer = m_alloc.Allocate(capacity);
         return DynamicBuffer(newBuffer.pointer, newBuffer.capacity, m_alloc);
     }
 

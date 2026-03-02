@@ -69,7 +69,10 @@ public:
     [[nodiscard]] inline constexpr TrivialBuffer Increment(SizeT size, AllocT const& alloc) const
         noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        AllocationResult<T> newBuffer = alloc.Increment(m_capacity, size);
+        SizeT capacity = m_capacity < size ? m_capacity + size : m_capacity << 1;
+        ASSERT(capacity != 0, "invalid capacity on buffer increment");
+
+        AllocationResult<T> newBuffer = alloc.Allocate(capacity);
         return TrivialBuffer(newBuffer.pointer, newBuffer.capacity);
     }
 

@@ -38,7 +38,6 @@ concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename 
     requires PointerT<typename T::ConstPointer>;
 
     { alloc.Allocate(s) } -> SameAsT<AllocationResult<typename T::Value>>;
-    { alloc.Increment(s, s) } -> SameAsT<AllocationResult<typename T::Value>>;
     { alloc.Deallocate(loc, s) };
 };
 
@@ -49,7 +48,6 @@ export template <typename AllocT, typename T>
 concept NoThrowAllocatorT =
     AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
     NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
-    NoThrowCallableT<decltype(&AllocT::Increment), SizeT, SizeT> &&
     NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, SizeT>;
 
 template <typename AllocT, typename T>
@@ -87,14 +85,6 @@ struct Allocator {
         }
 
         return { .pointer = nullptr, .capacity = size };
-    }
-
-    [[nodiscard]] inline constexpr AllocationResult<T> Increment(SizeT oldCap,
-                                                                 SizeT size) const noexcept
-    {
-        SizeT newCap = oldCap < size ? oldCap + size : oldCap << 1;
-        ASSERT(newCap != 0, "invalid capacity on buffer increment");
-        return Allocate(newCap);
     }
 
     inline constexpr void Deallocate(Pointer loc, SizeT size) const noexcept
@@ -151,12 +141,6 @@ public:
 
     template <typename T>
     AllocationResult<void> Allocate(T&&) const noexcept
-    {
-        NEVER_CALLED("dummy allocator should be rebinded");
-    }
-
-    template <typename T>
-    AllocationResult<void> Increment(T&&, T&&) const noexcept
     {
         NEVER_CALLED("dummy allocator should be rebinded");
     }

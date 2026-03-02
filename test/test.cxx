@@ -141,8 +141,6 @@ struct TEST_API TestAlloc {
     DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
     AllocationResult<TestObject> Allocate(SizeT s) { return Allocator<TestObject>{}.Allocate(s); }
-    AllocationResult<TestObject> Increment(SizeT o, SizeT s) { return Allocator<TestObject>{}.Increment(o, s); }
-
     void Deallocate(Pointer ptr, SizeT s) { Allocator<TestObject>{}.Deallocate(ptr, s); }
 };
 
