@@ -1,0 +1,7 @@
+{
+    "version": 10,
+    "include": [
+        "cmake/presets/macos.json",
+        "cmake/presets/windows.json"
+    ]
+}
