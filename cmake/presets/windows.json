@@ -13,20 +13,11 @@
             "binaryDir": "${sourceDir}/build"
         },
         {
-            "name": "windows-debug",
-            "displayName": "windows debug",
+            "name": "windows-default",
+            "displayName": "windows default",
             "inherits": "windows",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "BUILD_SHARED_LIBS": "ON"
-            }
-        },
-        {
-            "name": "windows-release",
-            "displayName": "windows release",
-            "inherits": "windows",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "BUILD_SHARED_LIBS": "ON"
             }
         },
@@ -40,18 +31,9 @@
             }
         },
         {
-            "name": "windows-debug-test",
+            "name": "windows-test",
             "displayName": "windows debug with test and benchmark",
-            "inherits": "windows-debug",
-            "cacheVariables": {
-                "INCLUDE_TEST": "ON",
-                "INCLUDE_BENCHMARK": "ON"
-            }
-        },
-        {
-            "name": "windows-release-test",
-            "displayName": "windows release with test and benchmark",
-            "inherits": "windows-release",
+            "inherits": "windows-default",
             "cacheVariables": {
                 "INCLUDE_TEST": "ON",
                 "INCLUDE_BENCHMARK": "ON"
