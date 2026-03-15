@@ -4,7 +4,6 @@
         {
             "name": "windows",
             "displayName": "windows config",
-            "hidden": true,
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
