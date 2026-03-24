@@ -221,9 +221,9 @@ private:
     constexpr void DestroyBuffer();
     constexpr void ResizeWithAlloc(SizeT, Value, SizeT);
     constexpr void SwitchToLarge(LargeBuffer&&, SizeT);
-    constexpr LargeBuffer SwitchToSmall(Pointer, SizeT);
+    constexpr void SwitchToSmall(Pointer, SizeT);
     template <StringLikeT<T> U>
-    constexpr ConstPointer GetViewData(U const&, SizeT);
+    constexpr ConstPointer GetSlicedViewData(U const&, SizeT);
 
     constexpr void InitEmpty();
     constexpr void InitWithCopy(BasicString const&);
@@ -255,7 +255,7 @@ private:
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString() noexcept
-    : m_alloc{}
+    : m_alloc{ }
 {
     InitEmpty();
 }
@@ -271,7 +271,7 @@ inline constexpr BasicString<T, AllocT>::~BasicString()
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString const& other)
-    : m_alloc{}
+    : m_alloc{ }
 {
     InitWithCopy(other);
 }
@@ -285,7 +285,7 @@ inline constexpr BasicString<T, AllocT>::BasicString(BasicString const& other, A
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::BasicString(BasicString&& other)
-    : m_alloc{}
+    : m_alloc{ }
 {
     if (other.LargeCapacity() && m_alloc != other.m_alloc) {
         InitWithCopy(other);
@@ -368,7 +368,7 @@ template <StringViewLikeT<T, AllocT> U>
 inline constexpr BasicString<T, AllocT>::BasicString(U const& src, SizeT size, AllocT const& alloc)
     : m_alloc(alloc)
 {
-    ConstPointer data = GetViewData(src, size);
+    ConstPointer data = GetSlicedViewData(src, size);
     Pointer loc = InitWithSize(size);
     memory::MemCopy(loc, data, size);
 }
@@ -400,7 +400,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
 inline constexpr void BasicString<T, AllocT>::Assign(U const& src, SizeT size)
 {
-    ConstPointer data = GetViewData(src, size);
+    ConstPointer data = GetSlicedViewData(src, size);
     AssignWithSource(data, size);
 }
 
@@ -456,7 +456,7 @@ template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
 inline constexpr void BasicString<T, AllocT>::Append(U const& src, SizeT size)
 {
-    ConstPointer data = GetViewData(src, size);
+    ConstPointer data = GetSlicedViewData(src, size);
     AppendWithSource(data, size);
 }
 
@@ -526,7 +526,7 @@ inline constexpr void BasicString<T, AllocT>::Insert(SizeT index, U const& src, 
         return;
     }
 
-    ConstPointer data = GetViewData(src, len);
+    ConstPointer data = GetSlicedViewData(src, len);
 
     AssertValidIndex(index);
     InsertWithSource(index, data, len);
@@ -590,7 +590,7 @@ inline constexpr void BasicString<T, AllocT>::Insert(ConstIterator iter, U const
         return;
     }
 
-    ConstPointer data = GetViewData(src, len);
+    ConstPointer data = GetSlicedViewData(src, len);
 
     AssertValidIterator(iter);
     InsertWithSource(index, data, len);
@@ -799,7 +799,7 @@ inline constexpr void BasicString<T, AllocT>::Reserve(SizeT size)
 
     if (!LargeCapacity()) {
         LargeBuffer buffer(size + 1, m_alloc);
-        memory::MemCopy(buffer.Data(), m_storage.s.buffer.Data(), m_storage.s.size);
+        memory::MemCopy(buffer.Data(), m_storage.s.buffer.Data(), SmallCapacity);
         SwitchToLarge(MoveArg(buffer), m_storage.s.size);
     } else {
         LargeBuffer buffer = m_storage.l.buffer.Resize(size + 1, m_alloc);
@@ -1086,21 +1086,18 @@ inline constexpr void BasicString<T, AllocT>::SwitchToLarge(LargeBuffer&& buffer
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::LargeBuffer
-BasicString<T, AllocT>::SwitchToSmall(Pointer ptr, SizeT size)
+inline constexpr void BasicString<T, AllocT>::SwitchToSmall(Pointer ptr, SizeT size)
 {
-    LargeBuffer tmpBuffer(MoveArg(m_storage.l.buffer));
     memory::MemCopy(m_storage.s.buffer.Data(), ptr, size);
     m_storage.s.buffer.Data()[size] = Value(0);
     m_storage.s.layout = 0;
     m_storage.s.size = static_cast<byte>(size);
-    return tmpBuffer;
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 template <StringLikeT<T> U>
-constexpr BasicString<T, AllocT>::ConstPointer BasicString<T, AllocT>::GetViewData(U const& src,
-                                                                                   SizeT size)
+constexpr BasicString<T, AllocT>::ConstPointer
+BasicString<T, AllocT>::GetSlicedViewData(U const& src, SizeT size)
 {
     if constexpr (ExplicitlyConvertibleToT<U, T const*>) {
         BasicStringView<T> view(static_cast<T const*>(src), size);
@@ -1212,7 +1209,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPointer ptr,
         return;
     }
 
-    memory::MemMove(Data(), ptr, len);
+    memory::MemMove(Data(), ptr, SmallCapacity);
     SetSizeWithNullTerminator(len);
 }
 
