@@ -71,7 +71,8 @@ private:
         PACKED_STRUCT_END
     };
 
-    static constexpr SizeT AllocatedSize = (sizeof(LargeStorage) / sizeof(T)) - 2;
+    static constexpr SizeT StorageSize = sizeof(LargeStorage);
+    static constexpr SizeT AllocatedSize = (StorageSize / sizeof(T)) - 2;
     static constexpr SizeT SmallCapacity = AllocatedSize > 2 ? AllocatedSize : 2;
     typedef memory::StaticBuffer<T, SmallCapacity + 1> SmallBuffer;
 
@@ -1209,7 +1210,7 @@ inline constexpr void BasicString<T, AllocT>::AssignWithSource(ConstPointer ptr,
         return;
     }
 
-    memory::MemMove(Data(), ptr, SmallCapacity);
+    memory::MemMove(Data(), ptr, len);
     SetSizeWithNullTerminator(len);
 }
 

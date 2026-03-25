@@ -20,8 +20,6 @@ static void NoOp(benchmark::State& state)
     for (; state.KeepRunning(););
 }
 
-BENCHMARK(NoOp);
-
 static void CtorEmpty(benchmark::State& state)
 {
     for (auto _ : state) {
@@ -138,21 +136,6 @@ static void CtorIter_std(benchmark::State& state)
     }
 }
 
-BENCHMARK(CtorEmpty);
-BENCHMARK(CtorEmpty_std);
-BENCHMARK(CtorCh);
-BENCHMARK(CtorCh_std);
-BENCHMARK(CtorShort);
-BENCHMARK(CtorShort_std);
-BENCHMARK(CtorLong);
-BENCHMARK(CtorLong_std);
-BENCHMARK(CtorCopy);
-BENCHMARK(CtorCopy_std);
-BENCHMARK(CtorMove);
-BENCHMARK(CtorMove_std);
-BENCHMARK(CtorIter);
-BENCHMARK(CtorIter_std);
-
 static void AssignOther(benchmark::State& state)
 {
     String str(shortStr);
@@ -257,17 +240,6 @@ static void AssignLong_std(benchmark::State& state)
     }
 }
 
-BENCHMARK(AssignOther);
-BENCHMARK(AssignOther_std);
-BENCHMARK(AssignCopy);
-BENCHMARK(AssignCopy_std);
-BENCHMARK(AssignMove);
-BENCHMARK(AssignMove_std);
-BENCHMARK(AssignShort);
-BENCHMARK(AssignShort_std);
-BENCHMARK(AssignLong);
-BENCHMARK(AssignLong_std);
-
 static void AppendShort(benchmark::State& state)
 {
     for (auto _ : state) {
@@ -306,11 +278,6 @@ static void AppendLong_std(benchmark::State& state)
     }
 }
 
-BENCHMARK(AppendShort);
-BENCHMARK(AppendShort_std);
-BENCHMARK(AppendLong);
-BENCHMARK(AppendLong_std);
-
 static void InsertShort(benchmark::State& state)
 {
     for (auto _ : state) {
@@ -348,6 +315,39 @@ static void InsertLong_std(benchmark::State& state)
         benchmark::DoNotOptimize(str);
     }
 }
+
+BENCHMARK(NoOp);
+
+BENCHMARK(CtorEmpty);
+BENCHMARK(CtorEmpty_std);
+BENCHMARK(CtorCh);
+BENCHMARK(CtorCh_std);
+BENCHMARK(CtorShort);
+BENCHMARK(CtorShort_std);
+BENCHMARK(CtorLong);
+BENCHMARK(CtorLong_std);
+BENCHMARK(CtorCopy);
+BENCHMARK(CtorCopy_std);
+BENCHMARK(CtorMove);
+BENCHMARK(CtorMove_std);
+BENCHMARK(CtorIter);
+BENCHMARK(CtorIter_std);
+
+BENCHMARK(AssignOther);
+BENCHMARK(AssignOther_std);
+BENCHMARK(AssignCopy);
+BENCHMARK(AssignCopy_std);
+BENCHMARK(AssignMove);
+BENCHMARK(AssignMove_std);
+BENCHMARK(AssignShort);
+BENCHMARK(AssignShort_std);
+BENCHMARK(AssignLong);
+BENCHMARK(AssignLong_std);
+
+BENCHMARK(AppendShort);
+BENCHMARK(AppendShort_std);
+BENCHMARK(AppendLong);
+BENCHMARK(AppendLong_std);
 
 BENCHMARK(InsertShort);
 BENCHMARK(InsertShort_std);
