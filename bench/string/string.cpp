@@ -162,6 +162,32 @@ static void AssignOther_std(benchmark::State& state)
     }
 }
 
+static void AssignOther2(benchmark::State& state)
+{
+    String str(shortStr);
+    String str2(longStr);
+    for (auto _ : state) {
+        String str3;
+        str3 = str2;
+        benchmark::DoNotOptimize(str3);
+        str3 = str;
+        benchmark::DoNotOptimize(str3);
+    }
+}
+
+static void AssignOther2_std(benchmark::State& state)
+{
+    std::string str(shortStr);
+    std::string str2(longStr);
+    for (auto _ : state) {
+        std::string str3;
+        str3 = str2;
+        benchmark::DoNotOptimize(str3);
+        str3 = str;
+        benchmark::DoNotOptimize(str3);
+    }
+}
+
 static void AssignCopy(benchmark::State& state)
 {
     String str(shortStr);
@@ -335,6 +361,8 @@ BENCHMARK(CtorIter_std);
 
 BENCHMARK(AssignOther);
 BENCHMARK(AssignOther_std);
+BENCHMARK(AssignOther2);
+BENCHMARK(AssignOther2_std);
 BENCHMARK(AssignCopy);
 BENCHMARK(AssignCopy_std);
 BENCHMARK(AssignMove);
