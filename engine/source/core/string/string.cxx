@@ -117,6 +117,7 @@ public:
     template <ForwardIteratableByT<T> Iter>
     constexpr BasicString(Iter, Iter, AllocT const& = AllocT());
 
+    constexpr void Assign(BasicString const&);
     constexpr void Assign(BasicString&&);
     template <StringLikeT<T> U>
     constexpr void Assign(U const&);
@@ -403,6 +404,17 @@ inline constexpr void BasicString<T, AllocT>::Assign(U const& src, SizeT size)
 {
     ConstPointer data = GetSlicedViewData(src, size);
     AssignWithSource(data, size);
+}
+
+template <CharT T, AllocatorT<T> AllocT>
+inline constexpr void BasicString<T, AllocT>::Assign(BasicString const& other)
+{
+    if (other.LargeCapacity()) {
+        AssignWithAlloc(other.m_storage.l.buffer.Data(), other.m_storage.l.size);
+    } else {
+        DestroyBuffer();
+        m_storage = other.m_storage;
+    }
 }
 
 template <CharT T, AllocatorT<T> AllocT>
