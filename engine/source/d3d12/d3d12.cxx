@@ -4,7 +4,7 @@ import mini.graphics;
 import mini.windows;
 
 export import :device;
-export import :render_context;
+export import :renderer;
 export import :swap_chain;
 
 extern "C" __declspec(dllexport) const char* D3D12SDKPath = "./";

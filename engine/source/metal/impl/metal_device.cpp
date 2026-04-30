@@ -3,7 +3,7 @@ module mini.metal;
 import mini.graphics;
 import mini.apple;
 import :swap_chain;
-import :render_context;
+import :renderer;
 
 namespace mini::metal {
 

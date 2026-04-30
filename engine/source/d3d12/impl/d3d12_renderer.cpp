@@ -2,7 +2,7 @@ module mini.d3d12;
 
 import mini.core;
 import :device;
-import :render_context;
+import :renderer;
 import :swap_chain;
 import :command_queue;
 

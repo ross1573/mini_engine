@@ -6,7 +6,7 @@ import mini.engine;
 import :log;
 import :swap_chain;
 import :command_queue;
-import :render_context;
+import :renderer;
 
 namespace mini::d3d12 {
 

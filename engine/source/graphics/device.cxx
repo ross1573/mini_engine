@@ -1,7 +1,7 @@
 export module mini.graphics:device;
 
 import :common;
-import :render_context;
+import :renderer;
 import :swap_chain;
 
 namespace mini::graphics {

@@ -4,7 +4,7 @@ import mini.graphics;
 import mini.windows;
 
 import :device;
-import :render_context;
+import :renderer;
 import :swap_chain;
 
 namespace mini {

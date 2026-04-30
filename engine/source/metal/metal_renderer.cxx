@@ -1,4 +1,4 @@
-export module mini.metal:render_context;
+export module mini.metal:renderer;
 
 import mini.core;
 import mini.graphics;

@@ -1,4 +1,4 @@
-export module mini.graphics:render_context;
+export module mini.graphics:renderer;
 
 import mini.core;
 

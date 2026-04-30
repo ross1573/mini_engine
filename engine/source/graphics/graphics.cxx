@@ -5,7 +5,7 @@ import mini.core;
 export import :common;
 export import :interface;
 export import :device;
-export import :render_context;
+export import :renderer;
 export import :swap_chain;
 
 namespace mini {

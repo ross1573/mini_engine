@@ -2,7 +2,7 @@ export module mini.metal;
 
 export import :device;
 export import :swap_chain;
-export import :render_context;
+export import :renderer;
 
 import mini.platform;
 import mini.graphics;

@@ -1,4 +1,4 @@
-export module mini.d3d12:render_context;
+export module mini.d3d12:renderer;
 
 import mini.core;
 import mini.graphics;
