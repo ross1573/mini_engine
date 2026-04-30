@@ -9,13 +9,13 @@ PUBLIC
         metal.cxx
         metal_device.cxx
         metal_swap_chain.cxx
-        metal_render_context.cxx
+        metal_renderer.cxx
 
 PRIVATE
     impl/metal.cpp
     impl/metal_device.cpp
     impl/metal_swap_chain.cpp
-    impl/metal_render_context.cpp
+    impl/metal_renderer.cpp
 )
 
 target_precompile_headers(mini.metal

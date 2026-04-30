@@ -8,7 +8,7 @@ import :command_queue;
 
 namespace mini::d3d12 {
 
-RenderContext::RenderContext(ID3D12Device* device)
+Renderer::Renderer(ID3D12Device* device)
     : m_device(device)
     , m_commandQueue(nullptr)
     , m_currentBuffer()
@@ -17,12 +17,12 @@ RenderContext::RenderContext(ID3D12Device* device)
 {
 }
 
-RenderContext::~RenderContext()
+Renderer::~Renderer()
 {
     WaitForIdle();
 }
 
-bool RenderContext::Initialize()
+bool Renderer::Initialize()
 {
     ID3D12Device* device = interface->GetDevice()->GetD3D12Device();
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -37,7 +37,7 @@ bool RenderContext::Initialize()
     return true;
 }
 
-void RenderContext::BeginRender()
+void Renderer::BeginRender()
 {
     m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());
     m_currentBuffer = interface->GetSwapChain()->GetCurrentBuffer();
@@ -45,13 +45,13 @@ void RenderContext::BeginRender()
     VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
     VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
 
-    D3D12_RESOURCE_TRANSITION_BARRIER transition{};
+    D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
     transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-    D3D12_RESOURCE_BARRIER barrier{};
+    D3D12_RESOURCE_BARRIER barrier{ };
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
@@ -62,15 +62,15 @@ void RenderContext::BeginRender()
     m_commandList->ClearRenderTargetView(cpuOffset, Color::Clear().data, 0, nullptr);
 }
 
-void RenderContext::EndRender()
+void Renderer::EndRender()
 {
-    D3D12_RESOURCE_TRANSITION_BARRIER transition{};
+    D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
     transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
-    D3D12_RESOURCE_BARRIER barrier{};
+    D3D12_RESOURCE_BARRIER barrier{ };
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
@@ -78,9 +78,9 @@ void RenderContext::EndRender()
     m_commandList->ResourceBarrier(1, &barrier);
 }
 
-void RenderContext::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
+void Renderer::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
 {
-    D3D12_VIEWPORT d3dViewport{};
+    D3D12_VIEWPORT d3dViewport{ };
     d3dViewport.TopLeftX = rect.x;
     d3dViewport.TopLeftY = rect.y;
     d3dViewport.Width = rect.width;
@@ -91,17 +91,17 @@ void RenderContext::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
     m_commandList->RSSetViewports(1, &d3dViewport);
 }
 
-void RenderContext::SetScissorRect(RectInt const& rect)
+void Renderer::SetScissorRect(RectInt const& rect)
 {
     m_commandList->RSSetScissorRects(1, reinterpret_cast<D3D12_RECT const*>(&rect));
 }
 
-void RenderContext::WaitForIdle()
+void Renderer::WaitForIdle()
 {
     m_commandQueue->WaitForIdle();
 }
 
-void RenderContext::Execute()
+void Renderer::Execute()
 {
     m_commandList->Close();
     m_commandQueue->ExecuteCommandList(m_commandList);

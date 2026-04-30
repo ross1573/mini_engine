@@ -24,7 +24,7 @@ public:
 
     void CreateSwapChainBuffer(SwapChainBuffer&);
     graphics::SwapChain* CreateSwapChain() final;
-    graphics::RenderContext* CreateRenderContext() final;
+    graphics::Renderer* CreateRenderer() final;
 
     graphics::API GetAPI() const final { return graphics::API::D3D12; }
     IDXGIFactory4* GetDXGIFactory() const { return m_factory; }

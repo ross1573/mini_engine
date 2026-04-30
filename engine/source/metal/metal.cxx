@@ -22,7 +22,7 @@ public:
     apple::Window* GetWindow() noexcept;
     metal::Device* GetDevice() noexcept;
     metal::SwapChain* GetSwapChain() noexcept;
-    metal::RenderContext* GetRenderContext() noexcept;
+    metal::Renderer* GetRenderer() noexcept;
 };
 
 } // namespace mini

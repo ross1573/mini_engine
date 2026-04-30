@@ -12,7 +12,7 @@ PUBLIC
         d3d12_command_queue.cxx
         d3d12_descriptor.cxx
         d3d12_device.cxx
-        d3d12_render_context.cxx
+        d3d12_renderer.cxx
         d3d12_swap_chain.cxx
 
 PRIVATE
@@ -21,7 +21,7 @@ PRIVATE
     impl/d3d12_command_queue.cpp
     impl/d3d12_descriptor.cpp
     impl/d3d12_device.cpp
-    impl/d3d12_render_context.cpp
+    impl/d3d12_renderer.cpp
     impl/d3d12_swap_chain.cpp
 )
 

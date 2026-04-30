@@ -6,7 +6,7 @@ import mini.apple;
 
 namespace mini::metal {
 
-export class METAL_API RenderContext final : public graphics::RenderContext {
+export class METAL_API Renderer final : public graphics::Renderer {
 private:
     SharedPtr<NS::AutoreleasePool> m_autoReleasePool;
     SharedPtr<MTL::CommandQueue> m_cmdQueue;
@@ -19,7 +19,7 @@ private:
     uint64 m_eventValue;
 
 public:
-    RenderContext(MTL::Device*);
+    Renderer(MTL::Device*);
 
     bool Initialize() final;
 

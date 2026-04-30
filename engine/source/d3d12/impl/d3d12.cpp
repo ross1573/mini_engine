@@ -40,9 +40,9 @@ d3d12::SwapChain* D3D12::GetSwapChain() noexcept
     return static_cast<d3d12::SwapChain*>(m_graphics->GetSwapChain());
 }
 
-d3d12::RenderContext* D3D12::GetRenderContext() noexcept
+d3d12::Renderer* D3D12::GetRenderer() noexcept
 {
-    return static_cast<d3d12::RenderContext*>(m_graphics->GetRenderContext());
+    return static_cast<d3d12::Renderer*>(m_graphics->GetRenderer());
 }
 
 } // namespace mini

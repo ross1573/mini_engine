@@ -29,9 +29,9 @@ metal::SwapChain* Metal::GetSwapChain() noexcept
     return static_cast<metal::SwapChain*>(m_graphics->GetSwapChain());
 }
 
-metal::RenderContext* Metal::GetRenderContext() noexcept
+metal::Renderer* Metal::GetRenderer() noexcept
 {
-    return static_cast<metal::RenderContext*>(m_graphics->GetRenderContext());
+    return static_cast<metal::Renderer*>(m_graphics->GetRenderer());
 }
 
 } // namespace mini

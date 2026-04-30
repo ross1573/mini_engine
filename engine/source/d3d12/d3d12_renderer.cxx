@@ -8,7 +8,7 @@ import :swap_chain;
 
 export namespace mini::d3d12 {
 
-class RenderContext final : public graphics::RenderContext {
+class Renderer final : public graphics::Renderer {
 private:
     SharedPtr<ID3D12Device> m_device;
     UniquePtr<CommandQueue> m_commandQueue;
@@ -18,8 +18,8 @@ private:
     SharedPtr<ID3D12GraphicsCommandList> m_commandList;
 
 public:
-    RenderContext(ID3D12Device*);
-    ~RenderContext();
+    Renderer(ID3D12Device*);
+    ~Renderer();
 
     bool Initialize() final;
 

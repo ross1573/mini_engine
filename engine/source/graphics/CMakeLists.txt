@@ -10,7 +10,7 @@ PUBLIC
         graphics_interface.cxx
         graphics_common.cxx
         device.cxx
-        render_context.cxx
+        renderer.cxx
         swap_chain.cxx
 
 PRIVATE

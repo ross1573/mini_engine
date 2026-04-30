@@ -24,7 +24,7 @@ public:
     windows::Window* GetWindow() noexcept;
     d3d12::Device* GetDevice() noexcept;
     d3d12::SwapChain* GetSwapChain() noexcept;
-    d3d12::RenderContext* GetRenderContext() noexcept;
+    d3d12::Renderer* GetRenderer() noexcept;
 };
 
 } // namespace mini

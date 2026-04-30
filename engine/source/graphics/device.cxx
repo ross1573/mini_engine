@@ -13,7 +13,7 @@ public:
     virtual bool Initialize() = 0;
 
     virtual SwapChain* CreateSwapChain() = 0;
-    virtual RenderContext* CreateRenderContext() = 0;
+    virtual Renderer* CreateRenderer() = 0;
 
     virtual API GetAPI() const = 0;
 

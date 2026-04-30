@@ -4,9 +4,9 @@ import mini.core;
 
 namespace mini::graphics {
 
-export class GRAPHICS_API RenderContext {
+export class GRAPHICS_API Renderer {
 public:
-    virtual ~RenderContext() = default;
+    virtual ~Renderer() = default;
 
     virtual bool Initialize() = 0;
 
@@ -19,7 +19,7 @@ public:
     virtual void SetScissorRect(RectInt const&) = 0;
 
 protected:
-    RenderContext() = default;
+    Renderer() = default;
 };
 
 } // namespace mini::graphics

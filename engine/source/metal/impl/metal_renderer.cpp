@@ -8,7 +8,7 @@ import :swap_chain;
 
 namespace mini::metal {
 
-RenderContext::RenderContext(MTL::Device* device)
+Renderer::Renderer(MTL::Device* device)
     : m_autoReleasePool(nullptr)
     , m_cmdQueue(nullptr)
     , m_cmdBuffer(nullptr)
@@ -21,7 +21,7 @@ RenderContext::RenderContext(MTL::Device* device)
     m_event = TransferShared(device->newSharedEvent());
 }
 
-bool RenderContext::Initialize()
+bool Renderer::Initialize()
 {
     ENSURE(m_cmdQueue, "failed to create MTLCommandQueue") {
         return false;
@@ -30,7 +30,7 @@ bool RenderContext::Initialize()
     return true;
 }
 
-void RenderContext::BeginRender()
+void Renderer::BeginRender()
 {
     m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
 
@@ -55,15 +55,15 @@ void RenderContext::BeginRender()
     m_cmdEncoder = m_cmdBuffer->renderCommandEncoder(renderPass);
 }
 
-void RenderContext::EndRender()
+void Renderer::EndRender()
 {
 }
 
-void RenderContext::WaitForIdle()
+void Renderer::WaitForIdle()
 {
 }
 
-void RenderContext::Execute()
+void Renderer::Execute()
 {
     m_cmdEncoder->endEncoding();
     m_cmdBuffer->presentDrawable(m_drawable);
@@ -78,11 +78,11 @@ void RenderContext::Execute()
     m_autoReleasePool.Reset();
 }
 
-void RenderContext::SetViewport(Rect const&, float32, float32)
+void Renderer::SetViewport(Rect const&, float32, float32)
 {
 }
 
-void RenderContext::SetScissorRect(RectInt const&)
+void Renderer::SetScissorRect(RectInt const&)
 {
 }
 

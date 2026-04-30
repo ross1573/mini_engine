@@ -26,9 +26,9 @@ graphics::SwapChain* Device::CreateSwapChain()
     return new SwapChain(m_device.Get());
 }
 
-graphics::RenderContext* Device::CreateRenderContext()
+graphics::Renderer* Device::CreateRenderer()
 {
-    return new RenderContext(m_device.Get());
+    return new Renderer(m_device.Get());
 }
 
 } // namespace mini::metal

@@ -53,9 +53,9 @@ graphics::SwapChain* Device::CreateSwapChain()
     return new SwapChain();
 }
 
-graphics::RenderContext* Device::CreateRenderContext()
+graphics::Renderer* Device::CreateRenderer()
 {
-    return new RenderContext(m_device.Get());
+    return new Renderer(m_device.Get());
 }
 
 void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
@@ -69,7 +69,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     ASSERT(m_device == nullptr);
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
-    D3D_FEATURE_LEVEL selectedLevel{};
+    D3D_FEATURE_LEVEL selectedLevel{ };
     D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1,
                                           D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
                                           D3D_FEATURE_LEVEL_11_0 };
@@ -84,7 +84,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
             return;
         }
 
-        DXGI_ADAPTER_DESC adapterDesc{};
+        DXGI_ADAPTER_DESC adapterDesc{ };
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
@@ -114,7 +114,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         return;
     }
 
-    StringView selectedLevelStr{};
+    StringView selectedLevelStr{ };
     switch (selectedLevel) {
         case D3D_FEATURE_LEVEL_12_2: selectedLevelStr = "D3D_FEATURE_LEVEL_12_2"; break;
         case D3D_FEATURE_LEVEL_12_1: selectedLevelStr = "D3D_FEATURE_LEVEL_12_1"; break;
@@ -124,7 +124,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         default:                     selectedLevelStr = "unsupported feature level"; break;
     }
 
-    DXGI_ADAPTER_DESC adapterDesc{};
+    DXGI_ADAPTER_DESC adapterDesc{ };
     m_adapter->GetDesc(&adapterDesc);
 
     const auto desc = StringConvert(adapterDesc.Description);
@@ -167,7 +167,7 @@ void Device::EnableDebugLayer()
 
 void Device::SetDebugLayerInfo()
 {
-    D3D12_INFO_QUEUE_FILTER filter = {};
+    D3D12_INFO_QUEUE_FILTER filter = { };
     D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
                                 D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
                                 // Workarounds for debug layer issues on hybrid-graphics systems

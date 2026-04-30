@@ -12,7 +12,7 @@ Graphics::Graphics() noexcept
 
 Graphics::~Graphics() noexcept
 {
-    m_renderContext.Reset();
+    m_renderer.Reset();
     m_swapChain.Reset();
     m_device.Reset();
 
@@ -48,8 +48,8 @@ bool Graphics::Initialize()
     }
     graphics::Log("{} device initialized", m_currentAPI);
 
-    m_renderContext = UniquePtr(m_device->CreateRenderContext());
-    ENSURE(m_renderContext && m_renderContext->Initialize(), "Failed to create render context") {
+    m_renderer = UniquePtr(m_device->CreateRenderer());
+    ENSURE(m_renderer && m_renderer->Initialize(), "Failed to create render context") {
         return false;
     }
     graphics::Log("{} render context initialized", m_currentAPI);
@@ -65,13 +65,13 @@ bool Graphics::Initialize()
 
 void Graphics::BeginFrame()
 {
-    m_renderContext->BeginRender();
+    m_renderer->BeginRender();
 }
 
 void Graphics::EndFrame()
 {
-    m_renderContext->EndRender();
-    m_renderContext->Execute();
+    m_renderer->EndRender();
+    m_renderer->Execute();
 
     m_swapChain->Present();
 }

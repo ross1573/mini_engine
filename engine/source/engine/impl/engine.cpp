@@ -41,9 +41,9 @@ void Engine::Launch()
             RectInt windowSize = window->GetSize();
             Rect windowRect(windowSize);
 
-            graphics::RenderContext* renderContext = graphics->GetRenderContext();
-            renderContext->SetViewport(windowRect, 0.1f, 100.f);
-            renderContext->SetScissorRect(windowSize);
+            graphics::Renderer* renderer = graphics->GetRenderer();
+            renderer->SetViewport(windowRect, 0.1f, 100.f);
+            renderer->SetScissorRect(windowSize);
         }
         graphics->EndFrame();
 

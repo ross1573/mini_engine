@@ -15,7 +15,7 @@ public:
     bool Initialize() final;
 
     graphics::SwapChain* CreateSwapChain() final;
-    graphics::RenderContext* CreateRenderContext() final;
+    graphics::Renderer* CreateRenderer() final;
 
     graphics::API GetAPI() const final { return graphics::API::Metal; }
     MTL::Device* GetMTLDevice() const { return m_device.Get(); }

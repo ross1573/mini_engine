@@ -17,7 +17,7 @@ public:
 
     typedef graphics::Device Device;
     typedef graphics::SwapChain SwapChain;
-    typedef graphics::RenderContext RenderContext;
+    typedef graphics::Renderer Renderer;
 
 private:
     API m_currentAPI;
@@ -25,7 +25,7 @@ private:
 
     UniquePtr<Device> m_device;
     UniquePtr<SwapChain> m_swapChain;
-    UniquePtr<RenderContext> m_renderContext;
+    UniquePtr<Renderer> m_renderer;
 
 public:
     Graphics() noexcept;
@@ -39,7 +39,7 @@ public:
 
     Device* GetDevice() const noexcept { return m_device.Get(); }
     SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }
-    RenderContext* GetRenderContext() const noexcept { return m_renderContext.Get(); }
+    Renderer* GetRenderer() const noexcept { return m_renderer.Get(); }
 
     static void ChangeResolution(uint32, uint32, bool);
 

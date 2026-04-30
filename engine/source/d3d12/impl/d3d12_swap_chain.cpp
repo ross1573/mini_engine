@@ -15,7 +15,7 @@ namespace mini::d3d12 {
 
 SwapChainBuffer::SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* rtv)
     : resource(nullptr)
-    , descriptor{}
+    , descriptor{ }
     , rtvDesc(rtv)
 {
 }
@@ -23,10 +23,10 @@ SwapChainBuffer::SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* rtv)
 SwapChain::SwapChain()
     : m_swapChain(nullptr)
     , m_buffers()
-    , m_swapChainDesc{}
-    , m_sampleDesc{}
-    , m_fullscreenDesc{}
-    , m_rTVDesc{}
+    , m_swapChainDesc{ }
+    , m_sampleDesc{ }
+    , m_fullscreenDesc{ }
+    , m_rTVDesc{ }
     , m_index(0)
     , m_vSync(0)
     , m_width(0)
@@ -43,8 +43,8 @@ bool SwapChain::Initialize()
     SharedPtr<IDXGISwapChain1> swapChain;
     auto window = interface->GetWindow();
     auto factory = interface->GetDevice()->GetDXGIFactory();
-    auto renderContext = interface->GetRenderContext();
-    auto commandQueue = renderContext->GetCommandQueue()->GetD3D12CommandQueue();
+    auto renderer = interface->GetRenderer();
+    auto commandQueue = renderer->GetCommandQueue()->GetD3D12CommandQueue();
 
     RectInt size = window->GetSize();
     m_width = static_cast<uint32>(size.width);
@@ -96,7 +96,7 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
         return;
     }
 
-    interface->GetRenderContext()->WaitForIdle();
+    interface->GetRenderer()->WaitForIdle();
 
     m_width = width;
     m_height = height;
@@ -122,7 +122,7 @@ void SwapChain::SetVSync(uint8 vSync)
 
 void SwapChain::SetFullScreen(bool fullscreen)
 {
-    interface->GetRenderContext()->WaitForIdle();
+    interface->GetRenderer()->WaitForIdle();
 
     if (FAILED(m_swapChain->SetFullscreenState(fullscreen, nullptr))) {
         LogError("Failed to set fullscreen state");
