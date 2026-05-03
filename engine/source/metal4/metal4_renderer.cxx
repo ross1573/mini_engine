@@ -1,18 +1,19 @@
-export module mini.metal:renderer;
+export module mini.metal4:renderer;
 
 import mini.core;
 import mini.graphics;
 import mini.apple;
 
-namespace mini::metal {
+namespace mini::metal4 {
 
-export class METAL_API Renderer final : public graphics::Renderer {
+export class METAL4_API Renderer final : public graphics::Renderer {
 private:
     SharedPtr<NS::AutoreleasePool> m_autoReleasePool;
-    SharedPtr<MTL::CommandQueue> m_cmdQueue;
+    SharedPtr<MTL4::CommandQueue> m_cmdQueue;
+    SharedPtr<MTL4::CommandBuffer> m_cmdBuffer;
+    SharedPtr<MTL4::CommandAllocator> m_cmdAllocator;
 
-    MTL::CommandBuffer* m_cmdBuffer;
-    MTL::RenderCommandEncoder* m_cmdEncoder;
+    MTL4::RenderCommandEncoder* m_cmdEncoder;
     CA::MetalDrawable* m_drawable;
 
     SharedPtr<MTL::SharedEvent> m_event;
@@ -31,7 +32,7 @@ public:
     void SetViewport(Rect const&, float32, float32) final;
     void SetScissorRect(RectInt const&) final;
 
-    MTL::CommandQueue* GetMTLCommandQueue() { return m_cmdQueue.Get(); }
+    MTL4::CommandQueue* GetMTLCommandQueue() { return m_cmdQueue.Get(); }
 };
 
-} // namespace mini::metal
+} // namespace mini::metal4

@@ -1,11 +1,11 @@
-module mini.metal;
+module mini.metal4;
 
 import mini.core;
 import mini.platform;
 import mini.apple;
 import :swap_chain;
 
-namespace mini::metal {
+namespace mini::metal4 {
 
 SwapChain::SwapChain(MTL::Device* device)
     : m_layer(TransferShared(CA::MetalLayer::layer()))
@@ -24,6 +24,7 @@ bool SwapChain::Initialize()
 
 void SwapChain::Present()
 {
+    m_drawable->present();
     m_drawable.Reset();
 }
 
@@ -61,4 +62,4 @@ CA::MetalDrawable* SwapChain::GetCurrentDrawable()
     return m_drawable.Get();
 }
 
-} // namespace mini::metal
+} // namespace mini::metal4

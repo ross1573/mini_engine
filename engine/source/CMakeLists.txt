@@ -16,7 +16,7 @@ if (WIN32)
     add_subdirectory_analyzed(d3d12)
 elseif (APPLE)
     add_subdirectory_analyzed(apple)
-    add_subdirectory_analyzed(metal)
+    add_subdirectory_analyzed(metal4)
 endif()
 
 add_subdirectory_analyzed(engine)

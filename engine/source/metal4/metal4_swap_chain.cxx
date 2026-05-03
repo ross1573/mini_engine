@@ -1,12 +1,12 @@
-export module mini.metal:swap_chain;
+export module mini.metal4:swap_chain;
 
 import mini.core;
 import mini.graphics;
 import mini.apple;
 
-namespace mini::metal {
+namespace mini::metal4 {
 
-export class METAL_API SwapChain final : public graphics::SwapChain {
+export class METAL4_API SwapChain final : public graphics::SwapChain {
 private:
     SharedPtr<CA::MetalLayer> m_layer;
     SharedPtr<CA::MetalDrawable> m_drawable;
@@ -31,4 +31,4 @@ public:
     CA::MetalLayer* GetMetalLayer() { return m_layer.Get(); }
 };
 
-} // namespace mini::metal
+} // namespace mini::metal4

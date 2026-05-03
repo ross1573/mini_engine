@@ -21,7 +21,7 @@ inline constexpr unsigned char bufferCount = 2;
 inline constexpr char const* graphicsModule = "d3d12";
 inline constexpr char const* platformModule = "windows";
 #elif PLATFORM_MACOS
-inline constexpr char const* graphicsModule = "metal";
+inline constexpr char const* graphicsModule = "metal4";
 inline constexpr char const* platformModule = "macos";
 #else
 inline constexpr char const* graphicsAPI = nullptr;
