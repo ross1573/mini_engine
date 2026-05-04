@@ -5,41 +5,31 @@ import mini.graphics;
 import mini.apple;
 import :renderer;
 import :swap_chain;
+import :render_pass;
 
 namespace mini::metal4 {
 
 Renderer::Renderer(MTL::Device* device)
     : m_autoReleasePool(nullptr)
-    , m_cmdQueue(nullptr)
-    , m_cmdBuffer(nullptr)
-    , m_event(nullptr)
+    , m_commandQueue(nullptr)
+    , m_commandBuffer(nullptr)
+    , m_commandAllocator(nullptr)
     , m_eventValue(0)
 {
     ASSERT(device);
 
-    m_cmdQueue = TransferShared(device->newMTL4CommandQueue());
-    m_cmdBuffer = TransferShared(device->newCommandBuffer());
-    m_cmdAllocator = TransferShared(device->newCommandAllocator());
+    m_commandQueue = TransferShared(device->newMTL4CommandQueue());
+    m_commandBuffer = TransferShared(device->newCommandBuffer());
+    m_commandAllocator = TransferShared(device->newCommandAllocator());
     m_event = TransferShared(device->newSharedEvent());
 }
 
 bool Renderer::Initialize()
 {
-    ENSURE(m_cmdQueue, "failed to create MTL4::CommandQueue") {
-        return false;
-    }
-
-    ENSURE(m_cmdBuffer, "failed to create MTL4::CommandBuffer") {
-        return false;
-    }
-
-    ENSURE(m_cmdAllocator, "failed to create MTL4::CommandAllocator") {
-        return false;
-    }
-
-    ENSURE(m_event, "failed to create MTL::SharedEvent") {
-        return false;
-    }
+    ENSURE(m_commandQueue, "failed to create MTL4::CommandQueue") return false;
+    ENSURE(m_commandBuffer, "failed to create MTL4::CommandBuffer") return false;
+    ENSURE(m_commandAllocator, "failed to create MTL4::CommandAllocator") return false;
+    ENSURE(m_event, "failed to create MTL::SharedEvent") return false;
 
     return true;
 }
@@ -48,61 +38,65 @@ void Renderer::BeginRender()
 {
     m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
 
-    m_autoReleasePool = TransferShared(NS::AutoreleasePool::alloc()->init());
-    m_drawable = interface->GetSwapChain()->GetCurrentDrawable();
+    NS::AutoreleasePool* autoReleasePool = NS::AutoreleasePool::alloc();
+    ENSURE(autoReleasePool != nullptr, "failed to allocate NS::AutoreleasePool") {
+        return;
+    }
 
-    m_cmdAllocator->reset();
-    m_cmdBuffer->beginCommandBuffer(m_cmdAllocator.Get());
+    m_autoReleasePool = TransferShared(autoReleasePool);
+    m_autoReleasePool->init();
 
-    MTL4::RenderPassDescriptor* renderPassDescriptor = MTL4::RenderPassDescriptor::alloc()->init();
-    MTL::RenderPassColorAttachmentDescriptor* clearColorAttachment =
-        renderPassDescriptor->colorAttachments()->object(0);
+    CA::MetalDrawable* drawable = interface->GetSwapChain()->GetCurrentDrawable();
+    MTL::Texture* targetTexture = drawable->texture();
 
-    Color clear = Color::Clear();
-    MTL::ClearColor clearColor(clear.r, clear.g, clear.b, clear.a);
-    MTL::Texture* texture = m_drawable->texture();
+    m_commandAllocator->reset();
+    m_commandBuffer->beginCommandBuffer(m_commandAllocator.Get());
 
-    clearColorAttachment->setTexture(texture);
-    clearColorAttachment->setLoadAction(MTL::LoadActionClear);
-    clearColorAttachment->setStoreAction(MTL::StoreActionStore);
-    clearColorAttachment->setClearColor(clearColor);
-    clearColorAttachment->clearColor();
-
-    m_cmdEncoder = m_cmdBuffer->renderCommandEncoder(renderPassDescriptor);
+    RenderPass renderPass(m_commandBuffer.Get());
+    renderPass.Begin(targetTexture, Color::Clear());
+    m_renderPasses.Push(MoveArg(renderPass));
 }
 
 void Renderer::EndRender()
 {
-    m_cmdEncoder->endEncoding();
-    m_cmdBuffer->endCommandBuffer();
+    for (RenderPass& renderPass : m_renderPasses) {
+        renderPass.End();
+    }
+
+    m_renderPasses.Clear();
+    m_commandBuffer->endCommandBuffer();
 }
 
 void Renderer::WaitForIdle()
 {
     m_eventValue++;
-    m_cmdQueue->signalEvent(m_event.Get(), m_eventValue);
+    m_commandQueue->signalEvent(m_event.Get(), m_eventValue);
     m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
 }
 
 void Renderer::Execute()
 {
-    MTL4::CommandBuffer* bufferPtr = m_cmdBuffer.Get();
-    m_cmdQueue->commit(&bufferPtr, 1);
+    MTL4::CommandBuffer* commandBuffer = m_commandBuffer.Get();
+    m_commandQueue->commit(&commandBuffer, 1);
 
     m_eventValue++;
-    m_cmdQueue->signalEvent(m_event.Get(), m_eventValue);
+    m_commandQueue->signalEvent(m_event.Get(), m_eventValue);
 
-    m_drawable = nullptr;
-    m_cmdEncoder = nullptr;
     m_autoReleasePool.Reset();
 }
 
-void Renderer::SetViewport(Rect const&, float32, float32)
+void Renderer::SetViewport(Rect const& rect, float32 near, float32 far)
 {
+    for (RenderPass& renderPass : m_renderPasses) {
+        renderPass.SetViewport(rect, near, far);
+    }
 }
 
-void Renderer::SetScissorRect(RectInt const&)
+void Renderer::SetScissorRect(RectInt const& rect)
 {
+    for (RenderPass& renderPass : m_renderPasses) {
+        renderPass.SetScissorRect(rect);
+    }
 }
 
 } // namespace mini::metal4

@@ -10,12 +10,14 @@ PUBLIC
         metal4_device.cxx
         metal4_swap_chain.cxx
         metal4_renderer.cxx
+        metal4_render_pass.cxx
 
 PRIVATE
     impl/metal4.cpp
     impl/metal4_device.cpp
     impl/metal4_swap_chain.cpp
     impl/metal4_renderer.cpp
+    impl/metal4_render_pass.cpp
 )
 
 target_precompile_headers(mini.metal4
