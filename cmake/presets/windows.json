@@ -17,7 +17,9 @@
             "inherits": "windows",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "BUILD_SHARED_LIBS": "ON"
+                "BUILD_SHARED_LIBS": "ON",
+                "INCLUDE_TEST": "OFF",
+                "INCLUDE_BENCHMARK": "OFF"
             }
         },
         {
@@ -26,14 +28,18 @@
             "inherits": "windows",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "BUILD_SHARED_LIBS": "OFF"
+                "BUILD_SHARED_LIBS": "OFF",
+                "INCLUDE_TEST": "OFF",
+                "INCLUDE_BENCHMARK": "OFF"
             }
         },
         {
             "name": "windows-test",
             "displayName": "windows debug with test and benchmark",
-            "inherits": "windows-default",
+            "inherits": "windows",
             "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_SHARED_LIBS": "ON",
                 "INCLUDE_TEST": "ON",
                 "INCLUDE_BENCHMARK": "ON"
             }
