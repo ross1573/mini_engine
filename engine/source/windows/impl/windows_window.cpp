@@ -11,7 +11,7 @@ namespace mini::windows {
 
 Window::Window()
     : m_windowHandle(nullptr)
-    , m_rect{}
+    , m_rect{ }
     , m_isShowing(false)
     , m_state(Default)
 {
@@ -27,8 +27,17 @@ Window::Window()
         style |= WS_THICKFRAME;
     }
 
-    m_windowHandle = CreateWindowExA(styleEx, className, titleName, style, m_rect.x, m_rect.y,
-                                     m_rect.width, m_rect.height, nullptr, nullptr, instance,
+    m_windowHandle = CreateWindowExA(styleEx,
+                                     className,
+                                     titleName,
+                                     style,
+                                     m_rect.x,
+                                     m_rect.y,
+                                     m_rect.width,
+                                     m_rect.height,
+                                     nullptr,
+                                     nullptr,
+                                     instance,
                                      nullptr);
 
     SetMenu(m_windowHandle, 0);

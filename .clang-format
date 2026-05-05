@@ -2,7 +2,7 @@
 LineEnding: LF
 BasedOnStyle: WebKit
 UseTab: Never
-ColumnLimit: 100
+ColumnLimit: 120
 IndentWidth: 4
 TabWidth: 4
 
@@ -12,12 +12,14 @@ ContinuationIndentWidth: 4
 PenaltyBreakAssignment: 20
 PenaltyBreakBeforeFirstCallParameter: 500
 PenaltyBreakBeforeMemberAccess: 500
+PenaltyBreakComment: 80
 PenaltyBreakFirstLessLess: 80
 PenaltyBreakOpenParenthesis: 500
 PenaltyBreakScopeResolution: 100
+PenaltyBreakString: 80
 PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
-PenaltyReturnTypeOnItsOwnLine: 60
+PenaltyReturnTypeOnItsOwnLine: 120
 
 WhitespaceSensitiveMacros:
   - STRINGIZE
@@ -74,6 +76,9 @@ AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 BitFieldColonSpacing: Both
+BinPackArguments: false
+BinPackLongBracedList: false
+BinPackParameters: OnePerLine
 BreakBeforeBraces: WebKit
 BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Leave

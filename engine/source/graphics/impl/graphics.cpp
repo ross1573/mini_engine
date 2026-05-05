@@ -83,8 +83,7 @@ bool Graphics::IsDeviceCurrent() noexcept
 
 bool Graphics::IsDeviceCurrent(API api) noexcept
 {
-    return graphics::interface->GetDevice() != nullptr &&
-           graphics::interface->GetCurrentAPI() == api;
+    return graphics::interface->GetDevice() != nullptr && graphics::interface->GetCurrentAPI() == api;
 }
 
 void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)

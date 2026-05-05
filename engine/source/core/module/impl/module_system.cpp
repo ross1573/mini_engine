@@ -10,8 +10,10 @@ import :module_loader;
 
 namespace mini {
 
-ModuleHandle::ModuleHandle(ModulePoilcy const* policy, NativeModule nativeModule,
-                           ModuleInterface* interface, StringView libraryName) noexcept
+ModuleHandle::ModuleHandle(ModulePoilcy const* policy,
+                           NativeModule nativeModule,
+                           ModuleInterface* interface,
+                           StringView libraryName) noexcept
     : m_policy(policy)
     , m_nativeModule(nativeModule)
     , m_interface(interface)
@@ -26,9 +28,10 @@ ModuleHandle::~ModuleHandle() noexcept
             callback();
         } catch (...) {
             String msg = Format("exception occured while invoking AtExit callback {} on module {}",
-                                (void*)callback, m_libraryName);
+                                (void*)callback,
+                                m_libraryName);
 
-            ENSURE(false, msg.Data()) {}
+            ENSURE(false, msg.Data()) { }
         }
     }
 
@@ -95,9 +98,9 @@ SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
 
 bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle> handle)
 {
-    RefIterator refIter =
-        FindIf(m_uninitialized.Begin(), m_uninitialized.End(),
-               [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
+    RefIterator refIter = FindIf(m_uninitialized.Begin(),
+                                 m_uninitialized.End(),
+                                 [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
 
     if (refIter != m_uninitialized.End()) {
         return false;
@@ -109,9 +112,9 @@ bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle
 
 SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 {
-    WeakRefIterator weakRefIter =
-        FindIf(m_modules.Begin(), m_modules.End(),
-               [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
+    WeakRefIterator weakRefIter = FindIf(m_modules.Begin(),
+                                         m_modules.End(),
+                                         [&name](ModuleWeakRef const& ref) noexcept { return ref.name == name; });
 
     if (weakRefIter != m_modules.End()) {
         if (weakRefIter->handle.Valid()) {
@@ -137,9 +140,9 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 
 SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 {
-    RefIterator refIter =
-        FindIf(m_uninitialized.Begin(), m_uninitialized.End(),
-               [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
+    RefIterator refIter = FindIf(m_uninitialized.Begin(),
+                                 m_uninitialized.End(),
+                                 [&name](ModuleRef const& ref) noexcept { return ref.name == name; });
 
     if (refIter != m_uninitialized.End()) {
         return StaticCast<ModuleHandle>(MoveArg(refIter->handle));

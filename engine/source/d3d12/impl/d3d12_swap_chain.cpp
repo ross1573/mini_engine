@@ -70,8 +70,12 @@ bool SwapChain::Initialize()
     m_swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
     m_swapChainDesc.Flags = m_vSync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
-    ENSURE(factory->CreateSwapChainForHwnd(commandQueue, window->GetHWND(), &m_swapChainDesc,
-                                           &m_fullscreenDesc, nullptr, &swapChain),
+    ENSURE(factory->CreateSwapChainForHwnd(commandQueue,
+                                           window->GetHWND(),
+                                           &m_swapChainDesc,
+                                           &m_fullscreenDesc,
+                                           nullptr,
+                                           &swapChain),
            "failed to create DXGI swapchain") {
         return false;
     }

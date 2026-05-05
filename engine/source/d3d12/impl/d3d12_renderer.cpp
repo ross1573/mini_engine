@@ -30,8 +30,7 @@ bool Renderer::Initialize()
     m_commandQueue = MakeUnique<CommandQueue>(device, graphics::CommandType::Direct);
 
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_commandAllocator)));
-    VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr,
-                                     IID_PPV_ARGS(&m_commandList)));
+    VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList)));
 
     m_commandList->Close();
     return true;

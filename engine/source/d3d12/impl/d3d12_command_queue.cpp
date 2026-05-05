@@ -8,7 +8,7 @@ CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType
     : m_commandQueue(nullptr)
     , m_fence(nullptr)
     , m_queueType(queueType)
-    , m_queueDesc{}
+    , m_queueDesc{ }
     , m_fenceHandle(nullptr)
     , m_fenceValue(0)
     , m_lastCompeletedFence(0)

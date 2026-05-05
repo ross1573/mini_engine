@@ -52,11 +52,11 @@ void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
     m_autoReleasePool = TransferShared(autoReleasePool);
     m_autoReleasePool->init();
 
-    MTL::RenderPassColorAttachmentDescriptor* colorAttachment =
-        m_renderPassDescriptor->colorAttachments()->object(0);
-
-    MTL::ClearColor clearColor(static_cast<double>(color.r), static_cast<double>(color.g),
-                               static_cast<double>(color.b), static_cast<double>(color.a));
+    MTL::RenderPassColorAttachmentDescriptor* colorAttachment = m_renderPassDescriptor->colorAttachments()->object(0);
+    MTL::ClearColor clearColor(static_cast<double>(color.r),
+                               static_cast<double>(color.g),
+                               static_cast<double>(color.b),
+                               static_cast<double>(color.a));
 
     colorAttachment->setTexture(m_targetTexture);
     colorAttachment->setLoadAction(MTL::LoadActionClear);
@@ -65,8 +65,7 @@ void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
     colorAttachment->clearColor();
 
     MTL4::RenderPassDescriptor* renderPassDescriptor = m_renderPassDescriptor.Get();
-    MTL4::RenderCommandEncoder* renderCommandEncoder =
-        m_commandBuffer->renderCommandEncoder(renderPassDescriptor);
+    MTL4::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
     ENSURE(renderCommandEncoder != nullptr, "failed to create MTL4::RenderCommandEncoder") {
         return;

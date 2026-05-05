@@ -39,9 +39,8 @@
 #    define BUILTIN_ASSERT(msg, func, line) __assert(msg, func, line)
 #  endif // PLATFORM_WINDOWS
 
-#  define ASSERT_INNER(expr, ...)                                               \
-      BUILTIN_ASSERT(mini::detail::AssertMsg(#expr __VA_OPT__(, ) __VA_ARGS__), \
-                     mini::detail::AssertLoc(), __LINE__)
+#  define ASSERT_INNER(expr, ...)                                                                                    \
+      BUILTIN_ASSERT(mini::detail::AssertMsg(#expr __VA_OPT__(, ) __VA_ARGS__), mini::detail::AssertLoc(), __LINE__)
 
 #  define ENSURE_INNER(expr, var, ...)                   \
       ENSURE_EVAL(expr, var);                            \
@@ -64,8 +63,7 @@
           UNREACHABLE();                                 \
       }
 
-#  define ENSURE(expr, ...)                                                              \
-      ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
+#  define ENSURE(expr, ...) ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 
 #else
 #  define BUILTIN_ASSERT(msg, func, line) ((void)0)
@@ -79,10 +77,9 @@
       ENSURE_EXPR(var)
 
 #  define VERIFY(expr, ...) \
-      ASSERT_EXPR(expr) {}
+      ASSERT_EXPR(expr) { }
 
-#  define ENSURE(expr, ...)                                                              \
-      ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
+#  define ENSURE(expr, ...) ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 
 #endif // DEBUG_ASSERT
 
@@ -129,7 +126,8 @@ inline constexpr bool TestExpr(T* const pointer) noexcept
 
 ASSERT_API CHAR_T AssertMsg(char const*, char const* = nullptr);
 ASSERT_API CHAR_T AssertLoc(std::source_location const& = std::source_location::current());
-ASSERT_API void EnsureHelper(char const*, char const* = nullptr,
+ASSERT_API void EnsureHelper(char const*,
+                             char const* = nullptr,
                              std::source_location const& = std::source_location::current());
 
 #if PLATFORM_WINDOWS

@@ -70,8 +70,10 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
 
     D3D_FEATURE_LEVEL selectedLevel{ };
-    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1,
-                                          D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
+    D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2,
+                                          D3D_FEATURE_LEVEL_12_1,
+                                          D3D_FEATURE_LEVEL_12_0,
+                                          D3D_FEATURE_LEVEL_11_1,
                                           D3D_FEATURE_LEVEL_11_0 };
 
     int32 levelCount = sizeof(featureLevels) / sizeof(D3D_FEATURE_LEVEL);

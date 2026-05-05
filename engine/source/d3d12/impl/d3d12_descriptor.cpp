@@ -47,7 +47,7 @@ DescriptorHeap::CPUOffsetT DescriptorHeap::GetOffset(uint32 index) const noexcep
 DescriptorAllocator::DescriptorAllocator(HeapTypeT type, uint32 size)
     : m_device(nullptr)
     , m_heapList(1)
-    , m_heapDesc{}
+    , m_heapDesc{ }
     , m_incrementSize(0)
 {
     m_heapDesc.Type = type;

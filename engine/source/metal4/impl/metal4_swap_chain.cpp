@@ -28,7 +28,8 @@ void SwapChain::Present()
     m_drawable.Reset();
 }
 
-void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width, [[maybe_unused]] uint32 height,
+void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width,
+                                 [[maybe_unused]] uint32 height,
                                  [[maybe_unused]] bool fullscreen)
 {
 }

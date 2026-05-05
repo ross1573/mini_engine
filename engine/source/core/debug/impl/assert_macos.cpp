@@ -38,13 +38,16 @@ void EnsureHelper(char const* expr, char const* msg, std::source_location const&
         assertLogger.Fatal("\n\nEnsure failed!\n"
                            "  Expression: {0}\n"
                            "  Function: {1}",
-                           exprView, locBuffer);
+                           exprView,
+                           locBuffer);
     } else {
         assertLogger.Fatal("\n\nEnsure failed!\n"
                            "  Expression: {0}\n"
                            "  Message: {1}\n"
                            "  Function: {2}",
-                           exprView, msgView, locBuffer);
+                           exprView,
+                           msgView,
+                           locBuffer);
     }
 }
 

@@ -44,7 +44,7 @@ bool Handle::Valid() const noexcept
 
 void Handle::PollEvents()
 {
-    MSG msg{};
+    MSG msg{ };
 
     while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
@@ -62,8 +62,10 @@ void Handle::AlertError(StringView const& msg)
     MessageBoxA(handle, msg.Data(), nullptr, MB_ICONERROR | MB_OK);
 }
 
-void Handle::ProcessMessage([[maybe_unused]] HWND hWnd, [[maybe_unused]] uint32 msg,
-                            [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
+void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
+                            [[maybe_unused]] uint32 msg,
+                            [[maybe_unused]] WPARAM wParam,
+                            [[maybe_unused]] LPARAM lParam)
 {
     switch (msg) {
         case WM_DESTROY: PostQuitMessage(0); break;
