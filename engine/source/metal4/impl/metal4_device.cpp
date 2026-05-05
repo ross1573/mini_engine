@@ -4,6 +4,7 @@ import mini.graphics;
 import mini.apple;
 import :swap_chain;
 import :renderer;
+import :buffer;
 
 namespace mini::metal4 {
 

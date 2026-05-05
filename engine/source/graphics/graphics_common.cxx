@@ -24,6 +24,12 @@ export enum class CommandType : int8 {
     Copy
 };
 
+export enum class PrimitiveType : byte {
+    Point = 0,
+    Line = 1,
+    Triangle = 2
+};
+
 GRAPHICS_API const std::regex d3d12_regex("[Dd]3[Dd]12");
 GRAPHICS_API const std::regex metal4_regex("[Mm][Ee][Tt][Aa][Ll]4");
 GRAPHICS_API const std::regex vulkan_regex("[Vv][Uu][Ll][Kk][Aa][Nn]");

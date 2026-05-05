@@ -1,8 +1,10 @@
 export module mini.metal4;
 
+export import :buffer;
 export import :device;
 export import :swap_chain;
 export import :renderer;
+export import :render_pass;
 
 import mini.platform;
 import mini.graphics;

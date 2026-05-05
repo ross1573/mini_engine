@@ -32,10 +32,10 @@ public:
     void SetViewport(Rect const&, float32, float32) final;
     void SetScissorRect(RectInt const&) final;
 
-    MTL4::CommandQueue* GetMTL4CommandQueue() const noexcept;
+    MTL4::CommandQueue* MTL4CommandQueue() const noexcept;
 };
 
-MTL4::CommandQueue* Renderer::GetMTL4CommandQueue() const noexcept
+MTL4::CommandQueue* Renderer::MTL4CommandQueue() const noexcept
 {
     return m_commandQueue.Get();
 }

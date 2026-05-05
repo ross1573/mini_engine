@@ -1,24 +1,49 @@
 module mini.metal4;
 
+import mini.core;
+import mini.graphics;
+import :log;
+import :common;
+import :buffer;
 import :render_pass;
 
 namespace mini::metal4 {
 
-RenderPass::RenderPass(MTL4::CommandBuffer* commandBuffer) noexcept
-    : m_targetTexture(nullptr)
-    , m_commandBuffer(commandBuffer)
+RenderPass::RenderPass(MTL::Device* device, MTL4::CommandBuffer* commandBuffer) noexcept
+    : m_commandBuffer(nullptr)
     , m_renderCommandEncoder(nullptr)
+    , m_targetTexture(nullptr)
 {
-    ASSERT(m_commandBuffer != nullptr);
+    ASSERT(commandBuffer != nullptr);
 
-    MTL4::RenderPassDescriptor* renderPassDescriptor = MTL4::RenderPassDescriptor::alloc();
-    ENSURE(renderPassDescriptor != nullptr, "failed to create MTL4::RenderPassDescriptor") {
-        m_commandBuffer = nullptr;
+    m_renderPassDescriptor = TransferShared(MTL4::RenderPassDescriptor::alloc());
+    ENSURE(m_renderPassDescriptor.Valid(), "failed to create MTL4::RenderPassDescriptor") {
         return;
     }
 
-    m_renderPassDescriptor = TransferShared(renderPassDescriptor);
     m_renderPassDescriptor->init();
+
+    m_argumentTableDescriptor = TransferShared(MTL4::ArgumentTableDescriptor::alloc());
+    ENSURE(m_argumentTableDescriptor.Valid(), "failed to create MTL4::ArgumentTableDescriptor") {
+        return;
+    }
+
+    // TODO: get descriptor values from argument
+    m_argumentTableDescriptor->init();
+    m_argumentTableDescriptor->setMaxBufferBindCount(1);
+    m_argumentTableDescriptor->setMaxSamplerStateBindCount(1);
+    m_argumentTableDescriptor->setMaxTextureBindCount(1);
+    m_argumentTableDescriptor->setSupportAttributeStrides(false);
+
+    NS::Error* error = nullptr;
+    MTL4::ArgumentTable* argumentTable = device->newArgumentTable(m_argumentTableDescriptor.Get(), &error);
+    ENSURE(error == nullptr, "failed to create MTL4::ArgumentTable") {
+        LogError(error->localizedFailureReason()->utf8String());
+        return;
+    }
+
+    m_argumentTable = TransferShared(argumentTable);
+    m_commandBuffer = commandBuffer;
 }
 
 RenderPass::~RenderPass() noexcept
@@ -43,14 +68,6 @@ void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
 
     ASSERT(m_commandBuffer != nullptr);
     ASSERT(m_targetTexture != nullptr);
-
-    NS::AutoreleasePool* autoReleasePool = NS::AutoreleasePool::alloc();
-    ENSURE(autoReleasePool != nullptr, "failed to allocate NS::AutoreleasePool") {
-        return;
-    }
-
-    m_autoReleasePool = TransferShared(autoReleasePool);
-    m_autoReleasePool->init();
 
     MTL::RenderPassColorAttachmentDescriptor* colorAttachment = m_renderPassDescriptor->colorAttachments()->object(0);
     MTL::ClearColor clearColor(static_cast<double>(color.r),
@@ -80,8 +97,25 @@ void RenderPass::End() noexcept
 
     m_renderCommandEncoder->endEncoding();
     m_renderCommandEncoder = nullptr;
+}
 
-    m_autoReleasePool.Reset();
+void RenderPass::SetVertexBuffer(Buffer const& buffer, uint64 index)
+{
+    ASSERT(m_renderCommandEncoder != nullptr);
+
+    MTL::GPUAddress gpuAddress = static_cast<MTL::GPUAddress>(buffer.GpuAddress());
+    m_argumentTable->setAddress(gpuAddress, index);
+}
+
+void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
+{
+    ASSERT(m_renderCommandEncoder != nullptr);
+
+    MTL::PrimitiveType mtlPrimitive = GetMTLPrimitiveType(primitiveType);
+    MTL::RenderStages renderStages = MTL::RenderStageVertex;
+
+    m_renderCommandEncoder->setArgumentTable(m_argumentTable.Get(), renderStages);
+    m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
 void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexcept
