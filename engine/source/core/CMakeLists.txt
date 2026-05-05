@@ -93,13 +93,13 @@ target_sources(mini.core
 PUBLIC
     FILE_SET container TYPE CXX_MODULES
     FILES
-        container/static_buffer.cxx
+        container/fixed_buffer.cxx
         container/dynamic_buffer.cxx
         container/trivial_buffer.cxx
 
         container/array.cxx
-        container/static_array.cxx
-        container/static_queue.cxx
+        container/fixed_array.cxx
+        container/fixed_queue.cxx
 )
 
 target_sources(mini.core

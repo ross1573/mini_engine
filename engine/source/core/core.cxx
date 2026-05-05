@@ -36,8 +36,8 @@ export import :array_iterator;
 export import :circular_iterator;
 
 export import :array;
-export import :static_array;
-export import :static_queue;
+export import :fixed_array;
+export import :fixed_queue;
 
 export import :string_memory;
 export import :string_convert;

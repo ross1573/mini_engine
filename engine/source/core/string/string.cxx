@@ -22,7 +22,7 @@ import :utility_operation;
 import :memory_operation;
 import :allocator;
 import :trivial_buffer;
-import :static_buffer;
+import :fixed_buffer;
 import :array_iterator;
 import :string_memory;
 import :string_view;
@@ -74,7 +74,7 @@ private:
     static constexpr SizeT StorageSize = sizeof(LargeStorage);
     static constexpr SizeT AllocatedSize = (StorageSize / sizeof(T)) - 2;
     static constexpr SizeT SmallCapacity = AllocatedSize > 2 ? AllocatedSize : 2;
-    typedef memory::StaticBuffer<T, SmallCapacity + 1> SmallBuffer;
+    typedef memory::FixedBuffer<T, SmallCapacity + 1> SmallBuffer;
 
     struct SmallStorage {
         PACKED_STRUCT_BEGIN(1)

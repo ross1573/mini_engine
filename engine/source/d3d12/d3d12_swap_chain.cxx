@@ -20,7 +20,7 @@ private:
     static constexpr uint8 MaxBuffer = SwapChain::MaxBackBuffer;
 
     SharedPtr<IDXGISwapChain3> m_swapChain;
-    StaticArray<SwapChainBuffer, MaxBuffer> m_buffers;
+    FixedArray<SwapChainBuffer, MaxBuffer> m_buffers;
 
     DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc;
     DXGI_SAMPLE_DESC m_sampleDesc;

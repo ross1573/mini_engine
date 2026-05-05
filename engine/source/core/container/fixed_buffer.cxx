@@ -1,4 +1,4 @@
-export module mini.core:static_buffer;
+export module mini.core:fixed_buffer;
 
 import :type;
 import :numeric;
@@ -6,13 +6,13 @@ import :numeric;
 namespace mini::memory {
 
 template <typename T, SizeT CapacityN, SizeT AlignN = alignof(T)>
-class StaticBuffer {
+class FixedBuffer {
 protected:
     alignas(AlignN) byte m_buffer[sizeof(T) * CapacityN];
 
 public:
-    constexpr StaticBuffer() = default;
-    constexpr ~StaticBuffer() = default;
+    constexpr FixedBuffer() = default;
+    constexpr ~FixedBuffer() = default;
 
     inline T* Data() noexcept { return Address(); }
     inline T const* Data() const noexcept { return Address(); }
@@ -26,20 +26,20 @@ private:
         return reinterpret_cast<T*>(const_cast<byte*>(&m_buffer[0]));
     }
 
-    StaticBuffer(StaticBuffer const&) = delete;
-    StaticBuffer(StaticBuffer&&) = delete;
-    StaticBuffer& operator=(StaticBuffer const&) = delete;
-    StaticBuffer& operator=(StaticBuffer&&) = delete;
+    FixedBuffer(FixedBuffer const&) = delete;
+    FixedBuffer(FixedBuffer&&) = delete;
+    FixedBuffer& operator=(FixedBuffer const&) = delete;
+    FixedBuffer& operator=(FixedBuffer&&) = delete;
 };
 
 template <TrivialT T, SizeT CapacityN, SizeT AlignN>
-class StaticBuffer<T, CapacityN, AlignN> {
+class FixedBuffer<T, CapacityN, AlignN> {
 protected:
     alignas(AlignN) T m_buffer[CapacityN];
 
 public:
-    constexpr StaticBuffer() = default;
-    constexpr ~StaticBuffer() = default;
+    constexpr FixedBuffer() = default;
+    constexpr ~FixedBuffer() = default;
 
     inline constexpr T* Data() noexcept { return const_cast<T*>(Address()); }
     inline constexpr T const* Data() const noexcept { return Address(); }
@@ -73,16 +73,16 @@ consteval auto SizeTypeSelector() -> decltype(auto)
 }
 
 template <SizeT CapacityN>
-struct StaticSize {
+struct FixedSize {
 public:
     typedef decltype(SizeTypeSelector<CapacityN>()) SizeType;
 
 public:
     SizeType size;
 
-    constexpr StaticSize() noexcept = default;
+    constexpr FixedSize() noexcept = default;
 
-    inline constexpr StaticSize(SizeT s) noexcept
+    inline constexpr FixedSize(SizeT s) noexcept
         : size(static_cast<SizeType>(s))
     {
     }
@@ -91,45 +91,45 @@ public:
     inline constexpr void Set(SizeT s) noexcept { size = static_cast<SizeType>(s); }
     inline constexpr operator SizeT() const noexcept { return static_cast<SizeT>(size); }
 
-    inline constexpr StaticSize& operator++() noexcept
+    inline constexpr FixedSize& operator++() noexcept
     {
         ++size;
         return *this;
     }
 
-    inline constexpr StaticSize& operator--() noexcept
+    inline constexpr FixedSize& operator--() noexcept
     {
         --size;
         return *this;
     }
 
-    inline constexpr StaticSize& operator+=(IntegralT auto s) noexcept
+    inline constexpr FixedSize& operator+=(IntegralT auto s) noexcept
     {
         size += static_cast<SizeType>(s);
         return *this;
     }
 
-    inline constexpr StaticSize& operator-=(IntegralT auto s) noexcept
+    inline constexpr FixedSize& operator-=(IntegralT auto s) noexcept
     {
         size -= static_cast<SizeType>(s);
         return *this;
     }
 
-    inline constexpr StaticSize operator++(int32) noexcept
+    inline constexpr FixedSize operator++(int32) noexcept
     {
-        StaticSize s = *this;
+        FixedSize s = *this;
         ++size;
         return s;
     }
 
-    inline constexpr StaticSize operator--(int32) noexcept
+    inline constexpr FixedSize operator--(int32) noexcept
     {
-        StaticSize s = *this;
+        FixedSize s = *this;
         --size;
         return s;
     }
 
-    inline constexpr StaticSize& operator=(SizeT s) noexcept
+    inline constexpr FixedSize& operator=(SizeT s) noexcept
     {
         size = static_cast<SizeType>(s);
         return *this;
@@ -137,20 +137,20 @@ public:
 };
 
 template <typename T, SizeT CapT, SizeT AlignT, typename U, SizeT CapU, SizeT AlignU>
-inline constexpr bool operator==(StaticBuffer<T, CapT, AlignT> const& l,
-                                 StaticBuffer<U, CapU, AlignU> const& r) noexcept
+inline constexpr bool operator==(FixedBuffer<T, CapT, AlignT> const& l,
+                                 FixedBuffer<U, CapU, AlignU> const& r) noexcept
 {
     return l.Data() == r.Data();
 }
 
 template <IntegralT T, SizeT CapacityN>
-inline constexpr auto operator<=>(StaticSize<CapacityN> const& s, T o) noexcept
+inline constexpr auto operator<=>(FixedSize<CapacityN> const& s, T o) noexcept
 {
     return static_cast<T>(s.size) <=> o;
 }
 
 template <SizeT LCapN, SizeT RCapN>
-inline constexpr auto operator<=>(StaticSize<LCapN> const& l, StaticSize<RCapN> const& r) noexcept
+inline constexpr auto operator<=>(FixedSize<LCapN> const& l, FixedSize<RCapN> const& r) noexcept
 {
     using CommonSizeT = CommonT<decltype(l.size), decltype(r.size)>;
     return static_cast<CommonSizeT>(l.size) <=> static_cast<CommonSizeT>(r.size);

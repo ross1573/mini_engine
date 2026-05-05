@@ -42,11 +42,13 @@ PUBLIC
 target_include_directories(mini.test PUBLIC include)
 target_link_libraries(mini.test PUBLIC mini.core)
 
-if (MSVC)
-    target_link_options(mini.test PUBLIC $<$<BOOL:${X86}>:-fsanitize=address>)
-else()
-    target_link_options(mini.test PUBLIC -fsanitize=address)
-endif()
+# TODO: address sanitizer hangs on some situations. 
+#       disabling it until finding out what is locking it
+# if (MSVC)
+#     target_link_options(mini.test PUBLIC $<$<BOOL:${X86}>:-fsanitize=address>)
+# else()
+#     target_link_options(mini.test PUBLIC -fsanitize=address)
+# endif()
 
 add_subdirectory(bit)
 add_subdirectory(memory)

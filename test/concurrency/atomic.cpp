@@ -56,28 +56,29 @@ static int32 TestAtomicLockFree()
     static_assert(Atomic<Unaligned>::IsAlwaysLockFree() == true);
     static_assert(Atomic<NonAtomic>::IsAlwaysLockFree() == false);
 
-    TEST_ENSURE(Atomic<S<1>>{}.IsLockFree() == true);
-    TEST_ENSURE(Atomic<S<2>>{}.IsLockFree() == true);
-    TEST_ENSURE(Atomic<S<3>>{}.IsLockFree() == true);
-    TEST_ENSURE(Atomic<S<4>>{}.IsLockFree() == true);
-    TEST_ENSURE(Atomic<S<5>>{}.IsLockFree() == Atomic<S<8>>{}.IsLockFree());
-    TEST_ENSURE(Atomic<S<9>>{}.IsLockFree() == Atomic<S<16>>{}.IsLockFree());
-    TEST_ENSURE(Atomic<S<8>>{}.IsLockFree() != Atomic<S<17>>{}.IsLockFree());
-    TEST_ENSURE(Atomic<Unaligned>{}.IsLockFree() == true);
-    TEST_ENSURE(Atomic<NonAtomic>{}.IsLockFree() == false);
+    TEST_ENSURE(Atomic<S<1>>{ }.IsLockFree() == true);
+    TEST_ENSURE(Atomic<S<2>>{ }.IsLockFree() == true);
+    TEST_ENSURE(Atomic<S<3>>{ }.IsLockFree() == true);
+    TEST_ENSURE(Atomic<S<4>>{ }.IsLockFree() == true);
+    TEST_ENSURE(Atomic<S<5>>{ }.IsLockFree() == Atomic<S<8>>{ }.IsLockFree());
+    TEST_ENSURE(Atomic<S<9>>{ }.IsLockFree() == Atomic<S<16>>{ }.IsLockFree());
+    TEST_ENSURE(Atomic<S<8>>{ }.IsLockFree() != Atomic<S<17>>{ }.IsLockFree());
+    TEST_ENSURE(Atomic<Unaligned>{ }.IsLockFree() == true);
+    TEST_ENSURE(Atomic<NonAtomic>{ }.IsLockFree() == false);
 
-    TEST_ENSURE(static_cast<Atomic<S<1>> volatile>(Atomic<S<1>>{}).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<S<2>> volatile>(Atomic<S<2>>{}).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<S<3>> volatile>(Atomic<S<3>>{}).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<S<4>> volatile>(Atomic<S<4>>{}).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<S<5>> volatile>(Atomic<S<5>>{}).IsLockFree() ==
-                static_cast<Atomic<S<8>> volatile>(Atomic<S<8>>{}).IsLockFree());
-    TEST_ENSURE(static_cast<Atomic<S<9>> volatile>(Atomic<S<9>>{}).IsLockFree() ==
-                static_cast<Atomic<S<16>> volatile>(Atomic<S<16>>{}).IsLockFree());
-    TEST_ENSURE(static_cast<Atomic<S<8>> volatile>(Atomic<S<8>>{}).IsLockFree() !=
-                static_cast<Atomic<S<17>> volatile>(Atomic<S<17>>{}).IsLockFree());
-    TEST_ENSURE(static_cast<Atomic<Unaligned> volatile>(Atomic<Unaligned>{}).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<NonAtomic> volatile>(Atomic<NonAtomic>{}).IsLockFree() == false);
+    TEST_ENSURE(static_cast<Atomic<S<1>> volatile>(Atomic<S<1>>{ }).IsLockFree() == true);
+    TEST_ENSURE(static_cast<Atomic<S<2>> volatile>(Atomic<S<2>>{ }).IsLockFree() == true);
+    TEST_ENSURE(static_cast<Atomic<S<3>> volatile>(Atomic<S<3>>{ }).IsLockFree() == true);
+    TEST_ENSURE(static_cast<Atomic<S<4>> volatile>(Atomic<S<4>>{ }).IsLockFree() == true);
+    TEST_ENSURE(static_cast<Atomic<S<5>> volatile>(Atomic<S<5>>{ }).IsLockFree() ==
+                static_cast<Atomic<S<8>> volatile>(Atomic<S<8>>{ }).IsLockFree());
+    TEST_ENSURE(static_cast<Atomic<S<9>> volatile>(Atomic<S<9>>{ }).IsLockFree() ==
+                static_cast<Atomic<S<16>> volatile>(Atomic<S<16>>{ }).IsLockFree());
+    TEST_ENSURE(static_cast<Atomic<S<8>> volatile>(Atomic<S<8>>{ }).IsLockFree() !=
+                static_cast<Atomic<S<17>> volatile>(Atomic<S<17>>{ }).IsLockFree());
+    TEST_ENSURE(static_cast<Atomic<Unaligned> volatile>(Atomic<Unaligned>{ }).IsLockFree() == true);
+    TEST_ENSURE(static_cast<Atomic<NonAtomic> volatile>(Atomic<NonAtomic>{ }).IsLockFree() ==
+                false);
 
     return 0;
 }
@@ -238,7 +239,7 @@ int32 TestFloatingFetchOperators()
 
 int32 TestPointerFetchOperators()
 {
-    StaticArray<int32, 7> sarr;
+    FixedArray<int32, 7> sarr;
     auto iter = sarr.Begin();
     Atomic<int32*> a = iter.Address();
 
@@ -310,7 +311,7 @@ int32 TestSpinLock()
     };
 
     std::thread thread([&spinLock]() {
-        while (spinLock() > 0) {}
+        while (spinLock() > 0) { }
     });
 
     // test if hangs

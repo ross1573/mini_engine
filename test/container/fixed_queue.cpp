@@ -27,19 +27,19 @@ FACTORY(FooArgF);
 
 [[maybe_unused]] static constexpr void QueueConstraints()
 {
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<int, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<int*, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<TestObject, 1>::Iterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(StaticQueue<TestObject*, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<int, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<int*, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<TestObject, 1>::Iterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<TestObject*, 1>::Iterator);
 
-    TEST_RANGE_BASED_FOR_SUPPORT(StaticQueue<TestObject, 1>);
+    TEST_RANGE_BASED_FOR_SUPPORT(FixedQueue<TestObject, 1>);
 
-    static_assert(sizeof(StaticQueue<TestObject, 1>::Iterator) ==
+    static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) ==
                   alignof(void*) * 2 + sizeof(SizeT) * 2);
 }
 
 template <typename T, SizeT CapN>
-static constexpr int TestQueue(StaticQueue<T, CapN> const& que, Array<T> const& arr)
+static constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& arr)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
         if constexpr (memory::DereferencableT<T>) {
@@ -68,28 +68,28 @@ static constexpr int TestQueue(StaticQueue<T, CapN> const& que, Array<T> const& 
 template <typename T, typename FactoryT>
 static constexpr int TestCtor()
 {
-    TEST_ENSURE((StaticQueue<T, 1>{}.Size() == 0));
-    TEST_ENSURE((StaticQueue<T, 1>{}.Capacity() == 1));
-    TEST_ENSURE((StaticQueue<T, 16>().Size() == 0));
-    TEST_ENSURE((StaticQueue<T, 16>().Capacity() == 16));
+    TEST_ENSURE((FixedQueue<T, 1>{ }.Size() == 0));
+    TEST_ENSURE((FixedQueue<T, 1>{ }.Capacity() == 1));
+    TEST_ENSURE((FixedQueue<T, 16>().Size() == 0));
+    TEST_ENSURE((FixedQueue<T, 16>().Capacity() == 16));
 
     if constexpr (CopyableT<T>) {
-        StaticQueue<T, 20> arr;
+        FixedQueue<T, 20> arr;
         int count = 0;
-        for (int i = 0; i < 20; ++i) arr.Enqueue(FactoryT{}(++count));
+        for (int i = 0; i < 20; ++i) arr.Enqueue(FactoryT{ }(++count));
 
-        TEST_ENSURE((StaticQueue<T, 20>(arr) == arr));
-        TEST_ENSURE((StaticQueue<T, 20>(StaticQueue<T, 20>(arr)) == arr));
-        TEST_ENSURE((StaticQueue<T, 20>(arr.Begin(), arr.End()) == arr));
+        TEST_ENSURE((FixedQueue<T, 20>(arr) == arr));
+        TEST_ENSURE((FixedQueue<T, 20>(FixedQueue<T, 20>(arr)) == arr));
+        TEST_ENSURE((FixedQueue<T, 20>(arr.Begin(), arr.End()) == arr));
 
         InitializerList list = {
-            FactoryT{}(++count),
-            FactoryT{}(++count),
-            FactoryT{}(++count),
-            FactoryT{}(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
         };
 
-        TEST_ENSURE(TestQueue(StaticQueue<T, 4>(list), Array<T>(list)) == 0);
+        TEST_ENSURE(TestQueue(FixedQueue<T, 4>(list), Array<T>(list)) == 0);
     }
 
     return 0;
@@ -98,21 +98,21 @@ static constexpr int TestCtor()
 template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
 static constexpr int TestModify()
 {
-    StaticQueue<T, 8> que;
+    FixedQueue<T, 8> que;
     Array<T> arr;
     int arrcount = 33;
     int veccount = 33;
 
-    que.Enqueue(FactoryT{}(++arrcount));
-    arr.Push(FactoryT{}(++veccount));
+    que.Enqueue(FactoryT{ }(++arrcount));
+    arr.Push(FactoryT{ }(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
-    que.Enqueue(ArgFactoryT{}(++arrcount));
-    arr.Push(ArgFactoryT{}(++veccount));
+    que.Enqueue(ArgFactoryT{ }(++arrcount));
+    arr.Push(ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
     if constexpr (CopyableT<T>) {
-        StaticQueue<T, 8> que2(que.Begin(), que.End());
+        FixedQueue<T, 8> que2(que.Begin(), que.End());
 
         que.EnqueueRange(que2.Begin(), que2.End());
         arr.Append(que2.Begin(), que2.End());
@@ -125,10 +125,10 @@ static constexpr int TestModify()
         que.EnqueueRange(que2.Begin(), que2.End());
 
         InitializerList list = {
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
         };
 
         que.EnqueueRange(list);
@@ -138,10 +138,10 @@ static constexpr int TestModify()
         que2.Assign(list);
         TEST_ENSURE(TestQueue(que2, Array<T>(list)) == 0);
     } else {
-        que.Enqueue(ArgFactoryT{}(++arrcount));
-        que.Enqueue(ArgFactoryT{}(++arrcount));
-        arr.Push(ArgFactoryT{}(++veccount));
-        arr.Push(ArgFactoryT{}(++veccount));
+        que.Enqueue(ArgFactoryT{ }(++arrcount));
+        que.Enqueue(ArgFactoryT{ }(++arrcount));
+        arr.Push(ArgFactoryT{ }(++veccount));
+        arr.Push(ArgFactoryT{ }(++veccount));
     }
 
     que.Dequeue();
@@ -165,7 +165,7 @@ static constexpr int TestModify()
 
 int TestRandom()
 {
-    StaticQueue<TestObject, 8> q;
+    FixedQueue<TestObject, 8> q;
     {
         static_assert(q.Capacity() == 8);
 
