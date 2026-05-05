@@ -14,7 +14,7 @@ public:
 
 protected:
     SharedPtr<ResourceValue> m_resource;
-    String m_name;
+    SharedPtr<NS::String> m_name;
 
 public:
     Resource(ResourcePointer) noexcept;
@@ -61,11 +61,6 @@ bool Resource<T>::Valid() const noexcept
 template <DerivedFromT<MTL::Resource> T>
 void Resource<T>::SetName(StringView name)
 {
-    NS::String* prevLabel = m_resource->label();
-    if (prevLabel != nullptr) {
-        prevLabel->release();
-    }
-
     NS::String* label = NS::String::alloc();
     ENSURE(label != nullptr, "failed to allocate NS::String") {
         return;
@@ -81,7 +76,7 @@ void Resource<T>::SetName(StringView name)
     }
 
     m_resource->setLabel(label);
-    m_name = name;
+    m_name.Reset(label);
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -93,7 +88,13 @@ SizeT Resource<T>::Capacity() const
 template <DerivedFromT<MTL::Resource> T>
 String Resource<T>::Name() const
 {
-    return m_name;
+    if (m_name.Valid() == false) {
+        return String();
+    }
+
+    char const* raw = m_name->utf8String();
+    SizeT len = static_cast<SizeT>(m_name->length());
+    return String(raw, len);
 }
 
 template <DerivedFromT<MTL::Resource> T>
