@@ -77,7 +77,7 @@ AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 BitFieldColonSpacing: Both
 BinPackArguments: false
-BinPackLongBracedList: false
+# BinPackLongBracedList: false
 BinPackParameters: OnePerLine
 BreakBeforeBraces: WebKit
 BreakAdjacentStringLiterals: true
