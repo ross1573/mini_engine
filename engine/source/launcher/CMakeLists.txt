@@ -32,6 +32,7 @@ PUBLIC
 )
 
 generate_define_header(mini.launcher)
+generate_module_log(mini.launcher)
 generate_static_init(mini.launcher
     INITIALIZE StaticInitialize
     CLEANUP StaticCleanup

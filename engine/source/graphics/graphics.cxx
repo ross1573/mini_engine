@@ -8,17 +8,11 @@ export import :device;
 export import :renderer;
 export import :swap_chain;
 
+using namespace mini::graphics;
+
 namespace mini {
 
 export class GRAPHICS_API Graphics final : public ModuleInterface {
-public:
-    typedef graphics::API API;
-    typedef graphics::Interface Interface;
-
-    typedef graphics::Device Device;
-    typedef graphics::SwapChain SwapChain;
-    typedef graphics::Renderer Renderer;
-
 private:
     API m_currentAPI;
     Module<Interface> m_currentModule;

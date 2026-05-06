@@ -29,13 +29,13 @@ public:
     Logger(StringView);
 
     template <typename... Args>
-    void Message(Level, MessageContext, Args&&...);
+    void Log(Level, MessageContext, Args&&...);
 
     template <typename... Args>
     void Debug(MessageContext, Args&&...);
 
     template <typename... Args>
-    void Log(MessageContext, Args&&...);
+    void Info(MessageContext, Args&&...);
 
     template <typename... Args>
     void Warn(MessageContext, Args&&...);
@@ -60,7 +60,7 @@ Logger::Logger(StringView category)
 }
 
 template <typename... Args>
-inline void Logger::Message(Level level, MessageContext context, Args&&... args)
+inline void Logger::Log(Level level, MessageContext context, Args&&... args)
 {
     String log;
     if constexpr (sizeof...(args) == 0) {
@@ -80,32 +80,32 @@ template <typename... Args>
 inline void Logger::Debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
 #if DEBUG
-    Message(Level(0), context, ForwardArg<Args>(args)...);
+    Log(Level(0), context, ForwardArg<Args>(args)...);
 #endif
 }
 
 template <typename... Args>
-inline void Logger::Log(MessageContext context, Args&&... args)
+inline void Logger::Info(MessageContext context, Args&&... args)
 {
-    Message(Level::info, context, ForwardArg<Args>(args)...);
+    Log(Level::info, context, ForwardArg<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::Warn(MessageContext context, Args&&... args)
 {
-    Message(Level::warn, context, ForwardArg<Args>(args)...);
+    Log(Level::warn, context, ForwardArg<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::Error(MessageContext context, Args&&... args)
 {
-    Message(Level::error, context, ForwardArg<Args>(args)...);
+    Log(Level::error, context, ForwardArg<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::Fatal(MessageContext context, Args&&... args)
 {
-    Message(Level::fatal, context, ForwardArg<Args>(args)...);
+    Log(Level::fatal, context, ForwardArg<Args>(args)...);
 }
 
 } // namespace mini

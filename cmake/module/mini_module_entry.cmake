@@ -35,7 +35,7 @@ function (generate_module_entry target)
         set_property(GLOBAL APPEND PROPERTY STATIC_MODULE ${target})
         set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__${api_full}_start_module")
     elseif (NOT target_type STREQUAL "SHARED_LIBRARY")
-        message(FATAL_ERROR "unsupported build type: " ${target_type})
+        message(FATAL_ERROR "cannot generate module entry of target type " ${target_type})
     endif()
 
     target_sources(${target} PRIVATE "${file_path}/${file_name}")

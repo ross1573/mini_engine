@@ -6,14 +6,11 @@ export import :interface;
 export import :window;
 export import :handle;
 
+using namespace mini::platform;
+
 namespace mini {
 
 export class PLATFORM_API Platform final : public ModuleInterface {
-public:
-    typedef platform::Interface Interface;
-    typedef platform::Handle Handle;
-    typedef platform::Window Window;
-
 private:
     Module<Interface> m_nativeModule;
     UniquePtr<Handle> m_handle;

@@ -66,7 +66,11 @@ StringView LoggerBase::InitializeIdentifier()
     CFStringRef bundleIdentifier = nullptr;
 
     bundle = CFBundleGetMainBundle();
-    bundleIdentifier = bundle ? CFBundleGetIdentifier(bundle) : nullptr;
+    if (bundle == nullptr) {
+        goto init_finish;
+    }
+
+    bundleIdentifier = CFBundleGetIdentifier(bundle);
     if (bundleIdentifier == nullptr) {
         goto init_finish;
     }
@@ -82,7 +86,9 @@ StringView LoggerBase::InitializeIdentifier()
     }
 
 init_finish:
-    if (bundle != nullptr) CFRelease(bundle);
+    if (bundle != nullptr) {
+        CFRelease(bundle);
+    }
 
     if (identifier.Empty() == false) {
         m_identifier = MoveArg(identifier);

@@ -58,22 +58,22 @@ TEST_API inline void InitializeCounter()
 
 TEST_API inline void PrintCounter(StringView msg, SizeT time = 0)
 {
-    Log("", "\tContainer: {} / {}", msg, time);
-    Log("", "\t\tConstructor: {}", ctor);
-    Log("", "\t\tCopy Constructor: {}", copyCtor);
-    Log("", "\t\tMove Constructor: {}", moveCtor);
-    Log("", "\t\tCopy Assign: {}", copyAssign);
-    Log("", "\t\tMove Assign: {}", moveAssign);
-    Log("", "\t\tDestructor: {}", dtor);
+    LogInfo("", "\tContainer: {} / {}", msg, time);
+    LogInfo("", "\t\tConstructor: {}", ctor);
+    LogInfo("", "\t\tCopy Constructor: {}", copyCtor);
+    LogInfo("", "\t\tMove Constructor: {}", moveCtor);
+    LogInfo("", "\t\tCopy Assign: {}", copyAssign);
+    LogInfo("", "\t\tMove Assign: {}", moveAssign);
+    LogInfo("", "\t\tDestructor: {}", dtor);
 }
 
 struct TEST_API Debug {
-    Debug() { Log("DEBUG", "constructor"); }
-    ~Debug() { Log("DEBUG", "destructor"); }
-    Debug(Debug const&) { Log("DEBUG", "copy constructor"); }
-    Debug(Debug&&) noexcept { Log("DEBUG", "move constructor"); }
-    void operator=(Debug const&) { Log("DEBUG", "copy assgin"); }
-    void operator=(Debug&&) noexcept { Log("DEBUG", "move assign"); }
+    Debug() { LogInfo("DEBUG", "constructor"); }
+    ~Debug() { LogInfo("DEBUG", "destructor"); }
+    Debug(Debug const&) { LogInfo("DEBUG", "copy constructor"); }
+    Debug(Debug&&) noexcept { LogInfo("DEBUG", "move constructor"); }
+    void operator=(Debug const&) { LogInfo("DEBUG", "copy assgin"); }
+    void operator=(Debug&&) noexcept { LogInfo("DEBUG", "move assign"); }
 };
 
 template <typename T>

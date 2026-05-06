@@ -4,7 +4,7 @@ import mini.core;
 
 namespace @prefix@::@api@ {
 
-@api_upper@_API ::mini::Logger logger("@camel_case@");
+@api_define@::mini::Logger logger("@camel_case@");
 
 using Level = ::mini::Logger::Level;
 using MessageContext = ::mini::Logger::MessageContext;
@@ -12,7 +12,7 @@ using MessageContext = ::mini::Logger::MessageContext;
 export template <typename... Args>
 inline void Log(Level level, MessageContext context, Args&&... args)
 {
-    logger.Message(level, context, ForwardArg<Args>(args)...);
+    logger.Log(level, context, ForwardArg<Args>(args)...);
 }
 
 export template <typename... Args>
@@ -22,9 +22,9 @@ inline void LogDebug(MessageContext context, Args&&... args)
 }
 
 export template <typename... Args>
-inline void Log(MessageContext context, Args&&... args)
+inline void LogInfo(MessageContext context, Args&&... args)
 {
-    logger.Log(context, ForwardArg<Args>(args)...);
+    logger.Info(context, ForwardArg<Args>(args)...);
 }
 
 export template <typename... Args>

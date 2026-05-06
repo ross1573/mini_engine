@@ -3,6 +3,8 @@ module mini.platform;
 import :interface;
 import :log;
 
+using namespace mini::platform;
+
 namespace mini {
 
 Platform::Platform() noexcept
@@ -35,21 +37,21 @@ bool Platform::Initialize()
         return false;
     }
     m_handle = UniquePtr(handle);
-    platform::Log("platform handle created");
+    LogInfo("platform handle created");
 
     Window* window = m_nativeModule->CreateWindow();
     ENSURE(window && window->Valid(), "failed to create window handle") {
         return false;
     }
     m_window = UniquePtr(window);
-    platform::Log("platform window created");
+    LogInfo("platform window created");
 
     return true;
 }
 
 void Platform::AlertError(StringView const& msg)
 {
-    Handle* handle = platform::interface->GetHandle();
+    Handle* handle = interface->GetHandle();
     if (handle != nullptr) {
         handle->AlertError(msg);
     }

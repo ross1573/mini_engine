@@ -3,24 +3,20 @@ export module mini.launcher;
 import mini.core;
 import mini.engine;
 import :static_init;
-
-namespace mini::launcher {
-
-Logger logger("Launcher");
-
-} // namespace mini::launcher
+import :log;
 
 namespace mini {
 
 export void LaunchEngine()
 {
-    launcher::logger.Log("launching engine");
+    launcher::LogInfo("launching engine");
 
     launcher::StaticInitialize();
-    launcher::logger.Log("static initialized");
+    launcher::LogInfo("static initialized");
 
     Module<Core> core("core");
     Module<Engine> engine("engine");
+
     engine->Launch();
     engine.Release();
 

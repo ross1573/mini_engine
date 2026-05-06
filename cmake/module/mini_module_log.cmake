@@ -1,10 +1,19 @@
 include(module/mini_module_api)
 
 function (generate_module_log target)
-    set(args PREFIX API INTERFACE IMPORT)
+    set(args PREFIX API)
     cmake_parse_arguments(PARSE_ARGV 1 arg "" "${args}" "")
-    
+
     generate_api_name(${target} PREFIX ${arg_PREFIX} API ${arg_API})
+
+    get_target_property(target_type ${target} TYPE)
+    if (target_type STREQUAL "EXECUTABLE")
+        set(api_define "")
+    elseif (target_type MATCHES ".*LIBRARY$")
+        set(api_define "${api_upper}_API")
+    else()
+        message(FATAL_ERROR "cannot generate module logger of target type ${target_type}")
+    endif()
 
     snake_to_camel_case(${api})
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
