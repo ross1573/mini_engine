@@ -9,6 +9,7 @@ PUBLIC
         metal4.cxx
         metal4_resource.cxx
         metal4_buffer.cxx
+        metal4_texture.cxx
         metal4_common.cxx
         metal4_device.cxx
         metal4_swap_chain.cxx

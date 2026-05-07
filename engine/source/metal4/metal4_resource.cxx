@@ -17,6 +17,9 @@ protected:
     SharedPtr<NS::String> m_name;
 
 public:
+    Resource() noexcept = default;
+    Resource(Resource const&) = delete;
+    Resource(Resource&&) noexcept = default;
     Resource(ResourcePointer) noexcept;
     Resource(ResourcePointer, StringView);
 
@@ -28,13 +31,8 @@ public:
     String Name() const;
     ResourcePointer MetalResource() const noexcept;
 
-private:
-    Resource() noexcept = delete;
-    Resource(Resource const&) = delete;
-    Resource(Resource&&) = delete;
-
     Resource& operator=(Resource const&) = delete;
-    Resource& operator=(Resource&&) = delete;
+    Resource& operator=(Resource&&) noexcept = default;
 };
 
 template <DerivedFromT<MTL::Resource> T>

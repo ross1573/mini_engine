@@ -54,7 +54,7 @@ RenderPass::~RenderPass() noexcept
 
 bool RenderPass::Valid() const noexcept
 {
-    return m_commandBuffer != nullptr;
+    return m_commandBuffer != nullptr && m_argumentTable.Valid();
 }
 
 bool RenderPass::Active() const noexcept
@@ -93,23 +93,15 @@ void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
 
 void RenderPass::End() noexcept
 {
-    ASSERT(m_renderCommandEncoder != nullptr);
+    ASSERT(Active());
 
     m_renderCommandEncoder->endEncoding();
     m_renderCommandEncoder = nullptr;
 }
 
-void RenderPass::SetVertexBuffer(Buffer const& buffer, uint64 index)
-{
-    ASSERT(m_renderCommandEncoder != nullptr);
-
-    MTL::GPUAddress gpuAddress = static_cast<MTL::GPUAddress>(buffer.GpuAddress());
-    m_argumentTable->setAddress(gpuAddress, index);
-}
-
 void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
 {
-    ASSERT(m_renderCommandEncoder != nullptr);
+    ASSERT(Active());
 
     MTL::PrimitiveType mtlPrimitive = GetMTLPrimitiveType(primitiveType);
     MTL::RenderStages renderStages = MTL::RenderStageVertex;
@@ -118,9 +110,17 @@ void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 ve
     m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
+void RenderPass::SetVertexBuffer(Buffer const& buffer, uint64 index)
+{
+    ASSERT(Active());
+
+    MTL::GPUAddress gpuAddress = static_cast<MTL::GPUAddress>(buffer.GpuAddress());
+    m_argumentTable->setAddress(gpuAddress, index);
+}
+
 void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexcept
 {
-    ASSERT(m_renderCommandEncoder != nullptr);
+    ASSERT(Active());
 
     MTL::Viewport viewport = {
         .originX = static_cast<double>(rect.x),
@@ -136,7 +136,7 @@ void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexce
 
 void RenderPass::SetScissorRect(RectInt const& rect) noexcept
 {
-    ASSERT(m_renderCommandEncoder != nullptr);
+    ASSERT(Active());
 
     MTL::ScissorRect ScissorRect = {
         .x = static_cast<NS::UInteger>(rect.x),

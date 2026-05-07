@@ -6,11 +6,12 @@ import :resource;
 
 namespace mini::metal4 {
 
-export class METAL4_API Buffer : Resource<MTL::Buffer> {
+export class METAL4_API Buffer : public Resource<MTL::Buffer> {
 private:
     typedef Resource<MTL::Buffer> Base;
 
 public:
+    Buffer() noexcept = default;
     Buffer(MTL::Buffer*) noexcept;
     Buffer(MTL::Buffer*, StringView);
 
