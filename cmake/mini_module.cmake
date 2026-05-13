@@ -62,7 +62,7 @@ function (add_module name)
     )
 
     if (NOT arg_NO_API_HEADER)
-        generate_api_header(${name} PRIVATE PREFIX ${prefix}API ${api})
+        generate_api_header(${name} PRIVATE PREFIX ${prefix} API ${api})
     endif()
     if (NOT arg_NO_API_LOG)
         generate_module_log(${name} PREFIX ${prefix} API ${api})

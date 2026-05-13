@@ -11,9 +11,9 @@ macro (set_external name)
 endmacro()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    add_compile_options(/W0 /utf-8)
+    add_compile_options(/W0 /utf-8 /fp:fast)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
-    add_compile_options(-Wno-everything -Wno-dev)
+    add_compile_options(-Wno-everything -Wno-dev -ffast-math)
 endif()
 
 include(external/Fmt)
