@@ -39,17 +39,6 @@
             }
         },
         {
-            "name": "macos-master",
-            "displayName": "macos master",
-            "inherits": "macos",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "BUILD_SHARED_LIBS": "OFF",
-                "INCLUDE_TEST": "OFF",
-                "INCLUDE_BENCHMARK": "OFF"
-            }
-        },
-        {
             "name": "macos-debug-test",
             "displayName": "macos debug with test and benchmark",
             "inherits": "macos",

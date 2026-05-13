@@ -6,7 +6,8 @@ include(module/mini_module_entry)
 include(module/mini_module_log)
 
 macro (set_module_defines name)
-    set(module_defines
+    set_property(TARGET ${name} 
+    PROPERTY MODULE_DEFINITIONS
         MODULE_NAME="${name}"
         MODULE_PREFIX="${prefix}"
         MODULE_API="${api}"
@@ -15,11 +16,6 @@ macro (set_module_defines name)
         MODULE_OUTPUT_SUFFIX="$<TARGET_FILE_SUFFIX:${name}>"
         "\n"
         ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
-    )
-
-    set_target_properties(${name} 
-    PROPERTIES 
-        MODULE_DEFINITIONS "${module_defines}"
     )
 endmacro()
 
@@ -66,27 +62,15 @@ function (add_module name)
     )
 
     if (NOT arg_NO_API_HEADER)
-        generate_api_header(${name} PRIVATE 
-            PREFIX ${prefix}
-            API ${api}
-        )
+        generate_api_header(${name} PRIVATE PREFIX ${prefix}API ${api})
     endif()
-
     if (NOT arg_NO_API_LOG)
-        generate_module_log(${name} 
-            PREFIX ${prefix}
-            API ${api}
-        )
+        generate_module_log(${name} PREFIX ${prefix} API ${api})
     endif()
-
     if (NOT arg_NO_DEFINE_HEADER)
         set_module_defines(${name})
-        generate_define_header(${name}
-            PREFIX ${prefix}
-            API ${api}
-        )
+        generate_define_header(${name} PREFIX ${prefix} API ${api})
     endif()
-
     if (NOT arg_NO_MODULE_ENTRY)
         cmake_language(EVAL CODE "
             cmake_language(DEFER CALL generate_module_entry [[${name}]]
@@ -97,7 +81,5 @@ function (add_module name)
         )
     endif()
 
-    cmake_language(EVAL CODE
-        "cmake_language(DEFER CALL build_source_tree [[${name}]])"
-    )
+    cmake_language(EVAL CODE "cmake_language(DEFER CALL build_source_tree [[${name}]])")
 endfunction()

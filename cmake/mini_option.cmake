@@ -1,5 +1,11 @@
 if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(
+        $<$<CONFIG:Debug>:/Zi>
+        $<$<CONFIG:Debug>:/Od>
+        $<$<CONFIG:Release,RelWithDebInfo>:/O2>
+        $<$<CONFIG:Release,RelWithDebInfo>:/Ob3>
+        /fp:fast
+
         /Wall
         /external:W0
         /external:anglebrackets
@@ -7,7 +13,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /MP
         /sdl-
         /utf-8
-        $<$<CONFIG:Debug>:/Zi>
 
         /wd4061 # each case in switch is not handled explicitly
         /wd4127 # conditional expression is constant
@@ -46,6 +51,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(
+        $<$<CONFIG:Release,RelWithDebInfo>:-O3>
+        -ffast-math
+
         -Wall
         -Wextra
         -Wshadow
