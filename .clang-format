@@ -9,7 +9,7 @@ TabWidth: 4
 AccessModifierOffset: -4
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-PenaltyBreakAssignment: 20
+PenaltyBreakAssignment: 500
 PenaltyBreakBeforeFirstCallParameter: 500
 PenaltyBreakBeforeMemberAccess: 500
 PenaltyBreakComment: 80
@@ -193,6 +193,7 @@ SpaceBeforeParensOptions:
   BeforeNonEmptyParentheses: false
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
+# SpaceInEmptyBracesStyle: Never
 SpaceInEmptyBlock: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: Never

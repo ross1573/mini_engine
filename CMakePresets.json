@@ -1,7 +1,42 @@
 {
     "version": 10,
     "include": [
+        "cmake/presets/config.json",
         "cmake/presets/macos.json",
         "cmake/presets/windows.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "macos-clang-debug",
+            "inherits": [ "macos-clang", "shared", "test" ]
+        },
+        {
+            "name": "macos-clang-develop",
+            "inherits": [ "macos-clang", "shared", "no-test" ]
+        },
+        {
+            "name": "macos-clang-release",
+            "inherits": [ "macos-clang", "shared", "no-test" ]
+        },
+        {
+            "name": "macos-clang-mono",
+            "inherits": [ "macos-clang", "static", "no-test" ]
+        },
+        {
+            "name": "windows-vs-debug",
+            "inherits": [ "windows-vs", "shared", "test" ]
+        },
+        {
+            "name": "windows-vs-develop",
+            "inherits": [ "windows-vs", "shared", "no-test" ]
+        },
+        {
+            "name": "windows-vs-release",
+            "inherits": [ "windows-vs", "shared", "no-test" ]
+        },
+        {
+            "name": "windows-vs-mono",
+            "inherits": [ "windows-vs", "static", "no-test" ]
+        }
     ]
 }

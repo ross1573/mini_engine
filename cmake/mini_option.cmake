@@ -1,9 +1,11 @@
 if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(
-        $<$<CONFIG:Debug>:/Zi>
-        $<$<CONFIG:Debug>:/Od>
-        $<$<CONFIG:Release,RelWithDebInfo>:/O2>
-        $<$<CONFIG:Release,RelWithDebInfo>:/Ob3>
+        $<$<CONFIG:Debug,Develop>:/Zi>
+        $<$<CONFIG:Debug,Develop>:/Od>
+        $<$<CONFIG:Develop>:/Od>
+        $<$<CONFIG:Develop>:/Ob2>
+        $<$<CONFIG:Release>:/O2>
+        $<$<CONFIG:Release>:/Ob3>
         /fp:fast
 
         /Wall
@@ -47,11 +49,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     )
 
     add_link_options(
-        $<$<CONFIG:Debug>:/INCREMENTAL>
+        $<$<CONFIG:Debug,Develop>:/INCREMENTAL>
     )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_compile_options(
-        $<$<CONFIG:Release,RelWithDebInfo>:-O3>
+        $<$<CONFIG:Debug,Develop>:-g>
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Develop>:-O1>
+        $<$<CONFIG:Release>:-O3>
         -ffast-math
 
         -Wall
@@ -75,7 +80,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
         )
     else()
         add_link_options(
-            # $<$<CONFIG:Debug>:-fsanitize=address>
+            $<$<CONFIG:Debug>:-fsanitize=address>
         )
     endif()
 else()

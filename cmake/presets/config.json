@@ -1,0 +1,35 @@
+{
+    "version": 10,
+    "configurePresets": [
+        {
+            "name": "shared",
+            "hidden": true,
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": "ON"
+            }
+        },
+        {
+            "name": "static",
+            "hidden": true,
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": "OFF"
+            }
+        },
+        {
+            "name": "test",
+            "hidden": true,
+            "cacheVariables": {
+                "INCLUDE_TEST": "ON",
+                "INCLUDE_BENCHMARK": "ON"
+            }
+        },
+        {
+            "name": "no-test",
+            "hidden": true,
+            "cacheVariables": {
+                "INCLUDE_TEST": "OFF",
+                "INCLUDE_BENCHMARK": "OFF"
+            }
+        }
+    ]
+}

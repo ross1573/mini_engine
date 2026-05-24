@@ -77,8 +77,7 @@ function (build_source_tree target)
 
     # make a list of generated files
     set(cmake_gen_path "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${target}.dir")
-    get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-    if (is_multi_config)
+    if (USING_MULTI_CONFIG)
         list(APPEND generated_files "${cmake_gen_path}/cmake_pch.cxx")
         list(APPEND generated_files "${cmake_gen_path}/$<CONFIG>/cmake_pch.hxx")
 

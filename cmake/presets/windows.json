@@ -2,33 +2,21 @@
     "version": 10,
     "configurePresets": [
         {
-            "name": "windows",
-            "displayName": "windows config",
+            "name": "windows-vs",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
             },
-            "binaryDir": "${sourceDir}/build"
-        },
-        {
-            "name": "windows-default",
-            "displayName": "windows default",
-            "inherits": "windows",
+            "generator": "Visual Studio 18 2026",
+            "binaryDir": "${sourceDir}/build/",
+            "toolset": {
+                "value": "v145,version=14.51",
+                "strategy": "external"
+            },
             "cacheVariables": {
-                "BUILD_SHARED_LIBS": "ON",
-                "INCLUDE_TEST": "OFF",
-                "INCLUDE_BENCHMARK": "OFF"
-            }
-        },
-        {
-            "name": "windows-test",
-            "displayName": "windows debug with test and benchmark",
-            "inherits": "windows",
-            "cacheVariables": {
-                "BUILD_SHARED_LIBS": "ON",
-                "INCLUDE_TEST": "ON",
-                "INCLUDE_BENCHMARK": "ON"
+                "VC_VERSION_MIN": "1951",
+                "VC_VERSION_MAX": "1959"
             }
         }
     ]
