@@ -18,7 +18,7 @@
     ],
     "buildPresets": [
         {
-            "name": "macos-clang-build",
+            "name": "macos-clang",
             "configurePreset": "macos-clang"
         }
     ]
