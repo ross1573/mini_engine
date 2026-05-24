@@ -10,14 +10,6 @@ module;
 #  else
 #    define PAUSE() __nop()
 #  endif
-#elif CLANG || GNUC
-#  if ARCH_ARM64
-#    define PAUSE() asm volatile("isb")
-#  elif ARCH_X86
-#    define PAUSE() __builtin_ia32_pause()
-#  else
-#    define PAUSE() asm volatile("", , , "memory")
-#  endif
 #else
 #  error "unsupported compiler"
 #endif

@@ -59,19 +59,17 @@ concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
                                 requires(T i, U v) { *i = ForwardArg<typename U::Value>(*v); };
 
 export template <typename T, typename U>
-concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
+concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> && //
                                requires(T i, U v) { *i = MoveArg(*v); };
 
 export template <typename Iter, typename T>
 concept ForwardIteratableByT = ForwardIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
 
 export template <typename Iter, typename T>
-concept BidirectionalIteratableByT = BidrectionalIteratorT<Iter> &&
-                                     ConvertibleToT<typename Iter::Value, T>;
+concept BidirectionalIteratableByT = BidrectionalIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
 
 export template <typename Iter, typename T>
-concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> &&
-                                    ConvertibleToT<typename Iter::Value, T>;
+concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
 
 } // namespace mini
 
@@ -121,9 +119,9 @@ inline constexpr typename T::ConstIterator cend(T const &c)
 
 } // namespace mini
 
-namespace std {
+export namespace std {
 
-export template <mini::ForwardIteratorT T>
+template <mini::ForwardIteratorT T>
 struct iterator_traits<T> {
     typedef std::forward_iterator_tag iterator_category;
     typedef typename T::Value value_type;
@@ -132,7 +130,7 @@ struct iterator_traits<T> {
     typedef mini::OffsetT difference_type;
 };
 
-export template <mini::BidrectionalIteratorT T>
+template <mini::BidrectionalIteratorT T>
 struct iterator_traits<T> {
     typedef std::bidirectional_iterator_tag iterator_category;
     typedef typename T::Value value_type;
@@ -141,7 +139,7 @@ struct iterator_traits<T> {
     typedef mini::OffsetT difference_type;
 };
 
-export template <mini::RandomAccessIteratorT T>
+template <mini::RandomAccessIteratorT T>
 struct iterator_traits<T> {
     typedef std::random_access_iterator_tag iterator_category;
     typedef typename T::Value value_type;

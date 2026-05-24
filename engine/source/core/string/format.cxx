@@ -9,8 +9,7 @@ import :string_view;
 
 namespace mini {
 
-inline constexpr auto WriteFormatError(String& to, StringView const& msg,
-                                       fmt::format_error const& error)
+inline constexpr auto WriteFormatError(String& to, StringView const& msg, fmt::format_error const& error)
 {
     StringView errorMsg = error.what();
     StringView pre = errorMsg.Empty() ? "format failed" : "format failed with error: ";
@@ -66,9 +65,9 @@ inline constexpr String ToString(T const& val, StringView fmt = "{}")
 
 } // namespace mini
 
-namespace fmt {
+export namespace fmt {
 
-export template <mini::CharT T, mini::AllocatorT<T> AllocT>
+template <mini::CharT T, mini::AllocatorT<T> AllocT>
 struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicString<T, AllocT> const& str, format_context& ctx) const
     {
@@ -77,10 +76,10 @@ struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<
     }
 };
 
-export template <mini::CharT T, mini::AllocatorT<T> AllocT>
+template <mini::CharT T, mini::AllocatorT<T> AllocT>
 struct fmt::is_range<mini::BasicString<T, AllocT>, T> : mini::FalseT {};
-
-export template <mini::CharT T>
+ 
+template <mini::CharT T>
 struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicStringView<T> const& str, format_context& ctx) const
     {
@@ -89,7 +88,7 @@ struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, 
     }
 };
 
-export template <mini::CharT T>
+template <mini::CharT T>
 struct fmt::is_range<mini::BasicStringView<T>, T> : mini::FalseT {};
 
 } // namespace fmt

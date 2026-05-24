@@ -26,10 +26,10 @@ export template <typename T>
 struct Allocator;
 
 template <typename AllocT>
-struct IsDefaultAlloc : FalseT { };
+struct IsDefaultAlloc : FalseT {};
 
 template <typename T>
-struct IsDefaultAlloc<Allocator<T>> : TrueT { };
+struct IsDefaultAlloc<Allocator<T>> : TrueT {};
 
 export template <typename T>
 concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename T::Pointer loc) {
@@ -45,10 +45,9 @@ export template <typename AllocT, typename T>
 concept AllocatorT = UnboundAllocatorT<AllocT> && SameAsT<typename AllocT::Value, T>;
 
 export template <typename AllocT, typename T>
-concept NoThrowAllocatorT =
-    AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
-    NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
-    NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, SizeT>;
+concept NoThrowAllocatorT = AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
+                            NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
+                            NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, SizeT>;
 
 template <typename AllocT, typename T>
 concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
@@ -124,7 +123,7 @@ export template <typename U, typename T>
 inline constexpr mini::Allocator<U> RebindAllocator(T const&)
     requires IsDefaultAlloc<T>::value
 {
-    return mini::Allocator<U>{ };
+    return mini::Allocator<U>{};
 }
 
 export template <typename T, typename U>
@@ -155,7 +154,7 @@ public:
 export template <typename U>
 inline constexpr Allocator<U> RebindAllocator(UnboundAllocator)
 {
-    return mini::Allocator<U>{ };
+    return mini::Allocator<U>{};
 }
 
 export inline constexpr bool operator==(UnboundAllocator const&, UnboundAllocator const&)
@@ -174,9 +173,9 @@ concept RebindableWithT = UnboundAllocatorT<AllocT> &&
 
 } // namespace mini
 
-namespace std {
+export namespace std {
 
-export template <typename ValueT, template <typename> typename T>
+template <typename ValueT, template <typename> typename T>
     requires mini::AllocatorT<T<ValueT>, ValueT>
 struct allocator_traits<T<ValueT>> {
     typedef T<ValueT> AllocT;
@@ -188,27 +187,20 @@ struct allocator_traits<T<ValueT>> {
     typedef typename mini::UnboundAllocator::Pointer void_pointer;
     typedef typename mini::UnboundAllocator::ConstPointer const_void_pointer;
 
-    static constexpr pointer allocate(AllocT& alloc, size_type n)
-    {
-        return alloc.Allocate(n).pointer;
-    }
+    static constexpr pointer allocate(AllocT& alloc, size_type n) { return alloc.Allocate(n).pointer; }
 
     static constexpr pointer allocate(AllocT& alloc, size_type n, const_void_pointer)
     {
         return alloc.Allocate(n).pointer;
     }
 
-    static constexpr std::allocation_result<pointer, size_type> allocate_at_least(AllocT& alloc,
-                                                                                  size_type n)
+    static constexpr std::allocation_result<pointer, size_type> allocate_at_least(AllocT& alloc, size_type n)
     {
         mini::AllocationResult<ValueT> result = alloc.Allocate(n);
         return { .ptr = result.pointer, .count = result.capacity };
     }
 
-    static constexpr void deallocate(AllocT& alloc, pointer ptr, size_type n)
-    {
-        alloc.Deallocate(ptr, n);
-    }
+    static constexpr void deallocate(AllocT& alloc, pointer ptr, size_type n) { alloc.Deallocate(ptr, n); }
 
     template <typename U, typename... Args>
     static constexpr void construct(AllocT&, U* ptr, Args&&... args)

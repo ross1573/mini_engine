@@ -93,14 +93,11 @@ inline constexpr uint32 CountLeftZero(T num) noexcept
     }
 
     if constexpr (sizeof(T) <= sizeof(unsigned int)) {
-        return static_cast<uint32>(BUILTIN_CLZ(num)) -
-               (NumericLimit<unsigned int>::digits - digits);
+        return static_cast<uint32>(BUILTIN_CLZ(num)) - (NumericLimit<unsigned int>::digits - digits);
     } else if constexpr (sizeof(T) <= sizeof(unsigned long)) {
-        return static_cast<uint32>(BUILTIN_CLZL(num)) -
-               (NumericLimit<unsigned long>::digits - digits);
+        return static_cast<uint32>(BUILTIN_CLZL(num)) - (NumericLimit<unsigned long>::digits - digits);
     } else if constexpr (sizeof(T) <= sizeof(unsigned long long)) {
-        return static_cast<uint32>(BUILTIN_CLZLL(num)) -
-               (NumericLimit<unsigned long long>::digits - digits);
+        return static_cast<uint32>(BUILTIN_CLZLL(num)) - (NumericLimit<unsigned long long>::digits - digits);
     } else {
         uint32 result = 0;
         uint32 iter = 0;
@@ -123,8 +120,7 @@ inline constexpr uint32 CountLeftZero(T num) noexcept
 export template <UnsignedIntegralT T>
 inline constexpr uint32 CountLeftOne(T num) noexcept
 {
-    return num != NumericLimit<T>::max ? CountLeftZero(static_cast<T>(~num))
-                                       : NumericLimit<T>::digits;
+    return num != NumericLimit<T>::max ? CountLeftZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }
 
 export template <UnsignedIntegralT T>
@@ -160,8 +156,7 @@ inline constexpr uint32 CountRightZero(T num) noexcept
 export template <UnsignedIntegralT T>
 inline constexpr uint32 CountRightOne(T num) noexcept
 {
-    return num != NumericLimit<T>::max ? CountRightZero(static_cast<T>(~num))
-                                       : NumericLimit<T>::digits;
+    return num != NumericLimit<T>::max ? CountRightZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }
 
 } // namespace mini::bit
