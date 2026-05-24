@@ -15,7 +15,7 @@ private:
     SwapChainBuffer* m_currentBuffer;
 
     SharedPtr<ID3D12CommandAllocator> m_commandAllocator;
-    SharedPtr<ID3D12GraphicsCommandList> m_commandList;
+    SharedPtr<ID3D12GraphicsCommandList4> m_commandList;
 
 public:
     Renderer(ID3D12Device*);
@@ -32,7 +32,7 @@ public:
     void SetScissorRect(RectInt const&) final;
 
     CommandQueue* GetCommandQueue() const { return m_commandQueue.Get(); }
-    ID3D12GraphicsCommandList* GetCommandList() const { return m_commandList; }
+    ID3D12GraphicsCommandList4* GetCommandList() const { return m_commandList; }
 };
 
 } // namespace mini::d3d12

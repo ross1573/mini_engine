@@ -1,6 +1,7 @@
 module mini.d3d12;
 
 import mini.core;
+import mini.windows;
 import :device;
 import :renderer;
 import :swap_chain;
@@ -44,13 +45,13 @@ void Renderer::BeginRender()
     VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
     VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
 
-    D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
+    D3D12_RESOURCE_TRANSITION_BARRIER transition{};
     transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
     transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-    D3D12_RESOURCE_BARRIER barrier{ };
+    D3D12_RESOURCE_BARRIER barrier{};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
@@ -63,13 +64,13 @@ void Renderer::BeginRender()
 
 void Renderer::EndRender()
 {
-    D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
+    D3D12_RESOURCE_TRANSITION_BARRIER transition{};
     transition.pResource = m_currentBuffer->resource;
     transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
-    D3D12_RESOURCE_BARRIER barrier{ };
+    D3D12_RESOURCE_BARRIER barrier{};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
     barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
     barrier.Transition = transition;
@@ -79,7 +80,7 @@ void Renderer::EndRender()
 
 void Renderer::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
 {
-    D3D12_VIEWPORT d3dViewport{ };
+    D3D12_VIEWPORT d3dViewport{};
     d3dViewport.TopLeftX = rect.x;
     d3dViewport.TopLeftY = rect.y;
     d3dViewport.Width = rect.width;
