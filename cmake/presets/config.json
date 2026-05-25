@@ -29,15 +29,27 @@
             "name": "test",
             "hidden": true,
             "cacheVariables": {
-                "INCLUDE_TEST": "ON",
-                "INCLUDE_BENCHMARK": "ON"
+                "INCLUDE_TEST": "ON"
             }
         },
         {
             "name": "no-test",
             "hidden": true,
             "cacheVariables": {
-                "INCLUDE_TEST": "OFF",
+                "INCLUDE_TEST": "OFF"
+            }
+        },
+        {
+            "name": "bench",
+            "hidden": true,
+            "cacheVariables": {
+                "INCLUDE_BENCHMARK": "ON"
+            }
+        },
+        {
+            "name": "no-bench",
+            "hidden": true,
+            "cacheVariables": {
                 "INCLUDE_BENCHMARK": "OFF"
             }
         }

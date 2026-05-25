@@ -8,39 +8,39 @@
     "configurePresets": [
         {
             "name": "macos-clang-debug",
-            "inherits": [ "macos-clang", "shared", "test" ],
+            "inherits": [ "macos-clang", "shared", "test", "no-bench" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
         },
         {
             "name": "macos-clang-develop",
-            "inherits": [ "macos-clang", "shared", "no-test" ],
+            "inherits": [ "macos-clang", "shared", "no-test", "no-bench" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Develop" }
         },
         {
             "name": "macos-clang-release",
-            "inherits": [ "macos-clang", "shared", "no-test" ],
+            "inherits": [ "macos-clang", "shared", "no-test", "no-bench" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
             "name": "macos-clang-mono",
-            "inherits": [ "macos-clang", "mono", "no-test" ],
+            "inherits": [ "macos-clang", "mono", "no-test", "no-bench" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
             "name": "windows-vs-debug",
-            "inherits": [ "windows-vs", "shared", "test" ]
+            "inherits": [ "windows-vs", "shared", "test", "no-bench" ]
         },
         {
             "name": "windows-vs-develop",
-            "inherits": [ "windows-vs", "shared", "no-test" ]
+            "inherits": [ "windows-vs", "shared", "no-test", "no-bench" ]
         },
         {
             "name": "windows-vs-release",
-            "inherits": [ "windows-vs", "shared", "no-test" ]
+            "inherits": [ "windows-vs", "shared", "no-test", "no-bench" ]
         },
         {
             "name": "windows-vs-mono",
-            "inherits": [ "windows-vs", "mono", "no-test" ]
+            "inherits": [ "windows-vs", "mono", "no-test", "no-bench" ]
         }
     ]
 }

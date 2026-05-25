@@ -2,6 +2,8 @@ include(mini_define)
 include(mini_option)
 include(mini_module)
 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
 set_output_directory()
 mini_compile_options()
 mini_link_options()

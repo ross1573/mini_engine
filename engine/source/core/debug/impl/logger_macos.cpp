@@ -25,7 +25,7 @@ void LoggerBase::PrintMessage(byte level, StringView msg)
 {
     // delay initialization of the logger until first message has been fetched
     if (m_logger == nullptr) {
-        StringView identifier = "com." ENGINE_PROJECT_AUTHOR ENGINE_PROJECT_NAME;
+        StringView identifier = "com." ENGINE_PROJECT_AUTHOR "." ENGINE_PROJECT_NAME;
         m_logger = os_log_create(identifier.Data(), m_category.Data());
     }
 
