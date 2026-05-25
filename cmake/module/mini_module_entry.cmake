@@ -32,7 +32,7 @@ function (generate_module_entry target)
     # these initializers will be used on code generated
     get_target_property(target_type ${target} TYPE)
     if (target_type STREQUAL "STATIC_LIBRARY")
-        set_property(GLOBAL APPEND PROPERTY STATIC_MODULE ${target})
+        set_property(GLOBAL APPEND PROPERTY STATIC_MODULE_ENTRY ${target})
         set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__${api_full}_start_module")
     elseif (NOT target_type STREQUAL "SHARED_LIBRARY")
         message(FATAL_ERROR "cannot generate module entry of target type " ${target_type})

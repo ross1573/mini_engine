@@ -5,14 +5,24 @@
             "name": "shared",
             "hidden": true,
             "cacheVariables": {
-                "BUILD_SHARED_LIBS": "ON"
+                "BUILD_SHARED_LIBS": "ON",
+                "BUILD_MONOLITHIC": "OFF"
             }
         },
         {
             "name": "static",
             "hidden": true,
             "cacheVariables": {
-                "BUILD_SHARED_LIBS": "OFF"
+                "BUILD_SHARED_LIBS": "OFF",
+                "BUILD_MONOLITHIC": "OFF"
+            }
+        },
+        {
+            "name": "mono",
+            "hidden": true,
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": "OFF",
+                "BUILD_MONOLITHIC": "ON"
             }
         },
         {

@@ -8,19 +8,23 @@
     "configurePresets": [
         {
             "name": "macos-clang-debug",
-            "inherits": [ "macos-clang", "shared", "test" ]
+            "inherits": [ "macos-clang", "shared", "test" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
         },
         {
             "name": "macos-clang-develop",
-            "inherits": [ "macos-clang", "shared", "no-test" ]
+            "inherits": [ "macos-clang", "shared", "no-test" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Develop" }
         },
         {
             "name": "macos-clang-release",
-            "inherits": [ "macos-clang", "shared", "no-test" ]
+            "inherits": [ "macos-clang", "shared", "no-test" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
             "name": "macos-clang-mono",
-            "inherits": [ "macos-clang", "static", "no-test" ]
+            "inherits": [ "macos-clang", "mono", "no-test" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
             "name": "windows-vs-debug",
@@ -36,7 +40,7 @@
         },
         {
             "name": "windows-vs-mono",
-            "inherits": [ "windows-vs", "static", "no-test" ]
+            "inherits": [ "windows-vs", "mono", "no-test" ]
         }
     ]
 }

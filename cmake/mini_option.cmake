@@ -1,4 +1,4 @@
-if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+macro (_msvc_compile_options)
     add_compile_options(
         $<$<CONFIG:Debug>:/Zi>
         $<$<CONFIG:Debug>:/Od>
@@ -49,11 +49,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         /wd5264 # 'const' variable is not used
         /wd5267 # implicit deprecation of special member functions
     )
+endmacro()
 
-    add_link_options(
-        $<$<CONFIG:Debug,Develop>:/INCREMENTAL>
-    )
-elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+macro (_clang_compile_options)
     add_compile_options(
         $<$<CONFIG:Debug,Develop>:-g>
         $<$<CONFIG:Debug>:-O0>
@@ -80,11 +78,37 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
             -Wno-language-extension-token # use in __uuidof and __declspec
             -Wno-cast-function-type-mismatch # reinterept_cast of dll exported function
         )
-    else()
-        add_link_options(
-            $<$<CONFIG:Debug>:-fsanitize=address>
-        )
     endif()
-else()
-    message(FATAL_ERROR "unsupported compiler: " ${CMAKE_CXX_COMPILER_ID})
-endif()
+endmacro()
+
+macro (_msvc_link_options)
+    add_link_options(
+        $<$<CONFIG:Debug,Develop>:/INCREMENTAL>
+    )
+endmacro()
+
+macro (_clang_link_options)
+    add_link_options(
+        # $<$<CONFIG:Debug>:-fsanitize=address>
+    )
+endmacro()
+
+macro (mini_compile_options)
+    if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        _msvc_compile_options()
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+        _clang_compile_options()
+    else()
+        message(FATAL_ERROR "unsupported compiler: " ${CMAKE_CXX_COMPILER_ID})
+    endif()
+endmacro()
+
+macro (mini_link_options)
+    if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+        _msvc_link_options()
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+        _clang_link_options()
+    else()
+        message(FATAL_ERROR "unsupported compiler: " ${CMAKE_CXX_COMPILER_ID})
+    endif()
+endmacro()

@@ -24,6 +24,3 @@ FetchContent_MakeAvailable(googlebenchmark)
 
 set_target_properties(benchmark PROPERTIES FOLDER external)
 set_target_properties(benchmark_main PROPERTIES FOLDER external)
-
-# restore output folder
-set_output_directory(${BUILD_TARGET_ARCH})

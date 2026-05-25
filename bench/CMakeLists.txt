@@ -3,6 +3,10 @@ include(mini_option)
 include(mini_module)
 include_shared(external/GoogleBenchmark)
 
+set_output_directory()
+mini_compile_options()
+mini_link_options()
+
 function (no_arg_benchmark name)
     add_executable(benchmark.${name} ${name}.cpp)
 

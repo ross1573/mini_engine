@@ -1,9 +1,10 @@
 include(module/mini_module_define)
 include(module/mini_module_static)
+include(module/mini_module_bundle)
 
 if (WIN32)
     add_executable(mini.launcher WIN32 windows/win_main.cpp)
-elseif (APPLE)
+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     enable_language(OBJCXX)
 
     add_executable(mini.launcher MACOSX_BUNDLE 
@@ -12,14 +13,6 @@ elseif (APPLE)
     )
 
     target_link_libraries(mini.launcher PRIVATE "-framework AppKit")
-    set_target_properties(mini.launcher 
-    PROPERTIES 
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME ${ENGINE_PROJECT_NAME}
-        MACOSX_BUNDLE_BUNDLE_VERSION ${ENGINE_PROJECT_VERSION}
-        MACOSX_BUNDLE_COPYRIGHT ${ENGINE_PROJECT_AUTHOR}
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.${ENGINE_PROJECT_AUTHOR}.${ENGINE_PROJECT_NAME}"
-    )
 else()
     message(FATAL_ERROR "unable to build on unknown platform: " ${CMAKE_SYSTEM_NAME})
 endif()
@@ -38,7 +31,7 @@ generate_static_init(mini.launcher
     CLEANUP StaticCleanup
 )
 
-get_property(static_modules GLOBAL PROPERTY STATIC_MODULE)
+get_modules(static_modules STATIC)
 set(modules
     mini.core
     mini.engine
@@ -48,10 +41,11 @@ list(APPEND modules ${static_modules})
 list(REMOVE_DUPLICATES modules)
 target_link_libraries(mini.launcher PRIVATE ${modules})
 
+relocate_executable(mini.launcher)
 set_target_properties(mini.launcher
 PROPERTIES
     FOLDER module
-    OUTPUT_NAME ${PROJECT_NAME}$<$<CONFIG:Debug>:Debug>
+    OUTPUT_NAME "${BUNDLE_OUTPUT_NAME}"
 )
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")

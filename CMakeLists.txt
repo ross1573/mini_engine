@@ -26,13 +26,27 @@ set(ENGINE_ARCHIVE_DIR "${ENGINE_PROJECT_DIR}/lib")
 set(ENGINE_LIBRARY_DIR "${ENGINE_PROJECT_DIR}/lib")
 set(ENGINE_RUNTIME_DIR "${ENGINE_PROJECT_DIR}/bin")
 
+set(BUILD_TARGET_ARCH ${CMAKE_SYSTEM_PROCESSOR})
+set(BUILD_PREFIX $<$<CONFIG:Debug>:d>)
+set(BUILD_TYPES "Debug" "Develop" "Release")
+set(BUNDLE_OUTPUT_NAME "${PROJECT_NAME}$<$<NOT:$<CONFIG:Release>>:$<CONFIG>>")
+
+set(CMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH TRUE)
+set(CMAKE_BUILD_REMOVE_ENVIRONMENT_RPATH TRUE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "build")
+get_property(using_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+set(USING_MULTI_CONFIG ${using_multi_config})
 
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake/modules")
 
 include(mini_build)
+
+clone_build_type(Debug Develop)
+apply_build_types()
+validate_compiler()
 
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})

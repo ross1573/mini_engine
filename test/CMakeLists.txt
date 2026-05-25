@@ -2,7 +2,9 @@ include(mini_define)
 include(mini_option)
 include(mini_module)
 
-set_output_directory(${BUILD_TARGET_ARCH})
+set_output_directory()
+mini_compile_options()
+mini_link_options()
 
 function (no_arg_test name)
     add_executable(test.${name} ${name}.cpp)
