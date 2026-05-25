@@ -8,7 +8,7 @@ import mini.test;
 using namespace mini;
 using namespace mini::test;
 
-template <SizeT CapacityN>
+template <size_t CapacityN>
 struct S {
     alignas(1) byte buffer[CapacityN];
 };
@@ -77,8 +77,7 @@ static int32 TestAtomicLockFree()
     TEST_ENSURE(static_cast<Atomic<S<8>> volatile>(Atomic<S<8>>{ }).IsLockFree() !=
                 static_cast<Atomic<S<17>> volatile>(Atomic<S<17>>{ }).IsLockFree());
     TEST_ENSURE(static_cast<Atomic<Unaligned> volatile>(Atomic<Unaligned>{ }).IsLockFree() == true);
-    TEST_ENSURE(static_cast<Atomic<NonAtomic> volatile>(Atomic<NonAtomic>{ }).IsLockFree() ==
-                false);
+    TEST_ENSURE(static_cast<Atomic<NonAtomic> volatile>(Atomic<NonAtomic>{ }).IsLockFree() == false);
 
     return 0;
 }

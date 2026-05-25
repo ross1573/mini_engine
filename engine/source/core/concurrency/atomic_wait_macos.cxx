@@ -23,7 +23,7 @@ namespace mini {
 using AtomicContention = uint64;
 
 template <typename T>
-struct AtomicWaitableT : FalseT {};
+struct AtomicWaitableT : FalseT { };
 
 template <typename T>
     requires(sizeof(T) == 4)
@@ -42,19 +42,19 @@ inline void AtomicRelax()
     PAUSE();
 }
 
-inline void WaitOnAddress(AtomicContention const volatile* addr, AtomicContention value, SizeT size)
+inline void WaitOnAddress(AtomicContention const volatile* addr, AtomicContention value, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wait_on_address(loc, value, size, OS_SYNC_WAIT_ON_ADDRESS_NONE);
 }
 
-inline void NotifyOnAddress(AtomicContention const volatile* addr, SizeT size)
+inline void NotifyOnAddress(AtomicContention const volatile* addr, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wake_by_address_any(loc, size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
 }
 
-inline void NotifyAllOnAddress(AtomicContention const volatile* addr, SizeT size)
+inline void NotifyAllOnAddress(AtomicContention const volatile* addr, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wake_by_address_all(loc, size, OS_SYNC_WAKE_BY_ADDRESS_NONE);

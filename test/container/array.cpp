@@ -35,14 +35,12 @@ FACTORY(FooArgF);
 
     TEST_RANGE_BASED_FOR_SUPPORT(Array<TestObject>);
 
-    static_assert(SameAsT<ArrayIterator<TestObject, Array<TestObject>>,
-                          Array<TestObject>::Iterator>);
+    static_assert(SameAsT<ArrayIterator<TestObject, Array<TestObject>>, Array<TestObject>::Iterator>);
     static_assert(sizeof(Array<TestObject>::Iterator) == alignof(void*) * 2);
 }
 
 template <typename T, typename AllocT, typename StdAllocT>
-[[no_inline]] constexpr int TestArray(Array<T, AllocT> const& arr,
-                                      std::vector<T, StdAllocT> const& vec)
+[[no_inline]] constexpr int TestArray(Array<T, AllocT> const& arr, std::vector<T, StdAllocT> const& vec)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
         if constexpr (memory::DereferencableT<T>) {
@@ -59,7 +57,7 @@ template <typename T, typename AllocT, typename StdAllocT>
         TEST_ENSURE(TestElement(arr.Last(), vec.back()));
     }
 
-    for (SizeT i = 0; i < arr.Size(); ++i) {
+    for (size_t i = 0; i < arr.Size(); ++i) {
         TEST_ENSURE(TestElement(arr[i], vec[i]));
         TEST_ENSURE(TestElement(arr.At(i), vec.at(i)));
     }
@@ -70,10 +68,10 @@ template <typename T, typename AllocT, typename StdAllocT>
 template <typename T, typename FactoryT>
 [[no_inline]] constexpr int TestCtor()
 {
-    constexpr auto alloc = Allocator<T>{};
+    constexpr auto alloc = Allocator<T>{ };
 
-    TEST_ENSURE(Array<T>{}.Size() == 0);
-    TEST_ENSURE(Array<T>{}.Capacity() == 0);
+    TEST_ENSURE(Array<T>{ }.Size() == 0);
+    TEST_ENSURE(Array<T>{ }.Capacity() == 0);
     TEST_ENSURE(Array<T>(alloc).Size() == 0);
     TEST_ENSURE(Array<T>(alloc).Capacity() == 0);
     TEST_ENSURE(Array<T>(MoveArg(alloc)).Size() == 0);
@@ -88,7 +86,7 @@ template <typename T, typename FactoryT>
     if constexpr (CopyableT<T>) {
         Array<T> arr;
         int count = 0;
-        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{}(++count));
+        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{ }(++count));
 
         TEST_ENSURE(Array<T>(arr) == arr);
         TEST_ENSURE(Array<T>(arr, alloc) == arr);
@@ -98,10 +96,10 @@ template <typename T, typename FactoryT>
         TEST_ENSURE(Array<T>(arr.Begin(), arr.End(), alloc) == arr);
 
         InitializerList list = {
-            FactoryT{}(++count),
-            FactoryT{}(++count),
-            FactoryT{}(++count),
-            FactoryT{}(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
+            FactoryT{ }(++count),
         };
 
         TEST_ENSURE(TestArray(Array<T>(list), std::vector<T>(list)) == 0);
@@ -118,12 +116,12 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
     int arrcount = 33;
     int veccount = 33;
 
-    arr.Push(FactoryT{}(++arrcount));
-    vec.push_back(FactoryT{}(++veccount));
+    arr.Push(FactoryT{ }(++arrcount));
+    vec.push_back(FactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Push(ArgFactoryT{}(++arrcount));
-    vec.emplace_back(ArgFactoryT{}(++veccount));
+    arr.Push(ArgFactoryT{ }(++arrcount));
+    vec.emplace_back(ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -132,10 +130,10 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
         TEST_ENSURE(TestArray(arr, vec) == 0);
 
         InitializerList list = {
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
         };
 
         arr.Append(list);
@@ -154,12 +152,12 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
     int arrcount = 33;
     int veccount = 33;
 
-    arr.Insert(0, FactoryT{}(++arrcount));
-    vec.insert(vec.begin(), FactoryT{}(++veccount));
+    arr.Insert(0, FactoryT{ }(++arrcount));
+    vec.insert(vec.begin(), FactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Insert(0, ArgFactoryT{}(++arrcount));
-    vec.emplace(vec.begin(), ArgFactoryT{}(++veccount));
+    arr.Insert(0, ArgFactoryT{ }(++arrcount));
+    vec.emplace(vec.begin(), ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -175,12 +173,12 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 
-    arr.Insert(arr.Begin(), FactoryT{}(++arrcount));
-    vec.insert(vec.begin(), FactoryT{}(++veccount));
+    arr.Insert(arr.Begin(), FactoryT{ }(++arrcount));
+    vec.insert(vec.begin(), FactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Insert(arr.Begin(), ArgFactoryT{}(++arrcount));
-    vec.emplace(vec.begin(), ArgFactoryT{}(++veccount));
+    arr.Insert(arr.Begin(), ArgFactoryT{ }(++arrcount));
+    vec.emplace(vec.begin(), ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -195,10 +193,10 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
         TEST_ENSURE(TestArray(arr, vec) == 0);
 
         InitializerList list = {
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
-            FactoryT{}(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
+            FactoryT{ }(++arrcount),
         };
 
         arr.InsertRange(2, list);
@@ -219,8 +217,8 @@ template <typename T, typename FactoryT>
 
     vec.reserve(32);
     for (int i = 0; i < 32; ++i) {
-        arr.Push(FactoryT{}(++arrcount));
-        vec.push_back(FactoryT{}(++veccount));
+        arr.Push(FactoryT{ }(++arrcount));
+        vec.push_back(FactoryT{ }(++veccount));
     }
 
     arr.RemoveLast();
@@ -260,8 +258,8 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
 
     vec.reserve(8);
     for (int i = 0; i < 8; ++i) {
-        arr.Push(FactoryT{}(++arrcount));
-        vec.emplace_back(FactoryT{}(++veccount));
+        arr.Push(FactoryT{ }(++arrcount));
+        vec.emplace_back(FactoryT{ }(++veccount));
     }
 
     if constexpr (CopyableT<T>) {
@@ -269,8 +267,8 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
         arr2.Assign(arr.Begin(), arr.End());
         TEST_ENSURE(arr == arr2);
 
-        arr.Resize(20, ArgFactoryT{}(++arrcount));
-        vec.resize(20, ArgFactoryT{}(++veccount));
+        arr.Resize(20, ArgFactoryT{ }(++arrcount));
+        vec.resize(20, ArgFactoryT{ }(++veccount));
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 

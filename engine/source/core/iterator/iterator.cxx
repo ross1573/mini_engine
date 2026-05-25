@@ -10,8 +10,8 @@ namespace mini {
 
 export template <typename T>
 concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
-                           !ConvertibleToT<SizeT, T> &&              //
-                           requires(T i, T const j, SizeT const n)   //
+                           !ConvertibleToT<size_t, T> &&             //
+                           requires(T i, T const j, size_t const n)  //
 {
     requires !ReferenceT<typename T::Value>;
     requires PointerT<typename T::Pointer>;
@@ -40,8 +40,8 @@ concept BidrectionalIteratorT = ForwardIteratorT<T> && //
 };
 
 export template <typename T>
-concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> && //
-                                requires(T i, T const j, OffsetT n, SizeT s)  //
+concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&  //
+                                requires(T i, T const j, offset_t n, size_t s) //
 {
     { i.Advance(n) } -> ConvertibleToT<bool>;
 
@@ -50,7 +50,7 @@ concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> && //
     { j + n } -> SameAsT<T>;
     { j - n } -> SameAsT<T>;
     { n + j } -> SameAsT<T>;
-    { j - i } -> SameAsT<OffsetT>;
+    { j - i } -> SameAsT<offset_t>;
     { j[n] } -> SameAsT<typename T::Reference>;
 };
 
@@ -127,7 +127,7 @@ struct iterator_traits<T> {
     typedef typename T::Value value_type;
     typedef typename T::Pointer pointer;
     typedef typename T::Reference reference;
-    typedef mini::OffsetT difference_type;
+    typedef mini::offset_t difference_type;
 };
 
 template <mini::BidrectionalIteratorT T>
@@ -136,7 +136,7 @@ struct iterator_traits<T> {
     typedef typename T::Value value_type;
     typedef typename T::Pointer pointer;
     typedef typename T::Reference reference;
-    typedef mini::OffsetT difference_type;
+    typedef mini::offset_t difference_type;
 };
 
 template <mini::RandomAccessIteratorT T>
@@ -145,7 +145,7 @@ struct iterator_traits<T> {
     typedef typename T::Value value_type;
     typedef typename T::Pointer pointer;
     typedef typename T::Reference reference;
-    typedef mini::OffsetT difference_type;
+    typedef mini::offset_t difference_type;
 };
 
 } // namespace std

@@ -9,7 +9,7 @@ export template <typename T, typename U>
 inline constexpr void CopyRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopy(dest, begin, static_cast<SizeT>(end - begin));
+        MemCopy(dest, begin, static_cast<size_t>(end - begin));
         return;
     }
 
@@ -22,7 +22,7 @@ export template <typename T, typename U>
 inline constexpr void CopyBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopyBackward(dest, end, static_cast<SizeT>(end - begin));
+        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
@@ -35,7 +35,7 @@ export template <typename T, typename U>
 inline constexpr void MoveRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopy(dest, begin, static_cast<SizeT>(end - begin));
+        MemCopy(dest, begin, static_cast<size_t>(end - begin));
         return;
     }
 
@@ -48,7 +48,7 @@ export template <typename T, typename U>
 inline constexpr void MoveBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopyBackward(dest, end, static_cast<SizeT>(end - begin));
+        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
@@ -61,7 +61,7 @@ export template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, U begin2, U end2)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        return MemCompare(begin1, begin2, static_cast<SizeT>(end2 - begin2));
+        return MemCompare(begin1, begin2, static_cast<size_t>(end2 - begin2));
     }
 
     for (; begin2 != end2; ++begin1, ++begin2) {
@@ -77,7 +77,7 @@ export template <typename T, typename U>
 inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        SizeT size = static_cast<SizeT>(end2 - begin2);
+        size_t size = static_cast<size_t>(end2 - begin2);
         if (size != (end1 - begin1)) {
             return false;
         }

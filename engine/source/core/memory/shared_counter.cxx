@@ -13,18 +13,18 @@ private:
     CounterValue m_weak;
 
 public:
-    constexpr SharedCounter(SizeT = 1) noexcept;
-    constexpr SharedCounter(SizeT, SizeT) noexcept;
+    constexpr SharedCounter(size_t = 1) noexcept;
+    constexpr SharedCounter(size_t, size_t) noexcept;
     constexpr virtual ~SharedCounter() = default;
 
-    constexpr SizeT Count() const noexcept;
-    constexpr SizeT WeakCount() const noexcept;
+    constexpr size_t Count() const noexcept;
+    constexpr size_t WeakCount() const noexcept;
 
-    constexpr void Retain(SizeT = 1) noexcept;
-    constexpr void RetainWeak(SizeT = 1) noexcept;
+    constexpr void Retain(size_t = 1) noexcept;
+    constexpr void RetainWeak(size_t = 1) noexcept;
 
-    constexpr void Release(SizeT = 1) noexcept;
-    constexpr void ReleaseWeak(SizeT = 1) noexcept;
+    constexpr void Release(size_t = 1) noexcept;
+    constexpr void ReleaseWeak(size_t = 1) noexcept;
 
     constexpr SharedCounter* Lock() noexcept;
 
@@ -40,41 +40,41 @@ private:
     SharedCounter& operator=(SharedCounter&&) = delete;
 };
 
-inline constexpr SharedCounter::SharedCounter(SizeT count) noexcept
+inline constexpr SharedCounter::SharedCounter(size_t count) noexcept
     : m_count(static_cast<CounterValue>(count))
     , m_weak(static_cast<CounterValue>(count))
 {
 }
 
-inline constexpr SharedCounter::SharedCounter(SizeT count, SizeT weakCount) noexcept
+inline constexpr SharedCounter::SharedCounter(size_t count, size_t weakCount) noexcept
     : m_count(static_cast<CounterValue>(count))
     , m_weak(static_cast<CounterValue>(weakCount))
 {
 }
 
-inline constexpr SizeT SharedCounter::Count() const noexcept
+inline constexpr size_t SharedCounter::Count() const noexcept
 {
     if consteval {
-        return static_cast<SizeT>(m_count);
+        return static_cast<size_t>(m_count);
     }
 
     CounterValue result;
     __atomic_load(&m_count, &result, __ATOMIC_RELAXED);
-    return static_cast<SizeT>(result);
+    return static_cast<size_t>(result);
 }
 
-inline constexpr SizeT SharedCounter::WeakCount() const noexcept
+inline constexpr size_t SharedCounter::WeakCount() const noexcept
 {
     if consteval {
-        return static_cast<SizeT>(m_weak);
+        return static_cast<size_t>(m_weak);
     }
 
     CounterValue result;
     __atomic_load(&m_weak, &result, __ATOMIC_RELAXED);
-    return static_cast<SizeT>(result);
+    return static_cast<size_t>(result);
 }
 
-inline constexpr void SharedCounter::Retain(SizeT count) noexcept
+inline constexpr void SharedCounter::Retain(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -88,7 +88,7 @@ inline constexpr void SharedCounter::Retain(SizeT count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-inline constexpr void SharedCounter::RetainWeak(SizeT count) noexcept
+inline constexpr void SharedCounter::RetainWeak(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -100,7 +100,7 @@ inline constexpr void SharedCounter::RetainWeak(SizeT count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-inline constexpr void SharedCounter::Release(SizeT count) noexcept
+inline constexpr void SharedCounter::Release(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -127,7 +127,7 @@ inline constexpr void SharedCounter::Release(SizeT count) noexcept
     ReleaseWeak(count);
 }
 
-inline constexpr void SharedCounter::ReleaseWeak(SizeT count) noexcept
+inline constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -167,8 +167,7 @@ inline constexpr SharedCounter* SharedCounter::Lock() noexcept
     __atomic_load(&m_count, &count, __ATOMIC_RELAXED);
     while (count != 0) {
         CounterValue desired = count + 1;
-        if (__atomic_compare_exchange(&m_count, &count, &desired, true, __ATOMIC_RELAXED,
-                                      __ATOMIC_RELAXED)) {
+        if (__atomic_compare_exchange(&m_count, &count, &desired, true, __ATOMIC_RELAXED, __ATOMIC_RELAXED)) {
             __atomic_fetch_add(&m_weak, 1, __ATOMIC_RELAXED);
             return this;
         }

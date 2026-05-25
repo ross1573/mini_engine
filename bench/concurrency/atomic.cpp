@@ -45,7 +45,7 @@ static void AtomicLoad(benchmark::State& state)
     Atomic<T> a(1);
     int32 sum = 0;
     std::thread t([&a]() {
-        while (a.Load(MemoryOrder::relaxed) < 0) {}
+        while (a.Load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -63,7 +63,7 @@ static void AtomicLoad_std(benchmark::State& state)
     std::atomic<T> a(1);
     int32 sum = 0;
     std::thread t([&a]() {
-        while (a.load(std::memory_order::relaxed) < 0) {}
+        while (a.load(std::memory_order::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -124,7 +124,7 @@ static void AtomicCompareExchange(benchmark::State& state)
 {
     Atomic<T> a(1);
     std::thread t([&a]() {
-        while (a.Load(MemoryOrder::relaxed) < 0) {}
+        while (a.Load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -141,7 +141,7 @@ static void AtomicCompareExchange_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
     std::thread t([&a]() {
-        while (a.load(std::memory_order::relaxed) < 0) {}
+        while (a.load(std::memory_order::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -163,7 +163,7 @@ static void AtomicFalseWait(benchmark::State& state)
 {
     Atomic<int32> a(1);
     std::thread t([&a]() {
-        while (a.Load(MemoryOrder::relaxed) < 0) {}
+        while (a.Load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -178,7 +178,7 @@ static void AtomicFalseWait_std(benchmark::State& state)
 {
     std::atomic<int32> a(1);
     std::thread t([&a]() {
-        while (a.load(std::memory_order::relaxed) < 0) {}
+        while (a.load(std::memory_order::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
@@ -312,7 +312,7 @@ BENCHMARK_TEMPLATE(AtomicWaitNotify_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicWaitNotify, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWaitNotify_std, NonAtomic);
 
-template <SizeT ThreadN>
+template <size_t ThreadN>
 static void AtomicSpinLock(benchmark::State& state)
 {
     Atomic<int32> atomic(1);
@@ -331,9 +331,9 @@ static void AtomicSpinLock(benchmark::State& state)
         return value;
     };
 
-    for (SizeT i = 0; i < ThreadN; ++i) {
+    for (size_t i = 0; i < ThreadN; ++i) {
         threads.Push(std::thread([&spinLock]() {
-            while (spinLock() > 0) {}
+            while (spinLock() > 0) { }
         }));
     }
 
@@ -348,7 +348,7 @@ static void AtomicSpinLock(benchmark::State& state)
     }
 }
 
-template <SizeT ThreadN>
+template <size_t ThreadN>
 static void AtomicSpinLock_std(benchmark::State& state)
 {
     std::atomic<int32> atomic(1);
@@ -367,9 +367,9 @@ static void AtomicSpinLock_std(benchmark::State& state)
         return value;
     };
 
-    for (SizeT i = 0; i < ThreadN; ++i) {
+    for (size_t i = 0; i < ThreadN; ++i) {
         threads.Push(std::thread([&spinLock]() {
-            while (spinLock() > 0) {}
+            while (spinLock() > 0) { }
         }));
     }
 

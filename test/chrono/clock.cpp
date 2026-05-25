@@ -18,7 +18,7 @@
 
 import mini.test;
 
-template <mini::SizeT MilliSecT>
+template <mini::size_t MilliSecT>
 void MiniClock()
 {
     mini::Clock::TimePoint start = mini::Clock::Now();
@@ -34,7 +34,7 @@ void MiniClock()
     static_assert(mini::SameAsT<decltype(diff), mini::NanoSeconds>);
 }
 
-template <mini::SizeT MilliSecT>
+template <mini::size_t MilliSecT>
 void StdClock()
 {
     auto start = std::chrono::high_resolution_clock::now();

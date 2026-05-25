@@ -4,7 +4,18 @@ module;
 
 export module mini.core:type_traits;
 
+template <typename T, T val>
+struct IntegralConstant {
+    using ValueT = T;
+    inline static constexpr ValueT value = val;
+    inline constexpr operator ValueT() const noexcept { return val; }
+    inline constexpr ValueT operator()() const noexcept { return val; }
+};
+
 namespace mini {
+
+export using TrueT = IntegralConstant<bool, true>;
+export using FalseT = IntegralConstant<bool, false>;
 
 export template <typename T>
 using RemoveRefT = std::remove_reference<T>::type;

@@ -27,10 +27,13 @@ constexpr bool TestConvertUTF(T const* from, U const* to)
     BasicString<U> target(to);
 
     size_t len = utf::ConvertLength(src.Data(), src.Data() + src.Size(), U(0));
-    BasicString<U> dst(U(0), static_cast<SizeT>(len));
+    BasicString<U> dst(U(0), static_cast<size_t>(len));
 
-    auto result = utf::Convert(src.Data(), src.Data() + src.Size(), dst.Data(),
-                               dst.Data() + dst.Size(), utf::ConversionFlags::strictConversion);
+    auto result = utf::Convert(src.Data(),
+                               src.Data() + src.Size(),
+                               dst.Data(),
+                               dst.Data() + dst.Size(),
+                               utf::ConversionFlags::strictConversion);
     return result == utf::ConversionResult::conversionOK && dst == target;
 }
 

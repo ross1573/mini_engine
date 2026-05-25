@@ -68,14 +68,14 @@ bool DescriptorAllocator::Initialize(ID3D12Device* device)
 Descriptor DescriptorAllocator::Allocate()
 {
     CPUOffsetT offset = { .ptr = 0 };
-    for (SizeT i = 0; i < m_heapList.Size(); ++i) {
+    for (size_t i = 0; i < m_heapList.Size(); ++i) {
         if (m_heapList[i].Allocate(offset)) {
             return { .offset = offset, .heapIndex = i };
         }
     }
 
     ASSERT(false, "failed to allocate descriptor");
-    return { .offset = offset, .heapIndex = SizeT(-1) };
+    return { .offset = offset, .heapIndex = size_t(-1) };
 }
 
 void DescriptorAllocator::Deallocate(Descriptor desc)

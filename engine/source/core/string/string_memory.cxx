@@ -26,7 +26,7 @@ inline constexpr T const* StringSearch(T const* str, T value) noexcept
 }
 
 export template <CharT T>
-inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexcept
+inline constexpr T const* StringSearch(T const* str, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -46,47 +46,46 @@ inline constexpr T const* StringSearch(T const* str, T value, SizeT count) noexc
 }
 
 export template <CharT T>
-inline constexpr SizeT StringLength(T const* str) noexcept
+inline constexpr size_t StringLength(T const* str) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             auto len = BUILTIN_STRLEN(reinterpret_cast<char const*>(str));
-            return static_cast<SizeT>(len);
+            return static_cast<size_t>(len);
         } else if constexpr (SameAsT<T, wchar>) {
-            return static_cast<SizeT>(BUILTIN_WCSLEN(str));
+            return static_cast<size_t>(BUILTIN_WCSLEN(str));
         }
     }
 
     T const* pos = str;
     for (; *pos != T(0); ++pos);
-    return static_cast<SizeT>(pos - str);
+    return static_cast<size_t>(pos - str);
 }
 
 export template <CharT T>
-inline constexpr SizeT StringLength(T const* str, SizeT count) noexcept
+inline constexpr size_t StringLength(T const* str, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
             void* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
-            return ptr == nullptr ? 0 : static_cast<SizeT>(static_cast<T const*>(ptr) - str);
+            return ptr == nullptr ? 0 : static_cast<size_t>(static_cast<T const*>(ptr) - str);
         } else if constexpr (SameAsT<T, wchar>) {
             wchar const* end = BUILTIN_WMEMCHR(str, wchar(0), count);
-            return end == nullptr ? 0 : static_cast<SizeT>(end - str);
+            return end == nullptr ? 0 : static_cast<size_t>(end - str);
         }
     }
 
     T const* pos = str;
     for (; count && *pos != T(0); --count, ++pos);
-    return static_cast<SizeT>(pos - str);
+    return static_cast<size_t>(pos - str);
 }
 
 export template <CharT T>
-inline constexpr T* StringFill(T* dst, T value, SizeT count) noexcept
+inline constexpr T* StringFill(T* dst, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int32>(value),
-                                       static_cast<size_t>(count));
+            void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int32>(value), static_cast<size_t>(count));
             return static_cast<T*>(ptr);
         } else if constexpr (SameAsT<T, wchar>) {
             return BUILTIN_WMEMSET(dst, value, static_cast<size_t>(count));
@@ -129,7 +128,7 @@ inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
 }
 
 export template <CharT T>
-inline constexpr int32 StringCompare(T const* s1, T const* s2, SizeT count) noexcept
+inline constexpr int32 StringCompare(T const* s1, T const* s2, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {

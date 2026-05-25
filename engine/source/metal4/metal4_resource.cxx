@@ -27,7 +27,7 @@ public:
 
     void SetName(StringView);
 
-    SizeT Capacity() const;
+    size_t Capacity() const;
     String Name() const;
     ResourcePointer MetalResource() const noexcept;
 
@@ -78,9 +78,9 @@ void Resource<T>::SetName(StringView name)
 }
 
 template <DerivedFromT<MTL::Resource> T>
-SizeT Resource<T>::Capacity() const
+size_t Resource<T>::Capacity() const
 {
-    return static_cast<SizeT>(m_resource->allocatedSize());
+    return static_cast<size_t>(m_resource->allocatedSize());
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -91,7 +91,7 @@ String Resource<T>::Name() const
     }
 
     char const* raw = m_name->utf8String();
-    SizeT len = static_cast<SizeT>(m_name->length());
+    size_t len = static_cast<size_t>(m_name->length());
     return String(raw, len);
 }
 

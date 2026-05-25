@@ -27,8 +27,7 @@ export template <FloatingT T>
         } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
             return static_cast<T>(BUILTIN_FMIN(static_cast<double>(x), static_cast<double>(y)));
         } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
-            return static_cast<T>(BUILTIN_FMINL(static_cast<long double>(x),
-                                                static_cast<long double>(y)));
+            return static_cast<T>(BUILTIN_FMINL(static_cast<long double>(x), static_cast<long double>(y)));
         }
     }
 
@@ -50,8 +49,7 @@ export template <FloatingT T>
         } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
             return static_cast<T>(BUILTIN_FMAX(static_cast<double>(x), static_cast<double>(y)));
         } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
-            return static_cast<T>(BUILTIN_FMAXL(static_cast<long double>(x),
-                                                static_cast<long double>(y)));
+            return static_cast<T>(BUILTIN_FMAXL(static_cast<long double>(x), static_cast<long double>(y)));
         }
     }
 
@@ -106,8 +104,7 @@ export template <FloatingT T>
     } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
         return static_cast<T>(BUILTIN_POW(static_cast<double>(base), static_cast<double>(exp)));
     } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
-        return static_cast<T>(BUILTIN_POWL(static_cast<long double>(base),
-                                           static_cast<long double>(exp)));
+        return static_cast<T>(BUILTIN_POWL(static_cast<long double>(base), static_cast<long double>(exp)));
     } else {
         NEVER_CALLED("not supported on such type", T);
     }
@@ -117,9 +114,9 @@ template <IntegralT T>
 consteval auto PowIntResultTypeImpl()
 {
     if constexpr (SignedT<T>) {
-        return OffsetT(0);
+        return offset_t(0);
     } else {
-        return SizeT(0);
+        return size_t(0);
     }
 }
 

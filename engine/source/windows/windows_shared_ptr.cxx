@@ -34,7 +34,7 @@ public:
     SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
     template <DerivedFromT<IUnknown> U>
     constexpr SharedPtr(SharedPtr<U>&&, Pointer) noexcept;
-    constexpr SharedPtr(NullptrT) noexcept;
+    constexpr SharedPtr(nullptr_t) noexcept;
 
     constexpr Pointer Get() const noexcept;
     constexpr bool Valid() const noexcept;
@@ -56,7 +56,7 @@ public:
 
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
-    constexpr SharedPtr& operator=(NullptrT) noexcept;
+    constexpr SharedPtr& operator=(nullptr_t) noexcept;
     template <PtrConvertibleToT<T> U>
     SharedPtr& operator=(SharedPtr<U> const&) noexcept;
     template <PtrConvertibleToT<T> U>
@@ -151,7 +151,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noex
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>::SharedPtr(NullptrT) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(nullptr_t) noexcept
     : m_ptr(nullptr)
 {
 }
@@ -284,7 +284,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexce
 
 template <NonRefT T>
     requires DerivedFromT<T, IUnknown>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
+inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 {
     if (m_ptr) {
         m_ptr->Release();
@@ -343,29 +343,27 @@ SharedPtr<T> MakeShared(Args&&...)
 
 template <NonRefT T, NonRefT U>
 inline constexpr bool operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
-    requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> &&
-             EqualityComparableWithT<T*, U*>
+    requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> && EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r.Get();
 }
 
 template <NonRefT T, NonRefT U>
 inline constexpr auto operator<=>(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
-    requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> &&
-             ThreeWayComparableWithT<T*, U*>
+    requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> && ThreeWayComparableWithT<T*, U*>
 {
     return l.Get <=> r.Get();
 }
 
 template <NonRefT T>
-inline constexpr auto operator==(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr auto operator==(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, IUnknown>
 {
     return s.Get() == nullptr;
 }
 
 template <NonRefT T>
-inline constexpr auto operator<=>(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr auto operator<=>(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, IUnknown>
 {
     return s.Get() <=> nullptr;

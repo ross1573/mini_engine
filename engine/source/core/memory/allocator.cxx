@@ -26,13 +26,13 @@ export template <typename T>
 struct Allocator;
 
 template <typename AllocT>
-struct IsDefaultAlloc : FalseT {};
+struct IsDefaultAlloc : FalseT { };
 
 template <typename T>
-struct IsDefaultAlloc<Allocator<T>> : TrueT {};
+struct IsDefaultAlloc<Allocator<T>> : TrueT { };
 
 export template <typename T>
-concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, SizeT s, typename T::Pointer loc) {
+concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, size_t s, typename T::Pointer loc) {
     requires !ReferenceT<typename T::Value>;
     requires PointerT<typename T::Pointer>;
     requires PointerT<typename T::ConstPointer>;
@@ -46,8 +46,8 @@ concept AllocatorT = UnboundAllocatorT<AllocT> && SameAsT<typename AllocT::Value
 
 export template <typename AllocT, typename T>
 concept NoThrowAllocatorT = AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> &&
-                            NoThrowCallableT<decltype(&AllocT::Allocate), SizeT> &&
-                            NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, SizeT>;
+                            NoThrowCallableT<decltype(&AllocT::Allocate), size_t> &&
+                            NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, size_t>;
 
 template <typename AllocT, typename T>
 concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
@@ -60,7 +60,7 @@ concept AllocRebindDeclaredT = requires(AllocT alloc) {
 export template <typename T>
 struct AllocationResult {
     T* pointer;
-    SizeT capacity;
+    size_t capacity;
 };
 
 export template <typename T>
@@ -69,7 +69,7 @@ struct Allocator {
     typedef T* Pointer;
     typedef T const* ConstPointer;
 
-    [[nodiscard]] inline constexpr AllocationResult<T> Allocate(SizeT size) const noexcept
+    [[nodiscard]] inline constexpr AllocationResult<T> Allocate(size_t size) const noexcept
     {
         if consteval {
             Pointer ptr = CONSTEXPR_ALLOC(T, size);
@@ -86,7 +86,7 @@ struct Allocator {
         return { .pointer = nullptr, .capacity = size };
     }
 
-    inline constexpr void Deallocate(Pointer loc, SizeT size) const noexcept
+    inline constexpr void Deallocate(Pointer loc, size_t size) const noexcept
     {
         if consteval {
             if (loc == nullptr) {
@@ -123,7 +123,7 @@ export template <typename U, typename T>
 inline constexpr mini::Allocator<U> RebindAllocator(T const&)
     requires IsDefaultAlloc<T>::value
 {
-    return mini::Allocator<U>{};
+    return mini::Allocator<U>{ };
 }
 
 export template <typename T, typename U>
@@ -154,7 +154,7 @@ public:
 export template <typename U>
 inline constexpr Allocator<U> RebindAllocator(UnboundAllocator)
 {
-    return mini::Allocator<U>{};
+    return mini::Allocator<U>{ };
 }
 
 export inline constexpr bool operator==(UnboundAllocator const&, UnboundAllocator const&)
@@ -180,8 +180,8 @@ template <typename ValueT, template <typename> typename T>
 struct allocator_traits<T<ValueT>> {
     typedef T<ValueT> AllocT;
     typedef AllocT allocator_type;
-    typedef mini::SizeT size_type;
-    typedef mini::OffsetT difference_type;
+    typedef mini::size_t size_type;
+    typedef mini::offset_t difference_type;
     typedef typename AllocT::Value value_type;
     typedef typename AllocT::Pointer pointer;
     typedef typename mini::UnboundAllocator::Pointer void_pointer;

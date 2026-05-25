@@ -34,11 +34,10 @@ FACTORY(FooArgF);
 
     TEST_RANGE_BASED_FOR_SUPPORT(FixedQueue<TestObject, 1>);
 
-    static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) ==
-                  alignof(void*) * 2 + sizeof(SizeT) * 2);
+    static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) == alignof(void*) * 2 + sizeof(size_t) * 2);
 }
 
-template <typename T, SizeT CapN>
+template <typename T, size_t CapN>
 static constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& arr)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
@@ -57,7 +56,7 @@ static constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& a
         TEST_ENSURE(TestElement(que.Last(), arr.Last()));
     }
 
-    for (SizeT i = 0; i < que.Size(); ++i) {
+    for (size_t i = 0; i < que.Size(); ++i) {
         TEST_ENSURE(TestElement(que[i], arr[i]));
         TEST_ENSURE(TestElement(que.At(i), arr.At(i)));
     }

@@ -15,7 +15,7 @@ public:
     Buffer(MTL::Buffer*) noexcept;
     Buffer(MTL::Buffer*, StringView);
 
-    SizeT Size() const;
+    size_t Size() const;
     uint64 GpuAddress() const;
 };
 
@@ -29,9 +29,9 @@ Buffer::Buffer(MTL::Buffer* buffer, StringView name)
 {
 }
 
-SizeT Buffer::Size() const
+size_t Buffer::Size() const
 {
-    return static_cast<SizeT>(m_resource->length());
+    return static_cast<size_t>(m_resource->length());
 }
 
 uint64 Buffer::GpuAddress() const

@@ -30,18 +30,18 @@ int main()
 
     SharedPtr<TestObject> p;
     SharedPtr<TestObject> p2(nullptr);
-    SharedPtr<TestObject> p3(nullptr, mini::DefaultDeleter<TestObject>{});
-    SharedPtr<TestObject> p4(nullptr, [](NullptrT) {});
-    SharedPtr<TestObject> p5(nullptr, [](NullptrT) {}, mini::Allocator<NullptrT>{});
+    SharedPtr<TestObject> p3(nullptr, mini::DefaultDeleter<TestObject>{ });
+    SharedPtr<TestObject> p4(nullptr, [](nullptr_t) { });
+    SharedPtr<TestObject> p5(nullptr, [](nullptr_t) { }, mini::Allocator<nullptr_t>{ });
     SharedPtr<TestObject> p6(new TestObject("string1"));
-    SharedPtr<TestObject> p7(new TestObject("string2"), FooDel{});
+    SharedPtr<TestObject> p7(new TestObject("string2"), FooDel{ });
     SharedPtr<TestObject> p10 = MakeShared<TestObject>("string5");
-    SharedPtr<BasicString<char>> p11(&p7->str, [](auto) {});
+    SharedPtr<BasicString<char>> p11(&p7->str, [](auto) { });
     SharedPtr<BasicString<char>> p12(p7, &p7->str);
 
     {
-        auto alloc = TestAlloc{};
-        SharedPtr<TestObject> p8(new TestObject("string3"), FooDel{}, alloc);
+        auto alloc = TestAlloc{ };
+        SharedPtr<TestObject> p8(new TestObject("string3"), FooDel{ }, alloc);
         SharedPtr<TestObject> p9 = AllocateShared<TestObject>(alloc, "string4");
     }
     InitializeCounter();

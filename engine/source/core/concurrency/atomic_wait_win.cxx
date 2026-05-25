@@ -29,7 +29,7 @@ using AtomicContention = int32;
 #endif
 
 template <typename T>
-struct AtomicWaitableT : FalseT {};
+struct AtomicWaitableT : FalseT { };
 
 template <typename T>
     requires(sizeof(T) == 1)
@@ -60,8 +60,8 @@ CORE_API inline void AtomicRelax()
     PAUSE();
 }
 
-CORE_API void WaitOnAddress(AtomicContention const volatile*, AtomicContention, SizeT);
-CORE_API void NotifyOnAddress(AtomicContention const volatile*, SizeT);
-CORE_API void NotifyAllOnAddress(AtomicContention const volatile*, SizeT);
+CORE_API void WaitOnAddress(AtomicContention const volatile*, AtomicContention, size_t);
+CORE_API void NotifyOnAddress(AtomicContention const volatile*, size_t);
+CORE_API void NotifyAllOnAddress(AtomicContention const volatile*, size_t);
 
 } // namespace mini

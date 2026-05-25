@@ -83,8 +83,7 @@ inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 }
 
 export template <NonArrT T, typename... Args>
-inline constexpr void ConstructAt(T* ptr, Args&&... args)
-    noexcept(NoThrowConstructibleFromT<T, Args...>)
+inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     ASSERT(ptr, "invalid location for object");
 
@@ -150,7 +149,7 @@ inline constexpr void EndLifetime(T* loc) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr void MemCopy(T* dst, T const* src, SizeT len) noexcept
+inline constexpr void MemCopy(T* dst, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMCPY(dst, src, len * sizeof(T));
@@ -163,7 +162,7 @@ inline constexpr void MemCopy(T* dst, T const* src, SizeT len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr void MemCopyBackward(T* dst, T const* src, SizeT len) noexcept
+inline constexpr void MemCopyBackward(T* dst, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dst - len, src - len, len * sizeof(T));
@@ -176,7 +175,7 @@ inline constexpr void MemCopyBackward(T* dst, T const* src, SizeT len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
+inline constexpr void MemMove(T* dst, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dst, src, len * sizeof(T));
@@ -191,7 +190,7 @@ inline constexpr void MemMove(T* dst, T const* src, SizeT len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr int32 MemCompare(T const* x, T const* y, SizeT len) noexcept
+inline constexpr int32 MemCompare(T const* x, T const* y, size_t len) noexcept
 {
     if !consteval {
         return BUILTIN_MEMCMP(x, y, len * sizeof(T));
@@ -221,7 +220,7 @@ export template <typename T, typename U>
 inline constexpr void ConstructRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        SizeT size = static_cast<SizeT>(end - begin);
+        size_t size = static_cast<size_t>(end - begin);
         BeginLifetime(dest, dest + size);
         MemCopy(dest, begin, size);
         return;
@@ -236,9 +235,9 @@ export template <typename T, typename U>
 inline constexpr void ConstructBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        SizeT size = static_cast<SizeT>(end - begin);
+        size_t size = static_cast<size_t>(end - begin);
         BeginLifetime(dest - size, dest);
-        MemCopyBackward(dest, end, static_cast<SizeT>(end - begin));
+        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
@@ -251,7 +250,7 @@ export template <typename T, typename U>
 inline constexpr void MoveConstructRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        SizeT size = static_cast<SizeT>(end - begin);
+        size_t size = static_cast<size_t>(end - begin);
         BeginLifetime(dest, dest + size);
         MemCopy(dest, begin, size);
         return;
@@ -266,9 +265,9 @@ export template <typename T, typename U>
 inline constexpr void MoveConstructBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
-        SizeT size = static_cast<SizeT>(end - begin);
+        size_t size = static_cast<size_t>(end - begin);
         BeginLifetime(dest - size, dest);
-        MemCopyBackward(dest, end, static_cast<SizeT>(end - begin));
+        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 

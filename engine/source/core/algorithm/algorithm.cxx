@@ -79,8 +79,8 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));
 
-    OffsetT diff1 = end1 - begin1;
-    OffsetT diff2 = end2 - begin2;
+    offset_t diff1 = end1 - begin1;
+    offset_t diff2 = end2 - begin2;
     ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value");
 
     if (diff1 != diff2) {
@@ -99,24 +99,24 @@ inline constexpr void FillRange(T begin, T end, U const& value)
 }
 
 export template <ForwardIteratorT T>
-inline constexpr SizeT Distance(T first, T last)
+inline constexpr size_t Distance(T first, T last)
 {
     ASSERT(CheckRange(first, last));
 
-    SizeT count = 0;
+    size_t count = 0;
     for (; first != last; ++count);
     return count;
 }
 
 export template <RandomAccessIteratorT T>
-inline constexpr SizeT Distance(T first, T last)
+inline constexpr size_t Distance(T first, T last)
 {
-    OffsetT diff = last - first;
+    offset_t diff = last - first;
 
     ASSERT(CheckRange(first, last));
     ASSERT(diff >= 0, "distance cannot be negative value");
 
-    return static_cast<SizeT>(diff);
+    return static_cast<size_t>(diff);
 }
 
 export template <ForwardIteratorT T, typename U = typename T::Value>

@@ -28,12 +28,12 @@ public:
     explicit constexpr Vector3Int(Int32ConvertibleT auto) noexcept;
 
     /*constexpr*/ float32 Length() const noexcept;
-    constexpr SizeT LengthSquared() const noexcept;
+    constexpr size_t LengthSquared() const noexcept;
 
     constexpr void Clamp(Vector3Int const&, Vector3Int const&) noexcept;
 
     static /*constexpr*/ float32 Distance(Vector3Int const&, Vector3Int const&) noexcept;
-    static constexpr SizeT DistanceSquared(Vector3Int const&, Vector3Int const&) noexcept;
+    static constexpr size_t DistanceSquared(Vector3Int const&, Vector3Int const&) noexcept;
 
     constexpr Vector3Int& operator+=(Vector3Int const&) noexcept;
     constexpr Vector3Int& operator-=(Vector3Int const&) noexcept;
@@ -105,12 +105,12 @@ inline constexpr Vector3Int::Vector3Int(Int32ConvertibleT auto val) noexcept
 
 inline /*constexpr*/ float32 Vector3Int::Length() const noexcept
 {
-    return Sqrt(static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u)));
+    return Sqrt(static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u)));
 }
 
-inline constexpr SizeT Vector3Int::LengthSquared() const noexcept
+inline constexpr size_t Vector3Int::LengthSquared() const noexcept
 {
-    return static_cast<SizeT>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u));
+    return static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u));
 }
 
 inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& v2) noexcept
@@ -120,16 +120,14 @@ inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& 
     z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
 }
 
-inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1,
-                                                  Vector3Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1, Vector3Int const& v2) noexcept
 {
     return (v1 - v2).Length();
 }
 
-inline constexpr SizeT Vector3Int::DistanceSquared(Vector3Int const& v1,
-                                                   Vector3Int const& v2) noexcept
+inline constexpr size_t Vector3Int::DistanceSquared(Vector3Int const& v1, Vector3Int const& v2) noexcept
 {
-    return static_cast<SizeT>((v1 - v2).LengthSquared());
+    return static_cast<size_t>((v1 - v2).LengthSquared());
 }
 
 inline constexpr Vector3Int& Vector3Int::operator+=(Vector3Int const& v) noexcept

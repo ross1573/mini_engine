@@ -13,7 +13,7 @@ inline constexpr auto WriteFormatError(String& to, StringView const& msg, fmt::f
 {
     StringView errorMsg = error.what();
     StringView pre = errorMsg.Empty() ? "format failed" : "format failed with error: ";
-    SizeT totalLen = to.Size() + msg.Size() + pre.Size() + errorMsg.Size() + 3;
+    size_t totalLen = to.Size() + msg.Size() + pre.Size() + errorMsg.Size() + 3;
 
     to.Reserve(totalLen);
     to.Append(msg);
@@ -77,8 +77,8 @@ struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<
 };
 
 template <mini::CharT T, mini::AllocatorT<T> AllocT>
-struct fmt::is_range<mini::BasicString<T, AllocT>, T> : mini::FalseT {};
- 
+struct fmt::is_range<mini::BasicString<T, AllocT>, T> : mini::FalseT { };
+
 template <mini::CharT T>
 struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicStringView<T> const& str, format_context& ctx) const
@@ -89,6 +89,6 @@ struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, 
 };
 
 template <mini::CharT T>
-struct fmt::is_range<mini::BasicStringView<T>, T> : mini::FalseT {};
+struct fmt::is_range<mini::BasicStringView<T>, T> : mini::FalseT { };
 
 } // namespace fmt

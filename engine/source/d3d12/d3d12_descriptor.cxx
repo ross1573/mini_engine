@@ -9,7 +9,7 @@ struct Descriptor {
     typedef D3D12_CPU_DESCRIPTOR_HANDLE CPUOffsetT;
 
     CPUOffsetT offset;
-    SizeT heapIndex;
+    size_t heapIndex;
 };
 
 class DescriptorHeap {

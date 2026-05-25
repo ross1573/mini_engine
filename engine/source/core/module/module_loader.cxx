@@ -35,7 +35,7 @@ public:
     bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
     SharedPtr<ModuleHandle> Load(StringView);
 
-    SizeT Count() const noexcept;
+    size_t Count() const noexcept;
 
 private:
     SharedPtr<ModuleHandle> LoadHandle(StringView);

@@ -5,14 +5,6 @@ module;
 
 export module mini.core:type_define;
 
-template <typename T, T val>
-struct IntegralConstant {
-    using ValueT = T;
-    inline static constexpr ValueT value = val;
-    inline constexpr operator ValueT() const noexcept { return val; }
-    inline constexpr ValueT operator()() const noexcept { return val; }
-};
-
 namespace mini {
 
 export using byte = std::uint8_t;
@@ -35,13 +27,8 @@ export using uint64 = std::uint64_t;
 export using float32 = float;
 export using float64 = double;
 
-export using SizeT = std::size_t;
-export using OffsetT = std::ptrdiff_t;
-
-export using TrueT = IntegralConstant<bool, true>;
-export using FalseT = IntegralConstant<bool, false>;
-
-export using IntPtrT = std::intptr_t;
-export using NullptrT = std::nullptr_t;
+export using size_t = std::size_t;
+export using offset_t = std::ptrdiff_t;
+export using nullptr_t = std::nullptr_t;
 
 } // namespace mini

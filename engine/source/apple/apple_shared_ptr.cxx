@@ -34,7 +34,7 @@ public:
     SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
     template <DerivedFromT<NS::Object> U>
     constexpr SharedPtr(SharedPtr<U>&&, Pointer) noexcept;
-    constexpr SharedPtr(NullptrT) noexcept;
+    constexpr SharedPtr(nullptr_t) noexcept;
 
     constexpr Pointer Get() const noexcept;
     constexpr bool Valid() const noexcept;
@@ -55,7 +55,7 @@ public:
 
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
-    constexpr SharedPtr& operator=(NullptrT) noexcept;
+    constexpr SharedPtr& operator=(nullptr_t) noexcept;
     template <PtrConvertibleToT<T> U>
     SharedPtr& operator=(SharedPtr<U> const&) noexcept;
     template <PtrConvertibleToT<T> U>
@@ -150,7 +150,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noex
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
-inline constexpr SharedPtr<T>::SharedPtr(NullptrT) noexcept
+inline constexpr SharedPtr<T>::SharedPtr(nullptr_t) noexcept
     : m_ptr(nullptr)
 {
 }
@@ -294,7 +294,7 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
 
 template <NonRefT T>
     requires DerivedFromT<T, NS::Object>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(NullptrT) noexcept
+inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 {
     if (m_ptr) {
         m_ptr->release();
@@ -337,41 +337,39 @@ template <NonRefT T>
 inline constexpr SharedPtr<T> TransferShared(T* other) noexcept
     requires DerivedFromT<T, NS::Object>
 {
-    return SharedPtr<T>(SharedPtr<T>{}, static_cast<T*>(other));
+    return SharedPtr<T>(SharedPtr<T>{ }, static_cast<T*>(other));
 }
 
 template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> TransferShared(U* other) noexcept
     requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object>
 {
-    return SharedPtr<T>(SharedPtr<T>{}, static_cast<T*>(other));
+    return SharedPtr<T>(SharedPtr<T>{ }, static_cast<T*>(other));
 }
 
 template <NonRefT T, NonRefT U>
 inline constexpr bool operator==(SharedPtr<T> const& l, U* r) noexcept
-    requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object> &&
-             EqualityComparableWithT<T*, U*>
+    requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object> && EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r;
 }
 
 template <NonRefT T, NonRefT U>
 inline constexpr auto operator<=>(SharedPtr<T> const l, U* r) noexcept
-    requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object> &&
-             ThreeWayComparableWithT<T*, U*>
+    requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object> && ThreeWayComparableWithT<T*, U*>
 {
     return l.Get() <=> r;
 }
 
 template <NonRefT T>
-inline constexpr bool operator==(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr bool operator==(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, NS::Object>
 {
     return s.Get() == nullptr;
 }
 
 template <NonRefT T>
-inline constexpr auto operator<=>(SharedPtr<T> const s, NullptrT) noexcept
+inline constexpr auto operator<=>(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, NS::Object>
 {
     return s.Get() <=> nullptr;

@@ -28,13 +28,13 @@ inline constexpr int32 FailureOrder(MemoryOrder order)
 }
 
 template <typename T>
-consteval SizeT AtomicAlignment()
+consteval size_t AtomicAlignment()
 {
     if (sizeof(T) > __ATOMIC_MAX_SUPPORT_SIZE) {
         return alignof(T);
     }
 
-    SizeT align = __ATOMIC_MAX_SUPPORT_SIZE;
+    size_t align = __ATOMIC_MAX_SUPPORT_SIZE;
     while (align > 0) {
         if ((align >> 1) < sizeof(T)) {
             return align;
@@ -53,8 +53,8 @@ public:
 
     static_assert(sizeof(Value) != 0, "cannot create atomic value from incomplete type.");
 
-    static constexpr SizeT valueSize = sizeof(Value);
-    static constexpr SizeT alignment = AtomicAlignment<Value>();
+    static constexpr size_t valueSize = sizeof(Value);
+    static constexpr size_t alignment = AtomicAlignment<Value>();
 
     alignas(alignment) Value value;
 };

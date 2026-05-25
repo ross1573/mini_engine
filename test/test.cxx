@@ -9,25 +9,25 @@ export import :log;
 
 export namespace mini::test {
 
-TEST_API inline SizeT ctor = 0;
-TEST_API inline SizeT dtor = 0;
-TEST_API inline SizeT copyCtor = 0;
-TEST_API inline SizeT moveCtor = 0;
-TEST_API inline SizeT copyAssign = 0;
-TEST_API inline SizeT moveAssign = 0;
-TEST_API inline SizeT debugAllocCnt = 0;
+TEST_API inline size_t ctor = 0;
+TEST_API inline size_t dtor = 0;
+TEST_API inline size_t copyCtor = 0;
+TEST_API inline size_t moveCtor = 0;
+TEST_API inline size_t copyAssign = 0;
+TEST_API inline size_t moveAssign = 0;
+TEST_API inline size_t debugAllocCnt = 0;
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::milliseconds MilliSecT;
 typedef std::chrono::microseconds MicroSecT;
 typedef Clock::time_point Time;
 
-TEST_API inline auto microSecondsCast = [](auto diff) -> SizeT {
-    return (SizeT)std::chrono::duration_cast<MicroSecT>(diff).count();
+TEST_API inline auto microSecondsCast = [](auto diff) -> size_t {
+    return (size_t)std::chrono::duration_cast<MicroSecT>(diff).count();
 };
 
-TEST_API inline auto millisecondsCast = [](auto diff) -> SizeT {
-    return (SizeT)std::chrono::duration_cast<MilliSecT>(diff).count();
+TEST_API inline auto millisecondsCast = [](auto diff) -> size_t {
+    return (size_t)std::chrono::duration_cast<MilliSecT>(diff).count();
 };
 
 template <typename T>
@@ -56,7 +56,7 @@ TEST_API inline void InitializeCounter()
     dtor = 0;
 }
 
-TEST_API inline void PrintCounter(StringView msg, SizeT time = 0)
+TEST_API inline void PrintCounter(StringView msg, size_t time = 0)
 {
     LogInfo("", "\tContainer: {} / {}", msg, time);
     LogInfo("", "\t\tConstructor: {}", ctor);
@@ -140,8 +140,8 @@ struct TEST_API TestAlloc {
     template <typename U>
     DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
-    AllocationResult<TestObject> Allocate(SizeT s) { return Allocator<TestObject>{}.Allocate(s); }
-    void Deallocate(Pointer ptr, SizeT s) { Allocator<TestObject>{}.Deallocate(ptr, s); }
+    AllocationResult<TestObject> Allocate(size_t s) { return Allocator<TestObject>{}.Allocate(s); }
+    void Deallocate(Pointer ptr, size_t s) { Allocator<TestObject>{}.Deallocate(ptr, s); }
 };
 
 struct TEST_API FooDel {

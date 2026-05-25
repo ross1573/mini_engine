@@ -79,7 +79,7 @@ StringView LoggerBase::InitializeIdentifier()
     length = CFStringGetLength(bundleIdentifier);
     maxSize = CFStringGetMaximumSizeForEncoding(length, encoding) + 1;
 
-    identifier.Resize(static_cast<SizeT>(maxSize));
+    identifier.Resize(static_cast<size_t>(maxSize));
     result = CFStringGetCString(bundleIdentifier, identifier.Data(), maxSize, encoding);
     if (result == false) {
         identifier.Clear();

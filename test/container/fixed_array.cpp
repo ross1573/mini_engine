@@ -38,7 +38,7 @@ FACTORY(FooArgF);
     static_assert(sizeof(FixedArray<TestObject, 1>::Iterator) == alignof(void*) * 2);
 }
 
-template <typename T, SizeT CapN, typename StdAllocT>
+template <typename T, size_t CapN, typename StdAllocT>
 static constexpr int TestArray(FixedArray<T, CapN> const& arr, std::vector<T, StdAllocT> const& vec)
 {
     constexpr auto TestElement = [](T const& l, T const& r) -> bool {
@@ -56,7 +56,7 @@ static constexpr int TestArray(FixedArray<T, CapN> const& arr, std::vector<T, St
         TEST_ENSURE(TestElement(arr.Last(), vec.back()));
     }
 
-    for (SizeT i = 0; i < arr.Size(); ++i) {
+    for (size_t i = 0; i < arr.Size(); ++i) {
         TEST_ENSURE(TestElement(arr[i], vec[i]));
         TEST_ENSURE(TestElement(arr.At(i), vec.at(i)));
     }

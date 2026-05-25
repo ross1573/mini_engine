@@ -156,9 +156,9 @@ SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
     return nullptr;
 }
 
-SizeT ModuleLoader::Count() const noexcept
+size_t ModuleLoader::Count() const noexcept
 {
-    SizeT count = 0;
+    size_t count = 0;
     for (auto const& mod : m_modules) {
         if (mod.handle.Valid()) ++count;
     }

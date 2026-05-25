@@ -75,24 +75,20 @@ using AtomicLock = uint32;
     auto opRet = __iso_volatile_load##size(reinterpret_cast<int##size const volatile*>(pointer)); \
     *result = *reinterpret_cast<decltype(result)>(memory::AddressOf(opRet))
 
-#define VOLATILE_STORE(size, pointer, value)                                   \
-    __iso_volatile_store##size(reinterpret_cast<int##size volatile*>(pointer), \
-                               *reinterpret_cast<int##size*>(value))
+#define VOLATILE_STORE(size, pointer, value)                                                                         \
+    __iso_volatile_store##size(reinterpret_cast<int##size volatile*>(pointer), *reinterpret_cast<int##size*>(value))
 
 #if ARCH_X86
-#  define EXCHANGE_ACQUIRE(pointer, value)                                   \
-      _InterlockedExchange(reinterpret_cast<long volatile*>(pointer), value)
+#  define EXCHANGE_ACQUIRE(pointer, value) _InterlockedExchange(reinterpret_cast<long volatile*>(pointer), value)
 
-#  define STORE_SEQ_CST(size, pointer, value)                                        \
-      ignore = _InterlockedExchange##size(reinterpret_cast<long volatile*>(pointer), \
-                                          *reinterpret_cast<long*>(value))
+#  define STORE_SEQ_CST(size, pointer, value)                                                                         \
+      ignore = _InterlockedExchange##size(reinterpret_cast<long volatile*>(pointer), *reinterpret_cast<long*>(value))
 
 #  define STORE_RELEASE(size, pointer, value) \
       SIGNAL_FENCE();                         \
       VOLATILE_STORE(size, pointer, value)
 #elif ARCH_ARM64
-#  define EXCHANGE_ACQUIRE(pointer, value)                                       \
-      _InterlockedExchange_acq(reinterpret_cast<long volatile*>(pointer), value)
+#  define EXCHANGE_ACQUIRE(pointer, value) _InterlockedExchange_acq(reinterpret_cast<long volatile*>(pointer), value)
 
 #  define STORE_RELEASE(size, pointer, value)                                                     \
       __stlr##size(reinterpret_cast<uint##size volatile*>(pointer),                               \
@@ -141,8 +137,7 @@ using AtomicLock = uint32;
 
 #define ATOMIC_BUILTIN(op, size, result, memorder, ...)                     \
     ATOMIC_BUILTIN_IMPL(int##size, op##size, result, memorder, __VA_ARGS__)
-#define ATOMIC_BUILTIN_32(op, result, memorder, ...)             \
-    ATOMIC_BUILTIN_IMPL(long, op, result, memorder, __VA_ARGS__)
+#define ATOMIC_BUILTIN_32(op, result, memorder, ...) ATOMIC_BUILTIN_IMPL(long, op, result, memorder, __VA_ARGS__)
 
 #if ARCH_X86
 #  define ATOMIC_LOAD(size, pointer, result, memorder) \
@@ -185,81 +180,118 @@ using AtomicLock = uint32;
 #endif // ATOMIC_STORE
 
 #define ATOMIC_EXCHANGE(size, pointer, desired, result, memorder)  \
-    ATOMIC_BUILTIN(_InterlockedExchange, size, result, memorder,   \
+    ATOMIC_BUILTIN(_InterlockedExchange,                           \
+                   size,                                           \
+                   result,                                         \
+                   memorder,                                       \
                    reinterpret_cast<int##size volatile*>(pointer), \
                    *reinterpret_cast<int##size*>(desired))
 
 #define ATOMIC_EXCHANGE_32(pointer, desired, result, memorder)   \
-    ATOMIC_BUILTIN_32(_InterlockedExchange, result, memorder,    \
+    ATOMIC_BUILTIN_32(_InterlockedExchange,                      \
+                      result,                                    \
+                      memorder,                                  \
                       reinterpret_cast<long volatile*>(pointer), \
                       *reinterpret_cast<long*>(desired))
 
 #define ATOMIC_COMPARE_EXCHANGE(size, pointer, expected, desired, result, memorder) \
-    ATOMIC_BUILTIN(_InterlockedCompareExchange, size, result, memorder,             \
+    ATOMIC_BUILTIN(_InterlockedCompareExchange,                                     \
+                   size,                                                            \
+                   result,                                                          \
+                   memorder,                                                        \
                    reinterpret_cast<int##size volatile*>(pointer),                  \
                    *reinterpret_cast<int##size*>(desired),                          \
                    *reinterpret_cast<int##size*>(expected))
 
-#define ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, desired, result, memorder)             \
-    ATOMIC_BUILTIN_32(_InterlockedCompareExchange, result, memorder,                         \
-                      reinterpret_cast<long volatile*>(pointer),                             \
-                      *reinterpret_cast<long*>(desired), *reinterpret_cast<long*>(expected))
+#define ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, desired, result, memorder) \
+    ATOMIC_BUILTIN_32(_InterlockedCompareExchange,                               \
+                      result,                                                    \
+                      memorder,                                                  \
+                      reinterpret_cast<long volatile*>(pointer),                 \
+                      *reinterpret_cast<long*>(desired),                         \
+                      *reinterpret_cast<long*>(expected))
 
-#define ATOMIC_FETCH_ADD(size, pointer, opValue, previous, memorder)  \
-    ATOMIC_BUILTIN(_InterlockedExchangeAdd, size, previous, memorder, \
-                   reinterpret_cast<int##size volatile*>(pointer),    \
+#define ATOMIC_FETCH_ADD(size, pointer, opValue, previous, memorder) \
+    ATOMIC_BUILTIN(_InterlockedExchangeAdd,                          \
+                   size,                                             \
+                   previous,                                         \
+                   memorder,                                         \
+                   reinterpret_cast<int##size volatile*>(pointer),   \
                    *reinterpret_cast<int##size*>(opValue))
 
-#define ATOMIC_FETCH_ADD_32(pointer, opValue, previous, memorder)  \
-    ATOMIC_BUILTIN_32(_InterlockedExchangeAdd, previous, memorder, \
-                      reinterpret_cast<long volatile*>(pointer),   \
+#define ATOMIC_FETCH_ADD_32(pointer, opValue, previous, memorder) \
+    ATOMIC_BUILTIN_32(_InterlockedExchangeAdd,                    \
+                      previous,                                   \
+                      memorder,                                   \
+                      reinterpret_cast<long volatile*>(pointer),  \
                       *reinterpret_cast<long*>(opValue))
 
 #define ATOMIC_FETCH_AND(size, pointer, value, previous, memorder) \
-    ATOMIC_BUILTIN(_InterlockedAnd, size, previous, memorder,      \
+    ATOMIC_BUILTIN(_InterlockedAnd,                                \
+                   size,                                           \
+                   previous,                                       \
+                   memorder,                                       \
                    reinterpret_cast<int##size volatile*>(pointer), \
                    *reinterpret_cast<int##size*>(value))
 
 #define ATOMIC_FETCH_AND_32(pointer, opValue, previous, memorder) \
-    ATOMIC_BUILTIN_32(_InterlockedAnd, previous, memorder,        \
+    ATOMIC_BUILTIN_32(_InterlockedAnd,                            \
+                      previous,                                   \
+                      memorder,                                   \
                       reinterpret_cast<long volatile*>(pointer),  \
                       *reinterpret_cast<long*>(opValue))
 
 #define ATOMIC_FETCH_OR(size, pointer, opValue, previous, memorder) \
-    ATOMIC_BUILTIN(_InterlockedOr, size, previous, memorder,        \
+    ATOMIC_BUILTIN(_InterlockedOr,                                  \
+                   size,                                            \
+                   previous,                                        \
+                   memorder,                                        \
                    reinterpret_cast<int##size volatile*>(pointer),  \
                    *reinterpret_cast<int##size*>(opValue))
 
 #define ATOMIC_FETCH_OR_32(pointer, opValue, previous, memorder) \
-    ATOMIC_BUILTIN_32(_InterlockedOr, previous, memorder,        \
+    ATOMIC_BUILTIN_32(_InterlockedOr,                            \
+                      previous,                                  \
+                      memorder,                                  \
                       reinterpret_cast<long volatile*>(pointer), \
                       *reinterpret_cast<long*>(opValue))
 
 #define ATOMIC_FETCH_XOR(size, pointer, opValue, previous, memorder) \
-    ATOMIC_BUILTIN(_InterlockedXor, size, previous, memorder,        \
+    ATOMIC_BUILTIN(_InterlockedXor,                                  \
+                   size,                                             \
+                   previous,                                         \
+                   memorder,                                         \
                    reinterpret_cast<int##size volatile*>(pointer),   \
                    *reinterpret_cast<int##size*>(opValue))
 
 #define ATOMIC_FETCH_XOR_32(pointer, opValue, previous, memorder) \
-    ATOMIC_BUILTIN_32(_InterlockedXor, previous, memorder,        \
+    ATOMIC_BUILTIN_32(_InterlockedXor,                            \
+                      previous,                                   \
+                      memorder,                                   \
                       reinterpret_cast<long volatile*>(pointer),  \
                       *reinterpret_cast<long*>(opValue))
 
 #if ARCH_X86_64 || ARCH_ARM64
-#  define ATOMIC_LOAD_128(pointer, result, memorder)                                \
-      ATOMIC_BUILTIN_128_IMPL(_InterlockedCompareExchange128, memorder,             \
-                              reinterpret_cast<long long volatile*>(pointer), 0, 0, \
+#  define ATOMIC_LOAD_128(pointer, result, memorder)                          \
+      ATOMIC_BUILTIN_128_IMPL(_InterlockedCompareExchange128,                 \
+                              memorder,                                       \
+                              reinterpret_cast<long long volatile*>(pointer), \
+                              0,                                              \
+                              0,                                              \
                               reinterpret_cast<long*>(result))
 
-#  define ATOMIC_COMPARE_EXCHANGE_128(pointer, expected, desired, result, memorder)     \
-      ATOMIC_BUILTIN_IMPL(mini::byte, _InterlockedCompareExchange128, result, memorder, \
-                          reinterpret_cast<long long volatile*>(pointer),               \
-                          reinterpret_cast<Packed128*>(desired)->high,                  \
-                          reinterpret_cast<Packed128*>(desired)->low,                   \
+#  define ATOMIC_COMPARE_EXCHANGE_128(pointer, expected, desired, result, memorder) \
+      ATOMIC_BUILTIN_IMPL(mini::byte,                                               \
+                          _InterlockedCompareExchange128,                           \
+                          result,                                                   \
+                          memorder,                                                 \
+                          reinterpret_cast<long long volatile*>(pointer),           \
+                          reinterpret_cast<Packed128*>(desired)->high,              \
+                          reinterpret_cast<Packed128*>(desired)->low,               \
                           reinterpret_cast<long*>(expected))
 #endif
 
-constexpr SizeT lockTableSize = 1 << 8;
+constexpr size_t lockTableSize = 1 << 8;
 CORE_API AtomicLock g_atomicLockTable[lockTableSize];
 
 template <typename T>
@@ -270,8 +302,8 @@ private:
 public:
     AtomicSpinLock(T const volatile* pointer) noexcept
     {
-        SizeT intptr = reinterpret_cast<SizeT>(pointer);
-        SizeT hash = intptr >> 6;
+        size_t intptr = reinterpret_cast<size_t>(pointer);
+        size_t hash = intptr >> 6;
         hash ^= hash >> 16;
         hash &= (lockTableSize - 1);
         m_lock = reinterpret_cast<AtomicLock*>(&g_atomicLockTable[hash]);
@@ -298,7 +330,7 @@ consteval bool IsAtomicSupported()
         return false;
     }
 
-    SizeT size = __ATOMIC_MAX_SUPPORT_SIZE;
+    size_t size = __ATOMIC_MAX_SUPPORT_SIZE;
     while (size > 0) {
         if (size == sizeof(T)) {
             return true;
@@ -335,8 +367,7 @@ inline CORE_API constexpr int32 CompareExchangeOrder(int32 success, int32 failur
                 case __ATOMIC_SEQ_CST:
                 default:               return __ATOMIC_SEQ_CST;
             }
-        case __ATOMIC_ACQ_REL:
-            return failure == __ATOMIC_SEQ_CST ? __ATOMIC_SEQ_CST : __ATOMIC_ACQ_REL;
+        case __ATOMIC_ACQ_REL: return failure == __ATOMIC_SEQ_CST ? __ATOMIC_SEQ_CST : __ATOMIC_ACQ_REL;
         case __ATOMIC_SEQ_CST:
         default:               return __ATOMIC_SEQ_CST;
     }
@@ -344,14 +375,13 @@ inline CORE_API constexpr int32 CompareExchangeOrder(int32 success, int32 failur
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline bool __atomic_compare_exchange_1(T volatile* pointer, T* expected, T desired, bool /*weak*/,
-                                        int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange_1(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
-    ATOMIC_COMPARE_EXCHANGE(8, pointer, expected, memory::AddressOf(desired),
-                            memory::AddressOf(previous), memorder);
+    ATOMIC_COMPARE_EXCHANGE(8, pointer, expected, memory::AddressOf(desired), memory::AddressOf(previous), memorder);
 
     if (BUILTIN_MEMCMP(memory::AddressOf(previous), expected, sizeof(T)) == 0) {
         return true;
@@ -363,14 +393,13 @@ inline bool __atomic_compare_exchange_1(T volatile* pointer, T* expected, T desi
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline bool __atomic_compare_exchange_2(T volatile* pointer, T* expected, T desired, bool /*weak*/,
-                                        int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange_2(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
-    ATOMIC_COMPARE_EXCHANGE(16, pointer, expected, memory::AddressOf(desired),
-                            memory::AddressOf(previous), memorder);
+    ATOMIC_COMPARE_EXCHANGE(16, pointer, expected, memory::AddressOf(desired), memory::AddressOf(previous), memorder);
 
     if (BUILTIN_MEMCMP(memory::AddressOf(previous), expected, sizeof(T)) == 0) {
         return true;
@@ -382,14 +411,13 @@ inline bool __atomic_compare_exchange_2(T volatile* pointer, T* expected, T desi
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline bool __atomic_compare_exchange_4(T volatile* pointer, T* expected, T desired, bool /*weak*/,
-                                        int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange_4(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
-    ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, memory::AddressOf(desired),
-                               memory::AddressOf(previous), memorder);
+    ATOMIC_COMPARE_EXCHANGE_32(pointer, expected, memory::AddressOf(desired), memory::AddressOf(previous), memorder);
 
     if (BUILTIN_MEMCMP(memory::AddressOf(previous), expected, sizeof(T)) == 0) {
         return true;
@@ -401,14 +429,13 @@ inline bool __atomic_compare_exchange_4(T volatile* pointer, T* expected, T desi
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline bool __atomic_compare_exchange_8(T volatile* pointer, T* expected, T desired, bool /*weak*/,
-                                        int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange_8(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
 
-    ATOMIC_COMPARE_EXCHANGE(64, pointer, expected, memory::AddressOf(desired),
-                            memory::AddressOf(previous), memorder);
+    ATOMIC_COMPARE_EXCHANGE(64, pointer, expected, memory::AddressOf(desired), memory::AddressOf(previous), memorder);
 
     if (BUILTIN_MEMCMP(memory::AddressOf(previous), expected, sizeof(T)) == 0) {
         return true;
@@ -420,8 +447,8 @@ inline bool __atomic_compare_exchange_8(T volatile* pointer, T* expected, T desi
 
 export template <typename T>
     requires(sizeof(T) == 16)
-inline bool __atomic_compare_exchange_16(T volatile* pointer, T* expected, T desired, bool /*weak*/,
-                                         int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange_16(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     byte result;
@@ -436,12 +463,12 @@ inline bool __atomic_compare_exchange_16(T volatile* pointer, T* expected, T des
 
 export template <typename T>
     requires(IsAtomicSupported<T>())
-inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/,
-                                      int32 success, int32 failure)
+inline bool
+__atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/, int32 success, int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 16) {
         byte result;
 
@@ -478,10 +505,14 @@ inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desir
 
 export template <typename T>
     requires(!IsAtomicSupported<T>())
-inline bool __atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/,
-                                      int32 /*success*/, int32 /*failure*/)
+inline bool __atomic_compare_exchange(T volatile* pointer,
+                                      T* expected,
+                                      T* desired,
+                                      bool /*weak*/,
+                                      int32 /*success*/,
+                                      int32 /*failure*/)
 {
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     AtomicSpinLock lock(pointer);
 
     if (BUILTIN_MEMCMP(const_cast<T*>(pointer), expected, size) == 0) {
@@ -541,7 +572,7 @@ inline T __atomic_load_16(T const volatile* pointer, int32 memorder)
 export template <typename T>
 inline void __atomic_load(T const volatile* pointer, T* result, int32 memorder)
 {
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_LOAD(8, pointer, result, memorder);
     } else if constexpr (size == 2) {
@@ -591,14 +622,18 @@ export template <typename T>
 inline void __atomic_store_16(T volatile* pointer, T value, int32 memorder)
 {
     T result{ value };
-    while (!__atomic_compare_exchange_16(pointer, memory::AddressOf(result),
-                                         memory::AddressOf(value), true, memorder, memorder)) {}
+    while (!__atomic_compare_exchange_16(pointer,
+                                         memory::AddressOf(result),
+                                         memory::AddressOf(value),
+                                         true,
+                                         memorder,
+                                         memorder)) { }
 }
 
 export template <typename T>
 inline void __atomic_store(T volatile* pointer, T* value, int32 memorder)
 {
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_STORE(8, pointer, value, memorder);
     } else if constexpr (size == 2) {
@@ -656,15 +691,19 @@ export template <typename T>
 inline T __atomic_exchange_16(T volatile* pointer, T value, int32 memorder)
 {
     T result{ value };
-    while (__atomic_compare_exchange_16(pointer, memory::AddressOf(result),
-                                        memory::AddressOf(value), true, memorder, memorder)) {}
+    while (__atomic_compare_exchange_16(pointer,
+                                        memory::AddressOf(result),
+                                        memory::AddressOf(value),
+                                        true,
+                                        memorder,
+                                        memorder)) { }
     return result;
 }
 
 export template <typename T>
 inline void __atomic_exchange(T volatile* pointer, T* value, T* result, int32 memorder)
 {
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_EXCHANGE(8, pointer, value, result, memorder);
     } else if constexpr (size == 2) {
@@ -725,7 +764,7 @@ inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
     T* resultPtr = memory::AddressOf(result);
     T* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_ADD(8, pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 2) {
@@ -742,14 +781,14 @@ inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
 }
 
 export template <PointerT T>
-inline T __atomic_fetch_add(T volatile* pointer, OffsetT value, int32 memorder)
+inline T __atomic_fetch_add(T volatile* pointer, offset_t value, int32 memorder)
     requires(!FunctionPtrT<T>)
 {
     T result;
     T* resultPtr = memory::AddressOf(result);
-    OffsetT* valuePtr = memory::AddressOf(value);
+    offset_t* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 8) {
@@ -807,7 +846,7 @@ inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
     T* resultPtr = memory::AddressOf(result);
     T* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_ADD(8, pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 2) {
@@ -824,15 +863,15 @@ inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
 }
 
 export template <PointerT T>
-inline T __atomic_fetch_sub(T volatile* pointer, OffsetT value, int32 memorder)
+inline T __atomic_fetch_sub(T volatile* pointer, offset_t value, int32 memorder)
     requires(!FunctionPtrT<T>)
 {
     value = ~value + 1;
     T result;
     T* resultPtr = memory::AddressOf(result);
-    OffsetT* valuePtr = memory::AddressOf(value);
+    offset_t* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 4) {
         ATOMIC_FETCH_ADD_32(pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 8) {
@@ -885,7 +924,7 @@ inline T __atomic_fetch_and(T volatile* pointer, T value, int32 memorder)
     T* resultPtr = memory::AddressOf(result);
     T* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_AND(8, pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 2) {
@@ -944,7 +983,7 @@ inline T __atomic_fetch_or(T volatile* pointer, T value, int32 memorder)
     T* resultPtr = memory::AddressOf(result);
     T* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_OR(8, pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 2) {
@@ -1003,7 +1042,7 @@ inline T __atomic_fetch_xor(T volatile* pointer, T value, int32 memorder)
     T* resultPtr = memory::AddressOf(result);
     T* valuePtr = memory::AddressOf(value);
 
-    constexpr SizeT size = sizeof(T);
+    constexpr size_t size = sizeof(T);
     if constexpr (size == 1) {
         ATOMIC_FETCH_XOR(8, pointer, valuePtr, resultPtr, memorder);
     } else if constexpr (size == 2) {
@@ -1037,13 +1076,13 @@ export inline CORE_API void __atomic_thread_fence(int32 memorder)
     THREAD_FENCE(memorder);
 }
 
-export inline constexpr bool __atomic_always_lock_free(SizeT size, void const volatile*)
+export inline constexpr bool __atomic_always_lock_free(size_t size, void const volatile*)
 {
     if (size > __ATOMIC_MAX_SUPPORT_SIZE) {
         return false;
     }
 
-    SizeT align = __ATOMIC_MAX_SUPPORT_SIZE;
+    size_t align = __ATOMIC_MAX_SUPPORT_SIZE;
     while (align >= size && align > 0) {
         if (align == size) {
             return true;
@@ -1055,7 +1094,7 @@ export inline constexpr bool __atomic_always_lock_free(SizeT size, void const vo
     return false;
 }
 
-export inline bool __atomic_is_lock_free(SizeT size, void const volatile*)
+export inline bool __atomic_is_lock_free(size_t size, void const volatile*)
 {
     return __atomic_always_lock_free(size, nullptr);
 }
