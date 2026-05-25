@@ -86,13 +86,7 @@ export template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     ASSERT(ptr, "invalid location for object");
-
-    if consteval {
-        CONSTEXPR_CONSTRUCT_AT(ptr, ForwardArg<Args>(args)...);
-        return;
-    }
-
-    ::new (MakeVoidPtr(ptr)) T(ForwardArg<Args>(args)...);
+    PLACEMENT_NEW_CONSTEXPR ::new (MakeVoidPtr(ptr)) T(ForwardArg<Args>(args)...);
 }
 
 export template <NoThrowDefaultConstructibleT T>
@@ -119,12 +113,6 @@ export template <NonArrT T>
 inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     ASSERT(ptr, "invalid location for object");
-
-    if consteval {
-        CONSTEXPR_DESTRUCT_AT(ptr);
-        return;
-    }
-
     ptr->~T();
 }
 
