@@ -17,8 +17,6 @@ private:
     String m_category;
     Logger m_logger;
 
-    static CORE_API String m_identifier;
-
 protected:
     LoggerBase(StringView);
     ~LoggerBase();
@@ -27,7 +25,6 @@ protected:
 
 private:
     LogLevel GetLogType(byte);
-    StringView InitializeIdentifier();
 };
 
 } // namespace mini

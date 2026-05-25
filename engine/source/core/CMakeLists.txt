@@ -218,12 +218,15 @@ PUBLIC
     fmt::fmt
 )
 
-if (APPLE)
-    target_link_libraries(mini.core PRIVATE "-framework CoreFoundation")
-elseif (WIN32)
+set_property(TARGET mini.core APPEND
+PROPERTY MODULE_DEFINITIONS
+    MODULE_OUTPUT_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}${prefix}${BUILD_PREFIX}"
+    MODULE_OUTPUT_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"
+)
+
+if (WIN32)
     target_link_libraries(mini.core PRIVATE synchronization.lib)
 endif()
-
 if (MSVC)
     target_compile_options(mini.core PRIVATE /wd4582)
 endif()

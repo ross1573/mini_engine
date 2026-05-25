@@ -1,7 +1,5 @@
 module;
 
-#include <CoreFoundation/CFBundle.h>
-#include <CoreFoundation/CFString.h>
 #include <os/log.h>
 
 module mini.core;
@@ -11,8 +9,6 @@ import :string;
 import :logger_platform;
 
 namespace mini {
-
-String LoggerBase::m_identifier = String();
 
 LoggerBase::LoggerBase(StringView category)
     : m_category(category)
@@ -29,7 +25,7 @@ void LoggerBase::PrintMessage(byte level, StringView msg)
 {
     // delay initialization of the logger until first message has been fetched
     if (m_logger == nullptr) {
-        StringView identifier = InitializeIdentifier();
+        StringView identifier = "com." ENGINE_PROJECT_AUTHOR ENGINE_PROJECT_NAME;
         m_logger = os_log_create(identifier.Data(), m_category.Data());
     }
 
@@ -49,53 +45,6 @@ LoggerBase::LogLevel LoggerBase::GetLogType(byte level)
     }
 
     return type;
-}
-
-StringView LoggerBase::InitializeIdentifier()
-{
-    if (m_identifier.Empty() == false) {
-        return m_identifier;
-    }
-
-    String identifier;
-    uint32 encoding = kCFStringEncodingUTF8;
-    bool result;
-
-    CFIndex length, maxSize;
-    CFBundleRef bundle = nullptr;
-    CFStringRef bundleIdentifier = nullptr;
-
-    bundle = CFBundleGetMainBundle();
-    if (bundle == nullptr) {
-        goto init_finish;
-    }
-
-    bundleIdentifier = CFBundleGetIdentifier(bundle);
-    if (bundleIdentifier == nullptr) {
-        goto init_finish;
-    }
-
-    encoding = kCFStringEncodingUTF8;
-    length = CFStringGetLength(bundleIdentifier);
-    maxSize = CFStringGetMaximumSizeForEncoding(length, encoding) + 1;
-
-    identifier.Resize(static_cast<size_t>(maxSize));
-    result = CFStringGetCString(bundleIdentifier, identifier.Data(), maxSize, encoding);
-    if (result == false) {
-        identifier.Clear();
-    }
-
-init_finish:
-    if (bundle != nullptr) {
-        CFRelease(bundle);
-    }
-
-    if (identifier.Empty() == false) {
-        m_identifier = MoveArg(identifier);
-        return m_identifier;
-    }
-
-    return ENGINE_PROJECT_NAME;
 }
 
 } // namespace mini
