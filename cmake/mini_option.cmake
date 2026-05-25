@@ -1,9 +1,11 @@
 if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
     add_compile_options(
-        $<$<CONFIG:Debug,Develop>:/Zi>
-        $<$<CONFIG:Debug,Develop>:/Od>
-        $<$<CONFIG:Develop>:/Od>
+        $<$<CONFIG:Debug>:/Zi>
+        $<$<CONFIG:Debug>:/Od>
+        $<$<CONFIG:Develop>:/Zi>
+        $<$<CONFIG:Develop>:/O1>
         $<$<CONFIG:Develop>:/Ob2>
+        $<$<CONFIG:Develop>:/Oi>
         $<$<CONFIG:Release>:/O2>
         $<$<CONFIG:Release>:/Ob3>
         /fp:fast
