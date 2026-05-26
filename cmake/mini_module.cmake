@@ -53,7 +53,7 @@ function (add_module name)
         "INTERFACE"
     )
     cmake_parse_arguments(PARSE_ARGV 1 arg "${options}" "${args}" "")
-    _parse_module_type(${ARGV})
+    _parse_module_type(type ${ARGV})
 
     add_library(${name} ${type})
     generate_api_name(${name} PREFIX ${arg_PREFIX} API ${arg_API})
