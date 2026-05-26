@@ -120,6 +120,10 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     ASSERT(ptr, "invalid location for object");
 
+    if constexpr (TrivialT<T>) {
+        return;
+    }
+
     if consteval {
         CONSTEXPR_DESTRUCT_AT(ptr);
         return;
