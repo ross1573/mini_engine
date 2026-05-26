@@ -132,26 +132,6 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
     ptr->~T();
 }
 
-export template <TriviallyDestructibleT T>
-inline constexpr void EndLifetime(T* begin, T* end) noexcept
-{
-    ASSERT(begin <= end, "invalid range");
-
-    if consteval {
-        for (; begin != end; ++begin) {
-            DestructAt(begin);
-        }
-    }
-}
-
-export template <TriviallyDestructibleT T>
-inline constexpr void EndLifetime(T* loc) noexcept
-{
-    if consteval {
-        DestructAt(loc);
-    }
-}
-
 export template <TrivialT T>
 inline constexpr void MemCopy(T* dst, T const* src, size_t len) noexcept
 {

@@ -57,7 +57,6 @@ public:
     template <AllocatorT<T> AllocT>
     inline constexpr void Deallocate(AllocT const& alloc) noexcept(NoThrowAllocatorT<AllocT, T>)
     {
-        memory::EndLifetime(m_buffer, m_buffer + m_capacity);
         alloc.Deallocate(m_buffer, m_capacity);
         m_buffer = nullptr;
         m_capacity = 0;
