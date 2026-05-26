@@ -17,7 +17,7 @@ function (no_arg_test name)
     target_link_libraries(test.${name} PRIVATE mini.test)
     set_target_properties(test.${name} PROPERTIES
         FOLDER test
-        OUTPUT_NAME $<IF:$<CONFIG:Debug>,testd,test>.${name}
+        OUTPUT_NAME test.${name}${MODULE_OUTPUT_SUFFIX}
     )
 
     if (NOT WIN32)

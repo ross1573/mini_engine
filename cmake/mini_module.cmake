@@ -70,7 +70,7 @@ function (add_module name)
     set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
     set_target_properties(${name} PROPERTIES 
         FOLDER module
-        OUTPUT_NAME "${prefix}${BUILD_PREFIX}.${api}"
+        OUTPUT_NAME "${prefix}.${api}${MODULE_OUTPUT_SUFFIX}"
         INTERFACE "${arg_INTERFACE}"
     )
 

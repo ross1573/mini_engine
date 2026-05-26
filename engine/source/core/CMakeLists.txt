@@ -5,6 +5,17 @@ add_module(mini.core
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
 
+if (NOT BUILD_SHARED_LIBS)
+    set_property(GLOBAL APPEND PROPERTY STATIC_MODULE_ENTRY "mini.core")
+    set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__mini_core_start_module")
+endif()
+
+set_property(TARGET mini.core APPEND
+PROPERTY MODULE_DEFINITIONS
+    MODULE_OUTPUT_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}"
+    MODULE_OUTPUT_SUFFIX="${MODULE_OUTPUT_SUFFIX}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+)
+
 target_sources(mini.core
 PUBLIC
     FILE_SET meta TYPE CXX_MODULES
@@ -216,12 +227,6 @@ target_link_libraries(mini.core
 PUBLIC
     convert_utf
     fmt::fmt
-)
-
-set_property(TARGET mini.core APPEND
-PROPERTY MODULE_DEFINITIONS
-    MODULE_OUTPUT_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}${prefix}${BUILD_PREFIX}"
-    MODULE_OUTPUT_SUFFIX="${CMAKE_SHARED_LIBRARY_SUFFIX}"
 )
 
 if (WIN32)

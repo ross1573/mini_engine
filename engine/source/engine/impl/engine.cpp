@@ -27,8 +27,8 @@ void Engine::Launch()
 {
     ENSURE(m_running == false, "engine is already running") return;
 
-    Module<Platform> platform("platform");
-    Module<Graphics> graphics("graphics");
+    Module<Platform> platform("mini.platform");
+    Module<Graphics> graphics("mini.graphics");
 
     platform->GetWindow()->Show();
     platform->PollEvents();

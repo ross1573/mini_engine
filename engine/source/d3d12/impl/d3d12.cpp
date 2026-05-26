@@ -10,7 +10,7 @@ import :swap_chain;
 namespace mini {
 
 D3D12::D3D12() noexcept
-    : m_windows("windows")
+    : m_windows("mini.windows")
 {
     d3d12::interface = this;
 }

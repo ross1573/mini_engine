@@ -14,8 +14,8 @@ export void LaunchEngine()
     launcher::StaticInitialize();
     launcher::LogInfo("static initialized");
 
-    Module<Core> core("core");
-    Module<Engine> engine("engine");
+    Module<Core> core("mini.core");
+    Module<Engine> engine("mini.engine");
 
     engine->Launch();
     engine.Release();

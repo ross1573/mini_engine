@@ -14,7 +14,7 @@ using NativeModuleHandle = HMODULE;
 
 String BuildModulePath(StringView name)
 {
-    StringView prefix = MODULE_OUTPUT_PREFIX ".";
+    StringView prefix = MODULE_OUTPUT_PREFIX;
     StringView suffix = MODULE_OUTPUT_SUFFIX;
 
     String modulePath(prefix.Size() + name.Size() + suffix.Size());

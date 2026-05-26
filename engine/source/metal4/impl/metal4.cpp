@@ -3,7 +3,7 @@ module mini.metal4;
 namespace mini {
 
 Metal4::Metal4() noexcept
-    : m_platform("platform")
+    : m_platform("mini.platform")
 {
     ASSERT(m_platform.Valid());
     metal4::interface = this;

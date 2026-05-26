@@ -13,11 +13,11 @@ function (no_arg_benchmark name)
     add_executable(benchmark.${name} ${name}.cpp)
 
     generate_define_header(benchmark.${name})
-    
+
     target_link_libraries(benchmark.${name} PRIVATE mini.benchmark)
     set_target_properties(benchmark.${name} PROPERTIES
         FOLDER bench
-        OUTPUT_NAME $<IF:$<CONFIG:Debug>,benchd,bench>.${name}
+        OUTPUT_NAME bench.${name}${MODULE_OUTPUT_SUFFIX}
     )
 
     if (NOT WIN32)

@@ -7,7 +7,7 @@ import :module_initializer;
 extern "C" void __mini_core_start_module()
 {
     auto factory = []() constexpr static { return new mini::Core(); };
-    mini::StaticModuleInitializer<decltype(factory)>::Register("core");
+    mini::StaticModuleInitializer<decltype(factory)>::Register("mini.core");
 }
 #else
 extern "C" CORE_API mini::ModuleInterface* __start_module()

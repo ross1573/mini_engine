@@ -29,7 +29,7 @@ public:
 #if @api_upper@_STATIC
 extern "C" void __@api_full@_start_module()
 {
-    mini::StaticModuleInitializer<InterfaceFactory>::Register("@api@");
+    mini::StaticModuleInitializer<InterfaceFactory>::Register("@prefix@.@api@");
 }
 #else
 extern "C" @api_upper@_API mini::ModuleInterface* __start_module()
