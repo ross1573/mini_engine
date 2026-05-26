@@ -3,15 +3,13 @@
 
 #include <memory>
 
-#if MSVC
-#  define PLACEMENT_NEW_CONSTEXPR [[msvc::constexpr]]
-#else
-#  define PLACEMENT_NEW_CONSTEXPR
-#endif
+// TODO: constexpr placement new operator is coming soon!
+#define CONSTEXPR_CONSTRUCT_AT std::construct_at
+#define CONSTEXPR_DESTRUCT_AT  std::destroy_at
 
 // TODO: only compiler can do constexpr (de)allocate
-#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{}.allocate(x)
-#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{}.deallocate(x, size)
+#define CONSTEXPR_ALLOC(type, x)         std::allocator<type>{ }.allocate(x)
+#define CONSTEXPR_DEALLOC(type, x, size) std::allocator<type>{ }.deallocate(x, size)
 
 #if HAS_BUILTIN(__builtin_addressof)
 #  define BUILTIN_ADDRESS_OF __builtin_addressof
