@@ -162,17 +162,17 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 
 export template <Utf8 T, Utf8 U>
 constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
-    return srcEnd - srcBegin;
+    return static_cast<size_t>(srcEnd - srcBegin);
 }
 
 export template <Utf16 T, Utf16 U>
 constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
-    return srcEnd - srcBegin;
+    return static_cast<size_t>(srcEnd - srcBegin);
 }
 
 export template <Utf32 T, Utf32 U>
 constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
-    return srcEnd - srcBegin;
+    return static_cast<size_t>(srcEnd - srcBegin);
 }
 
 export template <Utf8 T, Utf8 U>
@@ -511,7 +511,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
             case 4: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
             case 3: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
             case 2: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
-            case 1: *--target = static_cast<U>(ch | firstByteMark[bytesToWrite]);
+            case 1: *--target = static_cast<U>(ch) | static_cast<U>(firstByteMark[bytesToWrite]);
         }
         target += bytesToWrite;
     }
@@ -629,12 +629,12 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 
         /* The cases all fall through. See "Note A" below. */
         switch (extraBytesToRead) {
-            case 5: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
-            case 4: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
-            case 3: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 2: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 1: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 0: ch += static_cast<char8_t>(*source++);
+            case 5: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
+            case 4: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
+            case 3: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 2: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 1: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 0: ch += (char32_t)static_cast<char8_t>(*source++);
         }
 
         ch -= offsetsFromUTF8[extraBytesToRead];
@@ -674,12 +674,12 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 
         /* The cases all fall through. See "Note A" below. */
         switch (extraBytesToRead) {
-            case 5: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
-            case 4: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
-            case 3: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 2: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 1: ch += static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
-            case 0: ch += static_cast<char8_t>(*source++);
+            case 5: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
+            case 4: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]]; /* remember, illegal UTF-8 */
+            case 3: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 2: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 1: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 0: ch += (char32_t)static_cast<char8_t>(*source++);
         }
 
         ch -= offsetsFromUTF8[extraBytesToRead];
@@ -807,7 +807,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
             case 4: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
             case 3: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
             case 2: *--target = static_cast<U>((ch | byteMark) & byteMask); ch >>= 6; [[fallthrough]];
-            case 1: *--target = static_cast<U>(ch | firstByteMark[bytesToWrite]);
+            case 1: *--target = static_cast<U>(ch) | static_cast<U>(firstByteMark[bytesToWrite]);
         }
 
         target += bytesToWrite;
@@ -868,12 +868,12 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
          * The cases all fall through. See "Note A" below.
          */
         switch (extraBytesToRead) {
-            case 5: ch += (char8_t)*source++; ch <<= 6; [[fallthrough]];
-            case 4: ch += (char8_t)*source++; ch <<= 6; [[fallthrough]];
-            case 3: ch += (char8_t)*source++; ch <<= 6; [[fallthrough]];
-            case 2: ch += (char8_t)*source++; ch <<= 6; [[fallthrough]];
-            case 1: ch += (char8_t)*source++; ch <<= 6; [[fallthrough]];
-            case 0: ch += (char8_t)*source++;
+            case 5: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 4: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 3: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 2: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 1: ch += (char32_t)static_cast<char8_t>(*source++); ch <<= 6; [[fallthrough]];
+            case 0: ch += (char32_t)static_cast<char8_t>(*source++);
         }
 
         ch -= offsetsFromUTF8[extraBytesToRead];
@@ -896,7 +896,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                     *target++ = UNI_REPLACEMENT_CHAR;
                 }
             } else {
-                *target++ = ch;
+                *target++ = static_cast<U>(ch);
             }
         } else { /* i.e., ch > UNI_MAX_LEGAL_UTF32 */
             result    = ConversionResult::sourceIllegal;
@@ -912,8 +912,8 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 template <typename T, typename U>
     requires (sizeof(T) == sizeof(U))
 inline constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd) noexcept {
-    size_t sourceLen        = srcEnd - srcBegin;
-    size_t targetLen        = dstEnd - dstBegin;
+    size_t sourceLen        = static_cast<size_t>(srcEnd - srcBegin);
+    size_t targetLen        = static_cast<size_t>(dstEnd - dstBegin);
     size_t copyLen          = sourceLen;
     ConversionResult result = ConversionResult::conversionOK;
 
@@ -924,7 +924,7 @@ inline constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* ds
     
     if (std::is_constant_evaluated()) {
         for (; copyLen > 0; --copyLen) {
-            *(dstBegin++) = *(srcBegin++);
+            *(dstBegin++) = static_cast<U>(*(srcBegin++));
         }
     }
     else {
