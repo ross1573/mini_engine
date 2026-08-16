@@ -226,7 +226,7 @@ PRIVATE
 target_link_libraries(mini.core 
 PUBLIC
     convert_utf
-    fmt::fmt
+    fmt::fmt-module
 )
 
 if (WIN32)
