@@ -23,7 +23,8 @@ function (no_arg_benchmark name)
         OUTPUT_NAME ${output}${MODULE_OUTPUT_SUFFIX}
     )
 
-    set(OPT_RESULT_PATH ${ENGINE_PROJECT_DIR}/bin/bench/${target}.yaml)
+    get_output_directory(output_dir RUNTIME)
+    set(OPT_RESULT_PATH ${output_dir}/${target}.yaml)
     target_compile_options(benchmark.${name}
     PRIVATE
         $<$<CXX_COMPILER_ID:Clang>:-fsave-optimization-record> 
@@ -36,13 +37,6 @@ endfunction()
 add_module(mini.benchmark STATIC
     NO_MODULE_LOG
     NO_MODULE_ENTRY
-)
-
-target_sources(mini.benchmark
-PUBLIC
-    FILE_SET benchmark TYPE CXX_MODULES
-    FILES
-        benchmark.cxx
 )
 
 target_link_libraries(mini.benchmark 

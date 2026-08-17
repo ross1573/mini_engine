@@ -95,9 +95,9 @@ macro (_set_output_directory_impl)
             string(TOUPPER ${type} build_type_upper)
             _get_config_output_directory_impl(${type} archive_dir library_dir runtime_dir)
 
-            set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} ${archive_dir}/${dir} PARENT_SCOPE)
-            set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} ${library_dir}/${dir} PARENT_SCOPE)
-            set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} ${runtime_dir}/${runtime_target_dir} PARENT_SCOPE)
+            set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} "${archive_dir}/${dir}" PARENT_SCOPE)
+            set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} "${library_dir}/${dir}" PARENT_SCOPE)
+            set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} "${runtime_dir}/${runtime_target_dir}" PARENT_SCOPE)
         endforeach()
     else()
         _get_config_output_directory_impl(${CMAKE_BUILD_TYPE} archive_dir library_dir runtime_dir)
@@ -108,9 +108,37 @@ macro (_set_output_directory_impl)
     endif()
 endmacro()
 
+macro (_set_target_output_directory_impl target)
+    if (NOT DEFINED dir)
+        message(FATAL_ERROR "dir not defined")
+    endif()
+
+    _get_runtime_target_directory(runtime_target_dir ${dir})
+    _get_config_output_directory_impl(${CMAKE_BUILD_TYPE} archive_dir library_dir runtime_dir)
+
+    set_target_properties(${target} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${archive_dir}/${dir}"
+        LIBRARY_OUTPUT_DIRECTORY "${library_dir}/${dir}"
+        RUNTIME_OUTPUT_DIRECTORY "${runtime_dir}/${runtime_target_dir}")
+
+    if (USING_MULTI_CONFIG)
+        foreach (type ${BUILD_TYPES})
+            string(TOUPPER ${type} build_type_upper)
+            _get_config_output_directory_impl(${type} archive_dir library_dir runtime_dir)
+
+            set_target_properties(${target} PROPERTIES
+                ARCHIVE_OUTPUT_DIRECTORY_${build_type_upper} "${archive_dir}/${dir}"
+                LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} "${library_dir}/${dir}"
+                RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} "${runtime_dir}/${runtime_target_dir}")
+        endforeach()
+    endif()
+endmacro()
+
 function (get_output_directory out type)
     get_property(dir_stack GLOBAL PROPERTY OUTPUT_DIRECTORY_STACK)
-    if (dir_stack)
+    if (${ARGC} EQUAL 3)
+        list(GET ARGV 2 dir)
+    elseif (dir_stack)
         list(GET dir_stack -1 dir)
     else()
         set(dir "")
@@ -130,6 +158,21 @@ function (get_output_directory out type)
     endif()
 endfunction()
 
+function (get_target_output_directory out target type)
+    if (${type} STREQUAL "RUNTIME")
+        set(target_dir_type RUNTIME_OUTPUT_DIRECTORY)
+    elseif (${type} STREQUAL "LIBRARY")
+        set(target_dir_type LIBRARY_OUTPUT_DIRECTORY)
+    elseif (${type} STREQUAL "ARCHIVE")
+        set(target_dir_type ARCHIVE_OUTPUT_DIRECTORY)
+    else()
+        message(FATAL_ERROR "unknown type of output directory ${type}")
+    endif()
+
+    get_target_property(output_dir ${target} ${target_dir_type})
+    set(${out} ${output_dir} PARENT_SCOPE)
+endfunction()
+
 function (set_output_directory)
     if (${ARGC} EQUAL 0)
         set(dir "")
@@ -144,6 +187,18 @@ function (set_output_directory)
     _set_output_directory_impl()
 
     cmake_language(EVAL CODE "cmake_language(DEFER CALL restore_output_directory)")
+endfunction()
+
+function (set_target_output_directory target)
+    if (${ARGC} EQUAL 1)
+        set(dir "")
+    elseif (${ARGC} EQUAL 2)
+        list(GET ARGV 1 dir)
+    else()
+        message(FATAL_ERROR "invalid arguments. expected 2, instead received ${ARGC}(${ARGV})")
+    endif()
+
+    _set_target_output_directory_impl(${target})
 endfunction()
 
 function (restore_output_directory)

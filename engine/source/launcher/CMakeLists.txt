@@ -41,12 +41,13 @@ list(APPEND modules ${static_modules})
 list(REMOVE_DUPLICATES modules)
 target_link_libraries(mini.launcher PRIVATE ${modules})
 
-relocate_executable(mini.launcher)
+set_startup_project(mini.launcher)
+set_target_output_directory(mini.launcher)
 set_target_properties(mini.launcher
 PROPERTIES
     FOLDER module
     OUTPUT_NAME "${BUNDLE_OUTPUT_NAME}"
 )
 
-set_startup_project(mini.launcher)
+relocate_executable(mini.launcher)
 build_source_tree(mini.launcher)

@@ -1,7 +1,7 @@
 include(mini_util)
 
 function (_macos_bundle_module target)
-    get_output_directory(output_dir RUNTIME DEFAULT)
+    get_output_directory(output_dir RUNTIME "")
     set(bundle_path "${output_dir}/${BUNDLE_OUTPUT_NAME}.app/Contents/Frameworks")
     set(bundle_name $<TARGET_FILE_NAME:${target}>)
     set(bundle_file ${bundle_path}/${bundle_name})
