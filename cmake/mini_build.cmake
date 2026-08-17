@@ -114,12 +114,6 @@ macro (_set_target_output_directory_impl target)
     endif()
 
     _get_runtime_target_directory(runtime_target_dir ${dir})
-    _get_config_output_directory_impl(${CMAKE_BUILD_TYPE} archive_dir library_dir runtime_dir)
-
-    set_target_properties(${target} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY "${archive_dir}/${dir}"
-        LIBRARY_OUTPUT_DIRECTORY "${library_dir}/${dir}"
-        RUNTIME_OUTPUT_DIRECTORY "${runtime_dir}/${runtime_target_dir}")
 
     if (USING_MULTI_CONFIG)
         foreach (type ${BUILD_TYPES})
@@ -131,6 +125,13 @@ macro (_set_target_output_directory_impl target)
                 LIBRARY_OUTPUT_DIRECTORY_${build_type_upper} "${library_dir}/${dir}"
                 RUNTIME_OUTPUT_DIRECTORY_${build_type_upper} "${runtime_dir}/${runtime_target_dir}")
         endforeach()
+    else()
+        _get_config_output_directory_impl(${CMAKE_BUILD_TYPE} archive_dir library_dir runtime_dir)
+
+        set_target_properties(${target} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY "${archive_dir}/${dir}"
+            LIBRARY_OUTPUT_DIRECTORY "${library_dir}/${dir}"
+            RUNTIME_OUTPUT_DIRECTORY "${runtime_dir}/${runtime_target_dir}")
     endif()
 endmacro()
 
@@ -156,21 +157,6 @@ function (get_output_directory out type)
     else()
         message(FATAL_ERROR "unknown type of output directory ${type}")
     endif()
-endfunction()
-
-function (get_target_output_directory out target type)
-    if (${type} STREQUAL "RUNTIME")
-        set(target_dir_type RUNTIME_OUTPUT_DIRECTORY)
-    elseif (${type} STREQUAL "LIBRARY")
-        set(target_dir_type LIBRARY_OUTPUT_DIRECTORY)
-    elseif (${type} STREQUAL "ARCHIVE")
-        set(target_dir_type ARCHIVE_OUTPUT_DIRECTORY)
-    else()
-        message(FATAL_ERROR "unknown type of output directory ${type}")
-    endif()
-
-    get_target_property(output_dir ${target} ${target_dir_type})
-    set(${out} ${output_dir} PARENT_SCOPE)
 endfunction()
 
 function (set_output_directory)
