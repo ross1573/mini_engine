@@ -5,7 +5,7 @@ include(mini_define)
 include(mini_option)
 include(mini_module)
 
-set_output_directory()
+set_output_directory(engine)
 mini_compile_options()
 mini_link_options()
 

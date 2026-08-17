@@ -12,6 +12,11 @@
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
         },
         {
+            "name": "macos-clang-bench",
+            "inherits": [ "macos-clang", "shared", "no-test", "bench" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+        },
+        {
             "name": "macos-clang-develop",
             "inherits": [ "macos-clang", "shared", "no-test", "no-bench" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Develop" }
@@ -29,6 +34,10 @@
         {
             "name": "windows-vs-debug",
             "inherits": [ "windows-vs", "shared", "test", "no-bench" ]
+        },
+        {
+            "name": "windows-vs-bench",
+            "inherits": [ "windows-vs", "shared", "no-test", "bench" ]
         },
         {
             "name": "windows-vs-develop",

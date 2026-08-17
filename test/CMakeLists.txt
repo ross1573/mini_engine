@@ -4,31 +4,25 @@ include(mini_module)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-set_output_directory()
+set_output_directory(test)
 mini_compile_options()
 mini_link_options()
 
 function (no_arg_test name)
-    add_executable(test.${name} ${name}.cpp)
+    set(target test.${name})
+
+    add_executable(${target} ${name}.cpp)
     add_test(NAME ${name} COMMAND $<TARGET_FILE:test.${name}>)
 
-    generate_define_header(test.${name})
+    generate_define_header(${target})
     
-    target_link_libraries(test.${name} PRIVATE mini.test)
-    set_target_properties(test.${name} PROPERTIES
+    target_link_libraries(${target} PRIVATE mini.test)
+    set_target_properties(${target} PROPERTIES
         FOLDER test
-        OUTPUT_NAME test.${name}${MODULE_OUTPUT_SUFFIX}
+        OUTPUT_NAME ${target}${MODULE_OUTPUT_SUFFIX}
     )
 
-    if (NOT WIN32)
-        set_target_properties(test.${name} PROPERTIES
-            ARCHIVE_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/test
-            LIBRARY_OUTPUT_DIRECTORY ${ENGINE_LIBRARY_DIR}/test
-            RUNTIME_OUTPUT_DIRECTORY ${ENGINE_RUNTIME_DIR}/test
-        )
-    endif()
-
-    build_source_tree(test.${name})
+    build_source_tree(${target})
 endfunction()
 
 add_module(mini.test SHARED NO_MODULE_ENTRY)

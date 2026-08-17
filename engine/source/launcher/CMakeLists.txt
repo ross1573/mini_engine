@@ -48,6 +48,5 @@ PROPERTIES
     OUTPUT_NAME "${BUNDLE_OUTPUT_NAME}"
 )
 
-if (CMAKE_GENERATOR MATCHES "Visual Studio")
-    set_property(DIRECTORY ${CMAKE_BINARY_DIR} PROPERTY VS_STARTUP_PROJECT mini.launcher)
-endif()
+set_startup_project(mini.launcher)
+build_source_tree(mini.launcher)

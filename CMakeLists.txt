@@ -43,19 +43,21 @@ list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${ENGINE_PROJECT_DIR}/cmake/modules")
 
 include(mini_build)
+include(mini_util)
 
 clone_build_type(Debug Develop)
 apply_build_types()
 validate_compiler()
+set_output_directory()
 
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
 
 if (INCLUDE_TEST)
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory_analyzed(test)
 endif()
 
 if (INCLUDE_BENCHMARK)
-    add_subdirectory(bench)
+    add_subdirectory_analyzed(bench)
 endif()

@@ -1,4 +1,3 @@
-include(mini_util)
 include(module/mini_module_api)
 include(module/mini_module_define)
 include(module/mini_module_source)

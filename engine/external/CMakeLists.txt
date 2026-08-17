@@ -1,10 +1,9 @@
+set_output_directory(external)
+
+set(prev_log_level ${CMAKE_MESSAGE_LOG_LEVEL})
 set(CMAKE_MESSAGE_LOG_LEVEL WARNING) # silence messages from external source
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE) # most external libraries aren't compatible with c++ modules yet
 set(BUILD_SHARED_LIBS FALSE) # build external as static library
-
-include(mini_util)
-
-set_output_directory(external)
 
 macro (set_external name)
     set_target_properties(${name} PROPERTIES FOLDER external)
@@ -25,3 +24,6 @@ if (APPLE)
     add_subdirectory(metal-cpp)
     set_external(metal.cpp)
 endif()
+
+set(CMAKE_MESSAGE_LOG_LEVEL prev_log_level)
+set(CMAKE_CXX_SCAN_FOR_MODULES TRUE)

@@ -19,3 +19,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 set_target_properties(fmt PROPERTIES FOLDER external)
+set_target_properties(fmt-c PROPERTIES FOLDER external)
+set_target_properties(fmt-module PROPERTIES FOLDER external)
