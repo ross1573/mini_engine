@@ -1,5 +1,5 @@
 macro (module_global_definitions)
-    set_property(GLOBAL APPEND PROPERTY MODULE_DEFINITIONS ${ARGV} "\n")
+     list(APPEND MODULE_GLOBAL_DEFINITIONS ${ARGV} "\n")
 endmacro()
 
 if (WIN32)

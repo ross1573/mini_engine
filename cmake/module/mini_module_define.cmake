@@ -13,7 +13,7 @@ function (_write_module_definitions target prefix api file_path)
     string(APPEND parsed_list "#define ${api_upper}_DEFINE_H\n\n")
 
     get_target_property(module_definitions ${target} MODULE_DEFINITIONS)
-    get_property(target_definitions GLOBAL PROPERTY MODULE_DEFINITIONS)
+    set(target_definitions ${MODULE_GLOBAL_DEFINITIONS})
 
     if (module_definitions)
         list(APPEND target_definitions ${module_definitions})
