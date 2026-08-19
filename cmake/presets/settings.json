@@ -1,0 +1,12 @@
+{
+    "version": 10,
+    "configurePresets": [
+        {
+            "name": "settings",
+            "hidden": true,
+            "cacheVariables": {
+                "ASSERT_LEVEL": "Develop"
+            }
+        }
+    ]
+}

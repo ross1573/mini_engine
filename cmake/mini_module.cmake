@@ -6,13 +6,17 @@ include(module/mini_module_entry)
 include(module/mini_module_log)
 
 function (_set_module_defines name)
+    set(target_type_genexpr "$<TARGET_PROPERTY:${name},TYPE>")
+    set(static_type_genexpr "$<STREQUAL:${target_type_genexpr},STATIC_LIBRARY>")
+    set(module_static_genexpr "$<IF:${static_type_genexpr},true,false>")
+
     set_property(TARGET ${name} APPEND 
     PROPERTY MODULE_DEFINITIONS
         MODULE_NAME="${name}"
         MODULE_PREFIX="${prefix}"
         MODULE_API="${api}"
         "\n"
-        ${api_upper}_STATIC=$<IF:$<STREQUAL:$<TARGET_PROPERTY:${name},TYPE>,STATIC_LIBRARY>,true,false>
+        ${api_upper}_STATIC=${module_static_genexpr}
     )
 endfunction()
 

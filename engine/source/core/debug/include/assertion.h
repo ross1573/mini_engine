@@ -4,12 +4,6 @@
 #include <cassert>
 #include <source_location>
 
-#if DEBUG && !defined(NOASSERT)
-#  define DEBUG_ASSERT 1
-#else
-#  define DEBUG_ASSERT 0
-#endif // DEBUG && !defined(NOASSERT)
-
 #if defined(__has_builtin)
 #  define HAS_BUILTIN(x) __has_builtin(x)
 #else
@@ -32,7 +26,22 @@
 #define ENSURE_CONCAT_IN(x, y) x##y
 #define ENSURE_CONCAT(x, y)    ENSURE_CONCAT_IN(x, y)
 
-#if DEBUG_ASSERT
+#if NOASSERT
+#  define BUILTIN_ASSERT(msg, func, line) ((void)0)
+#  define ASSERT(expr, ...)               ((void)0)
+
+#  define ENSURE_INNER(expr, var, ...)                 \
+      ENSURE_EVAL(expr, var);                          \
+      ENSURE_EXPR(var) {                               \
+          ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__); \
+      }                                                \
+      ENSURE_EXPR(var)
+
+#  define VERIFY(expr, ...) \
+      ASSERT_EXPR(expr) { }
+
+#  define ENSURE(expr, ...) ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
+#else
 #  if PLATFORM_WINDOWS
 #    define BUILTIN_ASSERT(msg, func, line) _wassert(msg, func, line)
 #  else
@@ -64,24 +73,7 @@
       }
 
 #  define ENSURE(expr, ...) ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
-
-#else
-#  define BUILTIN_ASSERT(msg, func, line) ((void)0)
-#  define ASSERT(expr, ...)               ((void)0)
-
-#  define ENSURE_INNER(expr, var, ...)                 \
-      ENSURE_EVAL(expr, var);                          \
-      ENSURE_EXPR(var) {                               \
-          ENSURE_LOG(expr __VA_OPT__(, ) __VA_ARGS__); \
-      }                                                \
-      ENSURE_EXPR(var)
-
-#  define VERIFY(expr, ...) \
-      ASSERT_EXPR(expr) { }
-
-#  define ENSURE(expr, ...) ENSURE_INNER(expr, ENSURE_CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
-
-#endif // DEBUG_ASSERT
+#endif // NOASSERT
 
 #define NEVER_CALLED(msg, ...)                                 \
     static_assert(detail::FalseArgs<__VA_ARGS__>::value, msg); \
