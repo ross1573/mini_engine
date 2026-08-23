@@ -18,7 +18,7 @@
 #  define BUILTIN_ROTL_1(x, s) __builtin_rotateleft8(x, static_cast<unsigned char>(s))
 #elif MSVC
 #  define HAS_BUILTIN_ROTL_1   1
-#  define BUILTIN_ROTL_1(x, s) _rotr8(x, static_cast<unsigned char>(s))
+#  define BUILTIN_ROTL_1(x, s) _rotl8(x, static_cast<unsigned char>(s))
 #else
 #  define HAS_BUILTIN_ROTL_1 0
 #endif
