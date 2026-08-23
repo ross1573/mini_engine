@@ -17,7 +17,9 @@ module;
 export module mini.core:string;
 
 import :type;
+import :assert;
 import :numeric;
+import :cmemory;
 import :utility_operation;
 import :memory_operation;
 import :allocator;

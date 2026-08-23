@@ -320,18 +320,12 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noe
 }
 
 template <NonRefT T, UnboundAllocatorT AllocT, typename... Args>
-SharedPtr<T> AllocateShared(AllocT const&, Args&&...)
     requires DerivedFromT<T, NS::Object>
-{
-    NEVER_CALLED("NSObject should not be constructed directly");
-}
+SharedPtr<T> AllocateShared(AllocT const&, Args&&...) = deleted_function("NSObject should not be constructed directly");
 
 template <NonRefT T, typename... Args>
-SharedPtr<T> MakeShared(Args&&...)
     requires DerivedFromT<T, NS::Object>
-{
-    NEVER_CALLED("NSObject should not be constructed directly");
-}
+SharedPtr<T> MakeShared(Args&&...) = deleted_function("NSObject should not be constructed directly");
 
 template <NonRefT T>
 inline constexpr SharedPtr<T> TransferShared(T* other) noexcept
@@ -390,20 +384,15 @@ inline constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other) noexcept
 }
 
 template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const&) noexcept
     requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object>
-{
-    // TODO: is this even possible..?
-    NEVER_CALLED("dynamic cast of objective-c objects are not supported");
-}
+inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const&) noexcept = deleted_function("dynamic cast of "
+                                                                                           "objective-c "
+                                                                                           "objects are not supported");
 
 template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&&) noexcept
     requires DerivedFromT<T, NS::Object> && DerivedFromT<U, NS::Object>
-{
-    // TODO: is this even possible..?
-    NEVER_CALLED("dynamic cast of objective-c objects are not supported");
-}
+inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&&) noexcept = deleted_function("dynamic cast of objective-c "
+                                                                                      "objects are not supported");
 
 template <NonRefT T, NonRefT U>
 inline constexpr SharedPtr<T> ConstCast(SharedPtr<U> const& other) noexcept

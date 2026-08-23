@@ -18,7 +18,7 @@ public:
     template <typename T>
     constexpr void operator()(T&&)
     {
-        NEVER_CALLED("UnboundDeleter should not be called");
+        UNSUPPORTED("UnboundDeleter should not be called");
     }
 };
 

@@ -1,6 +1,7 @@
 export module mini.core:array_iterator;
 
 import :type;
+import :assert;
 import :iterator;
 
 namespace mini {

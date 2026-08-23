@@ -328,18 +328,13 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noe
 }
 
 template <NonRefT T, UnboundAllocatorT AllocT, typename... Args>
-SharedPtr<T> AllocateShared(AllocT const&, Args&&...)
     requires DerivedFromT<T, IUnknown>
-{
-    NEVER_CALLED("COM interface should not be constructed directly");
-}
+SharedPtr<T> AllocateShared(AllocT const&, Args&&...) = deleted_function("COM interface should not be "
+                                                                         "constructed directly");
 
 template <NonRefT T, typename... Args>
-SharedPtr<T> MakeShared(Args&&...)
     requires DerivedFromT<T, IUnknown>
-{
-    NEVER_CALLED("COM interface should not be constructed directly");
-}
+SharedPtr<T> MakeShared(Args&&...) = deleted_function("COM interface should not be constructed directly");
 
 template <NonRefT T, NonRefT U>
 inline constexpr bool operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept

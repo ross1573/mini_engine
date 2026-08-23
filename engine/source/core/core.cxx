@@ -45,6 +45,7 @@ export import :string_view;
 export import :string;
 export import :format;
 
+export import :assert;
 export import :logger;
 
 export import :atomic_base;

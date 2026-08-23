@@ -33,6 +33,14 @@ Macros:
   - ASSERT(x, y)=(x)
   - VERIFY(x)=(x)
   - VERIFY(x, y)=(x)
+AttributeMacros:
+  - force_inline
+  - no_inline
+  - emptyable_funciton
+  - deleted_function
+  - static_diagnose
+  - static_diagnose_warning
+  - static_diagnose_error
 
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Right

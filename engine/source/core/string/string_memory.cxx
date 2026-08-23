@@ -85,10 +85,10 @@ inline constexpr T* StringFill(T* dst, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMSET(static_cast<void*>(dst), static_cast<int32>(value), static_cast<size_t>(count));
+            void* ptr = BUILTIN_MEMSET(reinterpret_cast<char*>(dst), static_cast<int32>(value), count);
             return static_cast<T*>(ptr);
         } else if constexpr (SameAsT<T, wchar>) {
-            return BUILTIN_WMEMSET(dst, value, static_cast<size_t>(count));
+            return BUILTIN_WMEMSET(dst, value, count);
         }
     }
 

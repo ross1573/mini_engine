@@ -4,11 +4,14 @@ endmacro()
 
 if (WIN32)
     if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
+        set(arch "arm64")
         set(ARM64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Aa][Mm][Dd]64|[Ii][Aa]64")
+        set(arch "x86_64")
         set(X86 1)
         set(X86_64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86")
+        set(arch "x86_32")
         set(X86 1)
         set(X86_32 1)
     else()
@@ -16,8 +19,10 @@ if (WIN32)
     endif()
 elseif (APPLE)
     if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
+        set(arch "arm64")
         set(ARM64 1)
     elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86_64")
+        set(arch "x86_64")
         set(X86 1)
         set(X86_64 1)
     else()
@@ -29,12 +34,16 @@ endif()
 # compiler generator expression aren't supported on file generate, 
 # so they have to be handled manually
 if (CMAKE_CXX_COMPILER_ID MATCHES AppleClang)
+    set(compiler "apple_clang")
     set(APPLE_CLANG 1)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    set(compiler "clang")
     set(CLANG 1)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES GNUC)
+    set(compiler "gnuc")
     set(GNUC 1)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    set(compiler "msvc")
     set(MSVC 1)
 else()
     message(FATAL_ERROR "unsupproted compiler: " ${CMAKE_CXX_COMPILER_ID})
@@ -54,6 +63,9 @@ module_global_definitions(
     ENGINE_PROJECT_NAME="${ENGINE_PROJECT_NAME}"
     ENGINE_PROJECT_AUTHOR="${ENGINE_PROJECT_AUTHOR}"
     ENGINE_PROJECT_VERSION="${ENGINE_PROJECT_VERSION}"
+    ENGINE_BUILD_ARCH="${arch}"
+    ENGINE_BUILD_CONFIG="$<CONFIG>"
+    ENGINE_BUILD_COMPILER="${compiler}:${CMAKE_CXX_COMPILER_VERSION}"
 )
 
 module_global_definitions(
@@ -89,17 +101,19 @@ if (MSVC)
         force_inline=msvc::forceinline
         no_inline=msvc::noinline
         emptyable_address=msvc::no_unique_address
-        "diagnose(cond, msg, level)"
-        "diagnose_warning(cond, msg)"
-        "diagnose_error(cond, msg)"
+        "deleted_function(msg)=delete"
+        "static_diagnose(cond, msg, level)"
+        "static_diagnose_warning(cond, msg)"
+        "static_diagnose_error(cond, msg)"
     )
 elseif (CLANG)
     module_global_definitions(
         force_inline=clang::always_inline
         no_inline=clang::noinline
         emptyable_address=no_unique_address
-        "diagnose(cond, msg, level)=clang::diagnose_if(cond, msg, level)"
-        "diagnose_warning(cond, msg)=clang::diagnose_if(cond, msg, \"warn\")"
-        "diagnose_error(cond, msg)=clang::diagnose_if(cond, msg, \"error\")"
+        "deleted_function(msg)=delete(msg)"
+        "static_diagnose(cond, msg, level)=clang::diagnose_if(cond, msg, level)"
+        "static_diagnose_warning(cond, msg)=clang::diagnose_if(cond, msg, \"warn\")"
+        "static_diagnose_error(cond, msg)=clang::diagnose_if(cond, msg, \"error\")"
     )
 endif()

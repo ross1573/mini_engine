@@ -6,7 +6,24 @@ module mini.core;
 
 import :type;
 import :string;
+import :assert_format;
 import :logger_platform;
+
+namespace mini::debug {
+
+Logger assertLogger = Logger("Assert");
+
+void LogAssert(AssertFormatResult formatResult)
+{
+    assertLogger.Fatal(formatResult.message);
+}
+
+void LogEnsure(AssertFormatResult formatResult)
+{
+    assertLogger.Fatal(formatResult.message);
+}
+
+} // namespace mini::debug
 
 namespace mini {
 

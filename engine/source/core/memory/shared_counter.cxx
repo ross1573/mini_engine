@@ -1,6 +1,7 @@
 export module mini.core:shared_counter;
 
 import :type;
+import :assert;
 import :atomic_platform;
 
 namespace mini {

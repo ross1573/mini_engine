@@ -5,21 +5,21 @@ module;
 #  pragma clang diagnostic ignored "-Watomic-alignment"
 #endif
 
-#define diagnose_store(order)                                                                             \
-    diagnose_error((order == __ATOMIC_ACQUIRE || order == __ATOMIC_ACQ_REL || order == __ATOMIC_CONSUME), \
-                   "invalid memory order on atomic store operation")
+#define diagnose_store(order)                                                                                    \
+    static_diagnose_error((order == __ATOMIC_ACQUIRE || order == __ATOMIC_ACQ_REL || order == __ATOMIC_CONSUME), \
+                          "invalid memory order on atomic store operation")
 
-#define diagnose_load(order)                                                 \
-    diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
-                   "invalid memory order on atomic load operation")
+#define diagnose_load(order)                                                        \
+    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+                          "invalid memory order on atomic load operation")
 
-#define diagnose_compare_exchange(order)                                     \
-    diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
-                   "invalid memory order on atomic exchange operation")
+#define diagnose_compare_exchange(order)                                            \
+    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+                          "invalid memory order on atomic exchange operation")
 
-#define diagnose_wait(order)                                                \
-    diagnose_wait((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
-                  "invalid memory order on atomic wait operation")
+#define diagnose_wait(order)                                                        \
+    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+                          "invalid memory order on atomic wait operation")
 
 export module mini.core:atomic;
 

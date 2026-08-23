@@ -1,12 +1,12 @@
 module;
 
-#include "cstring.h"
-#include "cwstring.h"
 #include "memory.h"
 
 export module mini.core:memory_operation;
 
 import :type;
+import :assert;
+import :cmemory;
 import :utility_operation;
 
 namespace mini::memory {
@@ -36,7 +36,7 @@ inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
     } else if constexpr (IndirectAddressableT<T>) {
         return ele.Address();
     } else {
-        NEVER_CALLED("unknown type for address conversion", T);
+        UNSUPPORTED("unknown type for address conversion", T);
     }
 }
 
@@ -130,66 +130,6 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
     }
 
     ptr->~T();
-}
-
-export template <TrivialT T>
-inline constexpr void MemCopy(T* dst, T const* src, size_t len) noexcept
-{
-    if !consteval {
-        BUILTIN_MEMCPY(dst, src, len * sizeof(T));
-        return;
-    }
-
-    for (; len; --len) {
-        *dst++ = *src++;
-    }
-}
-
-export template <TrivialT T>
-inline constexpr void MemCopyBackward(T* dst, T const* src, size_t len) noexcept
-{
-    if !consteval {
-        BUILTIN_MEMMOVE(dst - len, src - len, len * sizeof(T));
-        return;
-    }
-
-    for (; len; --len) {
-        *(--dst) = *(--src);
-    }
-}
-
-export template <TrivialT T>
-inline constexpr void MemMove(T* dst, T const* src, size_t len) noexcept
-{
-    if !consteval {
-        BUILTIN_MEMMOVE(dst, src, len * sizeof(T));
-        return;
-    }
-
-    if (static_cast<T const*>(dst) < src) {
-        MemCopy(dst, src, len);
-    } else {
-        MemCopyBackward(dst + len, src + len, len);
-    }
-}
-
-export template <TrivialT T>
-inline constexpr int32 MemCompare(T const* x, T const* y, size_t len) noexcept
-{
-    if !consteval {
-        return BUILTIN_MEMCMP(x, y, len * sizeof(T));
-    }
-
-    for (; len; --len) {
-        if (*x != *y) {
-            return (*x < *y) ? -1 : 1;
-        }
-
-        ++x;
-        ++y;
-    }
-
-    return 0;
 }
 
 export template <typename T, typename... Args>

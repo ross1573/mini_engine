@@ -11,6 +11,7 @@ namespace mini {
 export class CORE_API Logger final : public LoggerBase {
 public:
     enum class Level {
+        debug = 0,
         info = 1,
         warn = 2,
         error = 3,
@@ -76,7 +77,7 @@ template <typename... Args>
 inline void Logger::Debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
 #if DEBUG
-    Log(Level(0), context, ForwardArg<Args>(args)...);
+    Log(Level::debug, context, ForwardArg<Args>(args)...);
 #endif
 }
 

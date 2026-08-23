@@ -5,6 +5,8 @@ module;
 export module mini.core:string_view;
 
 import :type;
+import :assert;
+import :cmemory;
 import :algorithm_memory;
 import :string_memory;
 import :array_iterator;

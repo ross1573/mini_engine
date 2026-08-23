@@ -1,6 +1,7 @@
 export module mini.core:circular_iterator;
 
 import :type;
+import :assert;
 import :iterator;
 
 namespace mini {

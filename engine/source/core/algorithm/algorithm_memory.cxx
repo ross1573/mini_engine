@@ -1,6 +1,7 @@
 export module mini.core:algorithm_memory;
 
 import :type;
+import :cmemory;
 import :memory_operation;
 
 namespace mini::memory {

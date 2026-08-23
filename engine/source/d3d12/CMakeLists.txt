@@ -9,6 +9,7 @@ PUBLIC
     FILE_SET d3d12 TYPE CXX_MODULES
     FILES
         d3d12.cxx
+        d3d12_assert.cxx
         d3d12_command_queue.cxx
         d3d12_descriptor.cxx
         d3d12_device.cxx

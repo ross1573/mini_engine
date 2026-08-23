@@ -106,7 +106,7 @@ export template <FloatingT T>
     } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
         return static_cast<T>(BUILTIN_POWL(static_cast<long double>(base), static_cast<long double>(exp)));
     } else {
-        NEVER_CALLED("not supported on such type", T);
+        UNSUPPORTED("not supported on such type", T);
     }
 }
 
@@ -149,7 +149,7 @@ export template <FloatingT T>
     } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
         return static_cast<T>(BUILTIN_SQRTL(static_cast<long double>(num)));
     } else {
-        NEVER_CALLED("not supported on such type", T);
+        UNSUPPORTED("not supported on such type", T);
     }
 }
 

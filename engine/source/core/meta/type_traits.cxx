@@ -17,6 +17,12 @@ namespace mini {
 export using TrueT = IntegralConstant<bool, true>;
 export using FalseT = IntegralConstant<bool, false>;
 
+export template <typename... Args>
+struct TrueArgT : TrueT { };
+
+export template <typename... Args>
+struct FalseArgT : FalseT { };
+
 export template <typename T>
 using RemoveRefT = std::remove_reference<T>::type;
 

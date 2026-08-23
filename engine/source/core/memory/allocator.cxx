@@ -14,6 +14,7 @@ concept AlwaysTrue = true;
 export module mini.core:allocator;
 
 import :type;
+import :assert;
 import :numeric;
 import :memory_operation;
 
@@ -141,13 +142,13 @@ public:
     template <typename T>
     AllocationResult<void> Allocate(T&&) const noexcept
     {
-        NEVER_CALLED("dummy allocator should be rebinded");
+        UNSUPPORTED("dummy allocator should be rebinded");
     }
 
     template <typename T, typename U>
     void Deallocate(T&&, U&&) const noexcept
     {
-        NEVER_CALLED("dummy allocator should be rebinded");
+        UNSUPPORTED("dummy allocator should be rebinded");
     }
 };
 
@@ -205,7 +206,7 @@ struct allocator_traits<T<ValueT>> {
     template <typename U, typename... Args>
     static constexpr void construct(AllocT&, U* ptr, Args&&... args)
     {
-        mini::memory::ConstructAt(ptr, mini::ForwardArg(args)...);
+        mini::memory::ConstructAt(ptr, mini::ForwardArg<Args>(args)...);
     }
 
     template <typename U>

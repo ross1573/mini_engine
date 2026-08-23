@@ -14,6 +14,7 @@ module;
 export module mini.core:mutex_platform;
 
 import :type;
+import :assert;
 
 namespace mini {
 

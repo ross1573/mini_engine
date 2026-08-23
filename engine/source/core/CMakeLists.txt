@@ -44,6 +44,7 @@ PUBLIC
     FILES
         memory/allocator.cxx
         memory/deleter.cxx
+        memory/cmemory.cxx
         memory/memory_operation.cxx
         memory/shared_counter.cxx
         memory/unique_ptr.cxx
@@ -132,15 +133,13 @@ PUBLIC
         $<$<PLATFORM_ID:Darwin>:debug/logger_macos.cxx>
         debug/logger.cxx
 
+        debug/assertion_expr.cxx
+        debug/assertion_format.cxx
+        debug/assertion.cxx
+
 PRIVATE
     $<$<PLATFORM_ID:Windows>:debug/impl/logger_win.cpp>
     $<$<PLATFORM_ID:Darwin>:debug/impl/logger_macos.cpp>
-    $<$<PLATFORM_ID:Windows>:debug/impl/assert_win.cpp>
-    $<$<PLATFORM_ID:Darwin>:debug/impl/assert_macos.cpp>
-    debug/impl/assert_util.cpp
-
-    $<$<PLATFORM_ID:Windows>:debug/include/assertion_win.h>
-    debug/include/assertion.h
 )
 
 target_sources(mini.core
@@ -210,8 +209,9 @@ PRIVATE
 
 target_precompile_headers(mini.core 
 PUBLIC
-    debug/include/assertion.h
+    include/config.h
     include/option.h
+    debug/include/assertion.h
 )
 
 target_include_directories(mini.core

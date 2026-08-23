@@ -5,8 +5,25 @@ module;
 module mini.core;
 
 import :type;
-import :string;
+import :string_memory;
+import :assert_format;
 import :logger_platform;
+
+namespace mini::debug {
+
+void LogAssert(AssertFormatResult formatResult)
+{
+    HWND handle = GetActiveWindow();
+    MessageBoxA(handle, formatResult.message, nullptr, MB_ICONERROR | MB_OK);
+    OutputDebugStringA(formatResult.message);
+}
+
+void LogEnsure(AssertFormatResult formatResult)
+{
+    OutputDebugStringA(formatResult.message);
+}
+
+} // namespace mini::debug
 
 namespace mini {
 
@@ -17,14 +34,22 @@ LoggerBase::LoggerBase(StringView category)
 
 void LoggerBase::PrintMessage(byte, StringView msg)
 {
-    String log(4 + m_category.Size() + msg.Size());
-    log.Push('[');
-    log.Append(m_category);
-    log.Append("] ", 2);
-    log.Append(msg);
-    log.Push('\n');
+    char buffer[1024]{ 0 };
+    char *ptr = buffer;
 
-    OutputDebugStringA(log.Data());
+    ENSURE(msg.Size() + m_category.Size() + 4 < 1024) {
+        return;
+    }
+
+    *(++ptr) = '[';
+    memory::MemCopy(ptr, m_category.Data(), m_category.Size());
+    *(++ptr) = ']';
+    *(++ptr) = ' ';
+    memory::MemCopy(ptr, msg.Data(), msg.Size());
+    *(++ptr) = '\n';
+    *(++ptr) = '\0';
+
+    OutputDebugStringA(ptr);
 }
 
 } // namespace mini

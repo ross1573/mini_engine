@@ -491,7 +491,7 @@ __atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*w
         } else if constexpr (size == 8) {
             ATOMIC_COMPARE_EXCHANGE(64, pointer, expected, desired, prevPtr, memorder);
         } else {
-            NEVER_CALLED("atomic type is not marked as unsupported", T);
+            UNSUPPORTED("atomic type is not marked as unsupported", T);
         }
 
         if (BUILTIN_MEMCMP(prevPtr, expected, sizeof(T)) == 0) {
@@ -774,7 +774,7 @@ inline T __atomic_fetch_add(T volatile* pointer, T value, int32 memorder)
     } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
     } else {
-        NEVER_CALLED("invalid integral operation", T);
+        UNSUPPORTED("invalid integral operation", T);
     }
 
     return result;
@@ -856,7 +856,7 @@ inline T __atomic_fetch_sub(T volatile* pointer, T value, int32 memorder)
     } else if constexpr (size == 8) {
         ATOMIC_FETCH_ADD(64, pointer, valuePtr, resultPtr, memorder);
     } else {
-        NEVER_CALLED("invalid integral operation", T);
+        UNSUPPORTED("invalid integral operation", T);
     }
 
     return result;
@@ -934,7 +934,7 @@ inline T __atomic_fetch_and(T volatile* pointer, T value, int32 memorder)
     } else if constexpr (size == 8) {
         ATOMIC_FETCH_AND(64, pointer, valuePtr, resultPtr, memorder);
     } else {
-        NEVER_CALLED("invalid bitwise operation", T);
+        UNSUPPORTED("invalid bitwise operation", T);
     }
 
     return result;
@@ -993,7 +993,7 @@ inline T __atomic_fetch_or(T volatile* pointer, T value, int32 memorder)
     } else if constexpr (size == 8) {
         ATOMIC_FETCH_OR(64, pointer, valuePtr, resultPtr, memorder);
     } else {
-        NEVER_CALLED("invalid bitwise operation", T);
+        UNSUPPORTED("invalid bitwise operation", T);
     }
 
     return result;
@@ -1052,7 +1052,7 @@ inline T __atomic_fetch_xor(T volatile* pointer, T value, int32 memorder)
     } else if constexpr (size == 8) {
         ATOMIC_FETCH_XOR(64, pointer, valuePtr, resultPtr, memorder);
     } else {
-        NEVER_CALLED("invalid bitwise operation", T);
+        UNSUPPORTED("invalid bitwise operation", T);
     }
 
     return result;
