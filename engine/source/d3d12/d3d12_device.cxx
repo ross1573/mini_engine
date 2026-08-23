@@ -13,9 +13,9 @@ private:
     SharedPtr<IDXGIAdapter> m_adapter;
     SharedPtr<ID3D12Device> m_device;
 
-    DescriptorAllocator m_rTVAllocator;
-    DescriptorAllocator m_dSVAllocator;
-    DescriptorAllocator m_sRVAllocator;
+    DescriptorAllocator m_RTVAllocator;
+    DescriptorAllocator m_DSVAllocator;
+    DescriptorAllocator m_SRVAllocator;
 
 public:
     Device();

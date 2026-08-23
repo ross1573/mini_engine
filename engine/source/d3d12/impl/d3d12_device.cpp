@@ -14,9 +14,9 @@ Device::Device()
     : m_factory(nullptr)
     , m_adapter(nullptr)
     , m_device(nullptr)
-    , m_rTVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 256)
-    , m_dSVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024)
-    , m_sRVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024)
+    , m_RTVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 256)
+    , m_DSVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024)
+    , m_SRVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024)
 {
 }
 
@@ -60,7 +60,7 @@ graphics::Renderer* Device::CreateRenderer()
 
 void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
 {
-    buffer.descriptor = m_rTVAllocator.Allocate();
+    buffer.descriptor = m_RTVAllocator.Allocate();
     m_device->CreateRenderTargetView(buffer.resource, buffer.rtvDesc, buffer.descriptor.offset);
 }
 

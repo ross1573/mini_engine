@@ -659,7 +659,7 @@ inline constexpr void FixedArray<T, N>::AssertValidCapacity([[maybe_unused]] siz
 template <MovableT T, size_t N>
 inline constexpr void FixedArray<T, N>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
-    ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, m_size);
+    ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, m_size.Get());
 }
 
 template <MovableT T, size_t N>

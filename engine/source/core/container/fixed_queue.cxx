@@ -526,13 +526,17 @@ inline constexpr void FixedQueue<T, N>::AssertValidOffset([[maybe_unused]] size_
     ASSERT(m_size != 0, "invalid access on empty queue");
 
     if (m_begin < m_end) {
-        ASSERT(offset >= m_begin && offset < m_end, "invalid offset {}. current: {}/{}", offset, m_begin, m_end);
+        ASSERT(offset >= m_begin && offset < m_end,
+               "invalid offset {}. current: {}/{}",
+               offset,
+               m_begin.Get(),
+               m_end.Get());
     } else {
         ASSERT(offset < m_end || offset >= m_begin && offset < m_buffer.Capacity(),
                "invalid offset {}. current: {}/{}",
                offset,
-               m_begin,
-               m_end);
+               m_begin.Get(),
+               m_end.Get());
     }
 }
 
