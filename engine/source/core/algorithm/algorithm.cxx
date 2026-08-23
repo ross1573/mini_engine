@@ -81,7 +81,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 
     offset_t diff1 = end1 - begin1;
     offset_t diff2 = end2 - begin2;
-    ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value");
+    ASSERT(diff1 >= 0 && diff2 >= 0, "distance cannot be negative value {}, {}", diff1, diff2);
 
     if (diff1 != diff2) {
         return false;
@@ -114,7 +114,7 @@ inline constexpr size_t Distance(T first, T last)
     offset_t diff = last - first;
 
     ASSERT(CheckRange(first, last));
-    ASSERT(diff >= 0, "distance cannot be negative value");
+    ASSERT(diff >= 0, "distance cannot be negative value {}", diff);
 
     return static_cast<size_t>(diff);
 }

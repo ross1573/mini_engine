@@ -27,11 +27,10 @@ ModuleHandle::~ModuleHandle() noexcept
         try {
             callback();
         } catch (...) {
-            String msg = Format("exception occured while invoking AtExit callback {} on module {}",
-                                (void*)callback,
-                                m_libraryName);
-
-            ENSURE(false, msg.Data()) { }
+            ENSURE(false,
+                   "exception occured while invoking AtExit callback {} on module {}",
+                   (void*)callback,
+                   m_libraryName.Data()) { }
         }
     }
 

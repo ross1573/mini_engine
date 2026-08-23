@@ -653,26 +653,29 @@ inline constexpr void FixedArray<T, N>::InsertRangeWithSize(size_t index, U firs
 template <MovableT T, size_t N>
 inline constexpr void FixedArray<T, N>::AssertValidCapacity([[maybe_unused]] size_t cap) const noexcept
 {
-    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity");
+    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", cap, N);
 }
 
 template <MovableT T, size_t N>
 inline constexpr void FixedArray<T, N>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
-    ASSERT(ValidIndex(index), "invalid index");
+    ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, m_size);
 }
 
 template <MovableT T, size_t N>
 inline constexpr void FixedArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(ValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator at index {}", iter.Address() - m_buffer.Data());
 }
 
 template <MovableT T, size_t N>
 inline constexpr void FixedArray<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                                          [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(ValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end),
+           "invalid range from {} to {}",
+           begin.Address() - m_buffer.Data(),
+           end.Address() - m_buffer.Data());
 }
 
 export template <MovableT T, size_t CapT, MovableT U, size_t CapU>

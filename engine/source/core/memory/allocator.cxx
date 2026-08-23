@@ -77,11 +77,12 @@ struct Allocator {
             return { .pointer = ptr, .capacity = size };
         }
 
+        size_t bytes = size * sizeof(T);
         try {
-            Pointer ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(size * sizeof(T)));
+            Pointer ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(bytes));
             return { .pointer = ptr, .capacity = size };
         } catch (...) {
-            ASSERT(true, "allocation failed. possible out-of-memory");
+            ASSERT(false, "allocate of {}({}*{}) failed. possible out-of-memory", bytes, size, sizeof(T));
         }
 
         return { .pointer = nullptr, .capacity = size };
@@ -101,7 +102,7 @@ struct Allocator {
         try {
             BUILTIN_OPERATOR_DELETE(memory::MakeVoidPtr(loc));
         } catch (...) {
-            ASSERT(true, "deallocation failed");
+            ASSERT(false, "deallocate failed");
         }
     }
 };

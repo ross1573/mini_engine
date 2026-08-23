@@ -213,7 +213,7 @@ export [[no_inline]] ASSERT_API void LogAssert(char const* expr)
 export template <typename... Args>
 [[no_inline]] void LogEnsure(char const* expr, AssertFormatContext ctx, Args&&... args)
 {
-    LogEnsure(AssertFormat(expr, ctx, ForwardArg(args)...));
+    LogEnsure(AssertFormat(expr, ctx, ForwardArg<Args>(args)...));
 }
 
 export [[no_inline]] ASSERT_API void LogEnsure(char const* expr)

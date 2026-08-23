@@ -14,7 +14,6 @@ CommandQueue::CommandQueue(ID3D12Device* device, graphics::CommandType queueType
     , m_lastCompeletedFence(0)
 {
     ASSERT(device, "cannot initialize command queue with null device");
-    ASSERT(m_queueType != graphics::CommandType::None, "invalid command queue type");
 
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
     switch (m_queueType) {

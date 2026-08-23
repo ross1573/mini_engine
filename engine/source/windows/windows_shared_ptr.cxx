@@ -1,6 +1,6 @@
 export module mini.windows:shared_ptr;
 
-import mini.core;
+export import mini.core;
 
 export namespace mini {
 

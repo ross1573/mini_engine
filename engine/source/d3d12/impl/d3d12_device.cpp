@@ -41,9 +41,9 @@ bool Device::Initialize()
         SetDebugLayerInfo();
     }
 
-    ENSURE(m_rTVAllocator.Initialize(m_device)) return false;
-    ENSURE(m_dSVAllocator.Initialize(m_device)) return false;
-    ENSURE(m_sRVAllocator.Initialize(m_device)) return false;
+    ENSURE(m_RTVAllocator.Initialize(m_device), "RTV allocator init failed") return false;
+    ENSURE(m_DSVAllocator.Initialize(m_device), "DSV allocator init failed") return false;
+    ENSURE(m_SRVAllocator.Initialize(m_device), "SRV allocator init failed") return false;
 
     return true;
 }
@@ -67,9 +67,9 @@ void Device::CreateSwapChainBuffer(SwapChainBuffer& buffer)
 void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
 {
     ASSERT(m_device == nullptr);
-    ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level");
+    ASSERT(minimum >= D3D_FEATURE_LEVEL_11_0, "unsupported D3D12 feature level {}", static_cast<size_t>(minimum));
 
-    D3D_FEATURE_LEVEL supportedFeatureLevel{};
+    D3D_FEATURE_LEVEL supportedFeatureLevel{ };
     D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_12_2,
                                           D3D_FEATURE_LEVEL_12_1,
                                           D3D_FEATURE_LEVEL_12_0,
@@ -86,7 +86,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
             return;
         }
 
-        DXGI_ADAPTER_DESC adapterDesc{};
+        DXGI_ADAPTER_DESC adapterDesc{ };
         SharedPtr<IDXGIAdapter> adapter = nullptr;
         SharedPtr<ID3D12Device> device = nullptr;
 
@@ -117,14 +117,14 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
     }
 
     D3D_SHADER_MODEL supportedShaderModel = D3D_SHADER_MODEL_NONE;
-    D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel{};
+    D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel{ };
     if (SUCCEEDED(m_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL,
                                                 &featureShaderModel,
                                                 sizeof(featureShaderModel)))) {
         supportedShaderModel = featureShaderModel.HighestShaderModel;
     }
 
-    StringView supportedFeatureLevelStr{};
+    StringView supportedFeatureLevelStr{ };
     switch (supportedFeatureLevel) {
         case D3D_FEATURE_LEVEL_12_2: supportedFeatureLevelStr = "D3D_FEATURE_LEVEL_12_2"; break;
         case D3D_FEATURE_LEVEL_12_1: supportedFeatureLevelStr = "D3D_FEATURE_LEVEL_12_1"; break;
@@ -134,7 +134,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         default:                     supportedFeatureLevelStr = "unsupported feature level"; break;
     }
 
-    StringView supportedShaderModelStr{};
+    StringView supportedShaderModelStr{ };
     switch (supportedShaderModel) {
         case D3D_SHADER_MODEL_5_1:  supportedShaderModelStr = "D3D_SHADER_MODEL_5_1"; break;
         case D3D_SHADER_MODEL_6_0:  supportedShaderModelStr = "D3D_SHADER_MODEL_6_0"; break;
@@ -151,7 +151,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minimum)
         default:                    supportedShaderModelStr = "unsupported shader model"; break;
     }
 
-    DXGI_ADAPTER_DESC adapterDesc{};
+    DXGI_ADAPTER_DESC adapterDesc{ };
     m_adapter->GetDesc(&adapterDesc);
 
     const auto desc = StringConvert(adapterDesc.Description);
@@ -187,7 +187,7 @@ void Device::EnableDebugLayer()
 
 void Device::SetDebugLayerInfo()
 {
-    D3D12_INFO_QUEUE_FILTER filter = {};
+    D3D12_INFO_QUEUE_FILTER filter = { };
     D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
                                 D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
                                 // Workarounds for debug layer issues on hybrid-graphics systems

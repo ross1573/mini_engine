@@ -113,7 +113,9 @@ void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
 
 void SwapChain::SetBackBufferCount(uint8 count)
 {
-    ENSURE(count > 0 || count < MaxBackBuffer, "Invalid swap chain count") return;
+    ENSURE(count > 0 || count < MaxBackBuffer, "invalid swap chain count {}. max size is {}", count, MaxBackBuffer) {
+        return;
+    }
 
     ReleaseBuffers();
     CreateBuffers(count);

@@ -246,7 +246,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Pointer ptr)
     : m_ptr(ptr)
     , m_counter(other.m_counter)
 {
-    ASSERT(m_counter);
+    ASSERT(m_counter, "object already released");
     m_counter->Retain();
 }
 

@@ -827,20 +827,27 @@ inline constexpr void Array<T, AllocT>::InsertRangeWithSize(size_t index, U firs
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Array<T, AllocT>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
-    ASSERT(ValidIndex(index), "invalid index");
+    ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, m_size);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Array<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(ValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter),
+           "invalid iterator at index {}. current size is {}",
+           iter.Address() - m_buffer.Data(),
+           m_size);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 inline constexpr void Array<T, AllocT>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                                          [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(ValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end),
+           "invalid range from {} to {}. current size is {}",
+           begin.Address() - m_buffer.Data(),
+           end.Address() - m_buffer.Data(),
+           m_size);
 }
 
 export template <MovableT T, AllocatorT<T> AllocT, MovableT U, AllocatorT<U> AllocU>

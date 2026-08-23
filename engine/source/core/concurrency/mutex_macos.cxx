@@ -73,17 +73,19 @@ inline void RecursiveMutexInitialize(PlatformRecursiveMutex& mutex)
     return;
 
 init_error:
-    ASSERT(error, "failed to initialize mutex");
+    ASSERT(error, "failed to initialize mutex. error: {}", error);
 }
 
 inline void RecursiveMutexLock(PlatformRecursiveMutex& mutex)
 {
-    VERIFY(pthread_mutex_lock(&mutex) == 0, "failed to lock pthread_mutex");
+    [[maybe_unused]] int32 error = pthread_mutex_lock(&mutex);
+    VERIFY(error == 0, "failed to lock pthread_mutex. error: {}", error);
 }
 
 inline void RecursiveMutexUnlock(PlatformRecursiveMutex& mutex)
 {
-    VERIFY(pthread_mutex_unlock(&mutex) == 0, "failed to unlock pthread_mutex");
+    [[maybe_unused]] int32 error = pthread_mutex_unlock(&mutex);
+    VERIFY(error == 0, "failed to unlock pthread_mutex. error: {}", error);
 }
 
 inline bool RecursiveMutexTryLock(PlatformRecursiveMutex& mutex)
@@ -93,7 +95,8 @@ inline bool RecursiveMutexTryLock(PlatformRecursiveMutex& mutex)
 
 inline void RecursiveMutexDestroy(PlatformRecursiveMutex& mutex)
 {
-    VERIFY(pthread_mutex_destroy(&mutex) == 0, "failed to destroy pthread_mutex");
+    [[maybe_unused]] int32 error = pthread_mutex_destroy(&mutex);
+    VERIFY(error == 0, "failed to destroy pthread_mutex. error: {}", error);
 }
 
 } // namespace mini

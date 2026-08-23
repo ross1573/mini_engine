@@ -1526,20 +1526,24 @@ inline constexpr BasicString<T, AllocT>::operator BasicStringView<T>() const noe
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
-    ASSERT(ValidIndex(index), "invalid index");
+    ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(ValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator at index {}. current size is {}", iter.Address() - Data(), Size());
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 inline constexpr void BasicString<T, AllocT>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                                                [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(ValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end),
+           "invalid range from {} to {}. current size is {}",
+           begin.Address() - Data(),
+           end.Address() - Data(),
+           Size());
 }
 
 export template <CharT T, AllocatorT<T> AllocT>

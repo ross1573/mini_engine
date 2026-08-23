@@ -42,10 +42,6 @@ void UnloadModule(NativeModuleHandle handle)
 
 void* LoadFunction(NativeModuleHandle handle, StringView name)
 {
-    ENSURE(handle, "module not loaded") {
-        return nullptr;
-    }
-
     return GetProcAddress(handle, name.Data());
 }
 

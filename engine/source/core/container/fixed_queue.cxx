@@ -517,7 +517,7 @@ inline constexpr void FixedQueue<T, N>::AssignRangeWithSize(U first, U last, siz
 template <MovableT T, size_t N>
 inline constexpr void FixedQueue<T, N>::AssertValidCapacity([[maybe_unused]] size_t cap) const noexcept
 {
-    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity");
+    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", cap, N);
 }
 
 template <MovableT T, size_t N>
@@ -526,23 +526,27 @@ inline constexpr void FixedQueue<T, N>::AssertValidOffset([[maybe_unused]] size_
     ASSERT(m_size != 0, "invalid access on empty queue");
 
     if (m_begin < m_end) {
-        ASSERT(offset >= m_begin && offset < m_end, "invalid offset");
+        ASSERT(offset >= m_begin && offset < m_end, "invalid offset {}. current: {}/{}", offset, m_begin, m_end);
     } else {
-        ASSERT(offset < m_end || offset >= m_begin && offset < m_buffer.Capacity(), "invalid offset");
+        ASSERT(offset < m_end || offset >= m_begin && offset < m_buffer.Capacity(),
+               "invalid offset {}. current: {}/{}",
+               offset,
+               m_begin,
+               m_end);
     }
 }
 
 template <MovableT T, size_t N>
 inline constexpr void FixedQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(ValidIterator(iter), "invalid iterator");
+    ASSERT(ValidIterator(iter), "invalid iterator at offset {}", iter.m_offset);
 }
 
 template <MovableT T, size_t N>
 inline constexpr void FixedQueue<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                                          [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(ValidRange(begin, end), "invalid range");
+    ASSERT(ValidRange(begin, end), "invalid range from {} to {}", begin.m_offset, end.m_offset);
 }
 
 export template <MovableT T, size_t CapT, MovableT U, size_t CapU>

@@ -13,7 +13,7 @@ DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 in
     , m_currentIndex(0)
 {
     ASSERT(m_heap, "invalid heap with nullptr");
-    ASSERT(m_incrementSize > 0, "invalid heap incremetal size");
+    ASSERT(m_incrementSize > 0, "invalid heap incremetal size {}", m_incrementSize);
 
     m_cpuHeapStart = m_heap->GetCPUDescriptorHandleForHeapStart();
 }

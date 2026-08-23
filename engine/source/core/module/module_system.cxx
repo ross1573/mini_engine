@@ -1,6 +1,7 @@
 export module mini.core:module_system;
 
 import :type;
+import :assert;
 import :utility_operation;
 import :memory_operation;
 import :array;
@@ -90,12 +91,12 @@ public:
     {
         String path = BuildModulePath(name);
         m_nativeModule = LoadModule(path);
-        if (m_nativeModule == nullptr) {
+        ENSURE(m_nativeModule, "failed to load module {}", name.Data()) {
             return;
         }
 
         StartFunc startFunc = GetFunction<ModuleInterface*>("__start_module");
-        if (startFunc == nullptr) {
+        ENSURE(startFunc, "failed to locate start function of module {}", name.Data()) {
             return;
         }
 
@@ -117,6 +118,10 @@ public:
     template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
     FuncT GetFunction(StringView name)
     {
+        ENSURE(m_nativeModule, "module not loaded") {
+            return nullptr;
+        }
+
         void* funcPtr = LoadFunction(m_nativeModule, name);
         return reinterpret_cast<FuncT>(funcPtr);
     }
@@ -127,8 +132,7 @@ public:
     typedef typename ModuleHandle::NativeModule NativeModule;
 
     inline static NativeModule programHandle = LoadMainProgram();
-    inline static constexpr ModulePoilcy policy =
-        ModulePoilcy{ .validator = nullptr, .deleter = nullptr };
+    inline static constexpr ModulePoilcy policy = ModulePoilcy{ .validator = nullptr, .deleter = nullptr };
 
 public:
     StaticModuleHandle(StringView name, ModuleInterface* interface) noexcept
@@ -138,8 +142,7 @@ public:
 };
 
 template <typename T>
-concept ModuleInterfaceT = ValueT<T> &&
-                           ConvertibleToT<T const volatile*, ModuleInterface const volatile*>;
+concept ModuleInterfaceT = ValueT<T> && ConvertibleToT<T const volatile*, ModuleInterface const volatile*>;
 
 template <typename From, typename To>
 concept RelatedInterfaceToT = ModuleInterfaceT<From> && ModuleInterfaceT<To> &&
@@ -221,12 +224,18 @@ inline Module<T>::Module() noexcept
 
 template <ModuleInterfaceT T>
 inline Module<T>::Module(StringView name)
-    : m_handle(Handle::Load(name))
-    , m_interface(QueryInterface())
 {
-    if (m_interface == nullptr) [[unlikely]] {
-        m_handle.Reset();
+    m_handle = Handle::Load(name);
+    ENSURE(m_handle, "failed to load module {}", name.Data()) {
+        return;
     }
+
+    m_interface = QueryInterface();
+    ENSURE(m_interface, "interface not found for {}", name.Data())
+
+        if (m_interface == nullptr) [[unlikely]] {
+            m_handle.Reset();
+        }
 }
 
 template <ModuleInterfaceT T>
@@ -273,7 +282,7 @@ template <ModuleInterfaceT T>
 template <UnboundAllocatorT AllocT>
 inline void Module<T>::Load(StringView name, AllocT const& alloc)
 {
-    m_handle.Reset(Handle::Load(name), DefaultDeleter<Handle>{}, alloc);
+    m_handle.Reset(Handle::Load(name), DefaultDeleter<Handle>{ }, alloc);
     m_interface = QueryInterface();
 
     if (m_interface == nullptr) [[unlikely]] {

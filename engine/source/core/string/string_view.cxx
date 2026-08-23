@@ -354,20 +354,24 @@ inline constexpr std::basic_string_view<T> ToStdStringView(BasicStringView<T> co
 template <CharT T>
 inline constexpr void BasicStringView<T>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
-    ASSERT(ValidIndex(index));
+    ASSERT(ValidIndex(index), "invalid index {}. view's length is {}", index, m_size);
 }
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
-    ASSERT(ValidIterator(iter));
+    ASSERT(ValidIterator(iter), "invalid iterator at index {}. view's length is {}", iter.Addreess() - m_data, m_size);
 }
 
 template <CharT T>
 inline constexpr void BasicStringView<T>::AssertValidRange([[maybe_unused]] ConstIterator begin,
                                                            [[maybe_unused]] ConstIterator end) const noexcept
 {
-    ASSERT(ValidRange(begin, end));
+    ASSERT(ValidRange(begin, end),
+           "invalid range from {} to {}. view's length is {}",
+           begin.Address() - m_data,
+           end.Address() - m_data,
+           m_size);
 }
 
 export template <CharT T>
