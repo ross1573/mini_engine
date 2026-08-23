@@ -90,7 +90,7 @@ public:
     constexpr Reference At(size_t);
     constexpr ConstReference At(size_t) const;
 
-    consteval size_t Capacity() const noexcept;
+    constexpr size_t Capacity() const noexcept;
     constexpr size_t Size() const noexcept;
     constexpr bool Empty() const noexcept;
     constexpr bool Full() const noexcept;
@@ -506,7 +506,7 @@ inline constexpr T const& FixedArray<T, N>::At(size_t index) const
 }
 
 template <MovableT T, size_t N>
-inline consteval size_t FixedArray<T, N>::Capacity() const noexcept
+inline constexpr size_t FixedArray<T, N>::Capacity() const noexcept
 {
     return m_buffer.Capacity();
 }

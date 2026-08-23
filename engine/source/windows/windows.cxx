@@ -1,8 +1,8 @@
 export module mini.windows;
 
-export import mini.core;
 import mini.platform;
 
+export import :assert;
 export import :handle;
 export import :window;
 export import :shared_ptr;

@@ -6,6 +6,7 @@ target_sources(mini.windows
 PUBLIC
     FILE_SET windows TYPE CXX_MODULES
     FILES
+        windows_assert.cxx
         windows_shared_ptr.cxx
         windows_handle.cxx
         windows_window.cxx

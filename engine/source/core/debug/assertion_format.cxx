@@ -170,7 +170,7 @@ constexpr size_t assertBufferSize = NOASSERT ? 1 : assertBufferRawSize - assertS
 [[no_inline]] ASSERT_API void LogAssert(AssertFormatResult formatResult);
 [[no_inline]] ASSERT_API void LogEnsure(AssertFormatResult formatResult);
 
-template <typename... Args>
+export template <typename... Args>
 constexpr AssertFormatResult AssertFormat(char const* expr, AssertFormatContext ctx, Args&&... args)
 {
     thread_local char assertBuffer[assertBufferRawSize] = { 0 };

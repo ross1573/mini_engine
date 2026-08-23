@@ -67,7 +67,7 @@ inline constexpr size_t StringLength(T const* str, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
+            void const* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
             return ptr == nullptr ? 0 : static_cast<size_t>(static_cast<T const*>(ptr) - str);
         } else if constexpr (SameAsT<T, wchar>) {
             wchar const* end = BUILTIN_WMEMCHR(str, wchar(0), count);

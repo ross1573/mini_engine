@@ -2,6 +2,7 @@
 #  include <crtdbg.h>
 #endif
 
+import mini.core;
 import mini.launcher;
 
 extern "C" int __stdcall wWinMain(void*, void*, wchar_t*, int)
@@ -13,7 +14,7 @@ extern "C" int __stdcall wWinMain(void*, void*, wchar_t*, int)
     mini::LaunchEngine();
 
 #if DEBUG
-    ASSERT(_CrtCheckMemory());
+    ASSERT(_CrtCheckMemory() == true);
 #endif
     return 0;
 }

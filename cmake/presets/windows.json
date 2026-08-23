@@ -15,6 +15,7 @@
                 "strategy": "external"
             },
             "cacheVariables": {
+                "CMAKE_CXX_STANDARD": "23",
                 "VC_VERSION_MIN": "1951",
                 "VC_VERSION_MAX": "1959"
             }
