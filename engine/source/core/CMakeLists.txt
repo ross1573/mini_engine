@@ -140,6 +140,7 @@ PUBLIC
 PRIVATE
     $<$<PLATFORM_ID:Windows>:debug/impl/logger_win.cpp>
     $<$<PLATFORM_ID:Darwin>:debug/impl/logger_macos.cpp>
+    debug/impl/assertion_format.cpp
 )
 
 target_sources(mini.core
