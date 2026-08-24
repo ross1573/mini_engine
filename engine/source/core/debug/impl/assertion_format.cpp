@@ -23,8 +23,6 @@ constexpr size_t assertRequiredSize = sizeof(assertStrTitle) + sizeof(assertStrE
 
 static_assert(assertBufferRawSize > assertRequiredSize);
 
-ASSERT_API thread_local char assertBuffer[assertBufferRawSize] = { 0 };
-
 size_t FormatASCII(char* dest, size_t destLen, int src)
 {
     size_t len = 0;
@@ -126,6 +124,8 @@ size_t FormatAssertString(char* dest, char const* destEnd, char const* src)
 
 AssertFormatResult AssertFormat(char const* expr, char const* message, SourceLocation location)
 {
+    thread_local char assertBuffer[assertBufferRawSize] = { 0 };
+
     size_t endLineCount = message != nullptr ? 1 : 0;
     char* buffer = assertBuffer;
     char* bufferEnd = buffer + assertBufferSize - endLineCount;
