@@ -21,3 +21,6 @@ FetchContent_MakeAvailable(fmt)
 set_target_properties(fmt PROPERTIES FOLDER external)
 set_target_properties(fmt-c PROPERTIES FOLDER external)
 set_target_properties(fmt-module PROPERTIES FOLDER external)
+
+# quick workaround for disabling standard library format support
+target_compile_definitions(fmt-module PRIVATE FMT_STD_H_)

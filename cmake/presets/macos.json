@@ -12,10 +12,10 @@
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_OSX_SYSROOT": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
-                "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm@21/bin/clang++",
+                "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
                 "CMAKE_CXX_STANDARD": "26",
-                "CLANG_VERSION_MIN": "21.1.0",
-                "CLANG_VERSION_MAX": "21.1.99"
+                "CLANG_VERSION_MIN": "23.1.0",
+                "CLANG_VERSION_MAX": "23.1.99"
             }
         }
     ],
