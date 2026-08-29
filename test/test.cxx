@@ -1,7 +1,3 @@
-module;
-
-#include <chrono>
-
 export module mini.test;
 
 export import mini.core;
@@ -17,19 +13,6 @@ TEST_API inline size_t copyAssign = 0;
 TEST_API inline size_t moveAssign = 0;
 TEST_API inline size_t debugAllocCnt = 0;
 
-typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::milliseconds MilliSecT;
-typedef std::chrono::microseconds MicroSecT;
-typedef Clock::time_point Time;
-
-TEST_API inline auto microSecondsCast = [](auto diff) -> size_t {
-    return (size_t)std::chrono::duration_cast<MicroSecT>(diff).count();
-};
-
-TEST_API inline auto millisecondsCast = [](auto diff) -> size_t {
-    return (size_t)std::chrono::duration_cast<MilliSecT>(diff).count();
-};
-
 template <typename T>
 inline constexpr RemoveRefT<T>& MakeLvalueReference(T&& value)
 {
@@ -44,9 +27,9 @@ inline constexpr RemoveRefT<T>&& MakeRvalueReference(T&& value)
 
 TEST_API inline void InitializeCounter()
 {
-    auto _ = Clock::now();
-    _ = Clock::now();
-    _ = Clock::now();
+    auto _ = Clock::Now();
+    _ = Clock::Now();
+    _ = Clock::Now();
 
     ctor = 0;
     copyCtor = 0;
@@ -138,7 +121,7 @@ struct TEST_API TestAlloc {
     Debug debug;
 
     template <typename U>
-    DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
+    constexpr DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
 
     AllocationResult<TestObject> Allocate(size_t s) { return Allocator<TestObject>{}.Allocate(s); }
     void Deallocate(Pointer ptr, size_t s) { Allocator<TestObject>{}.Deallocate(ptr, s); }

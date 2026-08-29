@@ -19,7 +19,7 @@ using namespace mini::test;
 template <typename T, typename CStr>
 static constexpr int TestCtor()
 {
-    TEST_ENSURE(BasicStringView<T>{} == CStr::e);
+    TEST_ENSURE(BasicStringView<T>{ } == CStr::e);
 
     TEST_ENSURE(BasicStringView<T>(BasicString<T>(CStr::s)) == CStr::s);
     TEST_ENSURE(BasicStringView<T>(BasicStringView<T>(CStr::s)) == CStr::s);
@@ -38,7 +38,7 @@ template <typename T, typename CStr>
 static constexpr int TestCopy()
 {
     BasicStringView<T> svs = CStr::s;
-    BasicString<T> ss{};
+    BasicString<T> ss{ };
     ss.Resize(svs.Size());
 
     svs.Copy(ss.Data(), 0, svs.Size());
@@ -115,11 +115,6 @@ static constexpr int TestOperator()
 
     view = CStr::s_10;
     TEST_ENSURE(view[9] == view.Last());
-
-    view = CStr::l;
-    auto stdstr = ToStdStringView(view);
-    TEST_ENSURE(view == stdstr.data());
-    TEST_ENSURE(view == BasicStringView<T>(stdstr));
 
     return 0;
 }

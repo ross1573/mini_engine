@@ -1,8 +1,5 @@
 module;
 
-#include <string>
-#include <string_view>
-
 #if CLANG || GNUC
 #  define PACKED_STRUCT_BEGIN(x) __attribute__((packed))
 #  define PACKED_STRUCT_END
@@ -202,11 +199,6 @@ public:
     constexpr BasicString& operator+=(U const&);
 
     constexpr operator BasicStringView<T>() const noexcept;
-    constexpr operator std::basic_string<T>() const;
-    constexpr operator std::basic_string_view<T>() const noexcept;
-
-    template <typename TraitsT, typename StdAllocT>
-    constexpr BasicString(std::basic_string<T, TraitsT, StdAllocT> const&, AllocT const& = AllocT());
 
 private:
     BasicString(nullptr_t) = delete;
@@ -1478,46 +1470,6 @@ inline constexpr void BasicString<T, AllocT>::InsertWithRange(size_t index, Iter
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <typename TraitsT, typename StdAllocT>
-inline constexpr BasicString<T, AllocT>::BasicString(std::basic_string<T, TraitsT, StdAllocT> const& other,
-                                                     AllocT const& alloc)
-    : m_alloc(alloc)
-{
-    size_t size = static_cast<size_t>(other.size());
-    Pointer buffer = InitWithSize(size);
-    memory::MemCopy(buffer, other.data(), size + 1);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::operator std::basic_string<T>() const
-{
-    return std::basic_string<T>(Data(), Size());
-}
-
-template <CharT T, AllocatorT<T> AllocT>
-inline constexpr BasicString<T, AllocT>::operator std::basic_string_view<T>() const noexcept
-{
-    return std::basic_string_view<T>(Data(), Size());
-}
-
-export template <CharT T, typename TraitsT, typename StdAllocT, AllocatorT<T> AllocT = mini::Allocator<T>>
-inline constexpr BasicString<T, AllocT> ToString(std::basic_string<T, TraitsT, StdAllocT> const& other,
-                                                 AllocT const& alloc = AllocT())
-{
-    return BasicString<T, AllocT>(other.data(), other.size(), alloc);
-}
-
-export template <CharT T,
-                 AllocatorT<T> AllocT,
-                 typename TraitsT = std::char_traits<T>,
-                 typename StdAllocT = std::allocator<T>>
-inline constexpr std::basic_string<T, TraitsT, StdAllocT> ToStdString(BasicString<T, AllocT> const& other,
-                                                                      StdAllocT const& alloc = StdAllocT())
-{
-    return std::basic_string<T, TraitsT, StdAllocT>(other.Data(), other.Size(), alloc);
-}
-
-template <CharT T, AllocatorT<T> AllocT>
 inline constexpr BasicString<T, AllocT>::operator BasicStringView<T>() const noexcept
 {
     return BasicStringView(Data(), Size());
@@ -1576,38 +1528,6 @@ inline constexpr bool operator==(BasicString<T, AllocT> const& l, BasicString<U,
 
     typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
     typename BasicString<U, AllocU>::ConstPointer rbuf = r.Data();
-    return memory::EqualRange(lbuf, rbuf, rbuf + size);
-}
-
-export template <CharT T, AllocatorT<T> AllocT, typename StdAllocT>
-inline constexpr bool operator==(BasicString<T, AllocT> const& l, std::basic_string<T, StdAllocT> const& r) noexcept
-{
-    size_t size = l.Size();
-    if (size != r.size()) {
-        return false;
-    }
-
-    typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
-    typename std::basic_string<T, StdAllocT>::const_pointer rbuf = r.data();
-
-    if (lbuf == rbuf) [[unlikely]] {
-        return true;
-    }
-
-    return memory::StringCompare(lbuf, rbuf, size) == 0;
-}
-
-export template <CharT T, AllocatorT<T> AllocT, CharT U, typename StdAllocU>
-inline constexpr bool operator==(BasicString<T, AllocT> const& l, std::basic_string<U, StdAllocU> const& r) noexcept
-    requires EqualityComparableWithT<T, U>
-{
-    size_t size = l.Size();
-    if (size != r.size()) {
-        return false;
-    }
-
-    typename BasicString<T, AllocT>::ConstPointer lbuf = l.Data();
-    typename std::basic_string<T, StdAllocU>::const_pointer rbuf = r.data();
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 

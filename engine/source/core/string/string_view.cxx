@@ -1,7 +1,3 @@
-module;
-
-#include <string_view>
-
 export module mini.core:string_view;
 
 import :type;
@@ -78,10 +74,6 @@ public:
 
     constexpr BasicStringView& operator=(BasicStringView const&) noexcept;
     constexpr BasicStringView& operator=(ConstPointer) noexcept;
-
-    constexpr operator std::basic_string_view<T>() const noexcept;
-
-    constexpr BasicStringView(std::basic_string_view<T> const&) noexcept;
 
 private:
     BasicStringView(nullptr_t) = delete;
@@ -327,31 +319,6 @@ inline constexpr BasicStringView<T>& BasicStringView<T>::operator=(ConstPointer 
 }
 
 template <CharT T>
-inline constexpr BasicStringView<T>::BasicStringView(std::basic_string_view<T> const& other) noexcept
-    : m_data(other.data())
-    , m_size(static_cast<size_t>(other.size()))
-{
-}
-
-template <CharT T>
-inline constexpr BasicStringView<T>::operator std::basic_string_view<T>() const noexcept
-{
-    return std::basic_string_view<T>(m_data, m_size);
-}
-
-export template <CharT T>
-inline constexpr BasicStringView<T> ToStringView(std::basic_string_view<T> const& other) noexcept
-{
-    return BasicStringView<T>(other.data(), static_cast<size_t>(other.size()));
-}
-
-export template <CharT T>
-inline constexpr std::basic_string_view<T> ToStdStringView(BasicStringView<T> const& other) noexcept
-{
-    return std::basic_string_view<T>(other.Data(), other.Size());
-}
-
-template <CharT T>
 inline constexpr void BasicStringView<T>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
     ASSERT(ValidIndex(index), "invalid index {}. view's length is {}", index, m_size);
@@ -404,38 +371,6 @@ inline constexpr bool operator==(BasicStringView<T> const& l, BasicStringView<U>
 
     typename BasicStringView<T>::ConstPointer lbuf = l.Data();
     typename BasicStringView<U>::ConstPointer rbuf = r.Data();
-    return memory::EqualRange(lbuf, rbuf, rbuf + size);
-}
-
-export template <CharT T>
-inline constexpr bool operator==(BasicStringView<T> const& l, std::basic_string_view<T> const& r) noexcept
-{
-    size_t size = l.Size();
-    if (size != static_cast<size_t>(r.Size())) {
-        return false;
-    }
-
-    typename BasicStringView<T>::ConstPointer lbuf = l.Data();
-    typename std::basic_string_view<T>::const_pointer rbuf = r.data();
-
-    if (lbuf == rbuf) [[unlikely]] {
-        return true;
-    }
-
-    return memory::StringCompare(lbuf, rbuf, size) == 0;
-}
-
-export template <CharT T, CharT U>
-inline constexpr bool operator==(BasicStringView<T> const& l, std::basic_string_view<U> const& r) noexcept
-    requires EqualityComparableWithT<T, U>
-{
-    size_t size = l.Size();
-    if (size != static_cast<size_t>(r.Size())) {
-        return false;
-    }
-
-    typename BasicStringView<T>::ConstPointer lbuf = l.Data();
-    typename std::basic_string_view<T>::const_pointer rbuf = r.data();
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 

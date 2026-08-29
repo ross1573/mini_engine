@@ -13,11 +13,11 @@ using namespace mini::test;
     static_assert(func<type __VA_OPT__(, ) __VA_ARGS__>() == 0); \
     TEST_ENSURE((func<type __VA_OPT__(, ) __VA_ARGS__>() == 0));
 
-#define FACTORY(name, ...)                                                  \
-    using name = decltype([](int c) {                                       \
-        std::string str("Hello world! This is a long string 0.");           \
-        str.replace(str.end() - 2, str.end() - 1, 1, static_cast<char>(c)); \
-        return __VA_ARGS__(str);                                            \
+#define FACTORY(name, ...)                                   \
+    using name = decltype([](int c) {                        \
+        String str("Hello world! This is a long string 0."); \
+        *(str.End() - 2) = static_cast<char>(c);             \
+        return __VA_ARGS__(str);                             \
     });
 
 FACTORY(UniquePtrF, MakeUnique<ConstexprObject>);

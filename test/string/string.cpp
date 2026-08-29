@@ -37,9 +37,9 @@ static constexpr int TestSSO()
 template <typename T, typename CStr>
 static constexpr int TestCtor()
 {
-    constexpr auto alloc = Allocator<T>{};
+    constexpr auto alloc = Allocator<T>{ };
 
-    TEST_ENSURE(BasicString<T>{} == CStr::e);
+    TEST_ENSURE(BasicString<T>{ } == CStr::e);
     TEST_ENSURE(BasicString<T>(alloc) == CStr::e);
 
     TEST_ENSURE(BasicString<T>(CStr::ch, 2).Size() == 2);
@@ -126,28 +126,28 @@ static constexpr int TestAppend()
     str2.Append(CStr::s);
     stdstr.append(CStr::s);
     TEST_ENSURE(str == CStr::s);
-    TEST_ENSURE(str2 == stdstr);
+    TEST_ENSURE(str2 == stdstr.data());
 
     str.Clear();
     str.Append(CStr::l);
     str2.Append(CStr::l);
     stdstr.append(CStr::l);
     TEST_ENSURE(str == CStr::l);
-    TEST_ENSURE(str2 == stdstr);
+    TEST_ENSURE(str2 == stdstr.data());
 
     str.Clear();
     str.Append(CStr::s, 10);
     str2.Append(CStr::s, 10);
     stdstr.append(CStr::s, 10);
     TEST_ENSURE(str == CStr::s_10);
-    TEST_ENSURE(str2 == stdstr);
+    TEST_ENSURE(str2 == stdstr.data());
 
     str.Clear();
     str.Append(CStr::l, 30);
     str2.Append(CStr::l, 30);
     stdstr.append(CStr::l, 30);
     TEST_ENSURE(str == CStr::l_30);
-    TEST_ENSURE(str2 == stdstr);
+    TEST_ENSURE(str2 == stdstr.data());
 
     str2 = CStr::s;
     str.Clear();
@@ -170,15 +170,15 @@ static constexpr int TestPush()
 
     str.Push(CStr::ch);
     stdstr.push_back(CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Push(CStr::ch, 5);
     stdstr.append(5, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Push(CStr::ch, 16);
     stdstr.append(16, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     return 0;
 }
@@ -191,51 +191,51 @@ static constexpr int TestInsert()
 
     str.Insert(0, CStr::ch);
     stdstr.insert(0, 1, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(1, CStr::ch, 2);
     stdstr.insert(1, 2, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(2, CStr::s);
     stdstr.insert(2, CStr::s);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(3, CStr::s, 10);
     stdstr.insert(3, CStr::s, 0, 10);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(4, str);
     stdstr.insert(4, stdstr);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(str.Begin(), CStr::ch);
     stdstr.insert(stdstr.begin(), 1, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(str.End(), CStr::ch);
     stdstr.insert(stdstr.end(), 1, CStr::ch);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(str.Begin() + 1, CStr::s);
     stdstr.insert(1, CStr::s);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(str.Begin() + 2, CStr::s, 10);
     stdstr.insert(2, CStr::s, 10);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.Insert(str.Begin() + 3, str);
     stdstr.insert(3, stdstr);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.InsertRange(4, str.Begin() + 1, str.Begin() + 8);
     stdstr.insert(stdstr.begin() + 4, stdstr.begin() + 1, stdstr.begin() + 8);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.InsertRange(str.Begin(), str.Begin(), str.Begin());
     stdstr.insert(stdstr.begin(), stdstr.begin(), stdstr.begin());
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     return 0;
 }
@@ -248,35 +248,35 @@ static constexpr int TestRemove()
 
     str.RemoveLast();
     stdstr.pop_back();
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveLast(5);
     stdstr.erase(stdstr.size() - 5, 5);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveAt(1);
     stdstr.erase(stdstr.begin() + 1);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveAt(str.Begin());
     stdstr.erase(stdstr.begin());
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveRange(2, 4);
     stdstr.erase(stdstr.begin() + 2, stdstr.begin() + 6);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveRange(str.End(), 5);
     stdstr.erase(stdstr.end(), stdstr.end()); // MSVC refuses to handle it
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveRange(str.Begin(), 5);
     stdstr.erase(stdstr.begin(), stdstr.begin() + 5);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     str.RemoveRange(str.Begin(), str.Begin() + 5);
     stdstr.erase(stdstr.begin(), stdstr.begin() + 5);
-    TEST_ENSURE(str == stdstr);
+    TEST_ENSURE(str == stdstr.data());
 
     return 0;
 }
@@ -330,10 +330,6 @@ static constexpr int TestOperator()
     str += CStr::s[11];
     str += CStr::s[12];
     TEST_ENSURE(str == CStr::s);
-
-    auto stdstr = ToStdString(str);
-    TEST_ENSURE(str == stdstr.data());
-    TEST_ENSURE(str == BasicString<T>(stdstr));
 
     return 0;
 }

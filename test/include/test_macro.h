@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <iterator>
 
 #include "config.h"
 #include "debug/assert.h"

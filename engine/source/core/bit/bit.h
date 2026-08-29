@@ -1,8 +1,6 @@
 #ifndef BUILTIN_BIT_H
 #define BUILTIN_BIT_H
 
-#include <bit>
-
 #if MSVC
 #  include <intrin.h>
 #endif
@@ -10,6 +8,7 @@
 #if HAS_BUILTIN(__builtin_bit_cast)
 #  define BUILTIN_BIT_CAST(To, From) __builtin_bit_cast(To, From)
 #else
+#  include <bit>
 #  define BUILTIN_BIT_CAST(To, From) std::bit_cast<To>(From)
 #endif
 

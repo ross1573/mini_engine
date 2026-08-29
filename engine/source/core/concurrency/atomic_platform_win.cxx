@@ -375,8 +375,12 @@ inline CORE_API constexpr int32 CompareExchangeOrder(int32 success, int32 failur
 
 export template <typename T>
     requires(sizeof(T) == 1)
-inline bool
-__atomic_compare_exchange_1(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange_1(T volatile* pointer,
+                                        T* expected,
+                                        T desired,
+                                        bool /*weak*/,
+                                        int32 success,
+                                        int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
@@ -393,8 +397,12 @@ __atomic_compare_exchange_1(T volatile* pointer, T* expected, T desired, bool /*
 
 export template <typename T>
     requires(sizeof(T) == 2)
-inline bool
-__atomic_compare_exchange_2(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange_2(T volatile* pointer,
+                                        T* expected,
+                                        T desired,
+                                        bool /*weak*/,
+                                        int32 success,
+                                        int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
@@ -411,8 +419,12 @@ __atomic_compare_exchange_2(T volatile* pointer, T* expected, T desired, bool /*
 
 export template <typename T>
     requires(sizeof(T) == 4)
-inline bool
-__atomic_compare_exchange_4(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange_4(T volatile* pointer,
+                                        T* expected,
+                                        T desired,
+                                        bool /*weak*/,
+                                        int32 success,
+                                        int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
@@ -429,8 +441,12 @@ __atomic_compare_exchange_4(T volatile* pointer, T* expected, T desired, bool /*
 
 export template <typename T>
     requires(sizeof(T) == 8)
-inline bool
-__atomic_compare_exchange_8(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange_8(T volatile* pointer,
+                                        T* expected,
+                                        T desired,
+                                        bool /*weak*/,
+                                        int32 success,
+                                        int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     T previous;
@@ -447,8 +463,12 @@ __atomic_compare_exchange_8(T volatile* pointer, T* expected, T desired, bool /*
 
 export template <typename T>
     requires(sizeof(T) == 16)
-inline bool
-__atomic_compare_exchange_16(T volatile* pointer, T* expected, T desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange_16(T volatile* pointer,
+                                         T* expected,
+                                         T desired,
+                                         bool /*weak*/,
+                                         int32 success,
+                                         int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
     byte result;
@@ -463,8 +483,12 @@ __atomic_compare_exchange_16(T volatile* pointer, T* expected, T desired, bool /
 
 export template <typename T>
     requires(IsAtomicSupported<T>())
-inline bool
-__atomic_compare_exchange(T volatile* pointer, T* expected, T* desired, bool /*weak*/, int32 success, int32 failure)
+inline bool __atomic_compare_exchange(T volatile* pointer,
+                                      T* expected,
+                                      T* desired,
+                                      bool /*weak*/,
+                                      int32 success,
+                                      int32 failure)
 {
     int32 memorder = CompareExchangeOrder(success, failure);
 
