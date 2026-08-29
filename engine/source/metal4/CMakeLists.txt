@@ -3,7 +3,7 @@ add_module(mini.metal4
 )
 
 module_compile_defintions(mini.metal4
-    SHADER_LIBRARY_SEARCH_PATH="../Resources/Shader/"
+    SHADER_LIBRARY_SEARCH_PATH="../Resources/shader/"
     SHADER_LIBRARY_EXTENSION="metallib"
 )
 
