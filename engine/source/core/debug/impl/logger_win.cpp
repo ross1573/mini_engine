@@ -11,14 +11,14 @@ import :logger_platform;
 
 namespace mini::debug {
 
-void LogAssert(AssertFormatResult formatResult)
+void LogAssert(AssertFormatResult formatResult) noexcept
 {
     HWND handle = GetActiveWindow();
     MessageBoxA(handle, formatResult.message, nullptr, MB_ICONERROR | MB_OK);
     OutputDebugStringA(formatResult.message);
 }
 
-void LogEnsure(AssertFormatResult formatResult)
+void LogEnsure(AssertFormatResult formatResult) noexcept
 {
     OutputDebugStringA(formatResult.message);
 }
@@ -27,12 +27,12 @@ void LogEnsure(AssertFormatResult formatResult)
 
 namespace mini {
 
-LoggerBase::LoggerBase(StringView category)
+LoggerBase::LoggerBase(StringView category) noexcept
     : m_category(category)
 {
 }
 
-void LoggerBase::PrintMessage(byte, StringView msg)
+void LoggerBase::PrintMessage(byte, StringView msg) noexcept
 {
     char buffer[1024]{ 0 };
     char *ptr = buffer;

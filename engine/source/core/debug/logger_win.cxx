@@ -10,10 +10,10 @@ private:
     String m_category;
 
 protected:
-    LoggerBase(StringView);
+    LoggerBase(StringView) noexcept;
     ~LoggerBase() noexcept = default;
 
-    void PrintMessage(byte, StringView);
+    void PrintMessage(byte, StringView) noexcept;
 };
 
 } // namespace mini

@@ -133,14 +133,14 @@ PUBLIC
         $<$<PLATFORM_ID:Darwin>:debug/logger_macos.cxx>
         debug/logger.cxx
 
-        debug/assertion_expr.cxx
-        debug/assertion_format.cxx
-        debug/assertion.cxx
+        debug/assert_expr.cxx
+        debug/assert_format.cxx
+        debug/assert.cxx
 
 PRIVATE
     $<$<PLATFORM_ID:Windows>:debug/impl/logger_win.cpp>
     $<$<PLATFORM_ID:Darwin>:debug/impl/logger_macos.cpp>
-    debug/impl/assertion_format.cpp
+    debug/impl/assert_format.cpp
 )
 
 target_sources(mini.core
@@ -212,12 +212,11 @@ target_precompile_headers(mini.core
 PUBLIC
     include/config.h
     include/option.h
-    debug/include/assertion.h
+    include/debug/assert.h
 )
 
 target_include_directories(mini.core
 PUBLIC
-    debug/include
     include/
 
 PRIVATE

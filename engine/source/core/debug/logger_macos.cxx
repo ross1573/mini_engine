@@ -18,13 +18,13 @@ private:
     Logger m_logger;
 
 protected:
-    LoggerBase(StringView);
-    ~LoggerBase();
+    LoggerBase(StringView) noexcept;
+    ~LoggerBase() noexcept;
 
-    void PrintMessage(byte, StringView);
+    void PrintMessage(byte, StringView) noexcept;
 
 private:
-    LogLevel GetLogType(byte);
+    LogLevel GetLogType(byte) noexcept;
 };
 
 } // namespace mini

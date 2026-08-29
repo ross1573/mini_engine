@@ -2,8 +2,8 @@
 
 #include <cstring>
 
-#include "assertion.h"
 #include "config.h"
+#include "debug/assert.h"
 
 #define TEST_ENSURE(expr, ...)                                          \
     if consteval {                                                      \

@@ -13,12 +13,12 @@ namespace mini::debug {
 
 Logger assertLogger = Logger("Assert");
 
-void LogAssert(AssertFormatResult formatResult)
+void LogAssert(AssertFormatResult formatResult) noexcept
 {
     assertLogger.Fatal(formatResult.message);
 }
 
-void LogEnsure(AssertFormatResult formatResult)
+void LogEnsure(AssertFormatResult formatResult) noexcept
 {
     assertLogger.Fatal(formatResult.message);
 }
@@ -27,18 +27,18 @@ void LogEnsure(AssertFormatResult formatResult)
 
 namespace mini {
 
-LoggerBase::LoggerBase(StringView category)
+LoggerBase::LoggerBase(StringView category) noexcept
     : m_category(category)
     , m_logger(nullptr)
 {
 }
 
-LoggerBase::~LoggerBase()
+LoggerBase::~LoggerBase() noexcept
 {
     os_release(m_logger);
 }
 
-void LoggerBase::PrintMessage(byte level, StringView msg)
+void LoggerBase::PrintMessage(byte level, StringView msg) noexcept
 {
     // delay initialization of the logger until first message has been fetched
     if (m_logger == nullptr) {
@@ -50,7 +50,7 @@ void LoggerBase::PrintMessage(byte level, StringView msg)
     os_log_with_type(m_logger, type, "%s", msg.Data());
 }
 
-LoggerBase::LogLevel LoggerBase::GetLogType(byte level)
+LoggerBase::LogLevel LoggerBase::GetLogType(byte level) noexcept
 {
     LogLevel type = OS_LOG_TYPE_DEFAULT;
     switch (level) {
