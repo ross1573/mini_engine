@@ -11,8 +11,7 @@ set(FMT_MODULE ON)
 set(FMT_SYSTEM_HEADERS ON)
 set(FMT_UNICODE ON)
 
-FetchContent_Declare(
-    fmt
+FetchContent_Declare(fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_TAG 12.2.0
 )
