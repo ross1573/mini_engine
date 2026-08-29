@@ -6,17 +6,30 @@
 #include "config.h"
 #include "debug/assert.h"
 
-#define TEST_ENSURE(expr, ...)                                          \
-    if consteval {                                                      \
-        if (::mini::debug::EvaluateExpr(expr) == false) {               \
-            memcpy(nullptr, nullptr, 0);                                \
-        }                                                               \
-    } else {                                                            \
-        if (::mini::debug::EvaluateExpr(expr) == false) {               \
-            ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
-            return -1;                                                  \
-        }                                                               \
-    }
+#if MSVC
+#  define TEST_ENSURE(expr, ...)                            \
+      if consteval {                                        \
+          if (::mini::debug::EvaluateExpr(expr) == false) { \
+              memcpy(nullptr, nullptr, 0);                  \
+          }                                                 \
+      } else {                                              \
+          if (::mini::debug::EvaluateExpr(expr) == false) { \
+              return -1;                                    \
+          }                                                 \
+      }
+#else
+#  define TEST_ENSURE(expr, ...)                                          \
+      if consteval {                                                      \
+          if (::mini::debug::EvaluateExpr(expr) == false) {               \
+              memcpy(nullptr, nullptr, 0);                                \
+          }                                                               \
+      } else {                                                            \
+          if (::mini::debug::EvaluateExpr(expr) == false) {               \
+              ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
+              return -1;                                                  \
+          }                                                               \
+      }
+#endif
 
 #define TEST_ENSURE_NOTHROW(expr, ...)                              \
     try {                                                           \
