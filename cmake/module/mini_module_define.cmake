@@ -1,9 +1,7 @@
 include(module/mini_module_api)
 
 function (module_compile_defintions name)
-    get_target_property(module_definitions ${name} MODULE_DEFINITIONS)
-    list(APPEND module_definitions "${ARGN}")
-    set_target_properties(${name} PROPERTIES MODULE_DEFINITIONS "${module_definitions}")
+    set_property(TARGET ${name} APPEND PROPERTY MODULE_DEFINITIONS "${ARGN}")
 endfunction()
 
 function (_write_module_definitions target prefix api file_path)

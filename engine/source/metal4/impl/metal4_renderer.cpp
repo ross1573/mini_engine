@@ -32,11 +32,6 @@ Renderer::Renderer(MTL::Device* device)
 
 bool Renderer::Initialize()
 {
-    ENSURE(m_commandQueue.Valid(), "failed to create MTL4::CommandQueue") return false;
-    ENSURE(m_commandBuffer.Valid(), "failed to create MTL4::CommandBuffer") return false;
-    ENSURE(m_commandAllocator.Valid(), "failed to create MTL4::CommandAllocator") return false;
-    ENSURE(m_event.Valid(), "failed to create MTL::SharedEvent") return false;
-
     return true;
 }
 

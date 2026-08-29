@@ -14,11 +14,11 @@ public:
 
 protected:
     SharedPtr<ResourceValue> m_resource;
-    SharedPtr<NS::String> m_name;
+    String m_name;
 
 public:
     Resource() noexcept = default;
-    Resource(Resource const&) = delete;
+    Resource(Resource const&) noexcept = default;
     Resource(Resource&&) noexcept = default;
     Resource(ResourcePointer) noexcept;
     Resource(ResourcePointer, StringView);
@@ -31,7 +31,7 @@ public:
     String Name() const;
     ResourcePointer MetalResource() const noexcept;
 
-    Resource& operator=(Resource const&) = delete;
+    Resource& operator=(Resource const&) noexcept = default;
     Resource& operator=(Resource&&) noexcept = default;
 };
 
@@ -59,22 +59,15 @@ bool Resource<T>::Valid() const noexcept
 template <DerivedFromT<MTL::Resource> T>
 void Resource<T>::SetName(StringView name)
 {
-    NS::String* label = NS::String::alloc();
-    ENSURE(label != nullptr, "failed to allocate NS::String") {
+    if (m_name == name) {
         return;
     }
 
-    label = label->init(static_cast<void*>(const_cast<char*>(name.Data())),
-                        static_cast<NS::UInteger>(name.Size()),
-                        NS::StringEncoding::UTF8StringEncoding,
-                        false);
-
-    ENSURE(label != nullptr, "failed to initialize NS::String") {
-        return;
+    SharedPtr<NS::String> label = ToNSString(name);
+    if (label != nullptr) {
+        m_resource->setLabel(label.Get());
+        m_name = name;
     }
-
-    m_resource->setLabel(label);
-    m_name.Reset(label);
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -86,13 +79,7 @@ size_t Resource<T>::Capacity() const
 template <DerivedFromT<MTL::Resource> T>
 String Resource<T>::Name() const
 {
-    if (m_name.Valid() == false) {
-        return String();
-    }
-
-    char const* raw = m_name->utf8String();
-    size_t len = static_cast<size_t>(m_name->length());
-    return String(raw, len);
+    return m_name;
 }
 
 template <DerivedFromT<MTL::Resource> T>

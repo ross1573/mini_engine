@@ -2,6 +2,7 @@ module mini.metal4;
 
 import mini.core;
 import mini.graphics;
+import mini.apple;
 import :log;
 import :common;
 import :buffer;
@@ -17,18 +18,10 @@ RenderPass::RenderPass(MTL::Device* device, MTL4::CommandBuffer* commandBuffer) 
     ASSERT(commandBuffer != nullptr);
 
     m_renderPassDescriptor = TransferShared(MTL4::RenderPassDescriptor::alloc());
-    ENSURE(m_renderPassDescriptor.Valid(), "failed to create MTL4::RenderPassDescriptor") {
-        return;
-    }
-
     m_renderPassDescriptor->init();
 
-    m_argumentTableDescriptor = TransferShared(MTL4::ArgumentTableDescriptor::alloc());
-    ENSURE(m_argumentTableDescriptor.Valid(), "failed to create MTL4::ArgumentTableDescriptor") {
-        return;
-    }
-
     // TODO: get descriptor values from argument
+    m_argumentTableDescriptor = TransferShared(MTL4::ArgumentTableDescriptor::alloc());
     m_argumentTableDescriptor->init();
     m_argumentTableDescriptor->setMaxBufferBindCount(1);
     m_argumentTableDescriptor->setMaxSamplerStateBindCount(1);
@@ -37,8 +30,8 @@ RenderPass::RenderPass(MTL::Device* device, MTL4::CommandBuffer* commandBuffer) 
 
     NS::Error* error = nullptr;
     MTL4::ArgumentTable* argumentTable = device->newArgumentTable(m_argumentTableDescriptor.Get(), &error);
-    ENSURE(error == nullptr, "failed to create MTL4::ArgumentTable") {
-        LogError(error->localizedFailureReason()->utf8String());
+    ENSURE(error == nullptr, error, "failed to create MTL4::ArgumentTable") {
+        error->release();
         return;
     }
 
