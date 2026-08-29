@@ -106,7 +106,7 @@ public:
         } catch (...) {
         }
 
-        if (interface == nullptr) {
+        ENSURE(interface, "failed to get interface object of module {}", name.Data()) {
             UnloadModule(m_nativeModule);
             m_nativeModule = nullptr;
             return;

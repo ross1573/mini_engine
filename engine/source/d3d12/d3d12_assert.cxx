@@ -4,9 +4,11 @@ import mini.core;
 
 namespace mini::debug {
 
-D3D12_API void AssertFormat(char const* expr, ID3DBlob* error, SourceLocation loc = SourceLocation::current())
+export template <typename... Args>
+AssertFormatResult FormatAssert(char const* _, ID3DBlob* error, AssertFormatContext ctx, Args&&... args)
 {
-    AssertFormat(expr, reinterpret_cast<char*>(error->GetBufferPointer()), loc);
+    char const* buffer = reinterpret_cast<char*>(error->GetBufferPointer());
+    FormatAssert("d3derror", buffer, ctx, ForwardArg<Args>(args)...);
 }
 
 } // namespace mini::debug

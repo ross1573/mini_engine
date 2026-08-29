@@ -41,15 +41,17 @@ void LoggerBase::PrintMessage(byte, StringView msg) noexcept
         return;
     }
 
-    *(++ptr) = '[';
+    *(ptr++) = '[';
     memory::MemCopy(ptr, m_category.Data(), m_category.Size());
-    *(++ptr) = ']';
-    *(++ptr) = ' ';
+    ptr += m_category.Size();
+    *(ptr++) = ']';
+    *(ptr++) = ' ';
     memory::MemCopy(ptr, msg.Data(), msg.Size());
-    *(++ptr) = '\n';
-    *(++ptr) = '\0';
+    ptr += msg.Size();
+    *(ptr++) = '\n';
+    *(ptr++) = '\0';
 
-    OutputDebugStringA(ptr);
+    OutputDebugStringA(buffer);
 }
 
 } // namespace mini
