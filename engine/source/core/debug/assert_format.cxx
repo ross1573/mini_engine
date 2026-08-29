@@ -47,7 +47,7 @@ public:
     SourceLocation location;
 
 public:
-    constexpr AssertFormatContext(SourceLocation loc = SourceLocation::current()) noexcept
+    explicit constexpr AssertFormatContext(SourceLocation loc = SourceLocation::current()) noexcept
         : message(nullptr, 0)
         , location(loc)
     {
@@ -125,6 +125,20 @@ export [[no_inline]] ASSERT_API void LogAssert(char const* expr,
     LogAssert(FormatAssert(assertExprCategory, expr, nullptr, loc));
 }
 
+export template <typename T, typename... Args>
+[[no_inline]] void LogAssert(char const* expr, T error, AssertFormatContext ctx, Args&&... args) noexcept
+    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
+{
+    LogAssert(FormatAssert(expr, error, ctx, ForwardArg<Args>(args)...));
+}
+
+export template <typename T>
+[[no_inline]] void LogAssert(char const* expr, T error, SourceLocation loc = SourceLocation::current()) noexcept
+    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
+{
+    LogAssert(FormatAssert(expr, error, AssertFormatContext(loc)));
+}
+
 export template <typename... Args>
 [[no_inline]] void LogEnsure(char const* expr, AssertFormatContext ctx, Args&&... args) noexcept
 {
@@ -135,6 +149,20 @@ export [[no_inline]] ASSERT_API void LogEnsure(char const* expr,
                                                SourceLocation loc = SourceLocation::current()) noexcept
 {
     LogEnsure(FormatAssert(assertExprCategory, expr, nullptr, loc));
+}
+
+export template <typename T, typename... Args>
+[[no_inline]] void LogEnsure(char const* expr, T error, AssertFormatContext ctx, Args&&... args) noexcept
+    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
+{
+    LogEnsure(FormatAssert(expr, error, ctx, ForwardArg<Args>(args)...));
+}
+
+export template <typename T>
+[[no_inline]] void LogEnsure(char const* expr, T error, SourceLocation loc = SourceLocation::current()) noexcept
+    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
+{
+    LogEnsure(FormatAssert(expr, error, AssertFormatContext(loc)));
 }
 
 } // namespace mini::debug

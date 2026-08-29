@@ -11,6 +11,8 @@ PUBLIC
     FILE_SET apple TYPE CXX_MODULES
     FILES
         apple.cxx
+        apple_assert.cxx
+        apple_string.cxx
         apple_window.cxx
         apple_shared_ptr.cxx
 )
