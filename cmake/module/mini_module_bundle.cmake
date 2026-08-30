@@ -17,8 +17,6 @@ function (_macos_bundle_module target)
     if (DSYMUTIL_PROGRAM AND STRIP_PROGRAM)
         set(dsym_path "${output_dir}/debug")
         set(dsym_file "${dsym_path}/${bundle_name}.dSYM")
-        set(lldb_cmd "settings append target.debug-file-search-paths debug/")
-        file(WRITE "${output_dir}/.lldbinit" "${lldb_cmd}")
 
         add_custom_command(TARGET ${target} POST_BUILD
             COMMAND ${DSYMUTIL_PROGRAM} "$<TARGET_FILE:${target}>" -o ${dsym_file}
@@ -48,17 +46,19 @@ function (_macos_set_exec_properties target)
     )
 
     find_program_from_path(dsymutil ${COMPILER_SEARCH_PATH} DSYMUTIL_PROGRAM)
-    find_program_from_path(llvm-strip ${COMPILER_SEARCH_PATH} STRIP_PROGRAM)
+    find_program_from_path(strip /usr/bin STRIP_PROGRAM)
 
     if (DSYMUTIL_PROGRAM AND STRIP_PROGRAM)
         get_output_directory(output_dir RUNTIME "")
         set(bundle_name $<TARGET_FILE_NAME:${target}>)
         set(dsym_path "${output_dir}/debug/")
         set(dsym_file "${dsym_path}/${bundle_name}.dSYM")
+        set(lldb_cmd "settings append target.debug-file-search-paths debug/")
+        file(WRITE "${output_dir}/.lldbinit" "${lldb_cmd}")
 
         add_custom_command(TARGET ${target} POST_BUILD
             COMMAND ${DSYMUTIL_PROGRAM} "$<TARGET_FILE:${target}>" -o ${dsym_file}
-            COMMAND ${STRIP_PROGRAM} -S -x -r "$<TARGET_FILE:${target}>"
+            COMMAND ${STRIP_PROGRAM} -S -x "$<TARGET_FILE:${target}>"
             COMMENT "Generating dSYM for ${bundle_name}"
         )
     endif()

@@ -82,7 +82,5 @@ function (find_program_from_path name path out)
     endif()
 
     set_property(GLOBAL PROPERTY "${name}_PROGRAM" ${prog})
-    set(${out} ${prog})
-    unset(prog)
-    unset(${name}_prog)
+    set(${out} ${prog} PARENT_SCOPE)
 endfunction()

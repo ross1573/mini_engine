@@ -57,6 +57,7 @@ macro (_clang_compile_options)
         $<$<CONFIG:Develop>:-O1>
         $<$<CONFIG:Release>:-O3>
         -g
+        -fno-limit-debug-info
         -ffast-math
 
         -Wall
