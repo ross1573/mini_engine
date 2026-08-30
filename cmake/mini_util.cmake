@@ -52,3 +52,37 @@ macro (snake_to_camel_case name)
     endforeach()
     string(CONCAT camel_case ${result})
 endmacro()
+
+function (find_program_from_path name path out)
+    set(prog ${name}_prog)
+    get_property(prog GLOBAL PROPERTY "${name}_PROGRAM")
+    if (prog STREQUAL "UNDEFINED")
+        set(${out} "" PARENT_SCOPE)
+        return()
+    elseif (prog)
+        set(${out} ${prog} PARENT_SCOPE)
+        return()
+    endif()
+
+    find_program(prog ${path} ${name}
+        PATHS ${path}
+        OPTIONAL
+        NO_CACHE
+        NO_DEFAULT_PATH
+        NO_PACKAGE_ROOT_PATH
+        NO_CMAKE_PATH
+        NO_CMAKE_ENVIRONMENT_PATH
+        NO_SYSTEM_ENVIRONMENT_PATH
+        NO_CMAKE_SYSTEM_PATH
+        NO_CMAKE_INSTALL_PREFIX)
+
+    if (NOT prog)
+        message(WARNING "failed to find dsymutil from given path (${path})")
+        return()
+    endif()
+
+    set_property(GLOBAL PROPERTY "${name}_PROGRAM" ${prog})
+    set(${out} ${prog})
+    unset(prog)
+    unset(${name}_prog)
+endfunction()

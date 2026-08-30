@@ -53,10 +53,10 @@ endmacro()
 
 macro (_clang_compile_options)
     add_compile_options(
-        $<$<CONFIG:Debug,Develop>:-g>
         $<$<CONFIG:Debug>:-O0>
         $<$<CONFIG:Develop>:-O1>
         $<$<CONFIG:Release>:-O3>
+        -g
         -ffast-math
 
         -Wall
@@ -89,7 +89,7 @@ endmacro()
 
 macro (_clang_link_options)
     add_link_options(
-        # $<$<CONFIG:Debug>:-fsanitize=address>
+        $<$<CONFIG:Debug>:-fsanitize=address>
     )
 endmacro()
 

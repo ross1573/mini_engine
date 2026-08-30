@@ -14,6 +14,7 @@
                 "CMAKE_OSX_SYSROOT": "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
                 "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
                 "CMAKE_CXX_STANDARD": "26",
+                "COMPILER_SEARCH_PATH": "/opt/homebrew/opt/llvm/bin/",
                 "CLANG_VERSION_MIN": "23.1.0",
                 "CLANG_VERSION_MAX": "23.1.99"
             }
