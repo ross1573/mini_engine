@@ -82,13 +82,21 @@ inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
     return IsPtrOverlapping(b1, b2, e2) || IsPtrOverlapping(e1, b2, e2);
 }
 
+// msvc won't evaluate placement new at compile time if there's no return.
+// this might be another stupid bug from msvc, since the expression has to be decorated with [[msvc::constexpr]]
+template <typename T, typename... Args>
+inline constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+{
+    MSVC_CONSTEXPR return ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
+}
+
 export template <NonArrT T, typename... Args>
 inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     ASSERT(ptr, "invalid location for object");
 
     if consteval {
-        CONSTEXPR_CONSTRUCT_AT(ptr, ForwardArg<Args>(args)...);
+        ConstructAtImpl(ptr, ForwardArg<Args>(args)...);
         return;
     }
 
@@ -121,11 +129,6 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
     ASSERT(ptr, "invalid location for object");
 
     if constexpr (TrivialT<T>) {
-        return;
-    }
-
-    if consteval {
-        CONSTEXPR_DESTRUCT_AT(ptr);
         return;
     }
 
