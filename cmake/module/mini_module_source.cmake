@@ -22,7 +22,7 @@ function (build_source_tree target)
     # if it starts with "GENERATED", it will be treated as generated file set
     get_target_property(source_sets ${target} SOURCE_SETS)
     foreach (source_set IN LISTS source_sets)
-        get_target_property(source_files ${target} SOURCE_SET_${module_set})
+        get_target_property(source_files ${target} SOURCE_SET_${source_set})
         string(TOUPPER ${source_set} source_set_upper)
 
         if (source_set_upper MATCHES "^GENERATED")
