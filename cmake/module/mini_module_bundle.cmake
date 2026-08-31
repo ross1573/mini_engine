@@ -15,7 +15,7 @@ function (_macos_bundle_module target)
     find_program_from_path(strip /usr/bin STRIP_PROGRAM)
 
     if (DSYMUTIL_PROGRAM AND STRIP_PROGRAM)
-        set(dsym_path "${output_dir}/debug")
+        set(dsym_path "${output_dir}/${ENGINE_RUNTIME_DEBUG_DIR}")
         set(dsym_file "${dsym_path}/${bundle_name}.dSYM")
 
         add_custom_command(TARGET ${target} POST_BUILD
@@ -51,9 +51,9 @@ function (_macos_set_exec_properties target)
     if (DSYMUTIL_PROGRAM AND STRIP_PROGRAM)
         get_output_directory(output_dir RUNTIME "")
         set(bundle_name $<TARGET_FILE_NAME:${target}>)
-        set(dsym_path "${output_dir}/debug/")
+        set(dsym_path "${output_dir}/${ENGINE_RUNTIME_DEBUG_DIR}")
         set(dsym_file "${dsym_path}/${bundle_name}.dSYM")
-        set(lldb_cmd "settings append target.debug-file-search-paths debug/")
+        set(lldb_cmd "settings append target.debug-file-search-paths ${ENGINE_RUNTIME_DEBUG_DIR}/")
         file(WRITE "${output_dir}/.lldbinit" "${lldb_cmd}")
 
         add_custom_command(TARGET ${target} POST_BUILD

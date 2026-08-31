@@ -11,11 +11,10 @@ function (_set_module_defines name)
     set(module_static_genexpr "$<IF:${static_type_genexpr},true,false>")
 
     module_compile_defintions(${name}
+        ${api_upper}_STATIC=${module_static_genexpr}
         MODULE_NAME="${name}"
         MODULE_PREFIX="${prefix}"
         MODULE_API="${api}"
-        "\n"
-        ${api_upper}_STATIC=${module_static_genexpr}
     )   
 endfunction()
 
