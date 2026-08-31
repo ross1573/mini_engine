@@ -231,11 +231,10 @@ inline Module<T>::Module(StringView name)
     }
 
     m_interface = QueryInterface();
-    ENSURE(m_interface, "interface not found for {}", name.Data())
-
-        if (m_interface == nullptr) [[unlikely]] {
-            m_handle.Reset();
-        }
+    ENSURE(m_interface, "interface not found for {}", name.Data()) {
+        m_handle.Reset();
+        return;
+    }
 }
 
 template <ModuleInterfaceT T>
