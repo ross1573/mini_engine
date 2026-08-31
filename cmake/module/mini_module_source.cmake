@@ -18,6 +18,20 @@ function (build_source_tree target)
         endif()
     endforeach()
 
+    # search for SOURCE_SETS
+    # if it starts with "GENERATED", it will be treated as generated file set
+    get_target_property(source_sets ${target} SOURCE_SETS)
+    foreach (source_set IN LISTS source_sets)
+        get_target_property(source_files ${target} SOURCE_SET_${module_set})
+        string(TOUPPER ${source_set} source_set_upper)
+
+        if (source_set_upper MATCHES "^GENERATED")
+            list(APPEND generated_files ${source_files})
+        else()
+            list(APPEND sources ${source_files})
+        endif()
+    endforeach()
+
     # search for CXX_MODULE_SETS
     # if it starts with "GENERATED", it will be treated as generated file set
     get_target_property(module_sets ${target} CXX_MODULE_SETS)
@@ -60,13 +74,6 @@ function (build_source_tree target)
 
     get_property(module_list GLOBAL PROPERTY MODULE_LIST)
     foreach (file ${filtered_list})
-        # filter generated source file
-        get_source_file_property(generated ${file} GENERATED)
-        if (generated)
-            list(APPEND generated_files ${file})
-            continue()
-        endif()
-
         # filter implementation files
         if (${file} MATCHES "^impl/.*|.*/impl/.*")
             list(APPEND implementations ${file})

@@ -38,6 +38,8 @@ function (generate_module_entry target)
         message(FATAL_ERROR "cannot generate module entry of target type " ${target_type})
     endif()
 
-    target_sources(${target} PRIVATE "${file_path}/${file_name}")
-    set_source_files_properties("${file_path}/${file_name}" PROPERTIES GENERATED ON)
+    target_sources(${target} PRIVATE 
+        FILE_SET generated_entry TYPE SOURCES BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
+        FILES "${file_path}/${file_name}"
+    )
 endfunction()
