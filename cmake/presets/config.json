@@ -2,14 +2,6 @@
     "version": 10,
     "configurePresets": [
         {
-            "name": "shared",
-            "hidden": true,
-            "cacheVariables": {
-                "BUILD_SHARED_LIBS": "ON",
-                "BUILD_MONOLITHIC": "OFF"
-            }
-        },
-        {
             "name": "static",
             "hidden": true,
             "cacheVariables": {
@@ -33,24 +25,10 @@
             }
         },
         {
-            "name": "no-test",
-            "hidden": true,
-            "cacheVariables": {
-                "INCLUDE_TEST": "OFF"
-            }
-        },
-        {
             "name": "bench",
             "hidden": true,
             "cacheVariables": {
                 "INCLUDE_BENCHMARK": "ON"
-            }
-        },
-        {
-            "name": "no-bench",
-            "hidden": true,
-            "cacheVariables": {
-                "INCLUDE_BENCHMARK": "OFF"
             }
         }
     ]

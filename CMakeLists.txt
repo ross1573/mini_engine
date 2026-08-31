@@ -6,6 +6,7 @@ project(MiniEngine
 )
 
 option(BUILD_SHARED_LIBS "build modules in shared libraries" ON)
+option(BUILD_MONOLITHIC "build all in single executable binary" OFF)
 option(INCLUDE_TEST "include testing executables" OFF)
 option(INCLUDE_BENCHMARK "include benchmarking executables" OFF)
 

@@ -1,5 +1,6 @@
 {
     "version": 10,
+    "include": [ "default.json" ],
     "configurePresets": [
         {
             "name": "macos-clang",
@@ -8,6 +9,7 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Darwin"
             },
+            "inherits": [ "default" ],
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {

@@ -8,49 +8,54 @@
     ],
     "configurePresets": [
         {
-            "name": "macos-clang-debug",
-            "inherits": [ "macos-clang", "settings", "shared", "test", "no-bench" ],
+            "name": "macos-clang-test",
+            "inherits": [ "settings", "test", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
         },
         {
             "name": "macos-clang-bench",
-            "inherits": [ "macos-clang", "settings", "shared", "no-test", "bench" ],
+            "inherits": [ "settings", "bench", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
+            "name": "macos-clang-debug",
+            "inherits": [ "settings", "macos-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
             "name": "macos-clang-develop",
-            "inherits": [ "macos-clang", "settings", "shared", "no-test", "no-bench" ],
+            "inherits": [ "settings", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Develop" }
         },
         {
             "name": "macos-clang-release",
-            "inherits": [ "macos-clang", "settings", "shared", "no-test", "no-bench" ],
+            "inherits": [ "settings", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
             "name": "macos-clang-mono",
-            "inherits": [ "macos-clang", "settings", "mono", "no-test", "no-bench" ],
+            "inherits": [ "settings", "mono", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
-            "name": "windows-vs-debug",
-            "inherits": [ "windows-vs", "settings", "shared", "test", "no-bench" ]
+            "name": "windows-vs-test",
+            "inherits": [ "settings", "test", "windows-vs" ]
         },
         {
             "name": "windows-vs-bench",
-            "inherits": [ "windows-vs", "settings", "shared", "no-test", "bench" ]
+            "inherits": [ "settings", "bench", "windows-vs" ]
         },
         {
             "name": "windows-vs-develop",
-            "inherits": [ "windows-vs", "settings", "shared", "no-test", "no-bench" ]
+            "inherits": [ "windows-vs", "settings" ]
         },
         {
             "name": "windows-vs-release",
-            "inherits": [ "windows-vs", "settings", "shared", "no-test", "no-bench" ]
+            "inherits": [ "windows-vs", "settings" ]
         },
         {
             "name": "windows-vs-mono",
-            "inherits": [ "windows-vs", "settings", "mono", "no-test", "no-bench" ]
+            "inherits": [ "windows-vs", "settings" ]
         }
     ]
 }

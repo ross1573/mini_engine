@@ -1,5 +1,6 @@
 {
     "version": 10,
+    "include": [ "default.json" ],
     "configurePresets": [
         {
             "name": "windows-vs",
@@ -8,6 +9,7 @@
                 "lhs": "${hostSystemName}",
                 "rhs": "Windows"
             },
+            "inherits": [ "default" ],
             "generator": "Visual Studio 18 2026",
             "binaryDir": "${sourceDir}/build/",
             "toolset": {
