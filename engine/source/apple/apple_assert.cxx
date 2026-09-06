@@ -1,6 +1,7 @@
 export module mini.apple:assert;
 
 import mini.core;
+import :shared_ptr;
 
 namespace mini::debug {
 
@@ -18,7 +19,8 @@ constexpr char const* nserrorRecovery = "- recovery: ";
 APPLE_API void FormatNSError(char* dest, char const* destEnd, NS::Error* error)
 {
     size_t code;
-    char hexBuffer[18];
+    size_t hexLen;
+    char hexBuffer[19];
     char const* buffer[4];
     char const* domain;
     char const* reason;
@@ -35,7 +37,8 @@ APPLE_API void FormatNSError(char* dest, char const* destEnd, NS::Error* error)
     desc = error->localizedDescription()->utf8String();
     recovery = error->localizedRecoverySuggestion()->utf8String();
 
-    FormatHex(hexBuffer, hexBuffer + sizeof(hexBuffer), code);
+    hexLen = FormatHex(hexBuffer, hexBuffer + sizeof(hexBuffer) - 1, code);
+    hexBuffer[hexLen] = '\0';
 
     buffer[0] = domain;
     buffer[1] = " (";
@@ -46,29 +49,35 @@ APPLE_API void FormatNSError(char* dest, char const* destEnd, NS::Error* error)
         goto format_nserror_result;
     }
 
-    buffer[0] = nserrorReason;
-    buffer[1] = reason;
-    dest += FormatAssertLine(dest, destEnd, buffer, 2);
-    if (dest == destEnd) [[unlikely]] {
-        goto format_nserror_result;
+    if (reason != nullptr) {
+        buffer[0] = nserrorReason;
+        buffer[1] = reason;
+        dest += FormatAssertLine(dest, destEnd, buffer, 2);
+        if (dest == destEnd) [[unlikely]] {
+            goto format_nserror_result;
+        }
     }
 
-    buffer[0] = nserrorDesc;
-    buffer[1] = desc;
-    dest += FormatAssertLine(dest, destEnd, buffer, 2);
-    if (dest == destEnd) [[unlikely]] {
-        goto format_nserror_result;
+    if (desc != nullptr) {
+        buffer[0] = nserrorDesc;
+        buffer[1] = desc;
+        dest += FormatAssertLine(dest, destEnd, buffer, 2);
+        if (dest == destEnd) [[unlikely]] {
+            goto format_nserror_result;
+        }
     }
 
-    buffer[0] = nserrorRecovery;
-    buffer[1] = recovery;
-    dest += FormatAssertLine(dest, destEnd, buffer, 2);
-    if (dest == destEnd) [[unlikely]] {
-        goto format_nserror_result;
+    if (recovery != nullptr) {
+        buffer[0] = nserrorRecovery;
+        buffer[1] = recovery;
+        dest += FormatAssertLine(dest, destEnd, buffer, 2);
+        if (dest == destEnd) [[unlikely]] {
+            goto format_nserror_result;
+        }
     }
 
 format_nserror_result:
-    *dest = '\0';
+    *(--dest) = '\0';
     return;
 }
 

@@ -41,9 +41,7 @@
     return menuItem;
 }
 
-- (NSMenuItem*)addHiddenItem:(NSString*)string
-                      action:(SEL)selector
-               keyEquivalent:(NSString*)charCode
+- (NSMenuItem*)addHiddenItem:(NSString*)string action:(SEL)selector keyEquivalent:(NSString*)charCode
 {
     NSMenuItem* menuItem = [self addItemWithTitle:string action:selector keyEquivalent:charCode];
     menuItem.hidden = YES;
@@ -77,18 +75,14 @@ NSMenuItem* CreateAboutMenu()
 
     [appMenu addItem:[NSMenuItem separatorItem]];
 
-    [appMenu addItemWithTitle:[@"Hide " stringByAppendingString:classStr]
-                       action:@selector(hide:)
-                keyEquivalent:@"h"];
+    [appMenu addItemWithTitle:[@"Hide " stringByAppendingString:classStr] action:@selector(hide:) keyEquivalent:@"h"];
 
     [appMenu addItemWithModifier:@"Hide Others"
                           action:@selector(hideOtherApplications:)
                    keyEquivalent:@"h"
                  keyModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
 
-    [appMenu addItemWithTitle:@"Show All"
-                       action:@selector(unhideAllApplications:)
-                keyEquivalent:@""];
+    [appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
 
     [appMenu addItem:[NSMenuItem separatorItem]];
 
@@ -107,17 +101,13 @@ NSMenuItem* CreateAboutMenu()
 NSMenuItem* CreateWindowMenu()
 {
     NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
-    NSMenuItem* windowMenuItem = [[NSMenuItem alloc] initWithTitle:@""
-                                                            action:nil
-                                                     keyEquivalent:@""];
+    NSMenuItem* windowMenuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
 
     [windowMenu addItemWithTitle:NSLocalizedString(@"Minimize", @"")
                           action:@selector(performMiniaturize:)
                    keyEquivalent:@"m"];
 
-    [windowMenu addItemWithTitle:NSLocalizedString(@"Maximize", @"")
-                          action:@selector(zoom:)
-                   keyEquivalent:@""];
+    [windowMenu addItemWithTitle:NSLocalizedString(@"Maximize", @"") action:@selector(zoom:) keyEquivalent:@""];
 
     [windowMenu addItem:[NSMenuItem separatorItem]];
 
