@@ -10,12 +10,13 @@ import :render_pass;
 
 namespace mini::metal4 {
 
-RenderPass::RenderPass(MTL::Device* device, MTL4::CommandBuffer* commandBuffer) noexcept
+RenderPass::RenderPass(Device const& device, MTL4::CommandBuffer* commandBuffer) noexcept
     : m_commandBuffer(nullptr)
     , m_renderCommandEncoder(nullptr)
-    , m_targetTexture(nullptr)
+    , m_targetTexture()
 {
-    ASSERT(commandBuffer != nullptr);
+    ASSERT(device);
+    ASSERT(commandBuffer);
 
     m_renderPassDescriptor = TransferShared(MTL4::RenderPassDescriptor::alloc());
     m_renderPassDescriptor->init();
@@ -28,10 +29,10 @@ RenderPass::RenderPass(MTL::Device* device, MTL4::CommandBuffer* commandBuffer) 
     m_argumentTableDescriptor->setMaxTextureBindCount(1);
     m_argumentTableDescriptor->setSupportAttributeStrides(false);
 
-    NS::Error* error = nullptr;
-    MTL4::ArgumentTable* argumentTable = device->newArgumentTable(m_argumentTableDescriptor.Get(), &error);
-    ENSURE(error == nullptr, error, "failed to create MTL4::ArgumentTable") {
-        error->release();
+    NS::Error* error;
+    MTL4::ArgumentTableDescriptor* desc = m_argumentTableDescriptor.Get();
+    MTL4::ArgumentTable* argumentTable = device->newArgumentTable(desc, &error);
+    ENSURE(argumentTable, error, "failed to create MTL4::ArgumentTable") {
         return;
     }
 
@@ -59,8 +60,8 @@ void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
 {
     m_targetTexture = targetTexture;
 
-    ASSERT(m_commandBuffer != nullptr);
-    ASSERT(m_targetTexture != nullptr);
+    ASSERT(m_commandBuffer);
+    ASSERT(m_targetTexture);
 
     MTL::RenderPassColorAttachmentDescriptor* colorAttachment = m_renderPassDescriptor->colorAttachments()->object(0);
     MTL::ClearColor clearColor(static_cast<double>(color.r),
@@ -90,13 +91,14 @@ void RenderPass::End() noexcept
 
     m_renderCommandEncoder->endEncoding();
     m_renderCommandEncoder = nullptr;
+    m_targetTexture = nullptr;
 }
 
 void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
 {
     ASSERT(Active());
 
-    MTL::PrimitiveType mtlPrimitive = GetMTLPrimitiveType(primitiveType);
+    MTL::PrimitiveType mtlPrimitive = MTLPrimitiveType(primitiveType);
     MTL::RenderStages renderStages = MTL::RenderStageVertex;
 
     m_renderCommandEncoder->setArgumentTable(m_argumentTable.Get(), renderStages);
@@ -109,6 +111,13 @@ void RenderPass::SetVertexBuffer(Buffer const& buffer, uint64 index)
 
     MTL::GPUAddress gpuAddress = static_cast<MTL::GPUAddress>(buffer.GpuAddress());
     m_argumentTable->setAddress(gpuAddress, index);
+}
+
+void RenderPass::SetPipelineState(RenderPipelineState const& state)
+{
+    ASSERT(state);
+
+    m_renderCommandEncoder->setRenderPipelineState(state.MTLRenderPipelineState());
 }
 
 void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexcept

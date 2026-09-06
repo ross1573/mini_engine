@@ -14,13 +14,17 @@ private:
     SharedPtr<MTL4::CommandBuffer> m_commandBuffer;
     SharedPtr<MTL4::CommandAllocator> m_commandAllocator;
 
+    Compiler m_compiler;
+    ShaderLibrary m_library;
+
     Array<RenderPass> m_renderPasses;
+    Array<RenderPipelineState> m_renderPipelineStates;
 
     SharedPtr<MTL::SharedEvent> m_event;
     uint64 m_eventValue;
 
 public:
-    Renderer(MTL::Device*);
+    Renderer(Device const&);
 
     bool Initialize() final;
 

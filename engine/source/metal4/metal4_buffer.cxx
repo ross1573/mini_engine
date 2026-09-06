@@ -12,7 +12,7 @@ private:
 
 public:
     Buffer() noexcept = default;
-    Buffer(MTL::Buffer*) noexcept;
+    explicit Buffer(MTL::Buffer*) noexcept;
     Buffer(MTL::Buffer*, StringView);
 
     size_t Size() const;

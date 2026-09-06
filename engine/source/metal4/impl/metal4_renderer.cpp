@@ -9,12 +9,15 @@ import :render_pass;
 
 namespace mini::metal4 {
 
-Renderer::Renderer(MTL::Device* device)
+Renderer::Renderer(Device const& device)
     : m_autoReleasePool(nullptr)
     , m_commandQueue(nullptr)
     , m_commandBuffer(nullptr)
     , m_commandAllocator(nullptr)
+    , m_compiler(device)
+    , m_library(device, "mini.shader")
     , m_renderPasses(1)
+    , m_renderPipelineStates(1)
     , m_eventValue(0)
 {
     ASSERT(device);
@@ -24,10 +27,18 @@ Renderer::Renderer(MTL::Device* device)
     m_commandAllocator = TransferShared(device->newCommandAllocator());
     m_event = TransferShared(device->newSharedEvent());
 
-    if (m_commandBuffer.Valid()) {
-        RenderPass renderPass(device, m_commandBuffer.Get());
-        m_renderPasses.Push(MoveArg(renderPass));
+    ENSURE(m_commandBuffer) {
+        return;
     }
+
+    RenderPass renderPass(device, m_commandBuffer.Get());
+    m_renderPasses.Push(MoveArg(renderPass));
+
+    ShaderFunction vertexFunction(m_library, "VertexMain");
+    ShaderFunction fragmentFunction(m_library, "FragmentMain");
+    RenderPipelineDescriptor pipelineDesc(MoveArg(vertexFunction), MoveArg(fragmentFunction));
+    RenderPipelineState pipelineState(m_compiler, pipelineDesc);
+    m_renderPipelineStates.Push(MoveArg(pipelineState));
 }
 
 bool Renderer::Initialize()
@@ -55,6 +66,8 @@ void Renderer::BeginRender()
 
     RenderPass* renderPass = m_renderPasses.Begin().Address();
     renderPass->Begin(targetTexture, Color::Clear());
+    renderPass->SetPipelineState(*m_renderPipelineStates.Begin());
+    renderPass->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
 }
 
 void Renderer::EndRender()

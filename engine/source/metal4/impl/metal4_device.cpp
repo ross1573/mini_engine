@@ -29,7 +29,7 @@ graphics::SwapChain* Device::CreateSwapChain()
 
 graphics::Renderer* Device::CreateRenderer()
 {
-    return new Renderer(m_device.Get());
+    return new Renderer(*this);
 }
 
 } // namespace mini::metal4

@@ -3,6 +3,7 @@ export module mini.metal4:resource;
 import mini.core;
 import mini.apple;
 import mini.graphics;
+import :common;
 
 namespace mini::metal4 {
 
@@ -18,22 +19,25 @@ protected:
 
 public:
     Resource() noexcept = default;
-    Resource(Resource const&) noexcept = default;
-    Resource(Resource&&) noexcept = default;
-    Resource(ResourcePointer) noexcept;
-    Resource(ResourcePointer, StringView);
-
-    bool Valid() const noexcept;
+    explicit Resource(nullptr_t) noexcept;
+    explicit Resource(ResourcePointer) noexcept;
+    explicit Resource(ResourcePointer, StringView);
 
     void SetName(StringView);
 
+    bool Valid() const noexcept;
     size_t Capacity() const;
     String Name() const;
-    ResourcePointer MetalResource() const noexcept;
 
-    Resource& operator=(Resource const&) noexcept = default;
-    Resource& operator=(Resource&&) noexcept = default;
+    ResourcePointer MTLResource() const noexcept;
+    ResourcePointer operator->() const noexcept;
 };
+
+template <DerivedFromT<MTL::Resource> T>
+Resource<T>::Resource(nullptr_t) noexcept
+    : m_resource(nullptr)
+{
+}
 
 template <DerivedFromT<MTL::Resource> T>
 Resource<T>::Resource(ResourcePointer resource) noexcept
@@ -45,9 +49,9 @@ Resource<T>::Resource(ResourcePointer resource) noexcept
 template <DerivedFromT<MTL::Resource> T>
 Resource<T>::Resource(ResourcePointer resource, StringView name)
     : m_resource(TransferShared(resource))
+    , m_name(SetLabel(m_resource, name))
 {
     ASSERT(m_resource.Valid());
-    SetName(name);
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -63,11 +67,7 @@ void Resource<T>::SetName(StringView name)
         return;
     }
 
-    SharedPtr<NS::String> label = ToNSString(name);
-    if (label != nullptr) {
-        m_resource->setLabel(label.Get());
-        m_name = name;
-    }
+    m_name = SetLabel(m_resource, name);
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -83,9 +83,15 @@ String Resource<T>::Name() const
 }
 
 template <DerivedFromT<MTL::Resource> T>
-Resource<T>::ResourcePointer Resource<T>::MetalResource() const noexcept
+Resource<T>::ResourcePointer Resource<T>::MTLResource() const noexcept
 {
     return m_resource.Get();
+}
+
+template <DerivedFromT<MTL::Resource> T>
+Resource<T>::ResourcePointer Resource<T>::operator->() const noexcept
+{
+    return m_resource.operator->();
 }
 
 } // namespace mini::metal4

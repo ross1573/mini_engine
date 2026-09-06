@@ -13,12 +13,14 @@ public:
     Device();
 
     bool Initialize() final;
+    bool Valid() const noexcept { return m_device.Valid(); }
 
     graphics::SwapChain* CreateSwapChain() final;
     graphics::Renderer* CreateRenderer() final;
 
     graphics::API GetAPI() const final { return graphics::API::Metal4; }
-    MTL::Device* GetMTL4Device() const { return m_device.Get(); }
+    MTL::Device* MTLDevice() const { return m_device.Get(); }
+    MTL::Device* operator->() const noexcept { return m_device.operator->(); }
 };
 
 } // namespace mini::metal4

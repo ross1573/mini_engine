@@ -12,25 +12,19 @@ private:
     String m_name;
 
 public:
-    ShaderLibrary(MTL::Device* device, StringView name);
+    ShaderLibrary(Device const& device, StringView name);
 
-    String Name() const;
+    void SetName(StringView name);
 
-    MTL::Library* GetMTLLibrary() const noexcept;
+    bool Valid() const noexcept { return m_library.Valid(); }
+    String Name() const { return m_name; }
+
+    MTL::Library* MTLLibrary() const noexcept { return m_library.Get(); }
+    MTL::Library* operator->() const noexcept { return m_library.operator->(); }
 
 private:
     String GetFilePath(StringView name) const;
 };
-
-inline String ShaderLibrary::Name() const
-{
-    return m_name;
-}
-
-inline MTL::Library* ShaderLibrary::GetMTLLibrary() const noexcept
-{
-    return m_library.Get();
-}
 
 export class METAL4_API ShaderFunction {
 private:
@@ -38,37 +32,13 @@ private:
     String m_name;
 
 public:
-    ShaderFunction(ShaderLibrary const& lib, StringView name);
+    ShaderFunction() = default;
+    ShaderFunction(ShaderLibrary const& lib, StringView const& name);
 
-    String Name() const;
+    bool Valid() const noexcept { return m_descriptor.Valid(); }
+    String Name() const { return m_name; }
 
-    MTL4::FunctionDescriptor* GetMTLFunctionDescriptor() const noexcept;
-};
-
-inline String ShaderFunction::Name() const
-{
-    return m_name;
-}
-
-inline MTL4::FunctionDescriptor* ShaderFunction::GetMTLFunctionDescriptor() const noexcept
-{
-    return m_descriptor.Get();
-}
-
-export class METAL4_API VertexFunction final : public ShaderFunction {
-public:
-    VertexFunction(ShaderLibrary lib, StringView name)
-        : ShaderFunction(lib, name)
-    {
-    }
-};
-
-export class METAL4_API FragmentFunction final : public ShaderFunction {
-public:
-    FragmentFunction(ShaderLibrary lib, StringView name)
-        : ShaderFunction(lib, name)
-    {
-    }
+    MTL4::FunctionDescriptor* MTL4FunctionDescriptor() const noexcept { return m_descriptor.Get(); }
 };
 
 } // namespace mini::metal4

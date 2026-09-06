@@ -6,43 +6,56 @@ import :shader;
 
 namespace mini::metal4 {
 
-ShaderLibrary::ShaderLibrary(MTL::Device* device, StringView name)
-    : m_name(name)
+ShaderLibrary::ShaderLibrary(Device const& device, StringView name)
 {
     String filePath = GetFilePath(name);
     SharedPtr<NS::String> path = ToNSString(filePath);
-    SharedPtr<NS::URL> url = TransferShared(NS::URL::fileURLWithPath(path.Get()));
+    NS::URL* url = NS::URL::fileURLWithPath(path.Get());
     NS::Error* error;
 
-    m_library = TransferShared(device->newLibrary(url.Get(), &error));
-    ENSURE(error == nullptr, error, "failed to load shader library at {}", filePath.Data()) {
-        m_library.Reset();
-        error->release();
+    m_library = TransferShared(device->newLibrary(url, &error));
+    ENSURE(m_library, error, "failed to load shader library at {}", filePath.Data()) {
         return;
     }
+
+    SetName(name);
+}
+
+void ShaderLibrary::SetName(StringView name)
+{
+    if (m_name == name) {
+        return;
+    }
+
+    m_name = SetLabel(m_library, name);
 }
 
 String ShaderLibrary::GetFilePath(StringView name) const
 {
-    StringView path = SHADER_LIBRARY_SEARCH_PATH;
+    StringView res = NS::Bundle::mainBundle()->resourcePath()->utf8String();
     StringView ext = SHADER_LIBRARY_EXTENSION;
-    String file(path.Size() + name.Size() + ext.Size() + 2);
+    String file(res.Size() + name.Size() + ext.Size() + 1);
 
-    file.Append(path);
+    file.Append(res);
     file.Push('/');
     file.Append(name);
-    file.Push('.');
     file.Append(ext);
     return file;
 }
 
-ShaderFunction::ShaderFunction(ShaderLibrary const& lib, StringView name)
-    : m_name(name)
+ShaderFunction::ShaderFunction(ShaderLibrary const& lib, StringView const& name)
 {
     SharedPtr<NS::String> nsName = ToNSString(name);
-    MTL4::LibraryFunctionDescriptor* libFuncDesc = MTL4::LibraryFunctionDescriptor::alloc()->init();
-    libFuncDesc->setLibrary(lib.GetMTLLibrary());
-    libFuncDesc->setName(nsName.Get());
+    SharedPtr<MTL4::LibraryFunctionDescriptor> desc = TransferShared(MTL4::LibraryFunctionDescriptor::alloc());
+    ENSURE(desc) {
+        return;
+    }
+
+    desc->init();
+    desc->setLibrary(lib.MTLLibrary());
+    desc->setName(nsName.Get());
+
+    m_descriptor = StaticCast<MTL4::FunctionDescriptor>(MoveArg(desc));
 }
 
 } // namespace mini::metal4

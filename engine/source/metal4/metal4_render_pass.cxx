@@ -3,6 +3,8 @@ export module mini.metal4:render_pass;
 import mini.core;
 import mini.graphics;
 import :buffer;
+import :texture;
+import :render_pipeline;
 
 namespace mini::metal4 {
 
@@ -17,7 +19,7 @@ private:
     MTL::Texture* m_targetTexture;
 
 public:
-    RenderPass(MTL::Device*, MTL4::CommandBuffer*) noexcept;
+    RenderPass(Device const&, MTL4::CommandBuffer*) noexcept;
     RenderPass(RenderPass&&) noexcept = default;
     ~RenderPass() noexcept;
 
@@ -30,6 +32,7 @@ public:
     void DrawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
 
     void SetVertexBuffer(Buffer const& buffer, uint64 index);
+    void SetPipelineState(RenderPipelineState const& state);
     void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
     void SetScissorRect(RectInt const&) noexcept;
 
