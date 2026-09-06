@@ -46,6 +46,9 @@ inline constexpr decltype(auto) AddressOf(T& ele)
     return BUILTIN_ADDRESS_OF(ele);
 }
 
+export template <typename T>
+inline constexpr decltype(auto) AddressOf(T const&& rval) = deleted_function("cannot get address of r-value");
+
 template <typename T, typename U>
 consteval bool IsTriviallyOperatable()
 {

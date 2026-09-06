@@ -73,8 +73,7 @@ export template <typename T, typename U>
 concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
 
 export template <typename From, typename To>
-concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> &&
-                            ConvertibleToT<From const volatile*, To const volatile*>;
+concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From const volatile*, To const volatile*>;
 
 export template <typename T, typename U>
 concept AssignableFromT = std::assignable_from<T, U>;
@@ -139,8 +138,7 @@ concept NoThrowCopyableT = NoThrowMovableT<T> && std::is_nothrow_copy_constructi
                            std::is_nothrow_copy_assignable_v<T>;
 
 export template <typename T>
-concept TrivialT = std::is_trivially_copyable_v<T> && NoThrowDefaultConstructibleT<T> &&
-                   NoThrowCopyableT<T>;
+concept TrivialT = std::is_trivially_copyable_v<T> && NoThrowDefaultConstructibleT<T> && NoThrowCopyableT<T>;
 
 } // namespace mini
 
@@ -158,6 +156,11 @@ concept NoThrowCallableT = std::is_nothrow_invocable_v<T, Args...>;
 } // namespace mini
 
 namespace mini {
+
+export template <typename T>
+concept ValidatableT = requires(T ele) {
+    { ele.Valid() } -> SameAsT<bool>;
+};
 
 export template <typename T>
 concept EqualityComparableT = std::equality_comparable<T>;
