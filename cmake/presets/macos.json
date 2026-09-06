@@ -26,6 +26,11 @@
         {
             "name": "macos-clang",
             "configurePreset": "macos-clang"
+        },
+        {
+            "name": "macos-metal-shader",
+            "configurePreset": "macos-clang",
+            "targets": [ "mini.metal.shader" ]
         }
     ]
 }

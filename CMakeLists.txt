@@ -21,6 +21,7 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 set(ENGINE_PROJECT_DIR "${CMAKE_SOURCE_DIR}")
 set(ENGINE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/engine/source")
+set(ENGINE_SHADER_DIR "${CMAKE_SOURCE_DIR}/engine/shader")
 set(ENGINE_EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/engine/external")
 
 set(BUILD_TYPES "Debug" "Develop" "Release")
@@ -49,6 +50,7 @@ set_output_directory()
 
 add_subdirectory(${ENGINE_EXTERNAL_DIR})
 add_subdirectory(${ENGINE_SOURCE_DIR})
+add_subdirectory(${ENGINE_SHADER_DIR})
 
 if (INCLUDE_TEST)
     enable_testing()
