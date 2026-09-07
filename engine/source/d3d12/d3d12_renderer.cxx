@@ -21,15 +21,13 @@ public:
     Renderer(ID3D12Device*);
     ~Renderer();
 
-    bool Initialize() final;
-
-    void BeginRender() final;
-    void EndRender() final;
     void WaitForIdle() final;
+    void Render() final;
     void Execute() final;
 
-    void SetViewport(Rect const&, float32, float32) final;
-    void SetScissorRect(RectInt const&) final;
+    // TODO: move to render pass
+    void SetViewport(Rect const&, float32, float32);
+    void SetScissorRect(RectInt const&);
 
     CommandQueue* GetCommandQueue() const { return m_commandQueue.Get(); }
     ID3D12GraphicsCommandList4* GetCommandList() const { return m_commandList; }

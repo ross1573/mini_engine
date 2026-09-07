@@ -12,8 +12,7 @@ private:
 public:
     Device();
 
-    bool Initialize() final;
-    bool Valid() const noexcept { return m_device.Valid(); }
+    bool Valid() const noexcept final { return m_device.Valid(); }
 
     graphics::SwapChain* CreateSwapChain() final;
     graphics::Renderer* CreateRenderer() final;

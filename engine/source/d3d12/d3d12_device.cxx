@@ -20,7 +20,7 @@ private:
 public:
     Device();
 
-    bool Initialize() final;
+    virtual bool Valid() const noexcept { return m_device.Valid(); }
 
     void CreateSwapChainBuffer(SwapChainBuffer&);
     graphics::SwapChain* CreateSwapChain() final;

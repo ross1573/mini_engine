@@ -41,12 +41,7 @@ Renderer::Renderer(Device const& device)
     m_renderPipelineStates.Push(MoveArg(pipelineState));
 }
 
-bool Renderer::Initialize()
-{
-    return true;
-}
-
-void Renderer::BeginRender()
+void Renderer::Render()
 {
     m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
 
@@ -64,15 +59,10 @@ void Renderer::BeginRender()
     m_commandAllocator->reset();
     m_commandBuffer->beginCommandBuffer(m_commandAllocator.Get());
 
-    RenderPass* renderPass = m_renderPasses.Begin().Address();
-    renderPass->Begin(targetTexture, Color::Clear());
-    renderPass->SetPipelineState(*m_renderPipelineStates.Begin());
-    renderPass->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
-}
-
-void Renderer::EndRender()
-{
     for (RenderPass& renderPass : m_renderPasses) {
+        renderPass.Begin(targetTexture, Color::Clear());
+        renderPass.SetPipelineState(*m_renderPipelineStates.Begin());
+        renderPass.DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
         renderPass.End();
     }
 
@@ -100,20 +90,6 @@ void Renderer::Execute()
     m_commandQueue->signalDrawable(drawable);
 
     m_autoReleasePool.Reset();
-}
-
-void Renderer::SetViewport(Rect const& rect, float32 near, float32 far)
-{
-    for (RenderPass& renderPass : m_renderPasses) {
-        renderPass.SetViewport(rect, near, far);
-    }
-}
-
-void Renderer::SetScissorRect(RectInt const& rect)
-{
-    for (RenderPass& renderPass : m_renderPasses) {
-        renderPass.SetScissorRect(rect);
-    }
 }
 
 } // namespace mini::metal4

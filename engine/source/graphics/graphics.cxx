@@ -26,12 +26,10 @@ public:
     ~Graphics() noexcept;
 
     bool LoadModule(StringView);
+    void RenderFrame();
 
-    void BeginFrame();
-    void EndFrame();
-
-    API GetCurrentAPI() const noexcept { return m_currentAPI; }
-    Module<Interface> GetCurrentModule() const noexcept { return m_currentModule; }
+    API CurrentAPI() const noexcept { return m_currentAPI; }
+    Module<Interface> CurrentModule() const noexcept { return m_currentModule; }
 
     Device* GetDevice() const noexcept { return m_device.Get(); }
     SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }

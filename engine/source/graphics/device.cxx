@@ -10,7 +10,7 @@ export class GRAPHICS_API Device {
 public:
     virtual ~Device() = default;
 
-    virtual bool Initialize() = 0;
+    virtual bool Valid() const noexcept = 0;
 
     virtual SwapChain* CreateSwapChain() = 0;
     virtual Renderer* CreateRenderer() = 0;

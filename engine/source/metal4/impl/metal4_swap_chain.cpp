@@ -14,12 +14,7 @@ SwapChain::SwapChain(MTL::Device* device)
     ASSERT(m_layer, "failed to retrieve MetalLayer object");
 
     m_layer->setDevice(device);
-}
-
-bool SwapChain::Initialize()
-{
     interface->GetWindow()->SetMetalLayer(m_layer.Get());
-    return true;
 }
 
 void SwapChain::Present()

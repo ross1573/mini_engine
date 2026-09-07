@@ -32,10 +32,6 @@ SwapChain::SwapChain()
     , m_width(0)
     , m_height(0)
 {
-}
-
-bool SwapChain::Initialize()
-{
     uint8 bufferCount = options::bufferCount;
     bool fullscreen = options::fullscreen;
     m_vSync = options::vsync;
@@ -77,14 +73,13 @@ bool SwapChain::Initialize()
                                            nullptr,
                                            &swapChain),
            "failed to create DXGI swapchain") {
-        return false;
+        return;
     }
 
     m_swapChain = DynamicCast<IDXGISwapChain3>(swapChain);
-    ENSURE(m_swapChain, "IDXGISwapChain3 not supported") return false;
+    ENSURE(m_swapChain, "IDXGISwapChain3 not supported") return;
 
     CreateBuffers(bufferCount);
-    return true;
 }
 
 void SwapChain::Present()

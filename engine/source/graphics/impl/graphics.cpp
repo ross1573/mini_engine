@@ -45,16 +45,10 @@ bool Graphics::LoadModule(StringView moduleName)
     return true;
 }
 
-void Graphics::BeginFrame()
+void Graphics::RenderFrame()
 {
-    m_renderer->BeginRender();
-}
-
-void Graphics::EndFrame()
-{
-    m_renderer->EndRender();
+    m_renderer->Render();
     m_renderer->Execute();
-
     m_swapChain->Present();
 }
 
@@ -65,7 +59,7 @@ bool Graphics::IsDeviceCurrent() noexcept
 
 bool Graphics::IsDeviceCurrent(API api) noexcept
 {
-    return interface->GetDevice() != nullptr && interface->GetCurrentAPI() == api;
+    return interface->GetDevice() != nullptr && interface->CurrentAPI() == api;
 }
 
 void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)

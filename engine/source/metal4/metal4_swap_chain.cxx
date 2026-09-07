@@ -14,7 +14,7 @@ private:
 public:
     SwapChain(MTL::Device*);
 
-    bool Initialize() final;
+    bool Valid() const noexcept final { return m_layer.Valid(); }
     void Present() final;
 
     void ResizeBackBuffer(uint32, uint32, bool) final;

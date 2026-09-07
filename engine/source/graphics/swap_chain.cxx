@@ -13,7 +13,7 @@ protected:
 public:
     virtual ~SwapChain() = default;
 
-    virtual bool Initialize() = 0;
+    virtual bool Valid() const noexcept = 0;
     virtual void Present() = 0;
 
     virtual void ResizeBackBuffer(uint32, uint32, bool) = 0;

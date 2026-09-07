@@ -13,15 +13,6 @@ Device::Device()
 {
 }
 
-bool Device::Initialize()
-{
-    ENSURE(m_device, "Metal4 device not created") {
-        return false;
-    }
-
-    return true;
-}
-
 graphics::SwapChain* Device::CreateSwapChain()
 {
     return new SwapChain(m_device.Get());

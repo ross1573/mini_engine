@@ -8,15 +8,9 @@ export class GRAPHICS_API Renderer {
 public:
     virtual ~Renderer() = default;
 
-    virtual bool Initialize() = 0;
-
-    virtual void BeginRender() = 0;
-    virtual void EndRender() = 0;
     virtual void WaitForIdle() = 0;
+    virtual void Render() = 0;
     virtual void Execute() = 0;
-
-    virtual void SetViewport(Rect const&, float32, float32) = 0;
-    virtual void SetScissorRect(RectInt const&) = 0;
 
 protected:
     Renderer() = default;

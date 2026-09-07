@@ -18,12 +18,6 @@ Device::Device()
     , m_DSVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024)
     , m_SRVAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024)
 {
-}
-
-bool Device::Initialize()
-{
-    ASSERT(m_factory == nullptr, "DXGIFactory not released");
-
     uint32 debugFlag = options::debugLayer ? DXGI_CREATE_FACTORY_DEBUG : 0;
 
     VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&m_factory)));
@@ -33,19 +27,22 @@ bool Device::Initialize()
     }
 
     CreateDevice();
-    ENSURE(m_device, "D3D12 device not created") {
-        return false;
-    }
+    ENSURE(m_device, "D3D12 device not created") goto init_failed;
 
     if (debugFlag) {
         SetDebugLayerInfo();
     }
 
-    ENSURE(m_RTVAllocator.Initialize(m_device), "RTV allocator init failed") return false;
-    ENSURE(m_DSVAllocator.Initialize(m_device), "DSV allocator init failed") return false;
-    ENSURE(m_SRVAllocator.Initialize(m_device), "SRV allocator init failed") return false;
+    ENSURE(m_RTVAllocator.Initialize(m_device), "RTV allocator init failed") goto init_failed;
+    ENSURE(m_DSVAllocator.Initialize(m_device), "DSV allocator init failed") goto init_failed;
+    ENSURE(m_SRVAllocator.Initialize(m_device), "SRV allocator init failed") goto init_failed;
+    return;
 
-    return true;
+init_failed:
+    m_device.Reset();
+    m_adapter.Reset();
+    m_factory.Reset();
+    return;
 }
 
 graphics::SwapChain* Device::CreateSwapChain()
