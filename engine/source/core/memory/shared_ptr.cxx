@@ -292,7 +292,15 @@ inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 template <NonRefT T>
 inline constexpr bool SharedPtr<T>::Valid() const noexcept
 {
-    return m_ptr != nullptr;
+    if (m_ptr == nullptr) {
+        return false;
+    }
+
+    if constexpr (ValidatableT<T>) {
+        return m_ptr->Valid();
+    }
+
+    return true;
 }
 
 template <NonRefT T>

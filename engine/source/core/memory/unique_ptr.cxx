@@ -134,7 +134,15 @@ inline constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::Get() const noe
 template <NonRefT T, DeleterT<T> DelT>
 inline constexpr bool UniquePtr<T, DelT>::Valid() const noexcept
 {
-    return m_ptr != nullptr;
+    if (m_ptr == nullptr) {
+        return false;
+    }
+
+    if constexpr (ValidatableT<T>) {
+        return m_ptr->Valid();
+    }
+
+    return true;
 }
 
 template <NonRefT T, DeleterT<T> DelT>
