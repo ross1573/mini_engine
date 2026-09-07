@@ -13,11 +13,11 @@
 #endif
 
 #if NOASSERT
-#  define VERIFY_INNER(expr)                                  \
-      if (::mini::debug::EvaluateExpr(expr)) [[unlikely]] { }
+#  define VERIFY_INNER(expr)                                           \
+      if (::mini::debug::EvaluateExpr(expr) == false) [[unlikely]] { }
 
 #  define ENSURE_INNER(expr, var, ...)                                \
-      const bool var = !::mini::debug::EvaluateExpr(expr);            \
+      const bool var = ::mini::debug::EvaluateExpr(expr) == false;    \
       if (var) [[unlikely]] {                                         \
           ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
       }                                                               \
@@ -28,7 +28,7 @@
 #  define ENSURE(expr, ...) ENSURE_INNER(expr, CONCAT(ensure_, __COUNTER__) __VA_OPT__(, ) __VA_ARGS__)
 #else
 #  define ENSURE_INNER(expr, var, ...)                                \
-      const bool var = !::mini::debug::EvaluateExpr(expr);            \
+      const bool var = ::mini::debug::EvaluateExpr(expr) == false;    \
       if (var) [[unlikely]] {                                         \
           ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
           BUILTIN_ASSERT();                                           \

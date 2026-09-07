@@ -43,7 +43,7 @@ ModuleHandle::~ModuleHandle() noexcept
 
 bool ModuleHandle::Valid() const noexcept
 {
-    return m_policy->validator != nullptr && m_policy->validator(m_nativeModule);
+    return m_policy->validator == nullptr || m_policy->validator(m_nativeModule);
 }
 
 bool ModuleHandle::AtExit(CallbackFunc func) noexcept
@@ -179,7 +179,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 {
     RefIterator refIter = FindRegistered(name);
-    if (refIter != m_uninitialized.End()) {
+    if (refIter.Valid()) {
         return StaticCast<ModuleHandle>(MoveArg(refIter->handle));
     }
 

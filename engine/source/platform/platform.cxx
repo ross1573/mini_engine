@@ -20,6 +20,7 @@ public:
     Platform() noexcept;
     ~Platform() noexcept;
 
+    bool LoadModule();
     void PollEvents();
 
     Handle* GetHandle() const noexcept { return m_handle.Get(); }

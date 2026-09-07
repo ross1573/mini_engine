@@ -33,7 +33,12 @@
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
-            "name": "macos-clang-mono",
+            "name": "macos-clang-mono-debug",
+            "inherits": [ "settings", "mono", "macos-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
+            "name": "macos-clang-mono-release",
             "inherits": [ "settings", "mono", "macos-clang" ],
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },

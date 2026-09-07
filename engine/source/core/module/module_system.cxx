@@ -246,7 +246,7 @@ inline Module<T>::Module(Module<U>&& other) noexcept
 template <ModuleInterfaceT T>
 inline bool Module<T>::Valid() const noexcept
 {
-    return m_handle != nullptr;
+    return m_handle.Valid();
 }
 
 template <ModuleInterfaceT T>
@@ -282,19 +282,19 @@ inline void Module<T>::Release() noexcept
 template <ModuleInterfaceT T>
 inline bool Module<T>::AtExit(CallbackFunc func) noexcept
 {
-    return m_handle != nullptr ? m_handle->AtExit(func) : false;
+    return m_handle.Valid() ? m_handle->AtExit(func) : false;
 }
 
 template <ModuleInterfaceT T>
 inline bool Module<T>::RemoveAtExit(CallbackFunc func) noexcept
 {
-    return m_handle != nullptr ? m_handle->RemoveAtExit(func) : false;
+    return m_handle.Valid() ? m_handle->RemoveAtExit(func) : false;
 }
 
 template <ModuleInterfaceT T>
 inline String Module<T>::LibraryName() const noexcept
 {
-    return m_handle != nullptr ? m_handle->LibraryName() : String();
+    return m_handle.Valid() ? m_handle->LibraryName() : String();
 }
 
 template <ModuleInterfaceT T>

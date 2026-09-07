@@ -10,17 +10,6 @@ namespace mini {
 Platform::Platform() noexcept
 {
     platform::interface = this;
-    m_nativeModule.Load(MODULE_NATIVE);
-
-    ENSURE(m_nativeModule.Valid(), "failed to load platform module") {
-        return;
-    }
-
-    m_handle = UniquePtr(m_nativeModule->CreateHandle());
-    m_window = UniquePtr(m_nativeModule->CreateWindow());
-
-    ASSERT(m_handle, "failed to create platform handle");
-    ASSERT(m_window, "failed to create window handle");
 }
 
 Platform::~Platform() noexcept
@@ -29,6 +18,22 @@ Platform::~Platform() noexcept
     m_handle.Reset();
 
     platform::interface = nullptr;
+}
+
+bool Platform::LoadModule()
+{
+    m_nativeModule.Load(MODULE_NATIVE);
+    ENSURE(m_nativeModule.Valid(), "failed to load platform module") {
+        return false;
+    }
+
+    m_handle = UniquePtr(m_nativeModule->CreateHandle());
+    m_window = UniquePtr(m_nativeModule->CreateWindow());
+
+    ENSURE(m_handle, "failed to create platform handle") return false;
+    ENSURE(m_window, "failed to create window handle") return false;
+
+    return true;
 }
 
 void Platform::PollEvents()
