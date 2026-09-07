@@ -26,9 +26,6 @@ public:
     Window* GetWindow() const noexcept { return m_window.Get(); }
 
     static void AlertError(StringView const&);
-
-protected:
-    bool Initialize() final;
 };
 
 } // namespace mini

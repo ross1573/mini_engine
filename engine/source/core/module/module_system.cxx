@@ -5,6 +5,7 @@ import :assert;
 import :utility_operation;
 import :memory_operation;
 import :array;
+import :format;
 import :string;
 import :string_view;
 import :deleter;
@@ -23,8 +24,6 @@ public:
     virtual ~ModuleInterface() noexcept = default;
 
 protected:
-    virtual bool Initialize() { return true; }
-
     ModuleInterface(ModuleInterface const&) = delete;
     ModuleInterface(ModuleInterface&&) = delete;
 
@@ -66,9 +65,9 @@ public:
     bool AtExit(CallbackFunc) noexcept;
     bool RemoveAtExit(CallbackFunc) noexcept;
 
-    String LibraryName() const noexcept;
-    NativeModule NativeHandle() noexcept;
-    ModuleInterface* GetInterface() const noexcept;
+    String LibraryName() const noexcept { return m_libraryName; }
+    NativeModule NativeHandle() noexcept { return m_nativeModule; }
+    ModuleInterface* GetInterface() const noexcept { return m_interface.Get(); }
 
     ModuleHandle& operator=(ModuleHandle&&) noexcept = default;
 
@@ -86,34 +85,7 @@ public:
     };
 
 public:
-    DynamicModuleHandle(StringView name) noexcept
-        : ModuleHandle(&policy, nullptr, nullptr, name)
-    {
-        String path = BuildModulePath(name);
-        m_nativeModule = LoadModule(path);
-        ENSURE(m_nativeModule, "failed to load module {}", name.Data()) {
-            return;
-        }
-
-        StartFunc startFunc = GetFunction<ModuleInterface*>("__start_module");
-        ENSURE(startFunc, "failed to locate start function of module {}", name.Data()) {
-            return;
-        }
-
-        ModuleInterface* interface = nullptr;
-        try {
-            interface = startFunc();
-        } catch (...) {
-        }
-
-        ENSURE(interface, "failed to get interface object of module {}", name.Data()) {
-            UnloadModule(m_nativeModule);
-            m_nativeModule = nullptr;
-            return;
-        }
-
-        m_interface = UniquePtr(interface);
-    }
+    DynamicModuleHandle(StringView name) noexcept;
 
     template <typename RetT, typename... Args, typename FuncT = RetT (*)(Args...)>
     FuncT GetFunction(StringView name)
@@ -226,12 +198,12 @@ template <ModuleInterfaceT T>
 inline Module<T>::Module(StringView name)
 {
     m_handle = Handle::Load(name);
-    ENSURE(m_handle, "failed to load module {}", name.Data()) {
+    ENSURE(m_handle, "failed to load module {}", name) {
         return;
     }
 
     m_interface = QueryInterface();
-    ENSURE(m_interface, "interface not found for {}", name.Data()) {
+    ENSURE(m_interface, "interface not found for {}", name) {
         m_handle.Reset();
         return;
     }
@@ -354,12 +326,14 @@ bool Module<T>::HandleEquals(Module<U> const& other) const noexcept
 template <ModuleInterfaceT T>
 inline Module<T>::InterfaceReference Module<T>::operator*() const noexcept
 {
+    ASSERT(m_interface, "null dereference of module {}", LibraryName());
     return *m_interface;
 }
 
 template <ModuleInterfaceT T>
 inline Module<T>::InterfacePointer Module<T>::operator->() const noexcept
 {
+    ASSERT(m_interface, "null dereference of module {}", LibraryName());
     return m_interface;
 }
 

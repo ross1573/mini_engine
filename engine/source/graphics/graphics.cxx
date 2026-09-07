@@ -25,6 +25,8 @@ public:
     Graphics() noexcept;
     ~Graphics() noexcept;
 
+    bool LoadModule(StringView);
+
     void BeginFrame();
     void EndFrame();
 
@@ -39,9 +41,6 @@ public:
 
     static bool IsDeviceCurrent() noexcept;
     static bool IsDeviceCurrent(API) noexcept;
-
-private:
-    bool Initialize() final;
 };
 
 } // namespace mini

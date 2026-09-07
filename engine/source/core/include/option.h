@@ -19,12 +19,10 @@ inline constexpr unsigned char bufferCount = 2;
 
 #if PLATFORM_WINDOWS
 inline constexpr char const* graphicsModule = "mini.d3d12";
-inline constexpr char const* platformModule = "mini.windows";
 #elif PLATFORM_MACOS
 inline constexpr char const* graphicsModule = "mini.metal4";
-inline constexpr char const* platformModule = "mini.macos";
 #else
-inline constexpr char const* graphicsAPI = nullptr;
+inline constexpr char const* graphicsModule = nullptr;
 #endif
 
 inline constexpr bool debugLayer = true;

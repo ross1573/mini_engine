@@ -10,6 +10,9 @@ export class ENGINE_API Engine final : public ModuleInterface {
 private:
     bool m_running;
 
+    Module<Platform> m_platform;
+    Module<Graphics> m_graphics;
+
 public:
     Engine();
     ~Engine() noexcept;

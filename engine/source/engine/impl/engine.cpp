@@ -12,6 +12,8 @@ namespace mini {
 
 Engine::Engine()
     : m_running(false)
+    , m_platform("mini.platform")
+    , m_graphics("mini.graphics")
 {
     ASSERT(engine == nullptr, "another instance of engine is created");
     engine = this;
@@ -26,28 +28,15 @@ Engine::~Engine() noexcept
 void Engine::Launch()
 {
     ENSURE(m_running == false, "engine is already running") return;
+    ENSURE(m_graphics->LoadModule(options::graphicsModule)) return;
 
-    Module<Platform> platform("mini.platform");
-    Module<Graphics> graphics("mini.graphics");
-
-    platform->GetWindow()->Show();
-    platform->PollEvents();
+    m_platform->GetWindow()->Show();
+    m_platform->PollEvents();
 
     m_running = true;
     while (m_running) {
-        graphics->BeginFrame();
-        {
-            platform::Window* window = platform->GetWindow();
-            RectInt windowSize = window->GetSize();
-            Rect windowRect(windowSize);
-
-            graphics::Renderer* renderer = graphics->GetRenderer();
-            renderer->SetViewport(windowRect, 0.1f, 100.f);
-            renderer->SetScissorRect(windowSize);
-        }
-        graphics->EndFrame();
-
-        platform->PollEvents();
+        m_graphics->RenderFrame();
+        m_platform->PollEvents();
     }
 }
 

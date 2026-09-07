@@ -22,46 +22,26 @@ Graphics::~Graphics() noexcept
     graphics::interface = nullptr;
 }
 
-bool Graphics::Initialize()
+bool Graphics::LoadModule(StringView moduleName)
 {
-    m_currentModule.Load(mini::options::graphicsModule);
-    ENSURE(m_currentModule.Valid(), "failed to load graphics module") {
-        return false;
-    }
+    m_currentModule.Load(moduleName);
 
-    String moduleName = m_currentModule.LibraryName();
-    ENSURE(m_currentModule.GetInterface(), "module does not implement mini::graphics::Interface") {
-        return false;
-    }
+    ENSURE(m_currentModule.Valid(), "failed to load graphics module") return false;
+    ENSURE(m_currentModule.GetInterface(), "module does not implement mini::graphics::Interface") return false;
+
     LogInfo("{} module loaded", moduleName);
 
-    Device* device = m_currentModule->CreateDevice();
-    ENSURE(device, "failed to create graphic device") {
-        return false;
-    }
+    m_device = UniquePtr(m_currentModule->CreateDevice());
+    ENSURE(m_device, "failed to create graphic device") return false;
     LogInfo("{} device created", moduleName);
 
-    m_device = UniquePtr(device);
     m_currentAPI = m_device->GetAPI();
-
-    ENSURE(m_currentAPI != API::Null, "unknown api") return false;
-    ENSURE(m_device->Initialize(), "failed to initialize graphics device") {
-        return false;
-    }
-    LogInfo("{} device initialized", m_currentAPI);
-
     m_renderer = UniquePtr(m_device->CreateRenderer());
-    ENSURE(m_renderer && m_renderer->Initialize(), "Failed to create render context") {
-        return false;
-    }
-    LogInfo("{} render context initialized", m_currentAPI);
-
     m_swapChain = UniquePtr(m_device->CreateSwapChain());
-    ENSURE(m_swapChain && m_swapChain->Initialize(), "Failed to create swap chain") {
-        return false;
-    }
-    LogInfo("{} swap chain initialized", m_currentAPI);
 
+    ENSURE(m_renderer) return false;
+    ENSURE(m_swapChain) return false;
+    LogInfo("{} initialized", moduleName);
     return true;
 }
 
