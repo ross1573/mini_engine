@@ -32,9 +32,13 @@ public:
     ID3D12Device* GetD3D12Device() const { return m_device; }
 
 private:
-    void CreateDevice(D3D_FEATURE_LEVEL = D3D_FEATURE_LEVEL_11_0);
+    void CreateDevice(D3D_FEATURE_LEVEL,
+                      SharedPtr<IDXGIFactory4> const& factory,
+                      SharedPtr<IDXGIAdapter>& adapter,
+                      SharedPtr<ID3D12Device>& device);
+
     void EnableDebugLayer();
-    void SetDebugLayerInfo();
+    void SetDebugLayerInfo(SharedPtr<ID3D12Device>&);
 };
 
 } // namespace mini::d3d12

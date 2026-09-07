@@ -196,7 +196,7 @@ bool ModuleLoader::FindCircularDependency(StringView name)
     Array<StringView>::Iterator pendingIter = Find(m_pending.Begin(), m_pending.End(), name);
 
     ENSURE(pendingIter.Valid() == false,
-           "circular dependency detected while loading module {}. ({})",
+           "circular dependency detected while loading module {}. load order: {}",
            name,
            m_pending) {
         return true;

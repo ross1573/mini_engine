@@ -11,7 +11,7 @@ private:
 
 public:
     Macos() noexcept = default;
-    ~Macos() noexcept { m_handle = nullptr; }
+    ~Macos() noexcept final { m_handle = nullptr; }
 
 protected:
     platform::Handle* CreateHandle() final
@@ -20,10 +20,7 @@ protected:
         return m_handle;
     }
 
-    platform::Window* CreateWindow() final
-    {
-        return new macos::Window((cocoa::Application*)m_handle);
-    }
+    platform::Window* CreateWindow() final { return new macos::Window((cocoa::Application*)m_handle); }
 };
 
 } // namespace mini

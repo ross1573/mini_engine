@@ -8,13 +8,14 @@ using namespace mini::platform;
 namespace mini {
 
 Platform::Platform() noexcept
-    : m_nativeModule(MODULE_NATIVE)
 {
+    platform::interface = this;
+    m_nativeModule.Load(MODULE_NATIVE);
+
     ENSURE(m_nativeModule.Valid(), "failed to load platform module") {
         return;
     }
 
-    platform::interface = this;
     m_handle = UniquePtr(m_nativeModule->CreateHandle());
     m_window = UniquePtr(m_nativeModule->CreateWindow());
 

@@ -12,7 +12,7 @@ namespace mini {
 export class WINDOWS_API Windows final : public platform::Interface {
 public:
     Windows() noexcept;
-    ~Windows() noexcept;
+    ~Windows() noexcept final;
 
     windows::Handle* GetHandle() noexcept;
     windows::Window* GetWindow() noexcept;
