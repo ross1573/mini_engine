@@ -10,7 +10,7 @@ if (NOT BUILD_SHARED_LIBS)
     set_property(GLOBAL APPEND PROPERTY STATIC_INIT "__mini_core_start_module")
 endif()
 
-module_compile_defintions(mini.core 
+module_compile_definitions(mini.core 
     MODULE_OUTPUT_PREFIX="${CMAKE_SHARED_LIBRARY_PREFIX}"
     MODULE_OUTPUT_SUFFIX="${MODULE_OUTPUT_SUFFIX}${CMAKE_SHARED_LIBRARY_SUFFIX}"
 )

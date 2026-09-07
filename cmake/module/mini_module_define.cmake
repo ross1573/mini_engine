@@ -1,6 +1,6 @@
 include(module/mini_module_api)
 
-function (module_compile_defintions name)
+function (module_compile_definitions name)
     set_property(TARGET ${name} APPEND PROPERTY MODULE_DEFINITIONS "${ARGN}")
 endfunction()
 

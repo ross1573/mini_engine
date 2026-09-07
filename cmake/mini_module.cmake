@@ -10,7 +10,7 @@ function (_set_module_defines name)
     set(static_type_genexpr "$<STREQUAL:${target_type_genexpr},STATIC_LIBRARY>")
     set(module_static_genexpr "$<IF:${static_type_genexpr},true,false>")
 
-    module_compile_defintions(${name}
+    module_compile_definitions(${name}
         ${api_upper}_STATIC=${module_static_genexpr}
         MODULE_NAME="${name}"
         MODULE_PREFIX="${prefix}"
