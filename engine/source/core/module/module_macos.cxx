@@ -12,7 +12,7 @@ namespace mini {
 
 using NativeModuleHandle = void*;
 
-String BuildModulePath(StringView name)
+NativeModuleHandle LoadModule(StringView name)
 {
     StringView prefix = MODULE_OUTPUT_PREFIX;
     StringView suffix = MODULE_OUTPUT_SUFFIX;
@@ -22,12 +22,7 @@ String BuildModulePath(StringView name)
     modulePath.Append(name);
     modulePath.Append(suffix);
 
-    return modulePath;
-}
-
-NativeModuleHandle LoadModule(StringView path)
-{
-    return dlopen(path.Data(), RTLD_NOW | RTLD_LOCAL);
+    return dlopen(modulePath.Data(), RTLD_NOW | RTLD_LOCAL);
 }
 
 NativeModuleHandle LoadMainProgram()

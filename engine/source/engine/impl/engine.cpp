@@ -28,8 +28,6 @@ Engine::~Engine() noexcept
 void Engine::Launch()
 {
     ENSURE(m_running == false, "engine is already running") return;
-
-    ENSURE(m_platform->LoadModule()) return;
     ENSURE(m_graphics->LoadModule(options::graphicsModule)) return;
 
     m_platform->GetWindow()->Show();

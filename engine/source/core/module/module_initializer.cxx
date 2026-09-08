@@ -7,19 +7,24 @@ import :module_loader;
 
 namespace mini {
 
-export template <CallableWithReturnT<ModuleInterface*> FactoryT>
-class StaticModuleInitializer {
-private:
-    static_assert(NoThrowDefaultConstructibleT<FactoryT>,
-                  "factory must be nothrow default constructible");
+template <typename T>
+concept InterfaceFactoryT = BaseOfT<ModuleInterface, typename T::Interface> && //
+                            DefaultConstructibleT<typename T::Interface> &&    //
+                            NoThrowDefaultConstructibleT<T> &&                 //
+                            requires                                           //
+{
+    { T{ }.operator()() } -> SameAsT<ModuleInterface*>;
+};
 
+export class StaticModuleInitializer {
 public:
+    template <InterfaceFactoryT T>
     static void Register(StringView name)
     {
-        ModuleInterface* interface = FactoryT{}();
-        SharedPtr<StaticModuleHandle> handle = MakeShared<StaticModuleHandle>(name, interface);
-        g_moduleLoader.RegisterUninitialized(name, StaticCast<ModuleHandle>(MoveArg(handle)));
+        g_moduleLoader.Register(name, &T::operator());
     }
+
+    static void Register(StringView name, LoaderRef::Loader loader) { g_moduleLoader.Register(name, loader); }
 };
 
 } // namespace mini

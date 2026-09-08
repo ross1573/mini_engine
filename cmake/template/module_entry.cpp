@@ -5,7 +5,7 @@ import @import@;
 namespace {
 
 struct InterfaceFactory {
-private:
+public:
     typedef mini::ModuleInterface DefaultInterface;
     typedef @class@ Interface;
 
@@ -21,7 +21,7 @@ private:
                   "consider passing NO_MODULE_ENTRY when adding the module.");
 
 public:
-    mini::ModuleInterface* operator()() { return new Interface(); }
+    static mini::ModuleInterface* operator()() { return new Interface(); }
 };
 
 } // namespace
@@ -29,7 +29,7 @@ public:
 #if @api_upper@_STATIC
 extern "C" void __@api_full@_start_module()
 {
-    mini::StaticModuleInitializer<InterfaceFactory>::Register("@prefix@.@api@");
+    mini::StaticModuleInitializer::Register<InterfaceFactory>("@prefix@.@api@");
 }
 #else
 extern "C" @api_upper@_API mini::ModuleInterface* __start_module()

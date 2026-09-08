@@ -9,13 +9,15 @@ import :module_system;
 
 namespace mini {
 
-struct ModuleRef {
+struct LoaderRef {
 public:
-    SharedPtr<ModuleHandle> handle;
+    typedef ModuleInterface* (*Loader)();
+
+    Loader loader;
     String name;
 };
 
-struct ModuleWeakRef {
+struct ModuleRef {
 public:
     WeakPtr<ModuleHandle> handle;
     String name;
@@ -33,21 +35,20 @@ public:
 
 class CORE_API ModuleLoader {
 private:
-    typedef typename Array<ModuleRef>::Iterator RefIterator;
-    typedef typename Array<ModuleRef>::ConstIterator RefConstIterator;
-    typedef typename Array<ModuleWeakRef>::Iterator WeakRefIterator;
+    typedef typename Array<LoaderRef>::Iterator LoaderIterator;
+    typedef typename Array<ModuleRef>::Iterator ModuleIterator;
     typedef typename Array<StringView>::Iterator PendingIterator;
 
     // TODO: use hash map instead
-    Array<ModuleRef> m_uninitialized;
-    Array<ModuleWeakRef> m_modules;
+    Array<LoaderRef> m_registered;
+    Array<ModuleRef> m_modules;
     Array<StringView> m_pending;
 
 public:
-    RefIterator FindRegistered(StringView);
-    WeakRefIterator FindLoaded(StringView);
+    LoaderIterator FindRegistered(StringView);
+    ModuleIterator FindLoaded(StringView);
 
-    bool RegisterUninitialized(StringView, SharedPtr<ModuleHandle>);
+    bool Register(StringView, LoaderRef::Loader);
     SharedPtr<ModuleHandle> Load(StringView);
 
     size_t Count() const noexcept;

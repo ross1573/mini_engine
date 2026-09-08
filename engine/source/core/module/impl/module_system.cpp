@@ -80,8 +80,7 @@ SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
 DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     : ModuleHandle(&policy, nullptr, nullptr, name)
 {
-    String path = BuildModulePath(name);
-    m_nativeModule = LoadModule(path);
+    m_nativeModule = LoadModule(name);
     ENSURE(m_nativeModule, "failed to load module {}", name) {
         return;
     }
@@ -106,28 +105,28 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     m_interface = UniquePtr(interface);
 }
 
-ModuleLoader::RefIterator ModuleLoader::FindRegistered(StringView name)
+ModuleLoader::LoaderIterator ModuleLoader::FindRegistered(StringView name)
 {
-    return FindIf(m_uninitialized.Begin(), m_uninitialized.End(), [&name](ModuleRef const& ref) noexcept {
+    return FindIf(m_registered.Begin(), m_registered.End(), [&name](LoaderRef const& ref) noexcept {
         return ref.name == name;
     });
 }
 
-ModuleLoader::WeakRefIterator ModuleLoader::FindLoaded(StringView name)
+ModuleLoader::ModuleIterator ModuleLoader::FindLoaded(StringView name)
 {
-    return FindIf(m_modules.Begin(), m_modules.End(), [&name](ModuleWeakRef const& ref) noexcept {
+    return FindIf(m_modules.Begin(), m_modules.End(), [&name](ModuleRef const& ref) noexcept {
         return ref.name == name;
     });
 }
 
-bool ModuleLoader::RegisterUninitialized(StringView name, SharedPtr<ModuleHandle> handle)
+bool ModuleLoader::Register(StringView name, LoaderRef::Loader loader)
 {
-    RefIterator refIterator = FindRegistered(name);
-    if (refIterator.Valid()) {
+    LoaderIterator loaderIter = FindRegistered(name);
+    if (loaderIter.Valid()) {
         return false;
     }
 
-    m_uninitialized.Push(ModuleRef{ .handle = MoveArg(handle), .name = name });
+    m_registered.Push(LoaderRef{ .loader = loader, .name = name });
     return true;
 }
 
@@ -148,13 +147,13 @@ PendingGuard::~PendingGuard() noexcept
 
 SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 {
-    WeakRefIterator weakRefIter = FindLoaded(name);
-    if (weakRefIter.Valid()) {
-        if (weakRefIter->handle.Valid()) {
-            return StaticCast<ModuleHandle>(weakRefIter->handle.Lock());
+    ModuleIterator modulefIter = FindLoaded(name);
+    if (modulefIter.Valid()) {
+        if (modulefIter->handle.Valid()) {
+            return StaticCast<ModuleHandle>(modulefIter->handle.Lock());
         }
 
-        m_modules.RemoveAt(weakRefIter);
+        m_modules.RemoveAt(modulefIter);
     }
 
     if (FindCircularDependency(name)) {
@@ -172,15 +171,17 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
         return nullptr;
     }
 
-    m_modules.Push(ModuleWeakRef{ .handle = handle, .name = name });
+    m_modules.Push(ModuleRef{ .handle = handle, .name = name });
     return handle;
 }
 
 SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 {
-    RefIterator refIter = FindRegistered(name);
-    if (refIter.Valid()) {
-        return StaticCast<ModuleHandle>(MoveArg(refIter->handle));
+    LoaderIterator loaderIter = FindRegistered(name);
+    if (loaderIter.Valid()) {
+        ModuleInterface* interface = loaderIter->loader();
+        SharedPtr<StaticModuleHandle> staticHandle = MakeShared<StaticModuleHandle>(name, interface);
+        return StaticCast<ModuleHandle>(MoveArg(staticHandle));
     }
 
     SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
@@ -193,7 +194,7 @@ SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
 
 bool ModuleLoader::FindCircularDependency(StringView name)
 {
-    Array<StringView>::Iterator pendingIter = Find(m_pending.Begin(), m_pending.End(), name);
+    PendingIterator pendingIter = Find(m_pending.Begin(), m_pending.End(), name);
 
     ENSURE(pendingIter.Valid() == false,
            "circular dependency detected while loading module {}. load order: {}",
