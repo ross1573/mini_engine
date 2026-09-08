@@ -52,15 +52,15 @@
         },
         {
             "name": "windows-vs-develop",
-            "inherits": [ "windows-vs", "settings" ]
+            "inherits": [ "settings", "windows-vs" ]
         },
         {
             "name": "windows-vs-release",
-            "inherits": [ "windows-vs", "settings" ]
+            "inherits": [ "settings", "windows-vs" ]
         },
         {
             "name": "windows-vs-mono",
-            "inherits": [ "windows-vs", "settings" ]
+            "inherits": [ "settings", "mono", "windows-vs" ]
         }
     ]
 }
