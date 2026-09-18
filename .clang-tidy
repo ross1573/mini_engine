@@ -1,0 +1,43 @@
+---
+WarningsAsErrors: true
+Checks: [
+  bugprone-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  misc-*,
+  clang-analyzer-*,
+
+  modernize-avoid-c-style-cast,
+  modernize-concat-nested-namespaces,
+  modernize-loop-convert,
+  modernize-macro-to-enum,
+  modernize-pass-by-value,
+  modernize-redundant-void-arg,
+  modernize-replace-disallow-copy-and-assign-macro,
+  modernize-return-braced-init-list,
+  modernize-unary-static-assert,
+  modernize-use-bool-literals,
+  modernize-use-constraints,
+  modernize-use-designated-initializers,
+  modernize-use-equals-default,
+  modernize-use-equals-delete,
+  modernize-use-nodiscard,
+  modernize-use-noexcept,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-use-structured-binding,
+  
+  -readability-redundant-qualified-alias,
+  -readability-redundant-access-specifiers
+]
+
+CheckOptions:
+  - key: readability-identifier-length.MinimumVariableNameLength
+    value: 2
+  - key:  readability-identifier-length.MinimumParameterNameLength
+    value: 2
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'mini::StringView'
+  - key: bugprone-easily-swappable-parameters.IgnoredParameterNames
+    value: '"";iter;iterator;begin;end;first;last;lhs;rhs;index'

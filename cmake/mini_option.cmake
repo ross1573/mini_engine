@@ -62,6 +62,7 @@ macro (_clang_compile_options)
 
         -Wall
         -Wextra
+        -Werror
         -Wshadow
         -Wpedantic
         -Wparentheses
