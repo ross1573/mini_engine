@@ -19,6 +19,7 @@ function (add_metal_library target)
         FOLDER shader
         LANGUAGE Metal
         LINKER_LANGUAGE Metal
+        EXPORT_COMPILE_COMMANDS OFF
     )
 
     if (arg_STANDARD)

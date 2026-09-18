@@ -1,0 +1,28 @@
+---
+If:
+  PathMatch: [ 
+    engine/(source|external)/.*\.h,
+    engine/(source|external)/.*\.cpp,
+    engine/(source|external)/.*\.cxx,
+    (test|bench)/.*\.h,
+    (test|bench)/.*\.cpp,
+    (test|bench)/.*\.cxx,
+  ]
+Index:
+  StandardLibrary: false
+Diagnostics:
+  Suppress: [
+    module_decl_not_at_start,
+    global_module_introducer_not_at_start
+  ]
+  
+---
+If:
+  PathMatch: [
+    engine/(platform|shader)/.*,
+    (cmake|bin|lib|build|venv|opt)/.*,
+  ]
+Index:
+  Background: Skip
+Diagnostics:
+  Suppress: ["*"]

@@ -1,10 +1,10 @@
-# build
 bin/
 lib/
 out/
 opt/
 build/
 intermediate/
+.cache/
 
 # cmake
 CMakeLists.txt.user
