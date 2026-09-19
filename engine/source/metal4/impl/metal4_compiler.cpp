@@ -25,13 +25,18 @@ Compiler::Compiler(Device const& device, StringView name)
 {
     ASSERT(device);
 
+    SharedPtr<NS::String> label = ToNSString(name);
     SharedPtr<MTL4::CompilerDescriptor> desc = TransferShared(MTL4::CompilerDescriptor::alloc());
     ENSURE(desc) {
         return;
     }
 
     desc->init();
-    m_name = SetLabel(desc, name);
+    desc->setLabel(label.Get());
+
+    if (label.Valid()) {
+        m_name = name;
+    }
 
     InitWithDescriptor(device, desc);
 }

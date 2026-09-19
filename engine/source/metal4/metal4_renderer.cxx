@@ -30,7 +30,7 @@ public:
     void Render() final;
     void Execute() final;
 
-    MTL4::CommandQueue* MTL4CommandQueue() const noexcept;
+    [[nodiscard]] MTL4::CommandQueue* MTL4CommandQueue() const noexcept;
 };
 
 MTL4::CommandQueue* Renderer::MTL4CommandQueue() const noexcept

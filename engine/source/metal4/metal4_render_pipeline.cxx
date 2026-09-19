@@ -13,7 +13,6 @@ private:
     SharedPtr<MTL4::RenderPipelineDescriptor> m_renderPipelineDescriptor;
     ShaderFunction m_vertex;
     ShaderFunction m_fragment;
-    String m_name;
 
 public:
     RenderPipelineDescriptor();
@@ -26,13 +25,13 @@ public:
     void SetFragmentFunction(ShaderFunction const& fragment);
     void SetFragmentFunction(ShaderFunction&& fragment);
 
-    String Name() const { return m_name; }
-    ShaderFunction VertexFunction() const { return m_vertex; }
-    ShaderFunction FragmentFunction() const { return m_fragment; }
+    [[nodiscard]] String Name() const { return ToString(m_renderPipelineDescriptor->label()); }
+    [[nodiscard]] ShaderFunction VertexFunction() const { return m_vertex; }
+    [[nodiscard]] ShaderFunction FragmentFunction() const { return m_fragment; }
 
-    MTL4::RenderPipelineDescriptor* MTL4RenderPipelineDescriptor() const noexcept;
-    MTL4::FunctionDescriptor* MTL4VertexFunction() const noexcept;
-    MTL4::FunctionDescriptor* MTL4FragmentFunction() const noexcept;
+    [[nodiscard]] MTL4::RenderPipelineDescriptor* MTL4RenderPipelineDescriptor() const noexcept;
+    [[nodiscard]] MTL4::FunctionDescriptor* MTL4VertexFunction() const noexcept;
+    [[nodiscard]] MTL4::FunctionDescriptor* MTL4FragmentFunction() const noexcept;
 };
 
 inline MTL4::RenderPipelineDescriptor* RenderPipelineDescriptor::MTL4RenderPipelineDescriptor() const noexcept
@@ -53,16 +52,25 @@ inline MTL4::FunctionDescriptor* RenderPipelineDescriptor::MTL4FragmentFunction(
 export class METAL4_API RenderPipelineState {
 private:
     SharedPtr<MTL::RenderPipelineState> m_renderPipelineState;
-    String m_name;
 
 public:
     RenderPipelineState(Compiler const& compiler, RenderPipelineDescriptor const& descriptor);
 
-    bool Valid() const noexcept { return m_renderPipelineState.Valid(); }
-    String Name() const { return m_name; }
+    [[nodiscard]] bool Valid() const noexcept { return m_renderPipelineState.Valid(); }
+    [[nodiscard]] String Name() const { return ToString(m_renderPipelineState->label()); }
 
-    MTL::RenderPipelineState* MTLRenderPipelineState() const noexcept { return m_renderPipelineState.Get(); }
-    MTL::RenderPipelineState* operator->() const noexcept { return m_renderPipelineState.operator->(); }
+    [[nodiscard]] MTL::RenderPipelineState* MTLRenderPipelineState() const noexcept;
+    [[nodiscard]] MTL::RenderPipelineState* operator->() const noexcept;
 };
+
+inline MTL::RenderPipelineState* RenderPipelineState::MTLRenderPipelineState() const noexcept
+{
+    return m_renderPipelineState.Get();
+}
+
+inline MTL::RenderPipelineState* RenderPipelineState::operator->() const noexcept
+{
+    return m_renderPipelineState.operator->();
+}
 
 } // namespace mini::metal4

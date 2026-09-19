@@ -12,11 +12,11 @@ private:
 
 public:
     Buffer() noexcept = default;
-    explicit Buffer(MTL::Buffer*) noexcept;
-    Buffer(MTL::Buffer*, StringView);
+    explicit Buffer(MTL::Buffer* buffer) noexcept;
+    Buffer(MTL::Buffer* buffer, StringView name);
 
-    size_t Size() const;
-    uint64 GpuAddress() const;
+    [[nodiscard]] size_t Size() const;
+    [[nodiscard]] uint64 GpuAddress() const;
 };
 
 Buffer::Buffer(MTL::Buffer* buffer) noexcept

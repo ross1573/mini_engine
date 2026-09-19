@@ -32,18 +32,18 @@ Renderer::Renderer(Device const& device)
     }
 
     RenderPass renderPass(device, m_commandBuffer.Get());
-    m_renderPasses.Push(MoveArg(renderPass));
+    m_renderPasses.PushBack(MoveArg(renderPass));
 
     ShaderFunction vertexFunction(m_library, "VertexMain");
     ShaderFunction fragmentFunction(m_library, "FragmentMain");
     RenderPipelineDescriptor pipelineDesc(MoveArg(vertexFunction), MoveArg(fragmentFunction));
     RenderPipelineState pipelineState(m_compiler, pipelineDesc);
-    m_renderPipelineStates.Push(MoveArg(pipelineState));
+    m_renderPipelineStates.PushBack(MoveArg(pipelineState));
 }
 
 void Renderer::Render()
 {
-    m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
+    m_event->waitUntilSignaledValue(m_eventValue, ~uint64{ 0 });
 
     NS::AutoreleasePool* autoReleasePool = NS::AutoreleasePool::alloc();
     ENSURE(autoReleasePool != nullptr, "failed to allocate NS::AutoreleasePool") {
@@ -73,7 +73,7 @@ void Renderer::WaitForIdle()
 {
     m_eventValue++;
     m_commandQueue->signalEvent(m_event.Get(), m_eventValue);
-    m_event->waitUntilSignaledValue(m_eventValue, ~uint64(0));
+    m_event->waitUntilSignaledValue(m_eventValue, ~uint64{ 0 });
 }
 
 void Renderer::Execute()

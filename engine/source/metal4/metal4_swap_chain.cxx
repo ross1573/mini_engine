@@ -14,21 +14,21 @@ private:
 public:
     SwapChain(MTL::Device*);
 
-    bool Valid() const noexcept final { return m_layer.Valid(); }
+    [[nodiscard]] bool Valid() const noexcept final { return m_layer.Valid(); }
     void Present() final;
 
-    void ResizeBackBuffer(uint32, uint32, bool) final;
-    void SetBackBufferCount(uint8) final;
-    void SetVSync(uint8) final;
-    void SetFullScreen(bool) final;
+    void ResizeBackBuffer(uint32 x, uint32 y, bool fullscreen) final;
+    void SetBackBufferCount(uint8 count) final;
+    void SetVSync(uint8 vsync) final;
+    void SetFullScreen(bool fullscreen) final;
 
-    Vector2Int GetBackBufferSize() const final { return Vector2Int(0, 0); } // TODO
-    uint8 GetBackBufferCount() const final { return 0; }                    // TODO
-    uint8 GetVSync() const final { return 0; }                              // TODO
-    bool GetFullScreen() const final;
+    [[nodiscard]] Vector2Int GetBackBufferSize() const final { return { 0, 0 }; } // TODO
+    [[nodiscard]] uint8 GetBackBufferCount() const final { return 0; }            // TODO
+    [[nodiscard]] uint8 GetVSync() const final { return 0; }                      // TODO
+    [[nodiscard]] bool GetFullScreen() const final;
 
-    CA::MetalDrawable* GetCurrentDrawable();
-    CA::MetalLayer* GetMetalLayer() { return m_layer.Get(); }
+    [[nodiscard]] CA::MetalDrawable* GetCurrentDrawable();
+    [[nodiscard]] CA::MetalLayer* GetMetalLayer() { return m_layer.Get(); }
 };
 
 } // namespace mini::metal4

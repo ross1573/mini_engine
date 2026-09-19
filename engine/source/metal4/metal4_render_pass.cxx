@@ -23,8 +23,8 @@ public:
     RenderPass(RenderPass&&) noexcept = default;
     ~RenderPass() noexcept;
 
-    bool Valid() const noexcept;
-    bool Active() const noexcept;
+    [[nodiscard]] bool Valid() const noexcept;
+    [[nodiscard]] bool Active() const noexcept;
 
     void Begin(MTL::Texture* targetTexture, Color const& clearColor) noexcept;
     void End() noexcept;
@@ -36,8 +36,8 @@ public:
     void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
     void SetScissorRect(RectInt const&) noexcept;
 
-    MTL4::RenderCommandEncoder* MTL4RenderCommandEncoder() const noexcept;
-    MTL4::RenderPassDescriptor* MTL4RenderPassDescriptor() const noexcept;
+    [[nodiscard]] MTL4::RenderCommandEncoder* MTL4RenderCommandEncoder() const noexcept;
+    [[nodiscard]] MTL4::RenderPassDescriptor* MTL4RenderPassDescriptor() const noexcept;
 
     RenderPass& operator=(RenderPass&&) noexcept = default;
 };

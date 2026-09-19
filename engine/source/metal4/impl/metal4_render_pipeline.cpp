@@ -31,7 +31,8 @@ RenderPipelineDescriptor::RenderPipelineDescriptor(ShaderFunction&& vertex, Shad
 
 void RenderPipelineDescriptor::SetName(StringView name)
 {
-    m_name = SetLabel(m_renderPipelineDescriptor, name);
+    SharedPtr<NS::String> label = ToNSString(name);
+    m_renderPipelineDescriptor->setLabel(label.Get());
 }
 
 void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction const& vertex)

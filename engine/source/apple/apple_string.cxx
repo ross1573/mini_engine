@@ -24,14 +24,14 @@ export APPLE_API SharedPtr<NS::String> ToNSString(StringView string)
     return TransferShared(result);
 }
 
-export APPLE_API String ToString(SharedPtr<NS::String> const& string)
+export APPLE_API String ToString(NS::String* string)
 {
     if (string == nullptr || string->length() == 0) {
-        return String();
+        return { };
     }
 
     char const* str = string->utf8String();
-    return String(str);
+    return { str };
 }
 
 } // namespace mini

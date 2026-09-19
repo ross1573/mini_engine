@@ -12,10 +12,10 @@ private:
 
 public:
     Texture() noexcept = default;
-    explicit Texture(MTL::Texture*) noexcept;
-    Texture(MTL::Texture*, StringView);
+    explicit Texture(MTL::Texture* texture) noexcept;
+    Texture(MTL::Texture* texture, StringView name);
 
-    uint64 GpuAddress() const;
+    [[nodiscard]] uint64 GpuAddress() const;
 };
 
 Texture::Texture(MTL::Texture* texture) noexcept

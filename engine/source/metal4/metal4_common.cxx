@@ -6,26 +6,6 @@ import mini.graphics;
 
 namespace mini::metal4 {
 
-template <typename T>
-concept LabeledTypeT = requires(T* ptr, NS::String* str) { ptr->setLabel(str); };
-
-template <LabeledTypeT T>
-String SetLabel(SharedPtr<T>& target, StringView name)
-{
-    if (name.Empty()) {
-        target->setLabel(nullptr);
-        return String();
-    }
-
-    SharedPtr<NS::String> label = ToNSString(name);
-    target->setLabel(label.Get());
-    if (label.Valid() == false) [[unlikely]] {
-        return String();
-    }
-
-    return name;
-}
-
 constexpr MTL::PrimitiveType MTLPrimitiveType(graphics::PrimitiveType primitiveType) noexcept
 {
     switch (primitiveType) {

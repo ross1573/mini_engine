@@ -15,22 +15,21 @@ public:
 
 protected:
     SharedPtr<ResourceValue> m_resource;
-    String m_name;
 
 public:
     Resource() noexcept = default;
     explicit Resource(nullptr_t) noexcept;
-    explicit Resource(ResourcePointer) noexcept;
-    explicit Resource(ResourcePointer, StringView);
+    explicit Resource(ResourcePointer resource) noexcept;
+    explicit Resource(ResourcePointer resource, StringView name);
 
-    void SetName(StringView);
+    void SetName(StringView name);
 
-    bool Valid() const noexcept;
-    size_t Capacity() const;
-    String Name() const;
+    [[nodiscard]] bool Valid() const noexcept;
+    [[nodiscard]] size_t Capacity() const;
+    [[nodiscard]] String Name() const;
 
-    ResourcePointer MTLResource() const noexcept;
-    ResourcePointer operator->() const noexcept;
+    [[nodiscard]] ResourcePointer MTLResource() const noexcept;
+    [[nodiscard]] ResourcePointer operator->() const noexcept;
 };
 
 template <DerivedFromT<MTL::Resource> T>
@@ -49,9 +48,9 @@ Resource<T>::Resource(ResourcePointer resource) noexcept
 template <DerivedFromT<MTL::Resource> T>
 Resource<T>::Resource(ResourcePointer resource, StringView name)
     : m_resource(TransferShared(resource))
-    , m_name(SetLabel(m_resource, name))
 {
     ASSERT(m_resource.Valid());
+    SetName(name);
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -63,11 +62,8 @@ bool Resource<T>::Valid() const noexcept
 template <DerivedFromT<MTL::Resource> T>
 void Resource<T>::SetName(StringView name)
 {
-    if (m_name == name) {
-        return;
-    }
-
-    m_name = SetLabel(m_resource, name);
+    SharedPtr<NS::String> label = ToNSString(name);
+    m_resource->setLabel(label.Get());
 }
 
 template <DerivedFromT<MTL::Resource> T>
@@ -79,7 +75,7 @@ size_t Resource<T>::Capacity() const
 template <DerivedFromT<MTL::Resource> T>
 String Resource<T>::Name() const
 {
-    return m_name;
+    return ToString(m_resource->label());
 }
 
 template <DerivedFromT<MTL::Resource> T>

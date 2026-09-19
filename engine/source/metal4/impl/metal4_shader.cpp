@@ -21,23 +21,14 @@ ShaderLibrary::ShaderLibrary(Device const& device, StringView name)
     SetName(name);
 }
 
-void ShaderLibrary::SetName(StringView name)
-{
-    if (m_name == name) {
-        return;
-    }
-
-    m_name = SetLabel(m_library, name);
-}
-
-String ShaderLibrary::GetFilePath(StringView name) const
+String ShaderLibrary::GetFilePath(StringView name)
 {
     StringView res = NS::Bundle::mainBundle()->resourcePath()->utf8String();
     StringView ext = SHADER_LIBRARY_EXTENSION;
     String file(res.Size() + name.Size() + ext.Size() + 1);
 
     file.Append(res);
-    file.Push('/');
+    file.PushBack('/');
     file.Append(name);
     file.Append(ext);
     return file;
