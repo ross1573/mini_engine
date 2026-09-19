@@ -127,7 +127,7 @@ constexpr void BasicStringView<T>::Copy(Pointer dest, size_t index, size_t size)
     }
 
     AssertValidIndex(index);
-    size_t end = m_size - size;
+    size_t end = m_size - index;
     size_t len = end < size ? end : size;
     memory::MemCopy(dest, m_data + index, len);
 }

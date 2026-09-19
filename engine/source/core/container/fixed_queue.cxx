@@ -506,7 +506,7 @@ constexpr void FixedQueue<T, N>::AssignRangeWithSize(U begin, U end, size_t len)
     Iterator iterBegin = Begin();
 
     if (len > m_size) {
-        memory::CopyRange(iterBegin, begin, end + size);
+        memory::CopyRange(iterBegin, begin, begin + size);
         memory::ConstructRange(iterBegin + size, begin + size, end);
     } else {
         memory::CopyRange(iterBegin, begin, end);
