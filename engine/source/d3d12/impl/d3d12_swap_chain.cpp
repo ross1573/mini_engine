@@ -158,7 +158,7 @@ void SwapChain::CreateBuffers(uint8 count)
 
         m_swapChain->GetBuffer(i, IID_PPV_ARGS(&buffer.resource));
         device->CreateSwapChainBuffer(buffer);
-        m_buffers.Push(MoveArg(buffer));
+        m_buffers.PushBack(MoveArg(buffer));
     }
 
     m_index = (uint8)m_swapChain->GetCurrentBackBufferIndex();

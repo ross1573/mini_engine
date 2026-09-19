@@ -91,7 +91,7 @@ bool DescriptorAllocator::AllocateHeap()
         return false;
     }
 
-    m_heapList.Push(MoveArg(heap), m_incrementSize);
+    m_heapList.PushBack(MoveArg(heap), m_incrementSize);
     return true;
 }
 
