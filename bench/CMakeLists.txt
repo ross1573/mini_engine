@@ -17,7 +17,12 @@ function (no_arg_benchmark name)
     
     generate_define_header(${target})
 
-    target_link_libraries(${target} PRIVATE mini.benchmark)
+    target_link_libraries(${target} 
+    PRIVATE 
+        mini.core
+        benchmark::benchmark
+    )
+
     set_target_properties(${target} PROPERTIES
         FOLDER bench
         OUTPUT_NAME ${output}${MODULE_OUTPUT_SUFFIX}
@@ -33,17 +38,6 @@ function (no_arg_benchmark name)
 
     build_source_tree(${target})
 endfunction()
-
-add_module(mini.benchmark STATIC
-    NO_MODULE_LOG
-    NO_MODULE_ENTRY
-)
-
-target_link_libraries(mini.benchmark 
-PUBLIC 
-    mini.core
-    benchmark::benchmark
-)
 
 add_subdirectory(string)
 add_subdirectory(concurrency)
