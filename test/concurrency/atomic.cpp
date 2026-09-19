@@ -19,7 +19,7 @@ public:
     char b;
 
     Unaligned() noexcept = default;
-    Unaligned(int32 n) noexcept { a = n; }
+    Unaligned(int32 num) noexcept { a = num; }
     operator int32() const noexcept { return a; }
 };
 
@@ -28,11 +28,11 @@ public:
     int32 v[5];
 
     NonAtomic() noexcept = default;
-    NonAtomic(int32 n) noexcept { memory::FillRange(&v[0], &v[5], n); }
+    NonAtomic(int32 num) noexcept { memory::FillRange(&v[0], &v[5], num); }
     operator int32() const noexcept { return v[0]; }
 };
 
-static int32 TestAtomicLockFree()
+int32 TestAtomicLockFree()
 {
     static_assert(sizeof(Atomic<S<1>>) == 1);
     static_assert(sizeof(Atomic<S<2>>) == 2);
@@ -46,15 +46,15 @@ static int32 TestAtomicLockFree()
     static_assert(sizeof(Atomic<Unaligned>) == 8);
     static_assert(sizeof(Atomic<NonAtomic>) == sizeof(NonAtomic));
 
-    static_assert(Atomic<S<1>>::IsAlwaysLockFree() == true);
-    static_assert(Atomic<S<2>>::IsAlwaysLockFree() == true);
-    static_assert(Atomic<S<3>>::IsAlwaysLockFree() == true);
-    static_assert(Atomic<S<4>>::IsAlwaysLockFree() == true);
+    static_assert(Atomic<S<1>>::IsAlwaysLockFree());
+    static_assert(Atomic<S<2>>::IsAlwaysLockFree());
+    static_assert(Atomic<S<3>>::IsAlwaysLockFree());
+    static_assert(Atomic<S<4>>::IsAlwaysLockFree());
     static_assert(Atomic<S<5>>::IsAlwaysLockFree() == Atomic<S<8>>::IsAlwaysLockFree());
     static_assert(Atomic<S<9>>::IsAlwaysLockFree() == Atomic<S<16>>::IsAlwaysLockFree());
     static_assert(Atomic<S<8>>::IsAlwaysLockFree() != Atomic<S<17>>::IsAlwaysLockFree());
-    static_assert(Atomic<Unaligned>::IsAlwaysLockFree() == true);
-    static_assert(Atomic<NonAtomic>::IsAlwaysLockFree() == false);
+    static_assert(Atomic<Unaligned>::IsAlwaysLockFree());
+    static_assert(!Atomic<NonAtomic>::IsAlwaysLockFree());
 
     TEST_ENSURE(Atomic<S<1>>{ }.IsLockFree() == true);
     TEST_ENSURE(Atomic<S<2>>{ }.IsLockFree() == true);

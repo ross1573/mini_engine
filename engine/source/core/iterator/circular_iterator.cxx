@@ -28,58 +28,58 @@ public:
     constexpr CircularIterator() noexcept;
 
     template <typename U, typename CircularU>
-    constexpr CircularIterator(CircularIterator<U, CircularU> const&) noexcept
+    constexpr CircularIterator(CircularIterator<U, CircularU> const& other) noexcept
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
-    constexpr Pointer Address() const noexcept;
-    constexpr bool Valid() const noexcept;
-    constexpr bool ValidWith(CircularIterator const&) const noexcept;
+    [[nodiscard]] constexpr Pointer Address() const noexcept;
+    [[nodiscard]] constexpr bool Valid() const noexcept;
+    [[nodiscard]] constexpr bool ValidWith(CircularIterator const& other) const noexcept;
 
     constexpr bool Reset() noexcept;
     constexpr bool Finish() noexcept;
     constexpr bool Increment() noexcept;
     constexpr bool Decrement() noexcept;
-    constexpr bool Advance(offset_t) noexcept;
+    constexpr bool Advance(offset_t offset) noexcept;
 
-    constexpr Pointer operator->() const noexcept;
-    constexpr Reference operator*() const noexcept;
-    constexpr Reference operator[](offset_t) const noexcept;
+    [[nodiscard]] constexpr Pointer operator->() const noexcept;
+    [[nodiscard]] constexpr Reference operator*() const noexcept;
+    [[nodiscard]] constexpr Reference operator[](offset_t offset) const noexcept;
 
     constexpr CircularIterator& operator++() noexcept;
     constexpr CircularIterator& operator--() noexcept;
-    constexpr CircularIterator& operator+=(offset_t) noexcept;
-    constexpr CircularIterator& operator-=(offset_t) noexcept;
+    constexpr CircularIterator& operator+=(offset_t offset) noexcept;
+    constexpr CircularIterator& operator-=(offset_t offset) noexcept;
     constexpr CircularIterator operator++(int32) noexcept;
     constexpr CircularIterator operator--(int32) noexcept;
-    constexpr CircularIterator operator+(offset_t) const noexcept;
-    constexpr CircularIterator operator-(offset_t) const noexcept;
+    constexpr CircularIterator operator+(offset_t offset) const noexcept;
+    constexpr CircularIterator operator-(offset_t offset) const noexcept;
 
     template <typename U, typename CircularU>
-    constexpr CircularIterator& operator=(CircularIterator<U, CircularU> const&) noexcept
+    constexpr CircularIterator& operator=(CircularIterator<U, CircularU> const& other) noexcept
         requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
 protected:
-    constexpr CircularIterator(size_t, size_t, Pointer, CircularT*) noexcept;
-    constexpr bool CheckIterator(CircularIterator const&) const noexcept;
+    constexpr CircularIterator(size_t idx, size_t cap, Pointer begin, CircularT* base) noexcept;
+    constexpr bool CheckIterator(CircularIterator const& iter) const noexcept;
 
     template <typename U, typename CircularU, typename Y, typename CircularY>
-    friend constexpr offset_t operator-(CircularIterator<U, CircularU> const& l,
-                                        CircularIterator<Y, CircularY> const& r) noexcept
+    friend constexpr offset_t operator-(CircularIterator<U, CircularU> const& lhs,
+                                        CircularIterator<Y, CircularY> const& rhs) noexcept
         requires SameAsT<DecayT<CircularU>, DecayT<CircularY>>;
 
     template <typename U, typename CircularU, typename Y, typename CircularY>
-    friend constexpr bool operator==(CircularIterator<U, CircularU> const&,
-                                     CircularIterator<Y, CircularY> const&) noexcept
+    friend constexpr bool operator==(CircularIterator<U, CircularU> const& lhs,
+                                     CircularIterator<Y, CircularY> const& rhs) noexcept
         requires SameAsT<DecayT<CircularU>, DecayT<CircularY>> && EqualityComparableWithT<U*, Y*>;
 
     template <typename U, typename CircularU, typename Y, typename CircularY>
-    friend constexpr auto operator<=>(CircularIterator<U, CircularU> const&,
-                                      CircularIterator<Y, CircularY> const&) noexcept
+    friend constexpr auto operator<=>(CircularIterator<U, CircularU> const& lhs,
+                                      CircularIterator<Y, CircularY> const& rhs) noexcept
         requires SameAsT<DecayT<CircularU>, DecayT<CircularY>> && ThreeWayComparableWithT<U*, Y*>;
 };
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
+constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
     : m_offset(0)
     , m_capacity(0)
     , m_begin(nullptr)
@@ -88,7 +88,7 @@ inline constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::
+constexpr CircularIterator<T, CircularT>::
     CircularIterator(size_t idx, size_t cap, Pointer begin, CircularT* base) noexcept
     : m_offset(idx)
     , m_capacity(cap)
@@ -99,54 +99,54 @@ inline constexpr CircularIterator<T, CircularT>::
 
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
-inline constexpr CircularIterator<T, CircularT>::CircularIterator(CircularIterator<U, CircularU> const& o) noexcept
+constexpr CircularIterator<T, CircularT>::CircularIterator(CircularIterator<U, CircularU> const& other) noexcept
     requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
-    : m_offset(o.m_offset)
-    , m_capacity(o.m_capacity)
-    , m_begin(o.m_begin)
-    , m_circular(o.m_circular)
+    : m_offset(other.m_offset)
+    , m_capacity(other.m_capacity)
+    , m_begin(other.m_begin)
+    , m_circular(other.m_circular)
 {
 }
 
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::
-operator=(CircularIterator<U, CircularU> const& o) noexcept
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::
+operator=(CircularIterator<U, CircularU> const& other) noexcept
     requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
 {
-    m_offset = o.m_offset;
-    m_capacity = o.m_capacity;
-    m_begin = o.m_begin;
-    m_circular = o.m_circular;
+    m_offset = other.m_offset;
+    m_capacity = other.m_capacity;
+    m_begin = other.m_begin;
+    m_circular = other.m_circular;
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
+constexpr bool CircularIterator<T, CircularT>::CheckIterator(CircularIterator const& iter) const noexcept
 {
     return iter.m_circular && iter.m_circular->ValidIterator(iter);
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>::Pointer CircularIterator<T, CircularT>::Address() const noexcept
+constexpr CircularIterator<T, CircularT>::Pointer CircularIterator<T, CircularT>::Address() const noexcept
 {
     return m_begin + (m_offset % m_capacity);
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Valid() const noexcept
+constexpr bool CircularIterator<T, CircularT>::Valid() const noexcept
 {
     return CheckIterator(*this);
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::ValidWith(CircularIterator const& o) const noexcept
+constexpr bool CircularIterator<T, CircularT>::ValidWith(CircularIterator const& other) const noexcept
 {
-    return m_circular && m_circular->ValidRange(*this, o);
+    return m_circular && m_circular->ValidRange(*this, other);
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Reset() noexcept
+constexpr bool CircularIterator<T, CircularT>::Reset() noexcept
 {
     if (m_circular == nullptr) [[unlikely]] {
         return false;
@@ -159,7 +159,7 @@ inline constexpr bool CircularIterator<T, CircularT>::Reset() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Finish() noexcept
+constexpr bool CircularIterator<T, CircularT>::Finish() noexcept
 {
     if (m_circular == nullptr) [[unlikely]] {
         return false;
@@ -172,7 +172,7 @@ inline constexpr bool CircularIterator<T, CircularT>::Finish() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Increment() noexcept
+constexpr bool CircularIterator<T, CircularT>::Increment() noexcept
 {
     if (!CheckIterator(*this + 1)) [[unlikely]] {
         return false;
@@ -184,7 +184,7 @@ inline constexpr bool CircularIterator<T, CircularT>::Increment() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Decrement() noexcept
+constexpr bool CircularIterator<T, CircularT>::Decrement() noexcept
 {
     if (!CheckIterator(*this - 1)) [[unlikely]] {
         return false;
@@ -195,128 +195,126 @@ inline constexpr bool CircularIterator<T, CircularT>::Decrement() noexcept
 }
 
 template <typename T, typename CircularT>
-inline constexpr bool CircularIterator<T, CircularT>::Advance(offset_t d) noexcept
+constexpr bool CircularIterator<T, CircularT>::Advance(offset_t offset) noexcept
 {
-    if (d >= (offset_t)m_capacity || !CheckIterator(*this + d)) [[unlikely]] {
+    if (offset >= static_cast<offset_t>(m_capacity) || !CheckIterator(*this + offset)) [[unlikely]] {
         return false;
     }
 
-    m_offset = (size_t)((offset_t)m_offset + d);
+    m_offset = static_cast<size_t>(static_cast<offset_t>(m_offset) + offset);
     return true;
 }
 
 template <typename T, typename CircularT>
-inline constexpr T* CircularIterator<T, CircularT>::operator->() const noexcept
+constexpr T* CircularIterator<T, CircularT>::operator->() const noexcept
 {
     ASSERT(CheckIterator(*this), "invalid access");
     return m_begin + (m_offset % m_capacity);
 }
 
 template <typename T, typename CircularT>
-inline constexpr T& CircularIterator<T, CircularT>::operator*() const noexcept
+constexpr T& CircularIterator<T, CircularT>::operator*() const noexcept
 {
     ASSERT(CheckIterator(*this), "invalid access");
     return *(m_begin + (m_offset % m_capacity));
 }
 
 template <typename T, typename CircularT>
-inline constexpr T& CircularIterator<T, CircularT>::operator[](offset_t const o) const noexcept
+constexpr T& CircularIterator<T, CircularT>::operator[](offset_t const offset) const noexcept
 {
-    ASSERT(CheckIterator(*this + o), "invalid access");
-    return *(m_begin + ((m_offset + o) % m_capacity));
+    ASSERT(CheckIterator(*this + offset), "invalid access");
+    return *(m_begin + ((m_offset + offset) % m_capacity));
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator++() noexcept
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator++() noexcept
 {
     ++m_offset;
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator--() noexcept
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator--() noexcept
 {
     --m_offset;
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator+=(offset_t d) noexcept
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator+=(offset_t offset) noexcept
 {
-    m_offset = (size_t)((offset_t)m_offset + d);
+    m_offset = static_cast<size_t>(static_cast<offset_t>(m_offset) + offset);
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator-=(offset_t d) noexcept
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator-=(offset_t offset) noexcept
 {
-    m_offset = (size_t)((offset_t)m_offset - d);
+    m_offset = static_cast<size_t>(static_cast<offset_t>(m_offset) - offset);
     return *this;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator++(int32) noexcept
+constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator++(int32) noexcept
 {
-    CircularIterator t(*this);
+    CircularIterator tmp(*this);
     ++(*this);
-    return t;
+    return tmp;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator--(int32) noexcept
+constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator--(int32) noexcept
 {
-    CircularIterator t(*this);
+    CircularIterator tmp(*this);
     --(*this);
-    return t;
+    return tmp;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator+(offset_t d) const noexcept
+constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator+(offset_t offset) const noexcept
 {
-    CircularIterator t(*this);
-    t += d;
-    return t;
+    CircularIterator tmp(*this);
+    tmp += offset;
+    return tmp;
 }
 
 template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator-(offset_t d) const noexcept
+constexpr CircularIterator<T, CircularT> CircularIterator<T, CircularT>::operator-(offset_t offset) const noexcept
 {
-    CircularIterator t(*this);
-    t -= d;
-    return t;
+    CircularIterator tmp(*this);
+    tmp -= offset;
+    return tmp;
 }
 
 export template <typename T, typename CircularT>
-inline constexpr CircularIterator<T, CircularT> operator+(offset_t n,
-                                                          CircularIterator<T, CircularT> const& iter) noexcept
+constexpr CircularIterator<T, CircularT> operator+(offset_t offset, CircularIterator<T, CircularT> const& iter) noexcept
 {
-    return iter + n;
+    return iter + offset;
 }
 
 export template <typename T, typename CircularT, typename U, typename CircularU>
-inline constexpr offset_t operator-(CircularIterator<T, CircularT> const& l,
-                                    CircularIterator<U, CircularU> const& r) noexcept
+constexpr offset_t operator-(CircularIterator<T, CircularT> const& lhs,
+                             CircularIterator<U, CircularU> const& rhs) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>>
 {
-    ASSERT(l.m_begin == r.m_begin);
-    return (offset_t)l.m_offset - (offset_t)r.m_offset;
+    ASSERT(lhs.m_begin == rhs.m_begin);
+    return static_cast<offset_t>(lhs.m_offset) - static_cast<offset_t>(rhs.m_offset);
 }
 
 export template <typename T, typename CircularT, typename U, typename CircularU>
-inline constexpr bool operator==(CircularIterator<T, CircularT> const& l,
-                                 CircularIterator<U, CircularU> const& r) noexcept
+constexpr bool operator==(CircularIterator<T, CircularT> const& lhs, CircularIterator<U, CircularU> const& rhs) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>> && EqualityComparableWithT<T*, U*>
 {
-    return (l.m_offset == r.m_offset) && (l.m_begin == r.m_begin);
+    return (lhs.m_offset == rhs.m_offset) && (lhs.m_begin == rhs.m_begin);
 }
 
 export template <typename T, typename CircularT, typename U, typename CircularU>
-inline constexpr auto operator<=>(CircularIterator<T, CircularT> const& l,
-                                  CircularIterator<U, CircularU> const& r) noexcept
+constexpr auto operator<=>(CircularIterator<T, CircularT> const& lhs,
+                           CircularIterator<U, CircularU> const& rhs) noexcept
     requires SameAsT<DecayT<CircularT>, DecayT<CircularU>> && ThreeWayComparableWithT<T*, U*>
 {
-    ASSERT(l.m_begin == r.m_begin);
-    return l.m_offset <=> r.m_offset;
+    ASSERT(lhs.m_begin == rhs.m_begin);
+    return lhs.m_offset <=> rhs.m_offset;
 }
 
 } // namespace mini

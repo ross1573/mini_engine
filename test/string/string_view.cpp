@@ -7,7 +7,7 @@ import mini.test;
 using namespace mini;
 using namespace mini::test;
 
-[[maybe_unused]] static constexpr void StringViewConstraints()
+[[maybe_unused]] constexpr void StringViewConstraints()
 {
     static_assert(sizeof(BasicStringView<char>) == 16);
     static_assert(sizeof(BasicStringView<wchar>) == 16);
@@ -17,7 +17,7 @@ using namespace mini::test;
 }
 
 template <typename T, typename CStr>
-static constexpr int TestCtor()
+constexpr int TestCtor()
 {
     TEST_ENSURE(BasicStringView<T>{ } == CStr::e);
 
@@ -35,7 +35,7 @@ static constexpr int TestCtor()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestCopy()
+constexpr int TestCopy()
 {
     BasicStringView<T> svs = CStr::s;
     BasicString<T> ss{ };
@@ -58,7 +58,7 @@ static constexpr int TestCopy()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestSubString()
+constexpr int TestSubString()
 {
     BasicStringView<T> sv = CStr::l;
 
@@ -80,7 +80,7 @@ static constexpr int TestSubString()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestRemove()
+constexpr int TestRemove()
 {
     BasicStringView<T> sv = CStr::l;
     BasicString<T> s = CStr::l;
@@ -94,18 +94,18 @@ static constexpr int TestRemove()
     TEST_ENSURE(sv == s);
 
     sv.RemoveLast();
-    s.RemoveLast();
+    s.PopBack();
     TEST_ENSURE(sv == s);
 
     sv.RemoveLast(5);
-    s.RemoveLast(5);
+    s.PopBack(5);
     TEST_ENSURE(sv == s);
 
     return 0;
 }
 
 template <typename T, typename CStr>
-static constexpr int TestOperator()
+constexpr int TestOperator()
 {
     BasicStringView<T> view;
 

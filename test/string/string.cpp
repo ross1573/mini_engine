@@ -7,7 +7,7 @@ import mini.test;
 using namespace mini;
 using namespace mini::test;
 
-[[maybe_unused]] static constexpr void StringConstraints()
+[[maybe_unused]] constexpr void StringConstraints()
 {
     static_assert(sizeof(BasicString<char>) == 24);
     static_assert(sizeof(BasicString<wchar>) == 24);
@@ -17,7 +17,7 @@ using namespace mini::test;
 }
 
 template <typename T>
-static constexpr int TestSSO()
+constexpr int TestSSO()
 {
     using CStr = CStr_inline<T>;
     constexpr auto SSOSize = (sizeof(BasicString<T>) / sizeof(T)) - 2;
@@ -35,7 +35,7 @@ static constexpr int TestSSO()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestCtor()
+constexpr int TestCtor()
 {
     constexpr auto alloc = Allocator<T>{ };
 
@@ -83,7 +83,7 @@ static constexpr int TestCtor()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestAssign()
+constexpr int TestAssign()
 {
     BasicString<T> str;
     BasicString<T> str2;
@@ -116,7 +116,7 @@ static constexpr int TestAssign()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestAppend()
+constexpr int TestAppend()
 {
     BasicString<T> str;
     BasicString<T> str2;
@@ -163,20 +163,20 @@ static constexpr int TestAppend()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestPush()
+constexpr int TestPush()
 {
     BasicString<T> str;
     std::basic_string<T> stdstr;
 
-    str.Push(CStr::ch);
+    str.PushBack(CStr::ch);
     stdstr.push_back(CStr::ch);
     TEST_ENSURE(str == stdstr.data());
 
-    str.Push(CStr::ch, 5);
+    str.PushBack(CStr::ch, 5);
     stdstr.append(5, CStr::ch);
     TEST_ENSURE(str == stdstr.data());
 
-    str.Push(CStr::ch, 16);
+    str.PushBack(CStr::ch, 16);
     stdstr.append(16, CStr::ch);
     TEST_ENSURE(str == stdstr.data());
 
@@ -184,7 +184,7 @@ static constexpr int TestPush()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestInsert()
+constexpr int TestInsert()
 {
     BasicString<T> str;
     std::basic_string<T> stdstr;
@@ -241,24 +241,24 @@ static constexpr int TestInsert()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestRemove()
+constexpr int TestRemove()
 {
     BasicString<T> str(CStr::l);
     std::basic_string<T> stdstr(CStr::l);
 
-    str.RemoveLast();
+    str.PopBack();
     stdstr.pop_back();
     TEST_ENSURE(str == stdstr.data());
 
-    str.RemoveLast(5);
+    str.PopBack(5);
     stdstr.erase(stdstr.size() - 5, 5);
     TEST_ENSURE(str == stdstr.data());
 
-    str.RemoveAt(1);
+    str.Remove(1);
     stdstr.erase(stdstr.begin() + 1);
     TEST_ENSURE(str == stdstr.data());
 
-    str.RemoveAt(str.Begin());
+    str.Remove(str.Begin());
     stdstr.erase(stdstr.begin());
     TEST_ENSURE(str == stdstr.data());
 
@@ -282,7 +282,7 @@ static constexpr int TestRemove()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestModify()
+constexpr int TestModify()
 {
     BasicString<char> str;
     BasicString<char> str2;
@@ -306,7 +306,7 @@ static constexpr int TestModify()
 }
 
 template <typename T, typename CStr>
-static constexpr int TestOperator()
+constexpr int TestOperator()
 {
     BasicString<T> str;
 

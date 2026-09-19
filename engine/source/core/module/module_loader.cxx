@@ -35,9 +35,9 @@ public:
 
 class CORE_API ModuleLoader {
 private:
-    typedef typename Array<LoaderRef>::Iterator LoaderIterator;
-    typedef typename Array<ModuleRef>::Iterator ModuleIterator;
-    typedef typename Array<StringView>::Iterator PendingIterator;
+    typedef Array<LoaderRef>::Iterator LoaderIterator;
+    typedef Array<ModuleRef>::Iterator ModuleIterator;
+    typedef Array<StringView>::Iterator PendingIterator;
 
     // TODO: use hash map instead
     Array<LoaderRef> m_registered;
@@ -51,7 +51,7 @@ public:
     bool Register(StringView, LoaderRef::Loader);
     SharedPtr<ModuleHandle> Load(StringView);
 
-    size_t Count() const noexcept;
+    [[nodiscard]] size_t Count() const noexcept;
 
 private:
     SharedPtr<ModuleHandle> LoadHandle(StringView);

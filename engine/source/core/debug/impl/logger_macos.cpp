@@ -11,7 +11,7 @@ import :logger_platform;
 
 namespace mini::debug {
 
-Logger assertLogger = Logger("Assert");
+thread_local Logger assertLogger = Logger("Assert");
 
 void LogAssert(AssertFormatResult formatResult) noexcept
 {
@@ -46,19 +46,20 @@ void LoggerBase::PrintMessage(byte level, StringView msg) noexcept
         m_logger = os_log_create(identifier.Data(), m_category.Data());
     }
 
-    LogLevel type = GetLogType(level);
+    LogLevel type = LoggerBase::GetLogType(level);
     os_log_with_type(m_logger, type, "%s", msg.Data());
 }
 
 LoggerBase::LogLevel LoggerBase::GetLogType(byte level) noexcept
 {
-    LogLevel type = OS_LOG_TYPE_DEFAULT;
+    LogLevel type;
     switch (level) {
-        case 0: type = OS_LOG_TYPE_DEBUG; break;
-        case 1: type = OS_LOG_TYPE_DEFAULT; break;
-        case 2: type = OS_LOG_TYPE_ERROR; break;
+        case 0:  type = OS_LOG_TYPE_DEBUG; break;
+        case 1:  type = OS_LOG_TYPE_DEFAULT; break;
+        case 2:  type = OS_LOG_TYPE_ERROR; break;
         case 3:
-        case 4: type = OS_LOG_TYPE_FAULT; break;
+        case 4:  type = OS_LOG_TYPE_FAULT; break;
+        default: type = OS_LOG_TYPE_DEFAULT; break;
     }
 
     return type;

@@ -5,16 +5,17 @@ import :atomic_platform;
 
 namespace mini {
 
+// NOLINTNEXTLINE: gcc and clang builtin parameter is int
 export enum class MemoryOrder : int {
     relaxed = __ATOMIC_RELAXED,
     consume = __ATOMIC_CONSUME,
     acquire = __ATOMIC_ACQUIRE,
     release = __ATOMIC_RELEASE,
     acquireRelease = __ATOMIC_ACQ_REL,
-    sequential = __ATOMIC_SEQ_CST
+    sequential = __ATOMIC_SEQ_CST,
 };
 
-inline constexpr int32 FailureOrder(MemoryOrder order)
+constexpr int32 FailureOrder(MemoryOrder order)
 {
     switch (order) {
         case MemoryOrder::relaxed:

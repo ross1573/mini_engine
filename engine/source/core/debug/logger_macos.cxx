@@ -24,7 +24,7 @@ protected:
     void PrintMessage(byte, StringView) noexcept;
 
 private:
-    LogLevel GetLogType(byte) noexcept;
+    static LogLevel GetLogType(byte) noexcept;
 };
 
 } // namespace mini

@@ -11,7 +11,7 @@ import :numeric;
 namespace mini::memory {
 
 export template <CharT T>
-inline constexpr T const* StringSearch(T const* str, T value) noexcept
+constexpr T const* StringSearch(T const* str, T value) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -21,12 +21,12 @@ inline constexpr T const* StringSearch(T const* str, T value) noexcept
         }
     }
 
-    for (; *str != T(0) && *str != value; ++str);
+    for (; *str != T(0) && *str != value; ++str) { }
     return str;
 }
 
 export template <CharT T>
-inline constexpr T const* StringSearch(T const* str, T value, size_t count) noexcept
+constexpr T const* StringSearch(T const* str, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -46,7 +46,7 @@ inline constexpr T const* StringSearch(T const* str, T value, size_t count) noex
 }
 
 export template <CharT T>
-inline constexpr size_t StringLength(T const* str) noexcept
+constexpr size_t StringLength(T const* str) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -58,66 +58,66 @@ inline constexpr size_t StringLength(T const* str) noexcept
     }
 
     T const* pos = str;
-    for (; *pos != T(0); ++pos);
+    for (; *pos != T(0); ++pos) { }
     return static_cast<size_t>(pos - str);
 }
 
 export template <CharT T>
-inline constexpr size_t StringLength(T const* str, size_t count) noexcept
+constexpr size_t StringLength(T const* str, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void const* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char(0), count);
+            void const* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char{ 0 }, count);
             return ptr == nullptr ? 0 : static_cast<size_t>(static_cast<T const*>(ptr) - str);
         } else if constexpr (SameAsT<T, wchar>) {
-            wchar const* end = BUILTIN_WMEMCHR(str, wchar(0), count);
+            wchar const* end = BUILTIN_WMEMCHR(str, wchar{ 0 }, count);
             return end == nullptr ? 0 : static_cast<size_t>(end - str);
         }
     }
 
     T const* pos = str;
-    for (; count && *pos != T(0); --count, ++pos);
+    for (; count && *pos != T(0); --count, ++pos) { }
     return static_cast<size_t>(pos - str);
 }
 
 export template <CharT T>
-inline constexpr T* StringFill(T* dst, T value, size_t count) noexcept
+constexpr T* StringFill(T* dest, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void* ptr = BUILTIN_MEMSET(reinterpret_cast<char*>(dst), static_cast<int32>(value), count);
+            void* ptr = BUILTIN_MEMSET(reinterpret_cast<char*>(dest), static_cast<int32>(value), count);
             return static_cast<T*>(ptr);
         } else if constexpr (SameAsT<T, wchar>) {
-            return BUILTIN_WMEMSET(dst, value, count);
+            return BUILTIN_WMEMSET(dest, value, count);
         }
     }
 
-    for (T* d = dst; count != 0; --count) {
-        *d++ = value;
+    for (T* ptr = dest; count != 0; --count) {
+        *ptr++ = value;
     }
 
-    return dst;
+    return dest;
 }
 
 export template <CharT T>
-inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
+constexpr int32 StringCompare(T const* lhs, T const* rhs) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            char const* l = reinterpret_cast<char const*>(s1);
-            char const* r = reinterpret_cast<char const*>(s2);
-            return static_cast<int32>(BUILTIN_STRCMP(l, r));
+            char const* s1 = reinterpret_cast<char const*>(lhs);
+            char const* s2 = reinterpret_cast<char const*>(rhs);
+            return static_cast<int32>(BUILTIN_STRCMP(s1, s2));
         } else if constexpr (SameAsT<T, wchar>) {
-            return static_cast<int32>(BUILTIN_WCSCMP(s1, s2));
+            return static_cast<int32>(BUILTIN_WCSCMP(lhs, rhs));
         }
     }
 
     T lch = T(0);
     T rch = T(0);
 
-    for (; lch == rch; ++s1, ++s2) {
-        lch = *s1;
-        rch = *s2;
+    for (; lch == rch; ++lhs, ++rhs) {
+        lch = *lhs;
+        rch = *rhs;
 
         if (lch == T(0)) {
             return static_cast<int32>(lch - rch);
@@ -128,21 +128,21 @@ inline constexpr int32 StringCompare(T const* s1, T const* s2) noexcept
 }
 
 export template <CharT T>
-inline constexpr int32 StringCompare(T const* s1, T const* s2, size_t count) noexcept
+constexpr int32 StringCompare(T const* lhs, T const* rhs, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            char const* l = reinterpret_cast<char const*>(s1);
-            char const* r = reinterpret_cast<char const*>(s2);
-            return static_cast<int32>(BUILTIN_STRNCMP(l, r, count));
+            char const* s1 = reinterpret_cast<char const*>(lhs);
+            char const* s2 = reinterpret_cast<char const*>(rhs);
+            return static_cast<int32>(BUILTIN_STRNCMP(s1, s2, count));
         } else if constexpr (SameAsT<T, wchar>) {
-            return static_cast<int32>(BUILTIN_WCSNCMP(s1, s2, count));
+            return static_cast<int32>(BUILTIN_WCSNCMP(lhs, rhs, count));
         }
     }
 
-    for (; count != 0; --count, ++s1, ++s2) {
-        T lch = *s1;
-        T rch = *s2;
+    for (; count != 0; --count, ++lhs, ++rhs) {
+        T lch = *lhs;
+        T rch = *rhs;
 
         if (lch != rch) {
             return static_cast<int32>(lch - rch);

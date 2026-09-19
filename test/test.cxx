@@ -14,13 +14,13 @@ TEST_API inline size_t moveAssign = 0;
 TEST_API inline size_t debugAllocCnt = 0;
 
 template <typename T>
-inline constexpr RemoveRefT<T>& MakeLvalueReference(T&& value)
+constexpr RemoveRefT<T>& MakeLvalueReference(T&& value)
 {
     return static_cast<RemoveRefT<T>&>(value);
 }
 
 template <typename T>
-inline constexpr RemoveRefT<T>&& MakeRvalueReference(T&& value)
+constexpr RemoveRefT<T>&& MakeRvalueReference(T&& value)
 {
     return static_cast<RemoveRefT<T>&&>(value);
 }

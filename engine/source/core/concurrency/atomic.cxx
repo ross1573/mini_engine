@@ -5,20 +5,20 @@ module;
 #  pragma clang diagnostic ignored "-Watomic-alignment"
 #endif
 
-#define diagnose_store(order)                                                                                    \
-    static_diagnose_error((order == __ATOMIC_ACQUIRE || order == __ATOMIC_ACQ_REL || order == __ATOMIC_CONSUME), \
+#define diagnose_store(order)                                                                                          \
+    static_diagnose_error(((order) == __ATOMIC_ACQUIRE || (order) == __ATOMIC_ACQ_REL || (order) == __ATOMIC_CONSUME), \
                           "invalid memory order on atomic store operation")
 
-#define diagnose_load(order)                                                        \
-    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+#define diagnose_load(order)                                                            \
+    static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic load operation")
 
-#define diagnose_compare_exchange(order)                                            \
-    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+#define diagnose_compare_exchange(order)                                                \
+    static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic exchange operation")
 
-#define diagnose_wait(order)                                                        \
-    static_diagnose_error((order == __ATOMIC_RELEASE || order == __ATOMIC_ACQ_REL), \
+#define diagnose_wait(order)                                                            \
+    static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic wait operation")
 
 export module mini.core:atomic;
@@ -38,7 +38,7 @@ private:
     typedef AtomicBase<T> Base;
 
 public:
-    typedef typename Base::Value Value;
+    typedef Base::Value Value;
 
 private:
     mutable Base m_value;
@@ -46,65 +46,72 @@ private:
 public:
     constexpr Atomic() noexcept(NoThrowDefaultConstructibleT<T>)
         requires DefaultConstructibleT<T>;
-    constexpr Atomic(Value) noexcept;
+    constexpr Atomic(Value value) noexcept;
     constexpr ~Atomic() noexcept = default;
 
-    void Store(Value, MemoryOrder) noexcept;
-    void Store(Value, MemoryOrder) volatile noexcept;
-    Value Load(MemoryOrder) const noexcept;
-    Value Load(MemoryOrder) const volatile noexcept;
-    Value Exchange(Value, MemoryOrder) noexcept;
-    Value Exchange(Value, MemoryOrder) volatile noexcept;
+    void Store(Value value, MemoryOrder order) noexcept;
+    void Store(Value value, MemoryOrder order) volatile noexcept;
+    Value Load(MemoryOrder order) const noexcept;
+    Value Load(MemoryOrder order) const volatile noexcept;
+    Value Exchange(Value value, MemoryOrder order) noexcept;
+    Value Exchange(Value value, MemoryOrder order) volatile noexcept;
 
-    bool CompareExchangeStrong(Value&, Value, MemoryOrder, MemoryOrder) noexcept;
-    bool CompareExchangeStrong(Value&, Value, MemoryOrder, MemoryOrder) volatile noexcept;
-    bool CompareExchangeStrong(Value&, Value, MemoryOrder) noexcept;
-    bool CompareExchangeWeak(Value&, Value, MemoryOrder, MemoryOrder) noexcept;
-    bool CompareExchangeWeak(Value&, Value, MemoryOrder, MemoryOrder) volatile noexcept;
-    bool CompareExchangeWeak(Value&, Value, MemoryOrder) noexcept;
-    bool CompareExchangeWeak(Value&, Value, MemoryOrder) volatile noexcept;
+    bool CompareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept;
+    bool CompareExchangeStrong(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
+    bool CompareExchangeStrong(Value& expected,
+                               Value desired,
+                               MemoryOrder success,
+                               MemoryOrder failure) volatile noexcept;
 
-    Value FetchAdd(Value, MemoryOrder) noexcept
+    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) noexcept;
+    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) volatile noexcept;
+    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
+    bool CompareExchangeWeak(Value& expected,
+                             Value desired,
+                             MemoryOrder success,
+                             MemoryOrder failure) volatile noexcept;
+
+    Value FetchAdd(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchAdd(Value, MemoryOrder) volatile noexcept
+    Value FetchAdd(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchSub(Value, MemoryOrder) noexcept
+    Value FetchSub(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchSub(Value, MemoryOrder) volatile noexcept
+    Value FetchSub(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchAnd(Value, MemoryOrder) noexcept
+    Value FetchAnd(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchAnd(Value, MemoryOrder) volatile noexcept
+    Value FetchAnd(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchXor(Value, MemoryOrder) noexcept
+    Value FetchXor(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchXor(Value, MemoryOrder) volatile noexcept
+    Value FetchXor(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchOr(Value, MemoryOrder) noexcept
+    Value FetchOr(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchOr(Value, MemoryOrder) volatile noexcept
+    Value FetchOr(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
 
-    Value FetchAdd(Value, MemoryOrder) noexcept
+    Value FetchAdd(Value value, MemoryOrder order) noexcept
         requires FloatingT<Value>;
-    Value FetchAdd(Value, MemoryOrder) volatile noexcept
+    Value FetchAdd(Value value, MemoryOrder order) volatile noexcept
         requires FloatingT<Value>;
-    Value FetchSub(Value, MemoryOrder) noexcept
+    Value FetchSub(Value value, MemoryOrder order) noexcept
         requires FloatingT<Value>;
-    Value FetchSub(Value, MemoryOrder) volatile noexcept
+    Value FetchSub(Value value, MemoryOrder order) volatile noexcept
         requires FloatingT<Value>;
 
-    Value FetchAdd(offset_t, MemoryOrder) noexcept
+    Value FetchAdd(offset_t offset, MemoryOrder order) noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchAdd(offset_t, MemoryOrder) volatile noexcept
+    Value FetchAdd(offset_t offset, MemoryOrder order) volatile noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchSub(offset_t, MemoryOrder) noexcept
+    Value FetchSub(offset_t offset, MemoryOrder order) noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchSub(offset_t, MemoryOrder) volatile noexcept
+    Value FetchSub(offset_t offset, MemoryOrder order) volatile noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
 
-    void Wait(Value, MemoryOrder) const noexcept;
-    void Wait(Value, MemoryOrder) const volatile noexcept;
+    void Wait(Value old, MemoryOrder order) const noexcept;
+    void Wait(Value old, MemoryOrder order) const volatile noexcept;
     void Notify() const noexcept;
     void Notify() const volatile noexcept;
     void NotifyAll() const noexcept;
@@ -119,10 +126,10 @@ public:
 
     explicit operator Value() const noexcept;
     explicit operator Value() const volatile noexcept;
-    Value operator=(Value) noexcept;
-    Value operator=(Value) volatile noexcept;
+    Value operator=(Value value) noexcept;
+    Value operator=(Value value) volatile noexcept;
 
-private:
+public:
     Atomic(Atomic const&) = delete;
     Atomic& operator=(Atomic const&) = delete;
     Atomic& operator=(Atomic const&) volatile = delete;
@@ -136,7 +143,7 @@ constexpr Atomic<T>::Atomic() noexcept(NoThrowDefaultConstructibleT<T>)
 }
 
 template <TrivialT T>
-inline constexpr Atomic<T>::Atomic(Value val) noexcept
+constexpr Atomic<T>::Atomic(Value val) noexcept
     : m_value(val)
 {
 }
@@ -512,7 +519,7 @@ inline bool Atomic<T>::IsLockFree() const volatile noexcept
 }
 
 template <TrivialT T>
-inline constexpr bool Atomic<T>::IsAlwaysLockFree() noexcept
+constexpr bool Atomic<T>::IsAlwaysLockFree() noexcept
 {
     return __atomic_always_lock_free(sizeof(Base), nullptr);
 }

@@ -38,68 +38,69 @@ private:
 public:
     constexpr FixedQueue() noexcept;
     constexpr ~FixedQueue();
-    constexpr FixedQueue(FixedQueue const&);
-    constexpr FixedQueue(FixedQueue&&) noexcept;
-    constexpr FixedQueue(InitializerList<T>);
+    constexpr FixedQueue(FixedQueue const& other);
+    constexpr FixedQueue(FixedQueue&& other) noexcept;
+    constexpr FixedQueue(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    explicit constexpr FixedQueue(Iter, Iter);
+    explicit constexpr FixedQueue(Iter begin, Iter end);
 
     template <typename... Args>
-    constexpr void Enqueue(Args&&...)
+    constexpr void PushBack(Args&&... args)
         requires ConstructibleFromT<T, Args...>;
     template <ForwardIteratableByT<T> Iter>
-    constexpr void EnqueueRange(Iter, Iter);
-    constexpr void EnqueueRange(InitializerList<T>);
+    constexpr void Append(Iter begin, Iter end);
+    constexpr void Append(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void Assign(Iter, Iter);
-    constexpr void Assign(InitializerList<T>);
-    constexpr T Dequeue();
-    constexpr void RemoveFirst();
-    constexpr void RemoveFirst(size_t);
+    constexpr void Assign(Iter begin, Iter end);
+    constexpr void Assign(InitializerList<T> initList);
+
+    constexpr T PopFirst();
+    constexpr void PopFront();
+    constexpr void PopFront(size_t count);
     constexpr void Clear();
 
-    constexpr Pointer Data() noexcept;
-    constexpr ConstPointer Data() const noexcept;
-    constexpr Iterator Begin() noexcept;
-    constexpr ConstIterator Begin() const noexcept;
-    constexpr Iterator End() noexcept;
-    constexpr ConstIterator End() const noexcept;
-    constexpr Reference First();
-    constexpr ConstReference First() const;
-    constexpr Reference Last();
-    constexpr ConstReference Last() const;
-    constexpr Reference At(size_t);
-    constexpr ConstReference At(size_t) const;
+    [[nodiscard]] constexpr Pointer Data() noexcept;
+    [[nodiscard]] constexpr ConstPointer Data() const noexcept;
+    [[nodiscard]] constexpr Iterator Begin() noexcept;
+    [[nodiscard]] constexpr ConstIterator Begin() const noexcept;
+    [[nodiscard]] constexpr Iterator End() noexcept;
+    [[nodiscard]] constexpr ConstIterator End() const noexcept;
+    [[nodiscard]] constexpr Reference First();
+    [[nodiscard]] constexpr ConstReference First() const;
+    [[nodiscard]] constexpr Reference Last();
+    [[nodiscard]] constexpr ConstReference Last() const;
+    [[nodiscard]] constexpr Reference At(size_t index);
+    [[nodiscard]] constexpr ConstReference At(size_t index) const;
 
-    constexpr size_t Capacity() const noexcept;
-    constexpr size_t Size() const noexcept;
-    constexpr bool Empty() const noexcept;
-    constexpr bool Full() const noexcept;
-    constexpr bool ValidIndex(size_t) const noexcept;
-    constexpr bool ValidIterator(ConstIterator) const noexcept;
-    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
+    [[nodiscard]] constexpr size_t Capacity() const noexcept;
+    [[nodiscard]] constexpr size_t Size() const noexcept;
+    [[nodiscard]] constexpr bool Empty() const noexcept;
+    [[nodiscard]] constexpr bool Full() const noexcept;
+    [[nodiscard]] constexpr bool ValidIndex(size_t index) const noexcept;
+    [[nodiscard]] constexpr bool ValidIterator(ConstIterator iter) const noexcept;
+    [[nodiscard]] constexpr bool ValidRange(ConstIterator begin, ConstIterator end) const noexcept;
 
-    constexpr Reference operator[](size_t);
-    constexpr ConstReference operator[](size_t) const;
+    [[nodiscard]] constexpr Reference operator[](size_t index);
+    [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
-    constexpr FixedQueue& operator=(FixedQueue const&);
-    constexpr FixedQueue& operator=(FixedQueue&&) noexcept;
-    constexpr FixedQueue& operator=(InitializerList<T>);
+    constexpr FixedQueue& operator=(FixedQueue const& other);
+    constexpr FixedQueue& operator=(FixedQueue&& other) noexcept;
+    constexpr FixedQueue& operator=(InitializerList<T> initList);
 
 private:
     template <typename U>
-    constexpr void EnqueueRangeWithSize(U, U, size_t);
+    constexpr void AppendRangeWithSize(U begin, U end, size_t len);
     template <typename U>
-    constexpr void AssignRangeWithSize(U, U, size_t);
+    constexpr void AssignRangeWithSize(U begin, U end, size_t len);
 
-    constexpr void AssertValidCapacity(size_t) const noexcept;
-    constexpr void AssertValidOffset(size_t) const noexcept;
-    constexpr void AssertValidIterator(ConstIterator) const noexcept;
-    constexpr void AssertValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr void AssertValidCapacity(size_t capacity) const noexcept;
+    constexpr void AssertValidOffset(size_t offset) const noexcept;
+    constexpr void AssertValidIterator(ConstIterator iter) const noexcept;
+    constexpr void AssertValidRange(ConstIterator begin, ConstIterator end) const noexcept;
 };
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::FixedQueue() noexcept
+constexpr FixedQueue<T, N>::FixedQueue() noexcept
     : m_begin(0)
     , m_end(0)
     , m_size(0)
@@ -108,13 +109,13 @@ inline constexpr FixedQueue<T, N>::FixedQueue() noexcept
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::~FixedQueue()
+constexpr FixedQueue<T, N>::~FixedQueue()
 {
     Clear();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::FixedQueue(FixedQueue const& other)
+constexpr FixedQueue<T, N>::FixedQueue(FixedQueue const& other)
     : m_buffer()
 {
     memory::ConstructRange(m_buffer.Data(), other.Begin(), other.End());
@@ -124,7 +125,7 @@ inline constexpr FixedQueue<T, N>::FixedQueue(FixedQueue const& other)
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::FixedQueue(FixedQueue&& other) noexcept
+constexpr FixedQueue<T, N>::FixedQueue(FixedQueue&& other) noexcept
     : m_buffer()
 {
     Iterator otherBegin = other.Begin();
@@ -141,30 +142,30 @@ inline constexpr FixedQueue<T, N>::FixedQueue(FixedQueue&& other) noexcept
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::FixedQueue(InitializerList<T> init)
+constexpr FixedQueue<T, N>::FixedQueue(InitializerList<T> initList)
     : m_buffer()
 {
-    AssertValidCapacity(init.size());
-    memory::ConstructRange(m_buffer.Data(), init.begin(), init.end());
+    AssertValidCapacity(initList.size());
+    memory::ConstructRange(m_buffer.Data(), initList.begin(), initList.end());
     m_begin = 0;
-    m_end = init.size();
-    m_size = init.size();
+    m_end = initList.size();
+    m_size = initList.size();
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr FixedQueue<T, N>::FixedQueue(Iter first, Iter last)
+constexpr FixedQueue<T, N>::FixedQueue(Iter begin, Iter end)
     : m_begin(0)
     , m_end(0)
     , m_size(0)
     , m_buffer()
 {
-    Assign(first, last);
+    Assign(begin, end);
 }
 
 template <MovableT T, size_t N>
 template <typename... Args>
-inline constexpr void FixedQueue<T, N>::Enqueue(Args&&... args)
+constexpr void FixedQueue<T, N>::PushBack(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_size + 1);
@@ -175,52 +176,52 @@ inline constexpr void FixedQueue<T, N>::Enqueue(Args&&... args)
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr void FixedQueue<T, N>::EnqueueRange(Iter first, Iter last)
+constexpr void FixedQueue<T, N>::Append(Iter begin, Iter end)
 {
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:  Enqueue(ForwardArg<typename Iter::Value>(*first)); return;
+        case 1:  PushBack(ForwardArg<typename Iter::Value>(*begin)); return;
         default: break;
     }
 
-    EnqueueRangeWithSize(first, last, distance);
+    AppendRangeWithSize(begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::EnqueueRange(InitializerList<T> init)
+constexpr void FixedQueue<T, N>::Append(InitializerList<T> initList)
 {
-    EnqueueRangeWithSize(init.begin(), init.end(), init.size());
+    AppendRangeWithSize(initList.begin(), initList.end(), initList.size());
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr void FixedQueue<T, N>::Assign(Iter first, Iter last)
+constexpr void FixedQueue<T, N>::Assign(Iter begin, Iter end)
 {
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     if (distance == 0) [[unlikely]] {
         Clear();
         return;
     }
 
-    AssignRangeWithSize(first, last, distance);
+    AssignRangeWithSize(begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::Assign(InitializerList<T> init)
+constexpr void FixedQueue<T, N>::Assign(InitializerList<T> initList)
 {
-    size_t size = init.size();
+    size_t size = initList.size();
     if (size == 0) [[unlikely]] {
         Clear();
         return;
     }
 
-    AssignRangeWithSize(init.begin(), init.end(), size);
+    AssignRangeWithSize(initList.begin(), initList.end(), size);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T FixedQueue<T, N>::Dequeue()
+constexpr T FixedQueue<T, N>::PopFirst()
 {
     Pointer begin = m_buffer.Data() + m_begin;
     T ele = MoveArg(*begin);
@@ -231,7 +232,7 @@ inline constexpr T FixedQueue<T, N>::Dequeue()
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::RemoveFirst()
+constexpr void FixedQueue<T, N>::PopFront()
 {
     if (Empty()) [[unlikely]] {
         return;
@@ -243,25 +244,23 @@ inline constexpr void FixedQueue<T, N>::RemoveFirst()
 }
 
 template <MovableT T, size_t N>
-constexpr void FixedQueue<T, N>::RemoveFirst(size_t count)
+constexpr void FixedQueue<T, N>::PopFront(size_t count)
 {
     if (Empty() || count == 0) [[unlikely]] {
         return;
     }
 
     size_t oldSize = Size();
-    if (count >= oldSize) {
-        count = oldSize;
-    }
+    count = count < oldSize ? count : oldSize;
 
-    Pointer begin = m_buffer.Data() + m_begin;
+    Pointer ptrBegin = m_buffer.Data() + m_begin;
     size_t frontCap = m_buffer.Capacity() - m_begin;
     if (frontCap >= count) {
-        memory::DestructRange(begin, begin + count);
+        memory::DestructRange(ptrBegin, ptrBegin + count);
         m_begin += count;
     } else {
         Pointer bufBegin = m_buffer.Data();
-        memory::DestructRange(begin, begin + frontCap);
+        memory::DestructRange(ptrBegin, ptrBegin + frontCap);
         memory::DestructRange(bufBegin, bufBegin + count - frontCap);
         m_begin = count - frontCap;
     }
@@ -277,14 +276,14 @@ constexpr void FixedQueue<T, N>::Clear()
     }
 
     Pointer buf = m_buffer.Data();
-    Pointer begin = buf + m_begin;
-    Pointer end = buf + m_end;
+    Pointer ptrBegin = buf + m_begin;
+    Pointer ptrEnd = buf + m_end;
 
     if (m_begin < m_end) {
-        memory::DestructRange(begin, end);
+        memory::DestructRange(ptrBegin, ptrEnd);
     } else {
-        memory::DestructRange(begin, buf + (offset_t)m_buffer.Capacity());
-        memory::DestructRange(buf, end);
+        memory::DestructRange(ptrBegin, buf + static_cast<offset_t>(m_buffer.Capacity()));
+        memory::DestructRange(buf, ptrEnd);
     }
 
     m_begin = 0;
@@ -293,63 +292,67 @@ constexpr void FixedQueue<T, N>::Clear()
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::Pointer FixedQueue<T, N>::Data() noexcept
+constexpr FixedQueue<T, N>::Pointer FixedQueue<T, N>::Data() noexcept
 {
     return m_buffer.Data();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::ConstPointer FixedQueue<T, N>::Data() const noexcept
+constexpr FixedQueue<T, N>::ConstPointer FixedQueue<T, N>::Data() const noexcept
 {
     return m_buffer.Data();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::Iterator FixedQueue<T, N>::Begin() noexcept
+constexpr FixedQueue<T, N>::Iterator FixedQueue<T, N>::Begin() noexcept
 {
-    return Iterator((size_t)m_begin, m_buffer.Capacity(), m_buffer.Data(), this);
+    return Iterator(static_cast<size_t>(m_begin), m_buffer.Capacity(), m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::ConstIterator FixedQueue<T, N>::Begin() const noexcept
+constexpr FixedQueue<T, N>::ConstIterator FixedQueue<T, N>::Begin() const noexcept
 {
-    return ConstIterator((size_t)m_begin, m_buffer.Capacity(), m_buffer.Data(), this);
+    return ConstIterator(static_cast<size_t>(m_begin), m_buffer.Capacity(), m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::Iterator FixedQueue<T, N>::End() noexcept
+constexpr FixedQueue<T, N>::Iterator FixedQueue<T, N>::End() noexcept
 {
     size_t cap = m_buffer.Capacity();
-    size_t endIdx = m_begin == m_end ? m_begin + m_size : m_begin < m_end ? (size_t)m_end : (size_t)m_end + cap;
+    size_t endIdx = m_begin == m_end
+                        ? m_begin + m_size
+                        : (m_begin < m_end ? static_cast<size_t>(m_end) : static_cast<size_t>(m_end) + cap);
 
     return Iterator(endIdx, cap, m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>::ConstIterator FixedQueue<T, N>::End() const noexcept
+constexpr FixedQueue<T, N>::ConstIterator FixedQueue<T, N>::End() const noexcept
 {
     size_t cap = m_buffer.Capacity();
-    size_t endIdx = m_begin == m_end ? m_begin + m_size : m_begin < m_end ? (size_t)m_end : (size_t)m_end + cap;
+    size_t endIdx = m_begin == m_end
+                        ? m_begin + m_size
+                        : (m_begin < m_end ? static_cast<size_t>(m_end) : static_cast<size_t>(m_end) + cap);
 
     return ConstIterator(endIdx, cap, m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedQueue<T, N>::First()
+constexpr T& FixedQueue<T, N>::First()
 {
     AssertValidOffset(m_begin);
     return *(m_buffer.Data() + m_begin);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedQueue<T, N>::First() const
+constexpr T const& FixedQueue<T, N>::First() const
 {
     AssertValidOffset(m_begin);
     return *(m_buffer.Data() + m_begin);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedQueue<T, N>::Last()
+constexpr T& FixedQueue<T, N>::Last()
 {
     size_t cap = m_buffer.Capacity();
     size_t offset = (m_end - 1 + cap) % cap;
@@ -358,7 +361,7 @@ inline constexpr T& FixedQueue<T, N>::Last()
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedQueue<T, N>::Last() const
+constexpr T const& FixedQueue<T, N>::Last() const
 {
     size_t cap = m_buffer.Capacity();
     size_t offset = (m_end - 1 + cap) % cap;
@@ -367,7 +370,7 @@ inline constexpr T const& FixedQueue<T, N>::Last() const
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedQueue<T, N>::At(size_t index)
+constexpr T& FixedQueue<T, N>::At(size_t index)
 {
     size_t offset = (m_begin + index) % m_buffer.Capacity();
     AssertValidOffset(offset);
@@ -375,7 +378,7 @@ inline constexpr T& FixedQueue<T, N>::At(size_t index)
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedQueue<T, N>::At(size_t index) const
+constexpr T const& FixedQueue<T, N>::At(size_t index) const
 {
     size_t offset = (m_begin + index) % m_buffer.Capacity();
     AssertValidOffset(offset);
@@ -383,66 +386,66 @@ inline constexpr T const& FixedQueue<T, N>::At(size_t index) const
 }
 
 template <MovableT T, size_t N>
-inline constexpr size_t FixedQueue<T, N>::Capacity() const noexcept
+constexpr size_t FixedQueue<T, N>::Capacity() const noexcept
 {
     return m_buffer.Capacity();
 }
 
 template <MovableT T, size_t N>
-inline constexpr size_t FixedQueue<T, N>::Size() const noexcept
+constexpr size_t FixedQueue<T, N>::Size() const noexcept
 {
     return m_size;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedQueue<T, N>::Empty() const noexcept
+constexpr bool FixedQueue<T, N>::Empty() const noexcept
 {
     return m_size == 0;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedQueue<T, N>::Full() const noexcept
+constexpr bool FixedQueue<T, N>::Full() const noexcept
 {
     return m_size == m_buffer.Capacity();
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedQueue<T, N>::ValidIndex(size_t index) const noexcept
+constexpr bool FixedQueue<T, N>::ValidIndex(size_t index) const noexcept
 {
     return index < m_size;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedQueue<T, N>::ValidIterator(ConstIterator iter) const noexcept
+constexpr bool FixedQueue<T, N>::ValidIterator(ConstIterator iter) const noexcept
 {
-    size_t begin = (size_t)m_begin;
-    size_t end = m_begin < m_end ? (size_t)m_end : (size_t)m_end + m_buffer.Capacity();
+    size_t begin = static_cast<size_t>(m_begin);
+    size_t end = m_begin < m_end ? static_cast<size_t>(m_end) : static_cast<size_t>(m_end) + m_buffer.Capacity();
     return iter.m_offset >= begin && iter.m_offset < end;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedQueue<T, N>::ValidRange(ConstIterator begin, ConstIterator end) const noexcept
+constexpr bool FixedQueue<T, N>::ValidRange(ConstIterator begin, ConstIterator end) const noexcept
 {
-    size_t bufferBegin = (size_t)m_begin;
-    size_t bufferEnd = m_begin < m_end ? (size_t)m_end : (size_t)m_end + m_buffer.Capacity();
+    size_t bufferBegin = static_cast<size_t>(m_begin);
+    size_t bufferEnd = m_begin < m_end ? static_cast<size_t>(m_end) : static_cast<size_t>(m_end) + m_buffer.Capacity();
     return (begin.m_offset >= bufferBegin && begin.m_offset < bufferEnd) &&
            (end.m_offset > bufferBegin && end.m_offset < bufferEnd + 1);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedQueue<T, N>::operator[](size_t index)
+constexpr T& FixedQueue<T, N>::operator[](size_t index)
 {
     return *(m_buffer.Data() + ((m_begin + index) % m_buffer.Capacity()));
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedQueue<T, N>::operator[](size_t index) const
+constexpr T const& FixedQueue<T, N>::operator[](size_t index) const
 {
     return *(m_buffer.Data() + ((m_begin + index) % m_buffer.Capacity()));
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue const& other)
+constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue const& other)
 {
     if (m_buffer == other.m_buffer) [[unlikely]] {
         return *this;
@@ -453,7 +456,7 @@ inline constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue const&
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue&& other) noexcept
+constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue&& other) noexcept
 {
     if (m_buffer == other.m_buffer) [[unlikely]] {
         return *this;
@@ -465,29 +468,29 @@ inline constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue&& othe
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(InitializerList<T> init)
+constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(InitializerList<T> initList)
 {
-    Assign(init);
+    Assign(initList);
     return *this;
 }
 
 template <MovableT T, size_t N>
 template <typename U>
-inline constexpr void FixedQueue<T, N>::EnqueueRangeWithSize(U first, U last, size_t len)
+constexpr void FixedQueue<T, N>::AppendRangeWithSize(U begin, U end, size_t len)
 {
     AssertValidCapacity(m_size + len);
-    Pointer end = m_buffer.Data() + m_end;
+    Pointer ptrEnd = m_buffer.Data() + m_end;
     size_t backCap = m_buffer.Capacity() - m_end;
 
     if (backCap >= len) {
-        memory::ConstructRange(end, first, last);
+        memory::ConstructRange(ptrEnd, begin, end);
         m_end += len;
     } else {
         size_t frontInsertCnt = len - backCap;
-        Pointer begin = m_buffer.Data();
+        Pointer ptrBegin = m_buffer.Data();
 
-        memory::ConstructRange(end, first, first + (offset_t)backCap);
-        memory::ConstructRange(begin, first + (offset_t)backCap, last);
+        memory::ConstructRange(ptrEnd, begin, begin + static_cast<offset_t>(backCap));
+        memory::ConstructRange(ptrBegin, begin + static_cast<offset_t>(backCap), end);
         m_end = frontInsertCnt;
     }
 
@@ -496,18 +499,18 @@ inline constexpr void FixedQueue<T, N>::EnqueueRangeWithSize(U first, U last, si
 
 template <MovableT T, size_t N>
 template <typename U>
-inline constexpr void FixedQueue<T, N>::AssignRangeWithSize(U first, U last, size_t len)
+constexpr void FixedQueue<T, N>::AssignRangeWithSize(U begin, U end, size_t len)
 {
     AssertValidCapacity(len);
-    offset_t size = (offset_t)m_size;
-    Iterator begin = Begin();
+    offset_t size = static_cast<offset_t>(m_size);
+    Iterator iterBegin = Begin();
 
     if (len > m_size) {
-        memory::CopyRange(begin, first, first + size);
-        memory::ConstructRange(begin + size, first + size, last);
+        memory::CopyRange(iterBegin, begin, end + size);
+        memory::ConstructRange(iterBegin + size, begin + size, end);
     } else {
-        memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + (offset_t)len, End());
+        memory::CopyRange(iterBegin, begin, end);
+        memory::DestructRange(iterBegin + static_cast<offset_t>(len), End());
     }
 
     m_end = (m_begin + len) % m_buffer.Capacity();
@@ -515,13 +518,13 @@ inline constexpr void FixedQueue<T, N>::AssignRangeWithSize(U first, U last, siz
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::AssertValidCapacity([[maybe_unused]] size_t cap) const noexcept
+constexpr void FixedQueue<T, N>::AssertValidCapacity([[maybe_unused]] size_t capacity) const noexcept
 {
-    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", cap, N);
+    ASSERT(capacity <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", capacity, N);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::AssertValidOffset([[maybe_unused]] size_t offset) const noexcept
+constexpr void FixedQueue<T, N>::AssertValidOffset([[maybe_unused]] size_t offset) const noexcept
 {
     ASSERT(m_size != 0, "invalid access on empty queue");
 
@@ -541,29 +544,31 @@ inline constexpr void FixedQueue<T, N>::AssertValidOffset([[maybe_unused]] size_
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+constexpr void FixedQueue<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     ASSERT(ValidIterator(iter), "invalid iterator at offset {}", iter.m_offset);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedQueue<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
-                                                         [[maybe_unused]] ConstIterator end) const noexcept
+constexpr void FixedQueue<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                                  [[maybe_unused]] ConstIterator end) const noexcept
 {
     ASSERT(ValidRange(begin, end), "invalid range from {} to {}", begin.m_offset, end.m_offset);
 }
 
 export template <MovableT T, size_t CapT, MovableT U, size_t CapU>
-inline constexpr bool operator==(FixedQueue<T, CapT> const& l, FixedQueue<U, CapU> const& r) noexcept
+constexpr bool operator==(FixedQueue<T, CapT> const& lhs, FixedQueue<U, CapU> const& rhs) noexcept
     requires EqualityComparableWithT<T, U>
 {
-    if (l.Size() != r.Size()) {
+    if (lhs.Size() != rhs.Size()) {
         return false;
-    } else if (l.Size() == 0) [[unlikely]] {
+    }
+
+    if (lhs.Size() == 0) [[unlikely]] {
         return true;
     }
 
-    return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
+    return memory::EqualRange(lhs.Begin(), lhs.End(), rhs.Begin(), rhs.End());
 }
 
 } // namespace mini

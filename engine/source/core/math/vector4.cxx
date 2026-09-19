@@ -21,54 +21,54 @@ public:
     };
 
     constexpr Vector4() noexcept;
-    constexpr Vector4(float32, float32, float32, float32) noexcept;
-    explicit constexpr Vector4(Float32ConvertibleT auto) noexcept;
+    constexpr Vector4(float32 x, float32 y, float32 z, float32 w) noexcept;
+    explicit constexpr Vector4(Float32ConvertibleT auto val) noexcept;
 
-    /*constexpr*/ float32 Length() const noexcept;
-    /*constexpr*/ float32 LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 LengthSquared() const noexcept;
 
-    constexpr float32 Dot(Vector4 const&) const noexcept;
-    constexpr Vector4 Cross(Vector4 const&) const noexcept;
+    [[nodiscard]] constexpr float32 Dot(Vector4 const& vec) const noexcept;
+    [[nodiscard]] constexpr Vector4 Cross(Vector4 const& vec) const noexcept;
 
-    constexpr void Clamp(Vector4 const&, Vector4 const&) noexcept;
+    constexpr void Clamp(Vector4 const& min, Vector4 const& max) noexcept;
     /*constexpr*/ void Normalize() noexcept;
 
-    static constexpr float32 Dot(Vector4 const&, Vector4 const&) noexcept;
-    static constexpr Vector4 Cross(Vector4 const&, Vector4 const&) noexcept;
+    static constexpr float32 Dot(Vector4 const& lhs, Vector4 const& rhs) noexcept;
+    static constexpr Vector4 Cross(Vector4 const& lhs, Vector4 const& rhs) noexcept;
 
-    static /*constexpr*/ Vector4 Normalize(Vector4 const&) noexcept;
+    static /*constexpr*/ Vector4 Normalize(Vector4 const& vec) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector4 const&, Vector4 const&) noexcept;
-    static /*constexpr*/ float32 DistanceSquared(Vector4 const&, Vector4 const&) noexcept;
-    static constexpr Vector4 Lerp(Vector4 const&, Vector4 const&, float32) noexcept;
+    static /*constexpr*/ float32 Distance(Vector4 const& lhs, Vector4 const& rhs) noexcept;
+    static /*constexpr*/ float32 DistanceSquared(Vector4 const& lhs, Vector4 const& rhs) noexcept;
+    static constexpr Vector4 Lerp(Vector4 const& x, Vector4 const& y, float32 ratio) noexcept;
 
-    constexpr Vector4& operator+=(Vector4 const&) noexcept;
-    constexpr Vector4& operator-=(Vector4 const&) noexcept;
-    constexpr Vector4& operator*=(Float32ConvertibleT auto) noexcept;
-    constexpr Vector4& operator/=(Float32ConvertibleT auto) noexcept;
+    constexpr Vector4& operator+=(Vector4 const& vec) noexcept;
+    constexpr Vector4& operator-=(Vector4 const& vec) noexcept;
+    constexpr Vector4& operator*=(Float32ConvertibleT auto val) noexcept;
+    constexpr Vector4& operator/=(Float32ConvertibleT auto val) noexcept;
 
     constexpr Vector4 operator+() const noexcept;
     constexpr Vector4 operator-() const noexcept;
 
-    constexpr bool operator==(Vector4 const&) const noexcept;
+    constexpr bool operator==(Vector4 const& other) const noexcept;
 
     constexpr explicit operator Vector3() const noexcept;
 
-    static constexpr Vector4 Zero() noexcept { return Vector4(0.f, 0.f, 0.f, 0.f); }
-    static constexpr Vector4 One() noexcept { return Vector4(1.f, 1.f, 1.f, 1.f); }
-    static constexpr Vector4 UnitX() noexcept { return Vector4(1.f, 0.f, 0.f, 0.f); }
-    static constexpr Vector4 UnitY() noexcept { return Vector4(0.f, 1.f, 0.f, 0.f); }
-    static constexpr Vector4 UnitZ() noexcept { return Vector4(0.f, 0.f, 1.f, 0.f); }
-    static constexpr Vector4 UnitW() noexcept { return Vector4(0.f, 0.f, 0.f, 1.f); }
+    static constexpr Vector4 Zero() noexcept { return { 0.f, 0.f, 0.f, 0.f }; }
+    static constexpr Vector4 One() noexcept { return { 1.f, 1.f, 1.f, 1.f }; }
+    static constexpr Vector4 UnitX() noexcept { return { 1.f, 0.f, 0.f, 0.f }; }
+    static constexpr Vector4 UnitY() noexcept { return { 0.f, 1.f, 0.f, 0.f }; }
+    static constexpr Vector4 UnitZ() noexcept { return { 0.f, 0.f, 1.f, 0.f }; }
+    static constexpr Vector4 UnitW() noexcept { return { 0.f, 0.f, 0.f, 1.f }; }
 };
 
-export constexpr Vector4 operator+(Vector4 const&, Vector4 const&) noexcept;
-export constexpr Vector4 operator-(Vector4 const&, Vector4 const&) noexcept;
-export constexpr Vector4 operator*(Vector4 const&, Float32ConvertibleT auto const) noexcept;
-export constexpr Vector4 operator/(Vector4 const&, Float32ConvertibleT auto const) noexcept;
-export constexpr Vector4 operator*(Float32ConvertibleT auto const, Vector4 const&) noexcept;
+export constexpr Vector4 operator+(Vector4 const& lhs, Vector4 const& rhs) noexcept;
+export constexpr Vector4 operator-(Vector4 const& lhs, Vector4 const& rhs) noexcept;
+export constexpr Vector4 operator*(Vector4 const& vec, Float32ConvertibleT auto val) noexcept;
+export constexpr Vector4 operator/(Vector4 const& vec, Float32ConvertibleT auto val) noexcept;
+export constexpr Vector4 operator*(Float32ConvertibleT auto val, Vector4 const& vec) noexcept;
 
-inline constexpr Vector4::Vector4() noexcept
+constexpr Vector4::Vector4() noexcept
     : x(0.f)
     , y(0.f)
     , z(0.f)
@@ -76,15 +76,15 @@ inline constexpr Vector4::Vector4() noexcept
 {
 }
 
-inline constexpr Vector4::Vector4(float32 inX, float32 inY, float32 inZ, float32 inW) noexcept
-    : x(inX)
-    , y(inY)
-    , z(inZ)
-    , w(inW)
+constexpr Vector4::Vector4(float32 x, float32 y, float32 z, float32 w) noexcept
+    : x(x)
+    , y(y)
+    , z(z)
+    , w(w)
 {
 }
 
-inline constexpr Vector4::Vector4(Float32ConvertibleT auto val) noexcept
+constexpr Vector4::Vector4(Float32ConvertibleT auto val) noexcept
     : x(static_cast<float32>(val))
     , y(static_cast<float32>(val))
     , z(static_cast<float32>(val))
@@ -102,22 +102,22 @@ inline /*constexpr*/ float32 Vector4::LengthSquared() const noexcept
     return Pow(x, 2.f) + Pow(y, 2.f) + Pow(z, 2.f) + Pow(w, 2.f);
 }
 
-inline constexpr float32 Vector4::Dot(Vector4 const& v) const noexcept
+constexpr float32 Vector4::Dot(Vector4 const& vec) const noexcept
 {
-    return Vector4::Dot(*this, v);
+    return Vector4::Dot(*this, vec);
 }
 
-inline constexpr Vector4 Vector4::Cross(Vector4 const& v) const noexcept
+constexpr Vector4 Vector4::Cross(Vector4 const& vec) const noexcept
 {
-    return Vector4::Cross(*this, v);
+    return Vector4::Cross(*this, vec);
 }
 
-inline constexpr void Vector4::Clamp(Vector4 const& v1, Vector4 const& v2) noexcept
+constexpr void Vector4::Clamp(Vector4 const& min, Vector4 const& max) noexcept
 {
-    x = (x < v1.x) ? v1.x : ((x > v2.x) ? v2.x : x);
-    y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
-    z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
-    w = (w < v1.w) ? v1.w : ((w > v2.w) ? v2.w : w);
+    x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
+    y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
+    z = (z < min.z) ? min.z : ((z > max.z) ? max.z : z);
+    w = (w < min.w) ? min.w : ((w > max.w) ? max.w : w);
 }
 
 inline /*constexpr*/ void Vector4::Normalize() noexcept
@@ -125,60 +125,60 @@ inline /*constexpr*/ void Vector4::Normalize() noexcept
     (*this) /= Length();
 }
 
-inline constexpr float32 Vector4::Dot(Vector4 const& v1, Vector4 const& v2) noexcept
+constexpr float32 Vector4::Dot(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
-    return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+    return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z) + (lhs.w * rhs.w);
 }
 
-inline constexpr Vector4 Vector4::Cross(Vector4 const& v1, Vector4 const& v2) noexcept
+constexpr Vector4 Vector4::Cross(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
     Vector4 result;
-    result.x = v1.y * v2.z - v1.z * v2.y;
-    result.y = v1.z * v2.x - v1.x * v2.z;
-    result.z = v1.x * v2.y - v1.y * v2.x;
-    result.w = v1.w * v2.w - v2.w * v2.w;
+    result.x = (lhs.y * rhs.z) - (lhs.z * rhs.y);
+    result.y = (lhs.z * rhs.x) - (lhs.x * rhs.z);
+    result.z = (lhs.x * rhs.y) - (lhs.y * rhs.x);
+    result.w = (lhs.w * rhs.w) - (rhs.w * rhs.w);
     return result;
 }
 
-inline /*constexpr*/ Vector4 Vector4::Normalize(Vector4 const& v) noexcept
+inline /*constexpr*/ Vector4 Vector4::Normalize(Vector4 const& vec) noexcept
 {
-    return v / v.Length();
+    return vec / vec.Length();
 }
 
-inline /*constexpr*/ float32 Vector4::Distance(Vector4 const& v1, Vector4 const& v2) noexcept
+inline /*constexpr*/ float32 Vector4::Distance(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
-    return (v1 - v2).Length();
+    return (lhs - rhs).Length();
 }
 
-inline /*constexpr*/ float32 Vector4::DistanceSquared(Vector4 const& v1, Vector4 const& v2) noexcept
+inline /*constexpr*/ float32 Vector4::DistanceSquared(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
-    return (v1 - v2).LengthSquared();
+    return (lhs - rhs).LengthSquared();
 }
 
-inline constexpr Vector4 Vector4::Lerp(Vector4 const& v1, Vector4 const& v2, float32 t) noexcept
+constexpr Vector4 Vector4::Lerp(Vector4 const& x, Vector4 const& y, float32 ratio) noexcept
 {
-    return (v2 - v1) * t + v1;
+    return (y - x) * ratio + x;
 }
 
-inline constexpr Vector4& Vector4::operator+=(Vector4 const& v) noexcept
+constexpr Vector4& Vector4::operator+=(Vector4 const& vec) noexcept
 {
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
+    x += vec.x;
+    y += vec.y;
+    z += vec.z;
+    w += vec.w;
     return *this;
 }
 
-inline constexpr Vector4& Vector4::operator-=(Vector4 const& v) noexcept
+constexpr Vector4& Vector4::operator-=(Vector4 const& vec) noexcept
 {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    w -= v.w;
+    x -= vec.x;
+    y -= vec.y;
+    z -= vec.z;
+    w -= vec.w;
     return *this;
 }
 
-inline constexpr Vector4& Vector4::operator*=(Float32ConvertibleT auto val) noexcept
+constexpr Vector4& Vector4::operator*=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x *= fVal;
@@ -188,7 +188,7 @@ inline constexpr Vector4& Vector4::operator*=(Float32ConvertibleT auto val) noex
     return *this;
 }
 
-inline constexpr Vector4& Vector4::operator/=(Float32ConvertibleT auto val) noexcept
+constexpr Vector4& Vector4::operator/=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x /= fVal;
@@ -198,76 +198,76 @@ inline constexpr Vector4& Vector4::operator/=(Float32ConvertibleT auto val) noex
     return *this;
 }
 
-inline constexpr Vector4 Vector4::operator+() const noexcept
+constexpr Vector4 Vector4::operator+() const noexcept
 {
-    return Vector4(x, y, z, w);
+    return { x, y, z, w };
 }
 
-inline constexpr Vector4 Vector4::operator-() const noexcept
+constexpr Vector4 Vector4::operator-() const noexcept
 {
-    return Vector4(-x, -y, -z, -w);
+    return { -x, -y, -z, -w };
 }
 
-inline constexpr bool Vector4::operator==(Vector4 const& v) const noexcept
+constexpr bool Vector4::operator==(Vector4 const& other) const noexcept
 {
-    return x == v.x && y == v.y && z == v.z && w == v.w;
+    return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
-inline constexpr Vector4::operator Vector3() const noexcept
+constexpr Vector4::operator Vector3() const noexcept
 {
-    return Vector3(x, y, z);
+    return { x, y, z };
 }
 
-inline constexpr Vector4 operator+(Vector4 const& v1, Vector4 const& v2) noexcept
+constexpr Vector4 operator+(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
     Vector4 result;
-    result.x = v1.x + v2.x;
-    result.y = v1.y + v2.y;
-    result.z = v1.z + v2.z;
-    result.w = v1.w + v2.w;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
+    result.w = lhs.w + rhs.w;
     return result;
 }
 
-inline constexpr Vector4 operator-(Vector4 const& v1, Vector4 const& v2) noexcept
+constexpr Vector4 operator-(Vector4 const& lhs, Vector4 const& rhs) noexcept
 {
     Vector4 result;
-    result.x = v1.x - v2.x;
-    result.y = v1.y - v2.y;
-    result.z = v1.z - v2.z;
-    result.w = v1.w - v2.w;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
+    result.w = lhs.w - rhs.w;
     return result;
 }
 
-inline constexpr Vector4 operator*(Vector4 const& v, Float32ConvertibleT auto val) noexcept
+constexpr Vector4 operator*(Vector4 const& vec, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector4 result;
-    result.x = v.x * fVal;
-    result.y = v.y * fVal;
-    result.z = v.z * fVal;
-    result.w = v.w * fVal;
+    result.x = vec.x * fVal;
+    result.y = vec.y * fVal;
+    result.z = vec.z * fVal;
+    result.w = vec.w * fVal;
     return result;
 }
 
-inline constexpr Vector4 operator/(Vector4 const& v, Float32ConvertibleT auto val) noexcept
+constexpr Vector4 operator/(Vector4 const& vec, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector4 result;
-    result.x = v.x / fVal;
-    result.y = v.y / fVal;
-    result.z = v.z / fVal;
-    result.w = v.w / fVal;
+    result.x = vec.x / fVal;
+    result.y = vec.y / fVal;
+    result.z = vec.z / fVal;
+    result.w = vec.w / fVal;
     return result;
 }
 
-inline constexpr Vector4 operator*(Float32ConvertibleT auto val, Vector4 const& v) noexcept
+constexpr Vector4 operator*(Float32ConvertibleT auto val, Vector4 const& vec) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector4 result;
-    result.x = v.x * fVal;
-    result.y = v.y * fVal;
-    result.z = v.z * fVal;
-    result.w = v.w * fVal;
+    result.x = vec.x * fVal;
+    result.y = vec.y * fVal;
+    result.z = vec.z * fVal;
+    result.w = vec.w * fVal;
     return result;
 }
 

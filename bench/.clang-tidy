@@ -1,4 +1,5 @@
 ---
+WarningsAsErrors: '*'
 Checks: [
   bugprone-*,
   performance-*,
@@ -28,9 +29,12 @@ Checks: [
   modernize-use-structured-binding,
   
   -bugprone-easily-swappable-parameters,
+  -bugprone-throwing-static-initialization,
   -readability-magic-numbers,
   -readability-uppercase-literal-suffix,
+  -misc-use-internal-linkage,
   -misc-non-private-member-variables-in-classes,
+  -performance-unnecessary-copy-initialization,
 ]
 
 CheckOptions:

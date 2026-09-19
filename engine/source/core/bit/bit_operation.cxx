@@ -16,7 +16,7 @@ import :bit_platform;
 namespace mini::bit {
 
 export template <typename To, typename From>
-inline constexpr To BitCast(From const& from) noexcept
+constexpr To BitCast(From const& from) noexcept
     requires(sizeof(To) == sizeof(From))
 {
     if consteval {
@@ -29,7 +29,7 @@ inline constexpr To BitCast(From const& from) noexcept
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr T RotateLeft(T num, int32 count) noexcept
+constexpr T RotateLeft(T num, int32 count) noexcept
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -55,7 +55,7 @@ inline constexpr T RotateLeft(T num, int32 count) noexcept
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr T RotateRight(T num, int32 count) noexcept
+constexpr T RotateRight(T num, int32 count) noexcept
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -81,7 +81,7 @@ inline constexpr T RotateRight(T num, int32 count) noexcept
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr uint32 CountLeftZero(T num) noexcept
+constexpr uint32 CountLeftZero(T num) noexcept
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CLZG) {
@@ -118,13 +118,13 @@ inline constexpr uint32 CountLeftZero(T num) noexcept
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr uint32 CountLeftOne(T num) noexcept
+constexpr uint32 CountLeftOne(T num) noexcept
 {
     return num != NumericLimit<T>::max ? CountLeftZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr uint32 CountRightZero(T num) noexcept
+constexpr uint32 CountRightZero(T num) noexcept
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CTZG) {
@@ -154,7 +154,7 @@ inline constexpr uint32 CountRightZero(T num) noexcept
 }
 
 export template <UnsignedIntegralT T>
-inline constexpr uint32 CountRightOne(T num) noexcept
+constexpr uint32 CountRightOne(T num) noexcept
 {
     return num != NumericLimit<T>::max ? CountRightZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }

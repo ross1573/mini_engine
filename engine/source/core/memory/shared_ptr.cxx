@@ -18,7 +18,7 @@ private:
 
 public:
     template <typename AllocU, typename DelU>
-    inline constexpr SharedBlock(T* ptr, AllocU&& alloc, DelU&& del) noexcept
+    constexpr SharedBlock(T* ptr, AllocU&& alloc, DelU&& del) noexcept
         : SharedCounter()
         , m_ptr(ptr)
         , m_alloc(ForwardArg<AllocU>(alloc))
@@ -26,22 +26,23 @@ public:
     {
     }
 
-    inline constexpr T* Get() noexcept { return m_ptr; }
+    constexpr T* Get() noexcept { return m_ptr; }
 
-    inline constexpr void DeletePtr() noexcept override
+protected:
+    constexpr void DeletePtr() noexcept override
     {
         m_deleter(m_ptr);
         m_ptr = nullptr;
     }
 
-    inline constexpr void DeleteSharedBlock() noexcept override
+    constexpr void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<SharedBlock>(MoveArg(m_alloc));
         memory::DestructAt(this);
         alloc.Deallocate(this, 1);
     }
 
-private:
+public:
     SharedBlock(SharedBlock const&) = delete;
     SharedBlock(SharedBlock&&) = delete;
 
@@ -58,7 +59,7 @@ private:
 public:
     template <typename AllocU, typename... Args>
         requires ConstructibleFromT<T, Args...>
-    inline InplaceSharedBlock(AllocU&& alloc, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+    InplaceSharedBlock(AllocU&& alloc, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
         : SharedCounter()
         , m_alloc(ForwardArg<AllocU>(alloc))
     {
@@ -66,22 +67,23 @@ public:
         memory::ConstructAt(ptr, ForwardArg<Args>(args)...);
     }
 
-    inline T* Get() noexcept { return reinterpret_cast<T*>(&m_buffer[0]); }
+    T* Get() noexcept { return reinterpret_cast<T*>(&m_buffer[0]); }
 
-    inline void DeletePtr() noexcept override
+protected:
+    void DeletePtr() noexcept override
     {
         T* ptr = reinterpret_cast<T*>(&m_buffer[0]);
         memory::DestructAt(ptr);
     }
 
-    inline void DeleteSharedBlock() noexcept override
+    void DeleteSharedBlock() noexcept override
     {
         auto alloc = RebindAllocator<InplaceSharedBlock>(MoveArg(m_alloc));
         memory::DestructAt(this);
         alloc.Deallocate(this, 1);
     }
 
-private:
+public:
     InplaceSharedBlock(InplaceSharedBlock const&) = delete;
     InplaceSharedBlock(InplaceSharedBlock&&) = delete;
 
@@ -112,64 +114,64 @@ private:
 public:
     constexpr SharedPtr() noexcept;
     constexpr ~SharedPtr();
-    constexpr SharedPtr(SharedPtr const&) noexcept;
-    constexpr SharedPtr(SharedPtr&&) noexcept;
+    constexpr SharedPtr(SharedPtr const& other) noexcept;
+    constexpr SharedPtr(SharedPtr&& other) noexcept;
     template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr(SharedPtr<U> const&) noexcept;
+    constexpr SharedPtr(SharedPtr<U> const& other) noexcept;
     template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr(SharedPtr<U>&&) noexcept;
+    constexpr SharedPtr(SharedPtr<U>&& other) noexcept;
     template <PtrConvertibleToT<T> U>
-    explicit constexpr SharedPtr(U*) noexcept;
+    explicit constexpr SharedPtr(U* ptr) noexcept;
     template <NonRefT U>
-    constexpr SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
+    constexpr SharedPtr(SharedPtr<U> const& other, Pointer ptr) noexcept;
     template <NonRefT U>
-    constexpr SharedPtr(SharedPtr<U>&&, Pointer) noexcept;
+    constexpr SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept;
 
     template <typename DelT = UnboundDeleter, typename AllocT = UnboundAllocator>
-    constexpr SharedPtr(nullptr_t, DelT = { }, AllocT = { }) noexcept;
+    constexpr SharedPtr(nullptr_t, DelT deleter = { }, AllocT allocator = { }) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-    constexpr SharedPtr(U*, DelT&&) noexcept;
+    constexpr SharedPtr(U* ptr, DelT&& deleter) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnboundAllocatorT AllocT>
-    constexpr SharedPtr(U*, DelT&&, AllocT const&)
+    constexpr SharedPtr(U* ptr, DelT&& deleter, AllocT const& allocator)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
-    constexpr Pointer Get() const noexcept;
-    constexpr bool Valid() const noexcept;
+    [[nodiscard]] constexpr Pointer Get() const noexcept;
+    [[nodiscard]] constexpr bool Valid() const noexcept;
 
-    constexpr void Swap(SharedPtr&) noexcept;
+    constexpr void Swap(SharedPtr& other) noexcept;
     constexpr void Reset() noexcept;
     template <PtrConvertibleToT<T> U>
-    constexpr void Reset(U*) noexcept;
+    constexpr void Reset(U* ptr) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-    constexpr void Reset(U*, DelT&&) noexcept;
+    constexpr void Reset(U* ptr, DelT&& deleter) noexcept;
     template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnboundAllocatorT AllocT>
-    constexpr void Reset(U*, DelT&&, AllocT const&)
+    constexpr void Reset(U* ptr, DelT&& deleter, AllocT const& allocator)
         requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>;
 
     template <NonRefT U>
-    constexpr bool Equals(SharedPtr<U> const&) const noexcept
+    [[nodiscard]] constexpr bool Equals(SharedPtr<U> const& other) const noexcept
         requires EqualityComparableWithT<T*, U*>;
     template <NonRefT U>
-    constexpr bool OwnerEquals(SharedPtr<U> const&) const noexcept;
+    [[nodiscard]] constexpr bool OwnerEquals(SharedPtr<U> const& other) const noexcept;
 
-    constexpr Pointer operator->() const noexcept;
-    constexpr Reference operator*() const noexcept;
+    [[nodiscard]] constexpr Pointer operator->() const noexcept;
+    [[nodiscard]] constexpr Reference operator*() const noexcept;
     explicit constexpr operator bool() const noexcept;
     explicit constexpr operator Pointer() const noexcept;
 
     constexpr SharedPtr& operator=(nullptr_t) noexcept;
-    constexpr SharedPtr& operator=(SharedPtr const&) noexcept;
-    constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
+    constexpr SharedPtr& operator=(SharedPtr const& other) noexcept;
+    constexpr SharedPtr& operator=(SharedPtr&& other) noexcept;
     template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr& operator=(SharedPtr<U> const&) noexcept;
+    constexpr SharedPtr& operator=(SharedPtr<U> const& other) noexcept;
     template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr& operator=(SharedPtr<U>&&) noexcept;
+    constexpr SharedPtr& operator=(SharedPtr<U>&& other) noexcept;
 
 private:
     template <typename AllocT, typename DelT>
-    constexpr void AllocateBlock(T*, AllocT const&, DelT&&);
+    constexpr void AllocateBlock(T* ptr, AllocT const& allocator, DelT&& deleter);
     template <typename AllocT, typename... Args>
-    constexpr void AllocateInplaceBlock(AllocT const&, Args&&...);
+    constexpr void AllocateInplaceBlock(AllocT const& allocator, Args&&... args);
 
     template <NonRefT U, UnboundAllocatorT AllocT, typename... Args>
     friend constexpr SharedPtr<U> AllocateShared(AllocT const&, Args&&...)
@@ -177,16 +179,16 @@ private:
 };
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::SharedPtr() noexcept
+constexpr SharedPtr<T>::SharedPtr() noexcept
     : m_ptr(nullptr)
     , m_counter(nullptr)
 {
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::~SharedPtr()
+constexpr SharedPtr<T>::~SharedPtr()
 {
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Release();
         m_counter = nullptr;
         m_ptr = nullptr;
@@ -194,7 +196,7 @@ inline constexpr SharedPtr<T>::~SharedPtr()
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
     : m_ptr(other.m_ptr)
     , m_counter(other.m_counter)
 {
@@ -204,7 +206,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
     : m_ptr(other.m_ptr)
     , m_counter(other.m_counter)
 {
@@ -214,7 +216,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_counter(other.m_counter)
 {
@@ -225,7 +227,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_counter(other.m_counter)
 {
@@ -235,14 +237,14 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr SharedPtr<T>::SharedPtr(U* ptr) noexcept
+constexpr SharedPtr<T>::SharedPtr(U* ptr) noexcept
 {
     AllocateBlock(static_cast<T*>(ptr), UnboundAllocator{ }, DefaultDeleter<T>{ });
 }
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Pointer ptr) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Pointer ptr) noexcept
     : m_ptr(ptr)
     , m_counter(other.m_counter)
 {
@@ -252,7 +254,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U> const& other, Pointer ptr)
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
+constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
     : m_ptr(ptr)
     , m_counter(other.m_counter)
 {
@@ -262,7 +264,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noex
 
 template <NonRefT T>
 template <typename DelT, typename AllocT>
-inline constexpr SharedPtr<T>::SharedPtr(nullptr_t, DelT, AllocT) noexcept
+constexpr SharedPtr<T>::SharedPtr(nullptr_t, DelT /*unused*/, AllocT /*unused*/) noexcept
     : m_ptr(nullptr)
     , m_counter(nullptr)
 {
@@ -270,27 +272,27 @@ inline constexpr SharedPtr<T>::SharedPtr(nullptr_t, DelT, AllocT) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-inline constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del) noexcept
+constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del) noexcept
 {
     AllocateBlock(static_cast<T*>(ptr), UnboundAllocator{ }, ForwardArg<DelT>(del));
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnboundAllocatorT AllocT>
-inline constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del, AllocT const& alloc)
+constexpr SharedPtr<T>::SharedPtr(U* ptr, DelT&& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
     AllocateBlock(static_cast<T*>(ptr), alloc, ForwardArg<DelT>(del));
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
+constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 {
     return m_ptr;
 }
 
 template <NonRefT T>
-inline constexpr bool SharedPtr<T>::Valid() const noexcept
+constexpr bool SharedPtr<T>::Valid() const noexcept
 {
     if (m_ptr == nullptr) {
         return false;
@@ -304,16 +306,16 @@ inline constexpr bool SharedPtr<T>::Valid() const noexcept
 }
 
 template <NonRefT T>
-inline constexpr void SharedPtr<T>::Swap(SharedPtr& o) noexcept
+constexpr void SharedPtr<T>::Swap(SharedPtr& other) noexcept
 {
-    mini::Swap(m_ptr, o.m_ptr);
-    mini::Swap(m_counter, o.m_counter);
+    mini::Swap(m_ptr, other.m_ptr);
+    mini::Swap(m_counter, other.m_counter);
 }
 
 template <NonRefT T>
-inline constexpr void SharedPtr<T>::Reset() noexcept
+constexpr void SharedPtr<T>::Reset() noexcept
 {
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Release();
         m_counter = nullptr;
         m_ptr = nullptr;
@@ -322,7 +324,7 @@ inline constexpr void SharedPtr<T>::Reset() noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
+constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
 {
     if (m_counter) {
         m_counter->Release();
@@ -333,7 +335,7 @@ inline constexpr void SharedPtr<T>::Reset(U* ptr) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT>
-inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
+constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
 {
     if (m_counter) {
         m_counter->Release();
@@ -344,7 +346,7 @@ inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del) noexcept
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U, DeleterT<T> DelT, UnboundAllocatorT AllocT>
-inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del, AllocT const& alloc)
+constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del, AllocT const& alloc)
     requires RebindableWithT<AllocT, SharedBlock<T, AllocT, DelT>>
 {
     if (m_counter) {
@@ -356,47 +358,47 @@ inline constexpr void SharedPtr<T>::Reset(U* ptr, DelT&& del, AllocT const& allo
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr bool SharedPtr<T>::Equals(SharedPtr<U> const& o) const noexcept
+constexpr bool SharedPtr<T>::Equals(SharedPtr<U> const& other) const noexcept
     requires EqualityComparableWithT<T*, U*>
 {
-    return m_ptr == o.m_ptr && m_counter == o.m_counter;
+    return m_ptr == other.m_ptr && m_counter == other.m_counter;
 }
 
 template <NonRefT T>
 template <NonRefT U>
-inline constexpr bool SharedPtr<T>::OwnerEquals(SharedPtr<U> const& o) const noexcept
+constexpr bool SharedPtr<T>::OwnerEquals(SharedPtr<U> const& other) const noexcept
 {
-    return m_counter == o.m_counter;
+    return m_counter == other.m_counter;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
+constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
     return m_ptr;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
+constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
     return *m_ptr;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::operator bool() const noexcept
+constexpr SharedPtr<T>::operator bool() const noexcept
 {
     return m_ptr != nullptr;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>::operator Pointer() const noexcept
+constexpr SharedPtr<T>::operator Pointer() const noexcept
 {
     return m_ptr;
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 {
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Release();
     }
 
@@ -407,16 +409,20 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& o) noexcept
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
-    if (m_counter) {
+    if (m_counter == other.m_counter) {
+        return *this;
+    }
+
+    if (m_counter != nullptr) {
         m_counter->Release();
     }
 
-    m_ptr = o.m_ptr;
-    m_counter = o.m_counter;
+    m_ptr = other.m_ptr;
+    m_counter = other.m_counter;
 
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Retain();
     }
 
@@ -424,32 +430,36 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& o) noexc
 }
 
 template <NonRefT T>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& o) noexcept
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept
 {
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Release();
     }
 
-    m_ptr = o.m_ptr;
-    m_counter = o.m_counter;
-    o.m_ptr = nullptr;
-    o.m_counter = nullptr;
+    m_ptr = other.m_ptr;
+    m_counter = other.m_counter;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 
     return *this;
 }
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& o) noexcept
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
 {
-    if (m_counter) {
+    if (m_counter == other.m_counter) {
+        return *this;
+    }
+
+    if (m_counter != nullptr) {
         m_counter->Release();
     }
 
-    m_ptr = static_cast<T*>(o.m_ptr);
-    m_counter = o.m_counter;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    m_counter = other.m_counter;
 
-    if (m_counter) {
+    if (m_counter != nullptr) {
         m_counter->Retain();
     }
 
@@ -458,23 +468,23 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& o) no
 
 template <NonRefT T>
 template <PtrConvertibleToT<T> U>
-inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& o) noexcept
+constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noexcept
 {
     if (m_counter) {
         m_counter->Release();
     }
 
-    m_ptr = static_cast<T*>(o.m_ptr);
-    m_counter = o.m_counter;
-    o.m_ptr = nullptr;
-    o.m_counter = nullptr;
+    m_ptr = static_cast<T*>(other.m_ptr);
+    m_counter = other.m_counter;
+    other.m_ptr = nullptr;
+    other.m_counter = nullptr;
 
     return *this;
 }
 
 template <NonRefT T>
 template <typename AllocT, typename DelT>
-inline constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT const& alloc, DelT&& del)
+constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT const& alloc, DelT&& del)
 {
     typedef SharedBlock<T, AllocT, DelT> Block;
 
@@ -488,7 +498,7 @@ inline constexpr void SharedPtr<T>::AllocateBlock(T* ptr, AllocT const& alloc, D
 
 template <NonRefT T>
 template <typename AllocT, typename... Args>
-inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Args&&... args)
+constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Args&&... args)
 {
     typedef InplaceSharedBlock<T, AllocT> Block;
 
@@ -501,7 +511,7 @@ inline constexpr void SharedPtr<T>::AllocateInplaceBlock(AllocT const& alloc, Ar
 }
 
 export template <NonRefT T, UnboundAllocatorT AllocT, typename... Args>
-inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args)
+constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args)
     requires RebindableWithT<AllocT, InplaceSharedBlock<T, AllocT>> && ConstructibleFromT<T, Args...>
 {
     SharedPtr<T> ret;
@@ -517,84 +527,84 @@ inline constexpr SharedPtr<T> AllocateShared(AllocT const& alloc, Args&&... args
 }
 
 export template <NonRefT T, typename... Args>
-inline constexpr SharedPtr<T> MakeShared(Args&&... args)
+constexpr SharedPtr<T> MakeShared(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     return AllocateShared<T, UnboundAllocator, Args...>({ }, ForwardArg<Args>(args)...);
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr bool operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
+constexpr bool operator==(SharedPtr<T> const& lhs, SharedPtr<U> const& rhs) noexcept
     requires EqualityComparableWithT<T*, U*>
 {
-    return l.Get() == r.Get();
+    return lhs.Get() == rhs.Get();
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr auto operator<=>(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
+constexpr auto operator<=>(SharedPtr<T> const& lhs, SharedPtr<U> const& rhs) noexcept
     requires ThreeWayComparableWithT<T*, U*>
 {
-    return l.Get() <=> r.Get();
+    return lhs.Get() <=> rhs.Get();
 }
 
 export template <NonRefT T>
-inline constexpr bool operator==(SharedPtr<T> const s, nullptr_t) noexcept
+constexpr bool operator==(SharedPtr<T> const ptr, nullptr_t) noexcept
 {
-    return s.Get() == nullptr;
+    return ptr.Get() == nullptr;
 }
 
 export template <NonRefT T>
-inline constexpr auto operator<=>(SharedPtr<T> const s, nullptr_t) noexcept
+constexpr auto operator<=>(SharedPtr<T> const ptr, nullptr_t) noexcept
 {
-    return s.Get() <=> nullptr;
+    return ptr.Get() <=> nullptr;
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> StaticCast(SharedPtr<U> const& other) noexcept
+constexpr SharedPtr<T> StaticCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, static_cast<T*>(other.Get()));
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other) noexcept
+constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), static_cast<T*>(other.Get()));
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
+constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
 {
     T* ptr = dynamic_cast<T*>(other.Get());
     return ptr ? SharedPtr<T>(other, ptr) : SharedPtr<T>();
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
+constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
 {
     T* ptr = dynamic_cast<T*>(other.Get());
     return ptr ? SharedPtr<T>(MoveArg(other), ptr) : SharedPtr<T>();
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> ConstCast(SharedPtr<U> const& other) noexcept
+constexpr SharedPtr<T> ConstCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, const_cast<T*>(other.Get()));
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> ConstCast(SharedPtr<U>&& other) noexcept
+constexpr SharedPtr<T> ConstCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), const_cast<T*>(other.Get()));
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U> const& other) noexcept
+constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U> const& other) noexcept
 {
     return SharedPtr<T>(other, reinterpret_cast<T*>(other.Get()));
 }
 
 export template <NonRefT T, NonRefT U>
-inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U>&& other) noexcept
+constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U>&& other) noexcept
 {
     return SharedPtr<T>(MoveArg(other), reinterpret_cast<T*>(other.Get()));
 }

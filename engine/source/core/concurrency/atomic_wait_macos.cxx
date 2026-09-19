@@ -2,16 +2,12 @@ module;
 
 #include <os/os_sync_wait_on_address.h>
 
-#if CLANG || GNUC
-#  if ARCH_ARM64
-#    define PAUSE() asm volatile("isb")
-#  elif ARCH_X86
-#    define PAUSE() __builtin_ia32_pause();
-#  else
-#    define PAUSE() asm volatile("", , , "memory")
-#  endif
+#if ARCH_ARM64
+#  define PAUSE() asm volatile("isb")
+#elif ARCH_X86
+#  define PAUSE() __builtin_ia32_pause();
 #else
-#  error "unsupported compiler"
+#  define PAUSE() asm volatile("", , , "memory")
 #endif
 
 export module mini.core:atomic_platform_wait;

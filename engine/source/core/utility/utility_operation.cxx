@@ -16,25 +16,25 @@ import :type_concepts;
 namespace mini {
 
 export template <typename T>
-inline constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept
+constexpr T&& ForwardArg(RemoveRefT<T>& arg) noexcept
 {
     return static_cast<T&&>(arg);
 };
 
 export template <typename T>
-inline constexpr T&& ForwardArg(RemoveRefT<T>&& arg) noexcept
+constexpr T&& ForwardArg(RemoveRefT<T>&& arg) noexcept
 {
     return static_cast<T&&>(arg);
 };
 
 export template <typename T>
-inline constexpr RemoveRefT<T>&& MoveArg(T&& arg) noexcept
+constexpr RemoveRefT<T>&& MoveArg(T&& arg) noexcept
 {
     return static_cast<RemoveRefT<T>&&>(arg);
 }
 
 export template <typename T>
-inline constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
+constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
 {
     T tmp = MoveArg(_1);
     _1 = MoveArg(_2);
@@ -42,15 +42,15 @@ inline constexpr void Swap(T& _1, T& _2) noexcept(NoThrowMovableT<T>)
 }
 
 export template <typename T, typename U = T>
-inline constexpr T Exchange(T& v, U&& n)
+constexpr T Exchange(T& val, U&& newVal)
     requires ConvertibleToT<U, T>
 {
-    T old = MoveArg(v);
-    v = static_cast<T>(ForwardArg<U>(n));
+    T old = MoveArg(val);
+    val = static_cast<T>(ForwardArg<U>(newVal));
     return old;
 }
 
-export inline constexpr void Unreachable()
+export constexpr void Unreachable()
 {
     BUILTIN_UNREACHABLE();
 }

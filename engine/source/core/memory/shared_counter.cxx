@@ -14,46 +14,46 @@ private:
     CounterValue m_weak;
 
 public:
-    constexpr SharedCounter(size_t = 1) noexcept;
-    constexpr SharedCounter(size_t, size_t) noexcept;
+    constexpr SharedCounter(size_t count = 1) noexcept;
+    constexpr SharedCounter(size_t count, size_t weakCount) noexcept;
     constexpr virtual ~SharedCounter() = default;
 
-    constexpr size_t Count() const noexcept;
-    constexpr size_t WeakCount() const noexcept;
+    [[nodiscard]] constexpr size_t Count() const noexcept;
+    [[nodiscard]] constexpr size_t WeakCount() const noexcept;
 
-    constexpr void Retain(size_t = 1) noexcept;
-    constexpr void RetainWeak(size_t = 1) noexcept;
+    constexpr void Retain(size_t count = 1) noexcept;
+    constexpr void RetainWeak(size_t count = 1) noexcept;
 
-    constexpr void Release(size_t = 1) noexcept;
-    constexpr void ReleaseWeak(size_t = 1) noexcept;
+    constexpr void Release(size_t count = 1) noexcept;
+    constexpr void ReleaseWeak(size_t count = 1) noexcept;
 
-    constexpr SharedCounter* Lock() noexcept;
+    [[nodiscard]] constexpr SharedCounter* Lock() noexcept;
 
-protected:
-    virtual void DeletePtr() noexcept = 0;
-    virtual void DeleteSharedBlock() noexcept = 0;
-
-private:
+public:
     SharedCounter(SharedCounter const&) = delete;
     SharedCounter(SharedCounter&&) = delete;
 
     SharedCounter& operator=(SharedCounter const&) = delete;
     SharedCounter& operator=(SharedCounter&&) = delete;
+
+protected:
+    virtual void DeletePtr() noexcept = 0;
+    virtual void DeleteSharedBlock() noexcept = 0;
 };
 
-inline constexpr SharedCounter::SharedCounter(size_t count) noexcept
+constexpr SharedCounter::SharedCounter(size_t count) noexcept
     : m_count(static_cast<CounterValue>(count))
     , m_weak(static_cast<CounterValue>(count))
 {
 }
 
-inline constexpr SharedCounter::SharedCounter(size_t count, size_t weakCount) noexcept
+constexpr SharedCounter::SharedCounter(size_t count, size_t weakCount) noexcept
     : m_count(static_cast<CounterValue>(count))
     , m_weak(static_cast<CounterValue>(weakCount))
 {
 }
 
-inline constexpr size_t SharedCounter::Count() const noexcept
+constexpr size_t SharedCounter::Count() const noexcept
 {
     if consteval {
         return static_cast<size_t>(m_count);
@@ -64,7 +64,7 @@ inline constexpr size_t SharedCounter::Count() const noexcept
     return static_cast<size_t>(result);
 }
 
-inline constexpr size_t SharedCounter::WeakCount() const noexcept
+constexpr size_t SharedCounter::WeakCount() const noexcept
 {
     if consteval {
         return static_cast<size_t>(m_weak);
@@ -75,7 +75,7 @@ inline constexpr size_t SharedCounter::WeakCount() const noexcept
     return static_cast<size_t>(result);
 }
 
-inline constexpr void SharedCounter::Retain(size_t count) noexcept
+constexpr void SharedCounter::Retain(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -89,7 +89,7 @@ inline constexpr void SharedCounter::Retain(size_t count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-inline constexpr void SharedCounter::RetainWeak(size_t count) noexcept
+constexpr void SharedCounter::RetainWeak(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -101,7 +101,7 @@ inline constexpr void SharedCounter::RetainWeak(size_t count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-inline constexpr void SharedCounter::Release(size_t count) noexcept
+constexpr void SharedCounter::Release(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -128,7 +128,7 @@ inline constexpr void SharedCounter::Release(size_t count) noexcept
     ReleaseWeak(count);
 }
 
-inline constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
+constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -152,7 +152,7 @@ inline constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
     }
 }
 
-inline constexpr SharedCounter* SharedCounter::Lock() noexcept
+constexpr SharedCounter* SharedCounter::Lock() noexcept
 {
     if consteval {
         if (m_count == 0) {

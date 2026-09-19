@@ -16,7 +16,7 @@ using namespace mini;
 using namespace mini::bit;
 
 template <typename T>
-static constexpr int TestRotateLeft()
+constexpr int TestRotateLeft()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -32,7 +32,7 @@ static constexpr int TestRotateLeft()
 }
 
 template <typename T>
-static constexpr int TestRotateRight()
+constexpr int TestRotateRight()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -48,7 +48,7 @@ static constexpr int TestRotateRight()
 }
 
 template <typename T>
-static constexpr int TestCountLeftZero()
+constexpr int TestCountLeftZero()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -69,7 +69,7 @@ static constexpr int TestCountLeftZero()
 }
 
 template <typename T>
-static constexpr int TestCountLeftOne()
+constexpr int TestCountLeftOne()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -90,7 +90,7 @@ static constexpr int TestCountLeftOne()
 }
 
 template <typename T>
-static constexpr int TestCountRightZero()
+constexpr int TestCountRightZero()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -111,7 +111,7 @@ static constexpr int TestCountRightZero()
 }
 
 template <typename T>
-static constexpr int TestCountRightOne()
+constexpr int TestCountRightOne()
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 

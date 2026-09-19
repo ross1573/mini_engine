@@ -13,9 +13,9 @@ using namespace mini::test;
     TEST_ENSURE((func<type __VA_OPT__(, ) __VA_ARGS__>() == 0));
 
 #define FACTORY(name, ...)                                   \
-    using name = decltype([](int c) {                        \
+    using name = decltype([](int count) {                    \
         String str("Hello world! This is a long string 0."); \
-        *(str.End() - 2) = static_cast<char>(c);             \
+        *(str.End() - 2) = static_cast<char>(count);         \
         return __VA_ARGS__(str);                             \
     });
 
@@ -25,7 +25,7 @@ FACTORY(ConstexprFooF, ConstexprObject);
 FACTORY(FooF, TestObject);
 FACTORY(FooArgF);
 
-[[maybe_unused]] static constexpr void QueueConstraints()
+[[maybe_unused]] constexpr void QueueConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<int, 1>::Iterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<int*, 1>::Iterator);
@@ -34,18 +34,20 @@ FACTORY(FooArgF);
 
     TEST_RANGE_BASED_FOR_SUPPORT(FixedQueue<TestObject, 1>);
 
-    static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) == alignof(void*) * 2 + sizeof(size_t) * 2);
+    static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) == (alignof(void*) * 2) + (sizeof(size_t) * 2));
 }
 
 template <typename T, size_t CapN>
-static constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& arr)
+constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& arr)
 {
-    constexpr auto TestElement = [](T const& l, T const& r) -> bool {
+    constexpr auto TestElement = [](T const& lhs, T const& rhs) -> bool {
         if constexpr (memory::DereferencableT<T>) {
-            if (l == nullptr || r == nullptr) return l == r;
-            return *l == *r;
+            if (lhs == nullptr || rhs == nullptr) {
+                return lhs == rhs;
+            }
+            return *lhs == *rhs;
         }
-        return l == r;
+        return lhs == rhs;
     };
 
     TEST_ENSURE(que.Size() == arr.Size());
@@ -65,7 +67,7 @@ static constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& a
 }
 
 template <typename T, typename FactoryT>
-static constexpr int TestCtor()
+constexpr int TestCtor()
 {
     TEST_ENSURE((FixedQueue<T, 1>{ }.Size() == 0));
     TEST_ENSURE((FixedQueue<T, 1>{ }.Capacity() == 1));
@@ -75,7 +77,9 @@ static constexpr int TestCtor()
     if constexpr (CopyableT<T>) {
         FixedQueue<T, 20> arr;
         int count = 0;
-        for (int i = 0; i < 20; ++i) arr.Enqueue(FactoryT{ }(++count));
+        for (int i = 0; i < 20; ++i) {
+            arr.PushBack(FactoryT{ }(++count));
+        }
 
         TEST_ENSURE((FixedQueue<T, 20>(arr) == arr));
         TEST_ENSURE((FixedQueue<T, 20>(FixedQueue<T, 20>(arr)) == arr));
@@ -95,25 +99,25 @@ static constexpr int TestCtor()
 }
 
 template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
-static constexpr int TestModify()
+constexpr int TestModify()
 {
     FixedQueue<T, 8> que;
     Array<T> arr;
     int arrcount = 33;
     int veccount = 33;
 
-    que.Enqueue(FactoryT{ }(++arrcount));
-    arr.Push(FactoryT{ }(++veccount));
+    que.PushBack(FactoryT{ }(++arrcount));
+    arr.PushBack(FactoryT{ }(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
-    que.Enqueue(ArgFactoryT{ }(++arrcount));
-    arr.Push(ArgFactoryT{ }(++veccount));
+    que.PushBack(ArgFactoryT{ }(++arrcount));
+    arr.PushBack(ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
     if constexpr (CopyableT<T>) {
         FixedQueue<T, 8> que2(que.Begin(), que.End());
 
-        que.EnqueueRange(que2.Begin(), que2.End());
+        que.Append(que2.Begin(), que2.End());
         arr.Append(que2.Begin(), que2.End());
         TEST_ENSURE(TestQueue(que, arr) == 0);
 
@@ -121,7 +125,7 @@ static constexpr int TestModify()
         que.Assign(que2.Begin(), que2.End());
         TEST_ENSURE(que == que2);
 
-        que.EnqueueRange(que2.Begin(), que2.End());
+        que.Append(que2.Begin(), que2.End());
 
         InitializerList list = {
             FactoryT{ }(++arrcount),
@@ -130,29 +134,29 @@ static constexpr int TestModify()
             FactoryT{ }(++arrcount),
         };
 
-        que.EnqueueRange(list);
+        que.Append(list);
         arr.Append(list);
         TEST_ENSURE(TestQueue(que, arr) == 0);
 
         que2.Assign(list);
         TEST_ENSURE(TestQueue(que2, Array<T>(list)) == 0);
     } else {
-        que.Enqueue(ArgFactoryT{ }(++arrcount));
-        que.Enqueue(ArgFactoryT{ }(++arrcount));
-        arr.Push(ArgFactoryT{ }(++veccount));
-        arr.Push(ArgFactoryT{ }(++veccount));
+        que.PushBack(ArgFactoryT{ }(++arrcount));
+        que.PushBack(ArgFactoryT{ }(++arrcount));
+        arr.PushBack(ArgFactoryT{ }(++veccount));
+        arr.PushBack(ArgFactoryT{ }(++veccount));
     }
 
-    que.Dequeue();
-    arr.RemoveAt(0);
+    que.PopFront();
+    arr.Remove(0);
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
-    que.RemoveFirst();
-    arr.RemoveAt(0);
+    que.PopFront();
+    arr.Remove(0);
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
-    que.RemoveFirst(2);
-    arr.RemoveRange(0, 2);
+    que.PopFront(2);
+    arr.RemoveRange(arr.Begin(), arr.Begin() + 2);
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
     que.Clear();
@@ -168,21 +172,21 @@ int TestRandom()
     {
         static_assert(q.Capacity() == 8);
 
-        q.Enqueue(Format("hello world! {}", 0));
-        q.Enqueue(Format("hello world! {}", 1));
-        q.Enqueue(Format("hello world! {}", 2));
+        q.PushBack(Format("hello world! {}", 0));
+        q.PushBack(Format("hello world! {}", 1));
+        q.PushBack(Format("hello world! {}", 2));
 
         decltype(q) q2 = q;
         decltype(q) q3 = MoveArg(q2);
         decltype(q)::Iterator iter = q3.Begin();
         decltype(q)::Iterator end = q3.End();
 
-        q.EnqueueRange(iter, end);
-        q.RemoveFirst(3);
-        q.EnqueueRange(iter, end);
-        q.RemoveFirst(2);
-        q.EnqueueRange(iter, end);
-        q.RemoveFirst();
+        q.Append(iter, end);
+        q.PopFront(3);
+        q.Append(iter, end);
+        q.PopFront(2);
+        q.Append(iter, end);
+        q.PopFront();
         q.Assign(q.Begin(), q.End());
 
         iter = q.Begin();
@@ -208,9 +212,9 @@ int TestRandom()
 
     Array<TestObject> arr(8);
     {
-        arr.Push(Format("hello world! {}", 0));
-        arr.Push(Format("hello world! {}", 1));
-        arr.Push(Format("hello world! {}", 2));
+        arr.PushBack(Format("hello world! {}", 0));
+        arr.PushBack(Format("hello world! {}", 1));
+        arr.PushBack(Format("hello world! {}", 2));
 
         Array<TestObject> arr2(arr);
         arr.Append(arr.Begin(), arr.End());
@@ -218,7 +222,7 @@ int TestRandom()
         arr.Append(arr2.Begin(), arr2.End());
         arr.RemoveRange(arr.Begin(), arr.Begin() + 2);
         arr.Append(arr2.Begin(), arr2.End());
-        arr.RemoveAt(arr.Begin());
+        arr.Remove(arr.Begin());
         arr.Assign(arr.Begin(), arr.End());
     }
 
@@ -229,8 +233,8 @@ int main()
 {
     static const int dummy = 0;
     using IntPtrF = decltype([](int) { return const_cast<int*>(&dummy); });
-    using IntF = decltype([](int c) { return c; });
-    using VecF = decltype([](int c) { return Vector2Int(c, c); });
+    using IntF = decltype([](int count) { return count; });
+    using VecF = decltype([](int count) { return Vector2Int(count, count); });
 
     TEST_ENSURE((TestCtor<int*, IntPtrF>() == 0));
     TEST_ENSURE((TestCtor<std::unique_ptr<ConstexprObject>, StdUniquePtrF>() == 0));

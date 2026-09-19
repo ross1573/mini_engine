@@ -33,13 +33,13 @@ template <typename T>
 struct IsDefaultAlloc<Allocator<T>> : TrueT { };
 
 export template <typename T>
-concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, size_t s, typename T::Pointer loc) {
+concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, size_t size, T::Pointer loc) {
     requires !ReferenceT<typename T::Value>;
     requires PointerT<typename T::Pointer>;
     requires PointerT<typename T::ConstPointer>;
 
-    { alloc.Allocate(s) } -> SameAsT<AllocationResult<typename T::Value>>;
-    { alloc.Deallocate(loc, s) };
+    { alloc.Allocate(size) } -> SameAsT<AllocationResult<typename T::Value>>;
+    { alloc.Deallocate(loc, size) };
 };
 
 export template <typename AllocT, typename T>
@@ -70,7 +70,7 @@ struct Allocator {
     typedef T* Pointer;
     typedef T const* ConstPointer;
 
-    [[nodiscard]] inline constexpr AllocationResult<T> Allocate(size_t size) const noexcept
+    [[nodiscard]] constexpr AllocationResult<T> Allocate(size_t size) const noexcept
     {
         if consteval {
             Pointer ptr = CONSTEXPR_ALLOC(T, size);
@@ -88,7 +88,7 @@ struct Allocator {
         return { .pointer = nullptr, .capacity = size };
     }
 
-    inline constexpr void Deallocate(Pointer loc, size_t size) const noexcept
+    constexpr void Deallocate(Pointer loc, size_t size) const noexcept
     {
         if consteval {
             if (loc == nullptr) {
@@ -108,28 +108,28 @@ struct Allocator {
 };
 
 export template <typename U, typename T>
-inline constexpr decltype(auto) RebindAllocator(T const& alloc)
+constexpr decltype(auto) RebindAllocator(T const& alloc)
     requires AllocRebindDeclaredT<T, U>
 {
     return alloc.template Rebind<U>();
 }
 
 export template <typename U, typename T>
-inline constexpr T&& RebindAllocator(T&& alloc)
+constexpr T&& RebindAllocator(T&& alloc)
     requires AllocatorT<T, U>
 {
     return ForwardArg<T>(alloc);
 }
 
 export template <typename U, typename T>
-inline constexpr mini::Allocator<U> RebindAllocator(T const&)
+constexpr mini::Allocator<U> RebindAllocator(T const& /*unused*/)
     requires IsDefaultAlloc<T>::value
 {
     return mini::Allocator<U>{ };
 }
 
 export template <typename T, typename U>
-inline constexpr bool operator==(Allocator<T> const&, Allocator<U> const&)
+constexpr bool operator==(Allocator<T> const& /*unused*/, Allocator<U> const& /*unused*/)
 {
     return true;
 }
@@ -141,25 +141,25 @@ public:
     typedef void const* ConstPointer;
 
     template <typename T>
-    AllocationResult<void> Allocate(T&&) const noexcept
+    AllocationResult<void> Allocate(T&& /*unused*/) const noexcept
     {
         UNSUPPORTED("dummy allocator should be rebinded");
     }
 
     template <typename T, typename U>
-    void Deallocate(T&&, U&&) const noexcept
+    void Deallocate(T&& /*unused*/, U&& /*unused*/) const noexcept
     {
         UNSUPPORTED("dummy allocator should be rebinded");
     }
 };
 
 export template <typename U>
-inline constexpr Allocator<U> RebindAllocator(UnboundAllocator)
+constexpr Allocator<U> RebindAllocator(UnboundAllocator /*unused*/)
 {
     return mini::Allocator<U>{ };
 }
 
-export inline constexpr bool operator==(UnboundAllocator const&, UnboundAllocator const&)
+export constexpr bool operator==(UnboundAllocator const& /*unused*/, UnboundAllocator const& /*unused*/)
 {
     return true;
 }

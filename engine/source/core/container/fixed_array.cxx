@@ -36,111 +36,110 @@ private:
 public:
     constexpr FixedArray() noexcept;
     constexpr ~FixedArray();
-    constexpr FixedArray(FixedArray const&);
-    constexpr FixedArray(FixedArray&&) noexcept;
-    constexpr FixedArray(InitializerList<T>);
+    constexpr FixedArray(FixedArray const& other);
+    constexpr FixedArray(FixedArray&& other) noexcept;
+    constexpr FixedArray(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    explicit constexpr FixedArray(Iter, Iter);
+    explicit constexpr FixedArray(Iter begin, Iter end);
 
     template <typename... Args>
-    constexpr void Push(Args&&...)
+    constexpr void PushBack(Args&&... args)
         requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(size_t, Args&&...)
+    constexpr void Insert(size_t index, Args&&... args)
         requires ConstructibleFromT<T, Args...>;
     template <typename... Args>
-    constexpr void Insert(ConstIterator, Args&&...)
+    constexpr void Insert(ConstIterator iter, Args&&... args)
         requires ConstructibleFromT<T, Args...>;
 
     template <ForwardIteratableByT<T> Iter>
-    constexpr void Assign(Iter, Iter);
-    constexpr void Assign(InitializerList<T>);
+    constexpr void Assign(Iter begin, Iter end);
+    constexpr void Assign(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void Append(Iter, Iter);
-    constexpr void Append(InitializerList<T>);
+    constexpr void Append(Iter begin, Iter end);
+    constexpr void Append(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void InsertRange(size_t, Iter, Iter);
-    constexpr void InsertRange(size_t, InitializerList<T>);
+    constexpr void InsertRange(size_t index, Iter begin, Iter end);
+    constexpr void InsertRange(size_t index, InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
-    constexpr void InsertRange(ConstIterator, Iter, Iter);
-    constexpr void InsertRange(ConstIterator, InitializerList<T>);
+    constexpr void InsertRange(ConstIterator iter, Iter begin, Iter end);
+    constexpr void InsertRange(ConstIterator iter, InitializerList<T> initList);
 
-    constexpr void RemoveLast();
-    constexpr void RemoveLast(size_t);
-    constexpr void RemoveAt(size_t);
-    constexpr void RemoveAt(ConstIterator);
-    constexpr void RemoveRange(size_t, size_t);
-    constexpr void RemoveRange(ConstIterator, ConstIterator);
+    constexpr void PopBack();
+    constexpr void PopBack(size_t count);
+    constexpr void Remove(size_t index);
+    constexpr void Remove(ConstIterator iter);
+    constexpr void RemoveRange(ConstIterator begin, ConstIterator end);
 
     template <typename... Args>
-    constexpr void Resize(size_t, Args&&...)
+    constexpr void Resize(size_t size, Args&&... args)
         requires ConstructibleFromT<T, Args...>;
     constexpr void Clear();
 
-    constexpr Pointer Data() noexcept;
-    constexpr ConstPointer Data() const noexcept;
-    constexpr Iterator Begin() noexcept;
-    constexpr ConstIterator Begin() const noexcept;
-    constexpr Iterator End() noexcept;
-    constexpr ConstIterator End() const noexcept;
-    constexpr Reference First();
-    constexpr ConstReference First() const;
-    constexpr Reference Last();
-    constexpr ConstReference Last() const;
-    constexpr Reference At(size_t);
-    constexpr ConstReference At(size_t) const;
+    [[nodiscard]] constexpr Pointer Data() noexcept;
+    [[nodiscard]] constexpr ConstPointer Data() const noexcept;
+    [[nodiscard]] constexpr Iterator Begin() noexcept;
+    [[nodiscard]] constexpr ConstIterator Begin() const noexcept;
+    [[nodiscard]] constexpr Iterator End() noexcept;
+    [[nodiscard]] constexpr ConstIterator End() const noexcept;
+    [[nodiscard]] constexpr Reference First();
+    [[nodiscard]] constexpr ConstReference First() const;
+    [[nodiscard]] constexpr Reference Last();
+    [[nodiscard]] constexpr ConstReference Last() const;
+    [[nodiscard]] constexpr Reference At(size_t index);
+    [[nodiscard]] constexpr ConstReference At(size_t index) const;
 
-    constexpr size_t Capacity() const noexcept;
-    constexpr size_t Size() const noexcept;
-    constexpr bool Empty() const noexcept;
-    constexpr bool Full() const noexcept;
-    constexpr bool ValidIndex(size_t) const noexcept;
-    constexpr bool ValidIterator(ConstIterator) const noexcept;
-    constexpr bool ValidRange(ConstIterator, ConstIterator) const noexcept;
+    [[nodiscard]] constexpr size_t Capacity() const noexcept;
+    [[nodiscard]] constexpr size_t Size() const noexcept;
+    [[nodiscard]] constexpr bool Empty() const noexcept;
+    [[nodiscard]] constexpr bool Full() const noexcept;
+    [[nodiscard]] constexpr bool ValidIndex(size_t index) const noexcept;
+    [[nodiscard]] constexpr bool ValidIterator(ConstIterator iter) const noexcept;
+    [[nodiscard]] constexpr bool ValidRange(ConstIterator begin, ConstIterator end) const noexcept;
 
-    constexpr Reference operator[](size_t);
-    constexpr ConstReference operator[](size_t) const;
+    [[nodiscard]] constexpr Reference operator[](size_t index);
+    [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
-    constexpr FixedArray& operator=(FixedArray const&);
-    constexpr FixedArray& operator=(FixedArray&&) noexcept;
-    constexpr FixedArray& operator=(InitializerList<T>);
+    constexpr FixedArray& operator=(FixedArray const& other);
+    constexpr FixedArray& operator=(FixedArray&& other) noexcept;
+    constexpr FixedArray& operator=(InitializerList<T> initList);
 
 private:
     template <typename U>
-    constexpr void AssignRangeWithSize(U, U, size_t);
+    constexpr void AssignRangeWithSize(U begin, U end, size_t len);
     template <typename U>
-    constexpr void AppendRangeWithSize(U, U, size_t);
+    constexpr void AppendRangeWithSize(U begin, U end, size_t len);
     template <typename U>
-    constexpr void InsertRangeWithSize(size_t, U, U, size_t);
+    constexpr void InsertRangeWithSize(size_t index, U begin, U end, size_t len);
 
-    constexpr void AssertValidCapacity(size_t) const noexcept;
-    constexpr void AssertValidIndex(size_t) const noexcept;
-    constexpr void AssertValidIterator(ConstIterator) const noexcept;
-    constexpr void AssertValidRange(ConstIterator, ConstIterator) const noexcept;
+    constexpr void AssertValidCapacity(size_t capacity) const noexcept;
+    constexpr void AssertValidIndex(size_t index) const noexcept;
+    constexpr void AssertValidIterator(ConstIterator iter) const noexcept;
+    constexpr void AssertValidRange(ConstIterator begin, ConstIterator end) const noexcept;
 };
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::FixedArray() noexcept
+constexpr FixedArray<T, N>::FixedArray() noexcept
     : m_size(0)
     , m_buffer()
 {
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::~FixedArray()
+constexpr FixedArray<T, N>::~FixedArray()
 {
     Clear();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::FixedArray(FixedArray const& other)
+constexpr FixedArray<T, N>::FixedArray(FixedArray const& other)
 {
     memory::ConstructRange(m_buffer.Data(), other.Begin(), other.End());
     m_size = other.m_size;
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::FixedArray(FixedArray&& other) noexcept
+constexpr FixedArray<T, N>::FixedArray(FixedArray&& other) noexcept
 {
     Pointer otherBegin = other.m_buffer.Data();
     Pointer otherEnd = otherBegin + other.m_size;
@@ -152,24 +151,24 @@ inline constexpr FixedArray<T, N>::FixedArray(FixedArray&& other) noexcept
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::FixedArray(InitializerList<T> init)
+constexpr FixedArray<T, N>::FixedArray(InitializerList<T> initList)
 {
-    AssertValidCapacity(init.size());
-    memory::ConstructRange(m_buffer.Data(), init.begin(), init.end());
-    m_size = init.size();
+    AssertValidCapacity(initList.size());
+    memory::ConstructRange(m_buffer.Data(), initList.begin(), initList.end());
+    m_size = initList.size();
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr FixedArray<T, N>::FixedArray(Iter first, Iter last)
+constexpr FixedArray<T, N>::FixedArray(Iter begin, Iter end)
     : m_size(0)
 {
-    Append(first, last);
+    Append(begin, end);
 }
 
 template <MovableT T, size_t N>
 template <typename... Args>
-inline constexpr void FixedArray<T, N>::Push(Args&&... args)
+constexpr void FixedArray<T, N>::PushBack(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     AssertValidCapacity(m_size + 1);
@@ -179,10 +178,10 @@ inline constexpr void FixedArray<T, N>::Push(Args&&... args)
 
 template <MovableT T, size_t N>
 template <typename... Args>
-inline constexpr void FixedArray<T, N>::Insert(size_t index, Args&&... args)
+constexpr void FixedArray<T, N>::Insert(size_t index, Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
-    Insert(Begin() + (offset_t)index, ForwardArg<Args>(args)...);
+    Insert(Begin() + static_cast<offset_t>(index), ForwardArg<Args>(args)...);
 }
 
 template <MovableT T, size_t N>
@@ -191,15 +190,15 @@ constexpr void FixedArray<T, N>::Insert(ConstIterator iter, Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     offset_t locDiff = iter - Begin();
-    if (locDiff == (offset_t)m_size) {
-        Push(ForwardArg<Args>(args)...);
+    if (locDiff == static_cast<offset_t>(m_size)) {
+        PushBack(ForwardArg<Args>(args)...);
         return;
     }
 
     AssertValidCapacity(m_size + 1);
     Pointer begin = m_buffer.Data();
     Pointer loc = begin + locDiff;
-    Pointer end = begin + (offset_t)m_size;
+    Pointer end = begin + static_cast<offset_t>(m_size);
     Pointer last = end - 1;
 
     // without the copy, invalid reference can get copied
@@ -214,109 +213,109 @@ constexpr void FixedArray<T, N>::Insert(ConstIterator iter, Args&&... args)
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr void FixedArray<T, N>::Assign(Iter first, Iter last)
+constexpr void FixedArray<T, N>::Assign(Iter begin, Iter end)
 {
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     if (distance == 0) [[unlikely]] {
         Clear();
         return;
     }
 
-    AssignRangeWithSize(first, last, distance);
+    AssignRangeWithSize(begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::Assign(InitializerList<T> init)
+constexpr void FixedArray<T, N>::Assign(InitializerList<T> initList)
 {
-    size_t size = init.size();
+    size_t size = initList.size();
     if (size == 0) [[unlikely]] {
         Clear();
         return;
     }
 
-    AssignRangeWithSize(init.begin(), init.end(), size);
+    AssignRangeWithSize(initList.begin(), initList.end(), size);
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void FixedArray<T, N>::Append(Iter first, Iter last)
+constexpr void FixedArray<T, N>::Append(Iter begin, Iter end)
 {
-    size_t distance = Distance(first, last);
-    AppendRangeWithSize(first, last, distance);
+    size_t distance = Distance(begin, end);
+    AppendRangeWithSize(begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::Append(InitializerList<T> init)
+constexpr void FixedArray<T, N>::Append(InitializerList<T> initList)
 {
-    AppendRangeWithSize(init.begin(), init.end(), init.size());
+    AppendRangeWithSize(initList.begin(), initList.end(), initList.size());
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-inline constexpr void FixedArray<T, N>::InsertRange(size_t index, Iter first, Iter last)
+constexpr void FixedArray<T, N>::InsertRange(size_t index, Iter begin, Iter end)
 {
     if (index == m_size) {
-        Append(first, last);
+        Append(begin, end);
         return;
     }
 
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:  Insert(index, ForwardArg<typename Iter::Value>(*first)); return;
+        case 1:  Insert(index, ForwardArg<typename Iter::Value>(*begin)); return;
         default: break;
     }
 
-    InsertRangeWithSize(index, first, last, distance);
+    InsertRangeWithSize(index, begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::InsertRange(size_t index, InitializerList<T> init)
+constexpr void FixedArray<T, N>::InsertRange(size_t index, InitializerList<T> initList)
 {
     if (index == m_size) {
-        Append(init);
+        Append(initList);
         return;
     }
 
-    InsertRangeWithSize(index, init.begin(), init.end(), init.size());
+    InsertRangeWithSize(index, initList.begin(), initList.end(), initList.size());
 }
 
 template <MovableT T, size_t N>
 template <ForwardIteratableByT<T> Iter>
-constexpr void FixedArray<T, N>::InsertRange(ConstIterator iter, Iter first, Iter last)
+constexpr void FixedArray<T, N>::InsertRange(ConstIterator iter, Iter begin, Iter end)
 {
     size_t locDiff = static_cast<size_t>(iter - Begin());
     if (locDiff == m_size) {
-        Append(first, last);
+        Append(begin, end);
         return;
     }
 
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:  Insert(iter, ForwardArg<typename Iter::Value>(*first)); return;
+        case 1:  Insert(iter, ForwardArg<typename Iter::Value>(*begin)); return;
         default: break;
     }
 
-    InsertRangeWithSize(locDiff, first, last, distance);
+    InsertRangeWithSize(locDiff, begin, end, distance);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::InsertRange(ConstIterator iter, InitializerList<T> init)
+constexpr void FixedArray<T, N>::InsertRange(ConstIterator iter, InitializerList<T> initList)
 {
     size_t locDiff = static_cast<size_t>(iter - Begin());
     if (locDiff == m_size) {
-        Append(init);
+        Append(initList);
         return;
     }
 
-    InsertRangeWithSize(locDiff, init.begin(), init.end(), init.size());
+    InsertRangeWithSize(locDiff, initList.begin(), initList.end(), initList.size());
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::RemoveLast()
+constexpr void FixedArray<T, N>::PopBack()
 {
     if (Empty()) [[unlikely]] {
         return;
@@ -327,13 +326,13 @@ inline constexpr void FixedArray<T, N>::RemoveLast()
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::RemoveLast(size_t count)
+constexpr void FixedArray<T, N>::PopBack(size_t count)
 {
     if (Empty() || count == 0) [[unlikely]] {
         return;
     }
 
-    size_t removeCnt = m_size < count ? (size_t)m_size : count;
+    size_t removeCnt = m_size < count ? static_cast<size_t>(m_size) : count;
     Pointer end = m_buffer.Data() + m_size;
 
     memory::DestructRange(end - removeCnt, end);
@@ -341,24 +340,24 @@ inline constexpr void FixedArray<T, N>::RemoveLast(size_t count)
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::RemoveAt(size_t index)
+constexpr void FixedArray<T, N>::Remove(size_t index)
 {
-    RemoveAt(Begin() + static_cast<offset_t>(index));
+    Remove(Begin() + static_cast<offset_t>(index));
 }
 
 template <MovableT T, size_t N>
-constexpr void FixedArray<T, N>::RemoveAt(ConstIterator iter)
+constexpr void FixedArray<T, N>::Remove(ConstIterator iter)
 {
     offset_t locDiff = iter - Begin();
-    if (locDiff == (offset_t)m_size) {
-        RemoveLast();
+    if (static_cast<offset_t>(m_size) == locDiff) {
+        PopBack();
         return;
     }
 
     AssertValidIterator(iter);
     Pointer begin = m_buffer.Data();
     Pointer loc = begin + locDiff;
-    Pointer end = begin + (offset_t)m_size;
+    Pointer end = begin + static_cast<offset_t>(m_size);
 
     memory::MoveRange(loc, loc + 1, end);
     memory::DestructAt(end - 1);
@@ -366,31 +365,24 @@ constexpr void FixedArray<T, N>::RemoveAt(ConstIterator iter)
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::RemoveRange(size_t first, size_t last)
+constexpr void FixedArray<T, N>::RemoveRange(ConstIterator begin, ConstIterator end)
 {
-    Iterator begin = Begin();
-    RemoveRange(begin + static_cast<offset_t>(first), begin + static_cast<offset_t>(last));
-}
-
-template <MovableT T, size_t N>
-constexpr void FixedArray<T, N>::RemoveRange(ConstIterator first, ConstIterator last)
-{
-    size_t distance = Distance(first, last);
+    size_t distance = Distance(begin, end);
     switch (distance) {
         [[unlikely]] case 0:
             return;
-        case 1:  RemoveAt(first); return;
+        case 1:  Remove(begin); return;
         default: break;
     }
 
-    AssertValidRange(first, last);
+    AssertValidRange(begin, end);
     Iterator iterBegin = Begin();
-    Pointer begin = m_buffer.Data();
-    Pointer end = begin + m_size;
-    Pointer loc = begin + (first - iterBegin);
+    Pointer ptrBegin = m_buffer.Data();
+    Pointer ptrEnd = ptrBegin + m_size;
+    Pointer ptrLoc = ptrBegin + (begin - iterBegin);
 
-    memory::MoveRange(loc, loc + distance, end);
-    memory::DestructRange(end - distance, end);
+    memory::MoveRange(ptrLoc, ptrLoc + distance, ptrEnd);
+    memory::DestructRange(ptrEnd - distance, ptrEnd);
     m_size -= distance;
 }
 
@@ -418,7 +410,7 @@ constexpr void FixedArray<T, N>::Resize(size_t size, Args&&... args)
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::Clear()
+constexpr void FixedArray<T, N>::Clear()
 {
     if (m_size == 0) [[unlikely]] {
         return;
@@ -432,118 +424,118 @@ inline constexpr void FixedArray<T, N>::Clear()
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::Pointer FixedArray<T, N>::Data() noexcept
+constexpr FixedArray<T, N>::Pointer FixedArray<T, N>::Data() noexcept
 {
     return m_buffer.Data();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::ConstPointer FixedArray<T, N>::Data() const noexcept
+constexpr FixedArray<T, N>::ConstPointer FixedArray<T, N>::Data() const noexcept
 {
     return m_buffer.Data();
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::Iterator FixedArray<T, N>::Begin() noexcept
+constexpr FixedArray<T, N>::Iterator FixedArray<T, N>::Begin() noexcept
 {
     return Iterator(m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::ConstIterator FixedArray<T, N>::Begin() const noexcept
+constexpr FixedArray<T, N>::ConstIterator FixedArray<T, N>::Begin() const noexcept
 {
     return ConstIterator(m_buffer.Data(), this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::Iterator FixedArray<T, N>::End() noexcept
+constexpr FixedArray<T, N>::Iterator FixedArray<T, N>::End() noexcept
 {
     return Iterator(m_buffer.Data() + m_size, this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>::ConstIterator FixedArray<T, N>::End() const noexcept
+constexpr FixedArray<T, N>::ConstIterator FixedArray<T, N>::End() const noexcept
 {
     return ConstIterator(m_buffer.Data() + m_size, this);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedArray<T, N>::First()
+constexpr T& FixedArray<T, N>::First()
 {
     return At(0);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedArray<T, N>::First() const
+constexpr T const& FixedArray<T, N>::First() const
 {
     return At(0);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedArray<T, N>::Last()
+constexpr T& FixedArray<T, N>::Last()
 {
     return At(m_size - 1);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedArray<T, N>::Last() const
+constexpr T const& FixedArray<T, N>::Last() const
 {
     return At(m_size - 1);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedArray<T, N>::At(size_t index)
+constexpr T& FixedArray<T, N>::At(size_t index)
 {
     AssertValidIndex(index);
     return *(m_buffer.Data() + index);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedArray<T, N>::At(size_t index) const
+constexpr T const& FixedArray<T, N>::At(size_t index) const
 {
     AssertValidIndex(index);
     return *(m_buffer.Data() + index);
 }
 
 template <MovableT T, size_t N>
-inline constexpr size_t FixedArray<T, N>::Capacity() const noexcept
+constexpr size_t FixedArray<T, N>::Capacity() const noexcept
 {
     return m_buffer.Capacity();
 }
 
 template <MovableT T, size_t N>
-inline constexpr size_t FixedArray<T, N>::Size() const noexcept
+constexpr size_t FixedArray<T, N>::Size() const noexcept
 {
     return m_size.Get();
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedArray<T, N>::Empty() const noexcept
+constexpr bool FixedArray<T, N>::Empty() const noexcept
 {
     return m_size == 0;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedArray<T, N>::Full() const noexcept
+constexpr bool FixedArray<T, N>::Full() const noexcept
 {
-    return (size_t)m_size == m_buffer.Capacity();
+    return static_cast<size_t>(m_size) == m_buffer.Capacity();
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedArray<T, N>::ValidIndex(size_t index) const noexcept
+constexpr bool FixedArray<T, N>::ValidIndex(size_t index) const noexcept
 {
     return index < m_size;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedArray<T, N>::ValidIterator(ConstIterator iter) const noexcept
+constexpr bool FixedArray<T, N>::ValidIterator(ConstIterator iter) const noexcept
 {
     size_t index = static_cast<size_t>(iter.m_ptr - m_buffer.Data());
     return index < m_size;
 }
 
 template <MovableT T, size_t N>
-inline constexpr bool FixedArray<T, N>::ValidRange(ConstIterator begin, ConstIterator end) const noexcept
+constexpr bool FixedArray<T, N>::ValidRange(ConstIterator begin, ConstIterator end) const noexcept
 {
     ConstPointer buffer = m_buffer.Data();
     size_t beginIdx = static_cast<size_t>(begin.m_ptr - buffer);
@@ -552,21 +544,21 @@ inline constexpr bool FixedArray<T, N>::ValidRange(ConstIterator begin, ConstIte
 }
 
 template <MovableT T, size_t N>
-inline constexpr T& FixedArray<T, N>::operator[](size_t index)
+constexpr T& FixedArray<T, N>::operator[](size_t index)
 {
     AssertValidIndex(index);
     return *(m_buffer.Data() + index);
 }
 
 template <MovableT T, size_t N>
-inline constexpr T const& FixedArray<T, N>::operator[](size_t index) const
+constexpr T const& FixedArray<T, N>::operator[](size_t index) const
 {
     AssertValidIndex(index);
     return *(m_buffer.Data() + index);
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray const& other)
+constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray const& other)
 {
     if (m_buffer == other.m_buffer) [[unlikely]] {
         return *this;
@@ -577,7 +569,7 @@ inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray const&
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray&& other) noexcept
+constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray&& other) noexcept
 {
     if (m_buffer == other.m_buffer) [[unlikely]] {
         return *this;
@@ -589,7 +581,7 @@ inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(FixedArray&& othe
 }
 
 template <MovableT T, size_t N>
-inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(InitializerList<T> init)
+constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(InitializerList<T> init)
 {
     Assign(init);
     return *this;
@@ -597,19 +589,19 @@ inline constexpr FixedArray<T, N>& FixedArray<T, N>::operator=(InitializerList<T
 
 template <MovableT T, size_t N>
 template <typename U>
-inline constexpr void FixedArray<T, N>::AssignRangeWithSize(U first, U last, size_t len)
+constexpr void FixedArray<T, N>::AssignRangeWithSize(U begin, U end, size_t len)
 {
     AssertValidCapacity(len);
 
-    offset_t size = (offset_t)m_size;
-    Pointer begin = m_buffer.Data();
+    offset_t size = static_cast<offset_t>(m_size);
+    Pointer ptrBegin = m_buffer.Data();
 
     if (m_size < len) {
-        memory::CopyRange(begin, first, first + size);
-        memory::ConstructRange(begin + size, first + size, last);
+        memory::CopyRange(ptrBegin, begin, end + size);
+        memory::ConstructRange(ptrBegin + size, begin + size, end);
     } else {
-        memory::CopyRange(begin, first, last);
-        memory::DestructRange(begin + len, begin + size);
+        memory::CopyRange(ptrBegin, begin, end);
+        memory::DestructRange(ptrBegin + len, ptrBegin + size);
     }
 
     m_size = len;
@@ -617,60 +609,60 @@ inline constexpr void FixedArray<T, N>::AssignRangeWithSize(U first, U last, siz
 
 template <MovableT T, size_t N>
 template <typename U>
-inline constexpr void FixedArray<T, N>::AppendRangeWithSize(U first, U last, size_t len)
+constexpr void FixedArray<T, N>::AppendRangeWithSize(U begin, U end, size_t len)
 {
     size_t newSize = m_size + len;
     AssertValidCapacity(newSize);
-    memory::ConstructRange(m_buffer.Data() + m_size, first, last);
+    memory::ConstructRange(m_buffer.Data() + m_size, begin, end);
     m_size = newSize;
 }
 
 template <MovableT T, size_t N>
 template <typename U>
-inline constexpr void FixedArray<T, N>::InsertRangeWithSize(size_t index, U first, U last, size_t len)
+constexpr void FixedArray<T, N>::InsertRangeWithSize(size_t index, U begin, U end, size_t len)
 {
     size_t newSize = m_size + len;
     AssertValidCapacity(newSize);
     AssertValidIndex(index);
 
-    Pointer begin = m_buffer.Data();
-    Pointer loc = begin + index;
-    Pointer end = begin + (offset_t)m_size;
+    Pointer ptrBegin = m_buffer.Data();
+    Pointer ptrLoc = ptrBegin + index;
+    Pointer ptrEnd = ptrBegin + static_cast<offset_t>(m_size);
 
-    if (static_cast<size_t>(end - loc) > len) {
-        memory::MoveConstructBackward(end + len, end - len, end);
-        memory::MoveBackward(end, loc, end - len);
-        memory::DestructRange(loc, loc + len);
+    if (static_cast<size_t>(ptrEnd - ptrLoc) > len) {
+        memory::MoveConstructBackward(ptrEnd + len, ptrEnd - len, ptrEnd);
+        memory::MoveBackward(ptrEnd, ptrLoc, ptrEnd - len);
+        memory::DestructRange(ptrLoc, ptrLoc + len);
     } else {
-        memory::MoveConstructBackward(end + len, loc, end);
-        memory::DestructRange(loc, end);
+        memory::MoveConstructBackward(ptrEnd + len, ptrLoc, ptrEnd);
+        memory::DestructRange(ptrLoc, ptrEnd);
     }
 
     m_size = newSize;
-    memory::ConstructRange(loc, first, last);
+    memory::ConstructRange(ptrLoc, begin, end);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::AssertValidCapacity([[maybe_unused]] size_t cap) const noexcept
+constexpr void FixedArray<T, N>::AssertValidCapacity([[maybe_unused]] size_t capacity) const noexcept
 {
-    ASSERT(cap <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", cap, N);
+    ASSERT(capacity <= m_buffer.Capacity(), "invalid capacity {}. max capacity is {}", capacity, N);
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
+constexpr void FixedArray<T, N>::AssertValidIndex([[maybe_unused]] size_t index) const noexcept
 {
     ASSERT(ValidIndex(index), "invalid index {}. current size is {}", index, m_size.Get());
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
+constexpr void FixedArray<T, N>::AssertValidIterator([[maybe_unused]] ConstIterator iter) const noexcept
 {
     ASSERT(ValidIterator(iter), "invalid iterator at index {}", iter.Address() - m_buffer.Data());
 }
 
 template <MovableT T, size_t N>
-inline constexpr void FixedArray<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
-                                                         [[maybe_unused]] ConstIterator end) const noexcept
+constexpr void FixedArray<T, N>::AssertValidRange([[maybe_unused]] ConstIterator begin,
+                                                  [[maybe_unused]] ConstIterator end) const noexcept
 {
     ASSERT(ValidRange(begin, end),
            "invalid range from {} to {}",
@@ -679,18 +671,22 @@ inline constexpr void FixedArray<T, N>::AssertValidRange([[maybe_unused]] ConstI
 }
 
 export template <MovableT T, size_t CapT, MovableT U, size_t CapU>
-inline constexpr bool operator==(FixedArray<T, CapT> const& l, FixedArray<U, CapU> const& r) noexcept
+constexpr bool operator==(FixedArray<T, CapT> const& lhs, FixedArray<U, CapU> const& rhs) noexcept
     requires EqualityComparableWithT<T, U>
 {
-    if (l.Size() != r.Size()) {
+    if (lhs.Size() != rhs.Size()) {
         return false;
-    } else if (l.Data() == r.Data()) [[unlikely]] {
-        return true;
-    } else if (l.Size() == 0) [[unlikely]] {
+    }
+
+    if (lhs.Data() == rhs.Data()) [[unlikely]] {
         return true;
     }
 
-    return memory::EqualRange(l.Begin(), l.End(), r.Begin(), r.End());
+    if (lhs.Size() == 0) [[unlikely]] {
+        return true;
+    }
+
+    return memory::EqualRange(lhs.Begin(), lhs.End(), rhs.Begin(), rhs.End());
 }
 
 } // namespace mini

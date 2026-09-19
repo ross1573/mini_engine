@@ -7,17 +7,19 @@ import :algorithm_memory;
 namespace mini {
 
 template <ForwardIteratorT T>
-inline constexpr bool CheckDest(T dest)
+constexpr bool CheckDest(T dest)
 {
     return dest.Valid();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool CheckRange(T begin, T end)
+constexpr bool CheckRange(T begin, T end)
 {
     if (begin == end) [[unlikely]] {
         return true;
-    } else if (!begin.ValidWith(end)) [[unlikely]] {
+    }
+
+    if (!begin.ValidWith(end)) [[unlikely]] {
         return false;
     }
 
@@ -29,7 +31,7 @@ inline constexpr bool CheckRange(T begin, T end)
 }
 
 export template <typename T, typename U>
-inline constexpr void CopyRange(T dest, U begin, U end)
+constexpr void CopyRange(T dest, U begin, U end)
     requires IteratorCopyableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
@@ -38,7 +40,7 @@ inline constexpr void CopyRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void CopyBackward(T dest, U begin, U end)
+constexpr void CopyBackward(T dest, U begin, U end)
     requires IteratorCopyableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
@@ -47,7 +49,7 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveRange(T dest, U begin, U end)
+constexpr void MoveRange(T dest, U begin, U end)
     requires IteratorMovableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
@@ -56,7 +58,7 @@ inline constexpr void MoveRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveBackward(T dest, U begin, U end)
+constexpr void MoveBackward(T dest, U begin, U end)
     requires IteratorMovableFromT<T, U>
 {
     ASSERT(CheckDest(dest));
@@ -65,7 +67,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
 }
 
 export template <ForwardIteratorT T, ForwardIteratorT U>
-inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
     requires EqualityComparableWithT<typename T::Value, typename U::Value>
 {
     ASSERT(CheckRange(begin1, end1));
@@ -74,7 +76,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     ASSERT(CheckRange(begin1, end1));
     ASSERT(CheckRange(begin2, end2));
@@ -91,7 +93,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 }
 
 export template <ForwardIteratorT T, typename U>
-inline constexpr void FillRange(T begin, T end, U const& value)
+constexpr void FillRange(T begin, T end, U const& value)
     requires ConvertibleToT<U, typename T::Value>
 {
     ASSERT(CheckRange(begin, end));
@@ -99,17 +101,17 @@ inline constexpr void FillRange(T begin, T end, U const& value)
 }
 
 export template <ForwardIteratorT T>
-inline constexpr size_t Distance(T first, T last)
+constexpr size_t Distance(T first, T last)
 {
     ASSERT(CheckRange(first, last));
 
     size_t count = 0;
-    for (; first != last; ++count);
+    for (; first != last; ++count) { }
     return count;
 }
 
 export template <RandomAccessIteratorT T>
-inline constexpr size_t Distance(T first, T last)
+constexpr size_t Distance(T first, T last)
 {
     offset_t diff = last - first;
 
@@ -119,22 +121,22 @@ inline constexpr size_t Distance(T first, T last)
     return static_cast<size_t>(diff);
 }
 
-export template <ForwardIteratorT T, typename U = typename T::Value>
-inline constexpr T Find(T first, T last, U const& value)
+export template <ForwardIteratorT T, typename U = T::Value>
+constexpr T Find(T first, T last, U const& value)
 {
     ASSERT(CheckRange(first, last));
     return memory::Find(first, last, value);
 }
 
 export template <ForwardIteratorT T, CallableWithReturnT<bool, typename T::Value> PredT>
-inline constexpr T FindIf(T first, T last, PredT pred)
+constexpr T FindIf(T first, T last, PredT pred)
 {
     ASSERT(CheckRange(first, last));
     return memory::FindIf(first, last, pred);
 }
 
 export template <ForwardIteratorT T, CallableWithReturnT<bool, typename T::Value> PredT>
-inline constexpr T FindIfNot(T first, T last, PredT pred)
+constexpr T FindIfNot(T first, T last, PredT pred)
 {
     ASSERT(CheckRange(first, last));
     return memory::FindIfNot(first, last, pred);

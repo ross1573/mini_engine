@@ -1,7 +1,6 @@
 module;
 
 #include "cstring.h"
-#include "cwstring.h"
 
 export module mini.core:cmemory;
 
@@ -10,7 +9,7 @@ import :type;
 namespace mini::memory {
 
 export template <TrivialT T>
-inline constexpr void MemCopy(T* dest, T const* src, size_t len) noexcept
+constexpr void MemCopy(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMCPY(dest, src, len * sizeof(T));
@@ -23,7 +22,7 @@ inline constexpr void MemCopy(T* dest, T const* src, size_t len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr void MemCopyBackward(T* dest, T const* src, size_t len) noexcept
+constexpr void MemCopyBackward(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dest - len, src - len, len * sizeof(T));
@@ -36,7 +35,7 @@ inline constexpr void MemCopyBackward(T* dest, T const* src, size_t len) noexcep
 }
 
 export template <TrivialT T>
-inline constexpr void MemMove(T* dest, T const* src, size_t len) noexcept
+constexpr void MemMove(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dest, src, len * sizeof(T));
@@ -51,7 +50,7 @@ inline constexpr void MemMove(T* dest, T const* src, size_t len) noexcept
 }
 
 export template <TrivialT T>
-inline constexpr int32 MemCompare(T const* x, T const* y, size_t len) noexcept
+constexpr int32 MemCompare(T const* x, T const* y, size_t len) noexcept
 {
     if !consteval {
         return BUILTIN_MEMCMP(x, y, len * sizeof(T));

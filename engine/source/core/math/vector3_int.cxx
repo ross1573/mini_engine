@@ -22,81 +22,81 @@ public:
     };
 
     constexpr Vector3Int() noexcept;
-    constexpr Vector3Int(int32, int32, int32) noexcept;
-    constexpr Vector3Int(uint32, uint32, uint32) noexcept;
-    explicit constexpr Vector3Int(Vector3 const&) noexcept;
-    explicit constexpr Vector3Int(Int32ConvertibleT auto) noexcept;
+    constexpr Vector3Int(int32 x, int32 y, int32 z) noexcept;
+    constexpr Vector3Int(uint32 x, uint32 y, uint32 z) noexcept;
+    explicit constexpr Vector3Int(Vector3 const& vec) noexcept;
+    explicit constexpr Vector3Int(Int32ConvertibleT auto val) noexcept;
 
-    /*constexpr*/ float32 Length() const noexcept;
-    constexpr size_t LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
+    [[nodiscard]] constexpr size_t LengthSquared() const noexcept;
 
-    constexpr void Clamp(Vector3Int const&, Vector3Int const&) noexcept;
+    constexpr void Clamp(Vector3Int const& min, Vector3Int const& max) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector3Int const&, Vector3Int const&) noexcept;
-    static constexpr size_t DistanceSquared(Vector3Int const&, Vector3Int const&) noexcept;
+    static /*constexpr*/ float32 Distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
+    static constexpr size_t DistanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
 
-    constexpr Vector3Int& operator+=(Vector3Int const&) noexcept;
-    constexpr Vector3Int& operator-=(Vector3Int const&) noexcept;
-    constexpr Vector3Int& operator*=(Int32ConvertibleT auto) noexcept;
-    constexpr Vector3Int& operator/=(Int32ConvertibleT auto) noexcept;
+    constexpr Vector3Int& operator+=(Vector3Int const& vec) noexcept;
+    constexpr Vector3Int& operator-=(Vector3Int const& vec) noexcept;
+    constexpr Vector3Int& operator*=(Int32ConvertibleT auto val) noexcept;
+    constexpr Vector3Int& operator/=(Int32ConvertibleT auto val) noexcept;
 
     constexpr Vector3Int operator+() const noexcept;
     constexpr Vector3Int operator-() const noexcept;
 
-    constexpr bool operator==(Vector3Int const&) const noexcept;
+    constexpr bool operator==(Vector3Int const& other) const noexcept;
 
     constexpr explicit operator Vector2Int() const noexcept;
     constexpr explicit operator Vector2() const noexcept;
     constexpr explicit operator Vector3() const noexcept;
 
-    static constexpr Vector3Int Zero() noexcept { return Vector3Int(0, 0, 0); }
-    static constexpr Vector3Int One() noexcept { return Vector3Int(1, 1, 1); }
-    static constexpr Vector3Int UnitX() noexcept { return Vector3Int(1, 0, 0); }
-    static constexpr Vector3Int UnitY() noexcept { return Vector3Int(0, 1, 0); }
-    static constexpr Vector3Int UnitZ() noexcept { return Vector3Int(0, 0, 1); }
-    static constexpr Vector3Int Up() noexcept { return Vector3Int(0, 1, 0); }
-    static constexpr Vector3Int Down() noexcept { return Vector3Int(0, -1, 0); }
-    static constexpr Vector3Int Left() noexcept { return Vector3Int(-1, 0, 0); }
-    static constexpr Vector3Int Right() noexcept { return Vector3Int(1, 0, 0); }
-    static constexpr Vector3Int Forward() noexcept { return Vector3Int(0, 0, 1); }
-    static constexpr Vector3Int Backward() noexcept { return Vector3Int(0, 0, -1); }
+    static constexpr Vector3Int Zero() noexcept { return { 0, 0, 0 }; }
+    static constexpr Vector3Int One() noexcept { return { 1, 1, 1 }; }
+    static constexpr Vector3Int UnitX() noexcept { return { 1, 0, 0 }; }
+    static constexpr Vector3Int UnitY() noexcept { return { 0, 1, 0 }; }
+    static constexpr Vector3Int UnitZ() noexcept { return { 0, 0, 1 }; }
+    static constexpr Vector3Int Up() noexcept { return { 0, 1, 0 }; }
+    static constexpr Vector3Int Down() noexcept { return { 0, -1, 0 }; }
+    static constexpr Vector3Int Left() noexcept { return { -1, 0, 0 }; }
+    static constexpr Vector3Int Right() noexcept { return { 1, 0, 0 }; }
+    static constexpr Vector3Int Forward() noexcept { return { 0, 0, 1 }; }
+    static constexpr Vector3Int Backward() noexcept { return { 0, 0, -1 }; }
 };
 
-export constexpr Vector3Int operator+(Vector3Int const&, Vector3Int const&) noexcept;
-export constexpr Vector3Int operator-(Vector3Int const&, Vector3Int const&) noexcept;
-export constexpr Vector3Int operator*(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
-export constexpr Vector3Int operator/(Vector3Int const&, Int32ConvertibleT auto const) noexcept;
-export constexpr Vector3Int operator*(Int32ConvertibleT auto const, Vector3Int const&) noexcept;
+export constexpr Vector3Int operator+(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
+export constexpr Vector3Int operator-(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
+export constexpr Vector3Int operator*(Vector3Int const& vec, Int32ConvertibleT auto val) noexcept;
+export constexpr Vector3Int operator/(Vector3Int const& vec, Int32ConvertibleT auto val) noexcept;
+export constexpr Vector3Int operator*(Int32ConvertibleT auto val, Vector3Int const& vec) noexcept;
 
-inline constexpr Vector3Int::Vector3Int() noexcept
+constexpr Vector3Int::Vector3Int() noexcept
     : x(0)
     , y(0)
     , z(0)
 {
 }
 
-inline constexpr Vector3Int::Vector3Int(int32 inX, int32 inY, int32 inZ) noexcept
-    : x(inX)
-    , y(inY)
-    , z(inZ)
+constexpr Vector3Int::Vector3Int(int32 x, int32 y, int32 z) noexcept
+    : x(x)
+    , y(y)
+    , z(z)
 {
 }
 
-inline constexpr Vector3Int::Vector3Int(uint32 inX, uint32 inY, uint32 inZ) noexcept
-    : x(static_cast<int32>(inX))
-    , y(static_cast<int32>(inY))
-    , z(static_cast<int32>(inZ))
+constexpr Vector3Int::Vector3Int(uint32 x, uint32 y, uint32 z) noexcept
+    : x(static_cast<int32>(x))
+    , y(static_cast<int32>(y))
+    , z(static_cast<int32>(z))
 {
 }
 
-inline constexpr Vector3Int::Vector3Int(Vector3 const& v) noexcept
-    : x(static_cast<int32>(v.x))
-    , y(static_cast<int32>(v.y))
-    , z(static_cast<int32>(v.z))
+constexpr Vector3Int::Vector3Int(Vector3 const& vec) noexcept
+    : x(static_cast<int32>(vec.x))
+    , y(static_cast<int32>(vec.y))
+    , z(static_cast<int32>(vec.z))
 {
 }
 
-inline constexpr Vector3Int::Vector3Int(Int32ConvertibleT auto val) noexcept
+constexpr Vector3Int::Vector3Int(Int32ConvertibleT auto val) noexcept
     : x(static_cast<int32>(val))
     , y(static_cast<int32>(val))
     , z(static_cast<int32>(val))
@@ -108,45 +108,45 @@ inline /*constexpr*/ float32 Vector3Int::Length() const noexcept
     return Sqrt(static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u)));
 }
 
-inline constexpr size_t Vector3Int::LengthSquared() const noexcept
+constexpr size_t Vector3Int::LengthSquared() const noexcept
 {
     return static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u));
 }
 
-inline constexpr void Vector3Int::Clamp(Vector3Int const& v1, Vector3Int const& v2) noexcept
+constexpr void Vector3Int::Clamp(Vector3Int const& min, Vector3Int const& max) noexcept
 {
-    x = (x < v1.x) ? v1.x : ((x > v2.x) ? v2.x : x);
-    y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
-    z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
+    x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
+    y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
+    z = (z < min.z) ? min.z : ((z > max.z) ? max.z : z);
 }
 
-inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& v1, Vector3Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
-    return (v1 - v2).Length();
+    return (lhs - rhs).Length();
 }
 
-inline constexpr size_t Vector3Int::DistanceSquared(Vector3Int const& v1, Vector3Int const& v2) noexcept
+constexpr size_t Vector3Int::DistanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
-    return static_cast<size_t>((v1 - v2).LengthSquared());
+    return (lhs - rhs).LengthSquared();
 }
 
-inline constexpr Vector3Int& Vector3Int::operator+=(Vector3Int const& v) noexcept
+constexpr Vector3Int& Vector3Int::operator+=(Vector3Int const& vec) noexcept
 {
-    x += v.x;
-    y += v.y;
-    z += v.z;
+    x += vec.x;
+    y += vec.y;
+    z += vec.z;
     return *this;
 }
 
-inline constexpr Vector3Int& Vector3Int::operator-=(Vector3Int const& v) noexcept
+constexpr Vector3Int& Vector3Int::operator-=(Vector3Int const& vec) noexcept
 {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
+    x -= vec.x;
+    y -= vec.y;
+    z -= vec.z;
     return *this;
 }
 
-inline constexpr Vector3Int& Vector3Int::operator*=(Int32ConvertibleT auto val) noexcept
+constexpr Vector3Int& Vector3Int::operator*=(Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     x *= iVal;
@@ -155,7 +155,7 @@ inline constexpr Vector3Int& Vector3Int::operator*=(Int32ConvertibleT auto val) 
     return *this;
 }
 
-inline constexpr Vector3Int& Vector3Int::operator/=(Int32ConvertibleT auto val) noexcept
+constexpr Vector3Int& Vector3Int::operator/=(Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     x /= iVal;
@@ -164,27 +164,27 @@ inline constexpr Vector3Int& Vector3Int::operator/=(Int32ConvertibleT auto val) 
     return *this;
 }
 
-inline constexpr Vector3Int Vector3Int::operator+() const noexcept
+constexpr Vector3Int Vector3Int::operator+() const noexcept
 {
-    return Vector3Int(x, y, z);
+    return { x, y, z };
 }
 
-inline constexpr Vector3Int Vector3Int::operator-() const noexcept
+constexpr Vector3Int Vector3Int::operator-() const noexcept
 {
-    return Vector3Int(-x, -y, -z);
+    return { -x, -y, -z };
 }
 
-inline constexpr bool Vector3Int::operator==(Vector3Int const& v) const noexcept
+constexpr bool Vector3Int::operator==(Vector3Int const& other) const noexcept
 {
-    return x == v.x && y == v.y && z == v.z;
+    return x == other.x && y == other.y && z == other.z;
 }
 
-inline constexpr Vector3Int::operator Vector2Int() const noexcept
+constexpr Vector3Int::operator Vector2Int() const noexcept
 {
-    return Vector2Int(x, y);
+    return { x, y };
 }
 
-inline constexpr Vector3Int::operator Vector2() const noexcept
+constexpr Vector3Int::operator Vector2() const noexcept
 {
     Vector2 result;
     result.x = static_cast<float32>(x);
@@ -192,7 +192,7 @@ inline constexpr Vector3Int::operator Vector2() const noexcept
     return result;
 }
 
-inline constexpr Vector3Int::operator Vector3() const noexcept
+constexpr Vector3Int::operator Vector3() const noexcept
 {
     Vector3 result;
     result.x = static_cast<float32>(x);
@@ -201,51 +201,51 @@ inline constexpr Vector3Int::operator Vector3() const noexcept
     return result;
 }
 
-inline constexpr Vector3Int operator+(Vector3Int const& v1, Vector3Int const& v2) noexcept
+constexpr Vector3Int operator+(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
     Vector3Int result;
-    result.x = v1.x + v2.x;
-    result.y = v1.y + v2.y;
-    result.z = v1.z + v2.z;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
     return result;
 }
 
-inline constexpr Vector3Int operator-(Vector3Int const& v1, Vector3Int const& v2) noexcept
+constexpr Vector3Int operator-(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
     Vector3Int result;
-    result.x = v1.x - v2.x;
-    result.y = v1.y - v2.y;
-    result.z = v1.z - v2.z;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
     return result;
 }
 
-inline constexpr Vector3Int operator*(Vector3Int const& v, Int32ConvertibleT auto val) noexcept
+constexpr Vector3Int operator*(Vector3Int const& vec, Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector3Int result;
-    result.x = v.x * iVal;
-    result.y = v.y * iVal;
-    result.z = v.z * iVal;
+    result.x = vec.x * iVal;
+    result.y = vec.y * iVal;
+    result.z = vec.z * iVal;
     return result;
 }
 
-inline constexpr Vector3Int operator/(Vector3Int const& v, Int32ConvertibleT auto val) noexcept
+constexpr Vector3Int operator/(Vector3Int const& vec, Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector3Int result;
-    result.x = v.x / iVal;
-    result.y = v.y / iVal;
-    result.z = v.z / iVal;
+    result.x = vec.x / iVal;
+    result.y = vec.y / iVal;
+    result.z = vec.z / iVal;
     return result;
 }
 
-inline constexpr Vector3Int operator*(Int32ConvertibleT auto val, Vector3Int const& v) noexcept
+constexpr Vector3Int operator*(Int32ConvertibleT auto val, Vector3Int const& vec) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector3Int result;
-    result.x = v.x * iVal;
-    result.y = v.y * iVal;
-    result.z = v.z * iVal;
+    result.x = vec.x * iVal;
+    result.y = vec.y * iVal;
+    result.z = vec.z * iVal;
     return result;
 }
 

@@ -2,16 +2,12 @@ module;
 
 #include <intrin.h>
 
-#if MSVC
-#  if ARCH_ARM64
-#    define PAUSE() __isb(_ARM64_BARRIER_SY)
-#  elif ARCH_X86
-#    define PAUSE() _mm_pause()
-#  else
-#    define PAUSE() __nop()
-#  endif
+#if ARCH_ARM64
+#  define PAUSE() __isb(_ARM64_BARRIER_SY)
+#elif ARCH_X86
+#  define PAUSE() _mm_pause()
 #else
-#  error "unsupported compiler"
+#  define PAUSE() __nop()
 #endif
 
 export module mini.core:atomic_platform_wait;

@@ -7,7 +7,7 @@ import :memory_operation;
 namespace mini::memory {
 
 export template <typename T, typename U>
-inline constexpr void CopyRange(T dest, U begin, U end)
+constexpr void CopyRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         MemCopy(dest, begin, static_cast<size_t>(end - begin));
@@ -20,7 +20,7 @@ inline constexpr void CopyRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void CopyBackward(T dest, U begin, U end)
+constexpr void CopyBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
@@ -33,7 +33,7 @@ inline constexpr void CopyBackward(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveRange(T dest, U begin, U end)
+constexpr void MoveRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         MemCopy(dest, begin, static_cast<size_t>(end - begin));
@@ -46,7 +46,7 @@ inline constexpr void MoveRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveBackward(T dest, U begin, U end)
+constexpr void MoveBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
@@ -59,7 +59,7 @@ inline constexpr void MoveBackward(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr bool EqualRange(T begin1, U begin2, U end2)
+constexpr bool EqualRange(T begin1, U begin2, U end2)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         return MemCompare(begin1, begin2, static_cast<size_t>(end2 - begin2));
@@ -75,7 +75,7 @@ inline constexpr bool EqualRange(T begin1, U begin2, U end2)
 }
 
 export template <typename T, typename U>
-inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end2 - begin2);
@@ -96,7 +96,7 @@ inline constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 }
 
 export template <typename T, typename U>
-inline constexpr void FillRange(T begin, T end, U const& value)
+constexpr void FillRange(T begin, T end, U const& value)
 {
     for (; begin != end; ++begin) {
         *ToAddress(begin) = value;
@@ -104,7 +104,7 @@ inline constexpr void FillRange(T begin, T end, U const& value)
 }
 
 export template <typename T, typename U>
-inline constexpr T Find(T first, T last, U const& value)
+constexpr T Find(T first, T last, U const& value)
 {
     for (; first != last; ++first) {
         if (*ToAddress(first) == value) {
@@ -116,7 +116,7 @@ inline constexpr T Find(T first, T last, U const& value)
 }
 
 export template <typename T, typename PredT>
-inline constexpr T FindIf(T first, T last, PredT pred)
+constexpr T FindIf(T first, T last, PredT pred)
 {
     for (; first != last; ++first) {
         if (pred(*ToAddress(first))) {
@@ -128,7 +128,7 @@ inline constexpr T FindIf(T first, T last, PredT pred)
 }
 
 export template <typename T, typename PredT>
-inline constexpr T FindIfNot(T first, T last, PredT pred)
+constexpr T FindIfNot(T first, T last, PredT pred)
 {
     for (; first != last; ++first) {
         if (!pred(*ToAddress(first))) {

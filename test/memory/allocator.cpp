@@ -9,16 +9,16 @@ template <typename U>
 inline auto RebindAllocator(Allocator<TestObject>);
 
 template <>
-inline auto RebindAllocator<TestObject>(Allocator<TestObject>)
+inline auto RebindAllocator<TestObject>(Allocator<TestObject> /*unused*/)
 {
-    return TestAlloc{};
+    return TestAlloc{ };
 }
 
 int main()
 {
-    auto&& r = RebindAllocator<TestObject>(Allocator<TestObject>{});
-    auto&& r2 = RebindAllocator<ConstexprObject>(Allocator<ConstexprObject>{});
-    auto&& r3 = RebindAllocator<TestObject>(TestAlloc{});
+    auto&& r = RebindAllocator<TestObject>(Allocator<TestObject>{ });
+    auto&& r2 = RebindAllocator<ConstexprObject>(Allocator<ConstexprObject>{ });
+    auto&& r3 = RebindAllocator<TestObject>(TestAlloc{ });
 
     static_assert(AllocatorT<Allocator<TestObject>, TestObject>);
     static_assert(AllocatorT<Allocator<int>, int>);
@@ -27,7 +27,7 @@ int main()
     static_assert(SameAsT<TestAlloc&&, decltype(r3)>);
     static_assert(SameAsT<Allocator<ConstexprObject>&&, decltype(r2)>);
 
-    static_assert(Allocator<TestObject>{} == Allocator<int>{});
+    static_assert(Allocator<TestObject>{ } == Allocator<int>{ });
 
     return 0;
 }

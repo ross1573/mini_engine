@@ -19,68 +19,68 @@ public:
     };
 
     constexpr Vector2Int() noexcept;
-    constexpr Vector2Int(int32, int32) noexcept;
-    constexpr Vector2Int(uint32, uint32) noexcept;
-    explicit constexpr Vector2Int(Vector2 const&) noexcept;
-    explicit constexpr Vector2Int(Int32ConvertibleT auto) noexcept;
+    constexpr Vector2Int(int32 x, int32 y) noexcept;
+    constexpr Vector2Int(uint32 x, uint32 y) noexcept;
+    explicit constexpr Vector2Int(Vector2 const& vec) noexcept;
+    explicit constexpr Vector2Int(Int32ConvertibleT auto val) noexcept;
 
-    /*constexpr*/ float32 Length() const noexcept;
-    constexpr size_t LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
+    [[nodiscard]] constexpr size_t LengthSquared() const noexcept;
 
-    constexpr void Clamp(Vector2Int const&, Vector2Int const&) noexcept;
+    constexpr void Clamp(Vector2Int const& min, Vector2Int const& max) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector2Int const&, Vector2Int const&) noexcept;
-    static constexpr size_t DistanceSquared(Vector2Int const&, Vector2Int const&) noexcept;
+    static /*constexpr*/ float32 Distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
+    static constexpr size_t DistanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
 
-    constexpr Vector2Int& operator+=(Vector2Int const&) noexcept;
-    constexpr Vector2Int& operator-=(Vector2Int const&) noexcept;
-    constexpr Vector2Int& operator*=(Int32ConvertibleT auto) noexcept;
-    constexpr Vector2Int& operator/=(Int32ConvertibleT auto) noexcept;
+    constexpr Vector2Int& operator+=(Vector2Int const& ivec) noexcept;
+    constexpr Vector2Int& operator-=(Vector2Int const& ivec) noexcept;
+    constexpr Vector2Int& operator*=(Int32ConvertibleT auto val) noexcept;
+    constexpr Vector2Int& operator/=(Int32ConvertibleT auto val) noexcept;
 
     constexpr Vector2Int operator+() const noexcept;
     constexpr Vector2Int operator-() const noexcept;
 
-    constexpr bool operator==(Vector2Int const&) const noexcept;
+    constexpr bool operator==(Vector2Int const& vec) const noexcept;
 
     explicit constexpr operator Vector2() const noexcept;
 
-    static constexpr Vector2Int Zero() noexcept { return Vector2Int(0, 0); }
-    static constexpr Vector2Int One() noexcept { return Vector2Int(1, 1); }
-    static constexpr Vector2Int UnitX() noexcept { return Vector2Int(1, 0); }
-    static constexpr Vector2Int UnitY() noexcept { return Vector2Int(0, 1); }
+    static constexpr Vector2Int Zero() noexcept { return { 0, 0 }; }
+    static constexpr Vector2Int One() noexcept { return { 1, 1 }; }
+    static constexpr Vector2Int UnitX() noexcept { return { 1, 0 }; }
+    static constexpr Vector2Int UnitY() noexcept { return { 0, 1 }; }
 };
 
-export constexpr Vector2Int operator+(Vector2Int const&, Vector2Int const&) noexcept;
-export constexpr Vector2Int operator-(Vector2Int const&, Vector2Int const&) noexcept;
-export constexpr Vector2Int operator*(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
-export constexpr Vector2Int operator/(Vector2Int const&, Int32ConvertibleT auto const) noexcept;
-export constexpr Vector2Int operator*(Int32ConvertibleT auto const, Vector2Int const&) noexcept;
+export constexpr Vector2Int operator+(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
+export constexpr Vector2Int operator-(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
+export constexpr Vector2Int operator*(Vector2Int const& vec, Int32ConvertibleT auto val) noexcept;
+export constexpr Vector2Int operator/(Vector2Int const& vec, Int32ConvertibleT auto val) noexcept;
+export constexpr Vector2Int operator*(Int32ConvertibleT auto val, Vector2Int const& vec) noexcept;
 
-inline constexpr Vector2Int::Vector2Int() noexcept
+constexpr Vector2Int::Vector2Int() noexcept
     : x(0)
     , y(0)
 {
 }
 
-inline constexpr Vector2Int::Vector2Int(int32 inX, int32 inY) noexcept
-    : x(inX)
-    , y(inY)
+constexpr Vector2Int::Vector2Int(int32 x, int32 y) noexcept
+    : x(x)
+    , y(y)
 {
 }
 
-inline constexpr Vector2Int::Vector2Int(uint32 inX, uint32 inY) noexcept
-    : x(static_cast<int32>(inX))
-    , y(static_cast<int32>(inY))
+constexpr Vector2Int::Vector2Int(uint32 x, uint32 y) noexcept
+    : x(static_cast<int32>(x))
+    , y(static_cast<int32>(y))
 {
 }
 
-inline constexpr Vector2Int::Vector2Int(Vector2 const& v) noexcept
-    : x(static_cast<int32>(v.x))
-    , y(static_cast<int32>(v.y))
+constexpr Vector2Int::Vector2Int(Vector2 const& vec) noexcept
+    : x(static_cast<int32>(vec.x))
+    , y(static_cast<int32>(vec.y))
 {
 }
 
-inline constexpr Vector2Int::Vector2Int(Int32ConvertibleT auto val) noexcept
+constexpr Vector2Int::Vector2Int(Int32ConvertibleT auto val) noexcept
     : x(static_cast<int32>(val))
     , y(static_cast<int32>(val))
 {
@@ -91,42 +91,42 @@ inline /*constexpr*/ float32 Vector2Int::Length() const noexcept
     return Sqrt(static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u)));
 }
 
-inline constexpr size_t Vector2Int::LengthSquared() const noexcept
+constexpr size_t Vector2Int::LengthSquared() const noexcept
 {
     return static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u));
 }
 
-inline constexpr void Vector2Int::Clamp(Vector2Int const& v1, Vector2Int const& v2) noexcept
+constexpr void Vector2Int::Clamp(Vector2Int const& min, Vector2Int const& max) noexcept
 {
-    x = (x < v1.x) ? v1.x : ((x > v2.x) ? v2.x : x);
-    y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
+    x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
+    y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
 }
 
-inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& v1, Vector2Int const& v2) noexcept
+inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
-    return (v1 - v2).Length();
+    return (lhs - rhs).Length();
 }
 
-inline constexpr size_t Vector2Int::DistanceSquared(Vector2Int const& v1, Vector2Int const& v2) noexcept
+constexpr size_t Vector2Int::DistanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
-    return static_cast<size_t>((v1 - v2).LengthSquared());
+    return (lhs - rhs).LengthSquared();
 }
 
-inline constexpr Vector2Int& Vector2Int::operator+=(Vector2Int const& v) noexcept
+constexpr Vector2Int& Vector2Int::operator+=(Vector2Int const& vec) noexcept
 {
-    x += v.x;
-    y += v.y;
+    x += vec.x;
+    y += vec.y;
     return *this;
 }
 
-inline constexpr Vector2Int& Vector2Int::operator-=(Vector2Int const& v) noexcept
+constexpr Vector2Int& Vector2Int::operator-=(Vector2Int const& vec) noexcept
 {
-    x -= v.x;
-    y -= v.y;
+    x -= vec.x;
+    y -= vec.y;
     return *this;
 }
 
-inline constexpr Vector2Int& Vector2Int::operator*=(Int32ConvertibleT auto val) noexcept
+constexpr Vector2Int& Vector2Int::operator*=(Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     x *= iVal;
@@ -134,7 +134,7 @@ inline constexpr Vector2Int& Vector2Int::operator*=(Int32ConvertibleT auto val) 
     return *this;
 }
 
-inline constexpr Vector2Int& Vector2Int::operator/=(Int32ConvertibleT auto val) noexcept
+constexpr Vector2Int& Vector2Int::operator/=(Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     x /= iVal;
@@ -142,22 +142,22 @@ inline constexpr Vector2Int& Vector2Int::operator/=(Int32ConvertibleT auto val) 
     return *this;
 }
 
-inline constexpr Vector2Int Vector2Int::operator+() const noexcept
+constexpr Vector2Int Vector2Int::operator+() const noexcept
 {
-    return Vector2Int(x, y);
+    return { x, y };
 }
 
-inline constexpr Vector2Int Vector2Int::operator-() const noexcept
+constexpr Vector2Int Vector2Int::operator-() const noexcept
 {
-    return Vector2Int(-x, -y);
+    return { -x, -y };
 }
 
-inline constexpr bool Vector2Int::operator==(Vector2Int const& v) const noexcept
+constexpr bool Vector2Int::operator==(Vector2Int const& vec) const noexcept
 {
-    return x == v.x && y == v.y;
+    return x == vec.x && y == vec.y;
 }
 
-inline constexpr Vector2Int::operator Vector2() const noexcept
+constexpr Vector2Int::operator Vector2() const noexcept
 {
     Vector2 result;
     result.x = static_cast<float32>(x);
@@ -165,46 +165,46 @@ inline constexpr Vector2Int::operator Vector2() const noexcept
     return result;
 }
 
-inline constexpr Vector2Int operator+(Vector2Int const& v1, Vector2Int const& v2) noexcept
+constexpr Vector2Int operator+(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
     Vector2Int result;
-    result.x = v1.x + v2.x;
-    result.y = v1.y + v2.y;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
     return result;
 }
 
-inline constexpr Vector2Int operator-(Vector2Int const& v1, Vector2Int const& v2) noexcept
+constexpr Vector2Int operator-(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
     Vector2Int result;
-    result.x = v1.x - v2.x;
-    result.y = v1.y - v2.y;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
     return result;
 }
 
-inline constexpr Vector2Int operator*(Vector2Int const& v, Int32ConvertibleT auto val) noexcept
+constexpr Vector2Int operator*(Vector2Int const& vec, Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector2Int result;
-    result.x = v.x * iVal;
-    result.y = v.y * iVal;
+    result.x = vec.x * iVal;
+    result.y = vec.y * iVal;
     return result;
 }
 
-inline constexpr Vector2Int operator/(Vector2Int const& v, Int32ConvertibleT auto val) noexcept
+constexpr Vector2Int operator/(Vector2Int const& vec, Int32ConvertibleT auto val) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector2Int result;
-    result.x = v.x / iVal;
-    result.y = v.y / iVal;
+    result.x = vec.x / iVal;
+    result.y = vec.y / iVal;
     return result;
 }
 
-inline constexpr Vector2Int operator*(Int32ConvertibleT auto val, Vector2Int const& v) noexcept
+constexpr Vector2Int operator*(Int32ConvertibleT auto val, Vector2Int const& vec) noexcept
 {
     const int32 iVal = static_cast<int32>(val);
     Vector2Int result;
-    result.x = v.x * iVal;
-    result.y = v.y * iVal;
+    result.x = vec.x * iVal;
+    result.y = vec.y * iVal;
     return result;
 }
 

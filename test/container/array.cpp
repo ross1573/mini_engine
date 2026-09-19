@@ -14,9 +14,9 @@ using namespace mini::test;
     TEST_ENSURE((func<type __VA_OPT__(, ) __VA_ARGS__>() == 0));
 
 #define FACTORY(name, ...)                                   \
-    using name = decltype([](int c) {                        \
+    using name = decltype([](int count) {                    \
         String str("Hello world! This is a long string 0."); \
-        *(str.End() - 2) = static_cast<char>(c);             \
+        *(str.End() - 2) = static_cast<char>(count);         \
         return __VA_ARGS__(str);                             \
     });
 
@@ -26,7 +26,7 @@ FACTORY(ConstexprFooF, ConstexprObject);
 FACTORY(FooF, TestObject);
 FACTORY(FooArgF);
 
-[[maybe_unused]] static constexpr void ArrayConstraints()
+[[maybe_unused]] constexpr void ArrayConstraints()
 {
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(Array<int>::Iterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(Array<int*>::Iterator);
@@ -42,12 +42,14 @@ FACTORY(FooArgF);
 template <typename T, typename AllocT, typename StdAllocT>
 [[no_inline]] constexpr int TestArray(Array<T, AllocT> const& arr, std::vector<T, StdAllocT> const& vec)
 {
-    constexpr auto TestElement = [](T const& l, T const& r) -> bool {
+    constexpr auto TestElement = [](T const& lhs, T const& rhs) -> bool {
         if constexpr (memory::DereferencableT<T>) {
-            if (l == nullptr || r == nullptr) return l == r;
-            return *l == *r;
+            if (lhs == nullptr || rhs == nullptr) {
+                return lhs == rhs;
+            }
+            return *lhs == *rhs;
         }
-        return l == r;
+        return lhs == rhs;
     };
 
     TEST_ENSURE(arr.Size() == vec.size());
@@ -86,7 +88,9 @@ template <typename T, typename FactoryT>
     if constexpr (CopyableT<T>) {
         Array<T> arr;
         int count = 0;
-        for (int i = 0; i < 20; ++i) arr.Push(FactoryT{ }(++count));
+        for (int i = 0; i < 20; ++i) {
+            arr.PushBack(FactoryT{ }(++count));
+        }
 
         TEST_ENSURE(Array<T>(arr) == arr);
         TEST_ENSURE(Array<T>(arr, alloc) == arr);
@@ -116,11 +120,11 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
     int arrcount = 33;
     int veccount = 33;
 
-    arr.Push(FactoryT{ }(++arrcount));
+    arr.PushBack(FactoryT{ }(++arrcount));
     vec.push_back(FactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Push(ArgFactoryT{ }(++arrcount));
+    arr.PushBack(ArgFactoryT{ }(++arrcount));
     vec.emplace_back(ArgFactoryT{ }(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
@@ -217,28 +221,24 @@ template <typename T, typename FactoryT>
 
     vec.reserve(32);
     for (int i = 0; i < 32; ++i) {
-        arr.Push(FactoryT{ }(++arrcount));
+        arr.PushBack(FactoryT{ }(++arrcount));
         vec.push_back(FactoryT{ }(++veccount));
     }
 
-    arr.RemoveLast();
+    arr.PopBack();
     vec.pop_back();
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.RemoveLast(5);
+    arr.PopBack(5);
     vec.erase(vec.end() - 5, vec.end());
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.RemoveAt(0);
+    arr.Remove(0);
     vec.erase(vec.begin());
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.RemoveAt(arr.Begin() + 5);
+    arr.Remove(arr.Begin() + 5);
     vec.erase(vec.begin() + 5);
-    TEST_ENSURE(TestArray(arr, vec) == 0);
-
-    arr.RemoveRange(2, 5);
-    vec.erase(vec.begin() + 2, vec.begin() + 5);
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     arr.RemoveRange(arr.Begin() + 2, arr.Begin() + 5);
@@ -258,7 +258,7 @@ template <typename T, typename FactoryT, typename ArgFactoryT = FactoryT>
 
     vec.reserve(8);
     for (int i = 0; i < 8; ++i) {
-        arr.Push(FactoryT{ }(++arrcount));
+        arr.PushBack(FactoryT{ }(++arrcount));
         vec.emplace_back(FactoryT{ }(++veccount));
     }
 

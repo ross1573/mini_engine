@@ -21,7 +21,7 @@ public:
 
     MutexT* GetNativeHandle() noexcept { return &m_mutex; }
 
-private:
+public:
     Mutex(Mutex const&) = delete;
     Mutex& operator=(Mutex const&) = delete;
 };
@@ -42,7 +42,7 @@ public:
 
     MutexT* GetNativeHandle() noexcept { return &m_mutex; }
 
-private:
+public:
     RecursiveMutex(RecursiveMutex const&) = delete;
     RecursiveMutex& operator=(RecursiveMutex const&) = delete;
 };

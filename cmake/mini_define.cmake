@@ -49,14 +49,28 @@ else()
     message(FATAL_ERROR "unsupproted compiler: " ${CMAKE_CXX_COMPILER_ID})
 endif()
 
-if (ASSERT_LEVEL STREQUAL "Debug")
+if (NOASSERT)
+    set(assert 0)
+elseif (ASSERT_LEVEL STREQUAL "Debug")
     set(assert "$<CONFIG:Debug>")
 elseif (ASSERT_LEVEL STREQUAL "Develop")
     set(assert "$<CONFIG:Debug,Develop>")
 elseif (ASSERT_LEVEL STREQUAL "Release")
     set(assert "$<CONFIG:Debug,Develop,Release>")
 else()
-    set(assert "true")
+    set(assert 1)
+endif()
+
+if (NODEBUGLOG)
+    set(debugLog 0)
+elseif (DEBUG_LOG_LEVEL STREQUAL "Debug")
+    set(debugLog "$<CONFIG:Debug>")
+elseif (DEBUG_LOG_LEVEL STREQUAL "Develop")
+    set(debugLog "$<CONFIG:Debug,Develop>")
+elseif (DEBUG_LOG_LEVEL STREQUAL "Release")
+    set(debugLog "$<CONFIG:Debug,Develop,Release>")
+else()
+    set(debugLog 1)
 endif()
 
 module_global_definitions(
@@ -73,6 +87,7 @@ module_global_definitions(
     DEVELOP=$<IF:$<CONFIG:Develop>,true,false>
     RELEASE=$<IF:$<CONFIG:Release>,true,false>
     NOASSERT=$<IF:${assert},false,true>
+    NODEBUGLOG=$<IF:${debugLog},false,true>
 )
 
 # handle compiler specific definition here

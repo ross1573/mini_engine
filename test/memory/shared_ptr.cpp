@@ -5,7 +5,7 @@ import mini.test;
 using namespace mini;
 using namespace mini::test;
 
-static constexpr bool ConstexprSharedPtr()
+constexpr bool ConstexprSharedPtr()
 {
     SharedPtr<ConstexprObject> p(new ConstexprObject("string"));
     SharedPtr<ConstexprObject> p2(p);

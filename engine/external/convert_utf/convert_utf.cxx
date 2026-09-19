@@ -75,18 +75,18 @@ constexpr char32_t UNI_SUR_HIGH_END   = (char32_t)0xDBFF;
 constexpr char32_t UNI_SUR_LOW_START  = (char32_t)0xDC00;
 constexpr char32_t UNI_SUR_LOW_END    = (char32_t)0xDFFF;
 
-export enum class ConversionResult
+export enum class ConversionResult : int8_t
 {
-    conversionOK,    /* conversion successful */
-    sourceExhausted, /* partial character in source, but hit end */
-    targetExhausted, /* insuff. room in target for conversion */
-    sourceIllegal    /* source sequence is illegal/malformed */
+    ConversionOK,    /* conversion successful */
+    SourceExhausted, /* partial character in source, but hit end */
+    TargetExhausted, /* insuff. room in target for conversion */
+    SourceIllegal,   /* source sequence is illegal/malformed */
 };
 
-export enum class ConversionFlags
+export enum class ConversionFlags : int8_t
 {
-    strictConversion = 0,
-    lenientConversion
+    StrictConversion = 0,
+    LenientConversion
 };
 
 template <typename T, typename... Args>
@@ -116,7 +116,7 @@ concept Utf32 = AnyOf<T,
 
 template <typename T, typename U>
     requires (sizeof(T) == sizeof(U))
-inline constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd) noexcept;
+constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd) noexcept;
 
 export template <Utf8 T, Utf16 U>
 constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U tag) noexcept;
@@ -138,27 +138,27 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U tag) noexce
 
 export template <Utf8 T, Utf16 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf8 T, Utf32 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf16 T, Utf8 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf16 T, Utf32 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf32 T, Utf8 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf32 T, Utf16 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags flags = ConversionFlags::lenientConversion) noexcept;
+                                   ConversionFlags flags = ConversionFlags::LenientConversion) noexcept;
 
 export template <Utf8 T, Utf8 U>
 constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
@@ -177,19 +177,19 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 
 export template <Utf8 T, Utf8 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags = ConversionFlags::lenientConversion) noexcept {
+                                   ConversionFlags = ConversionFlags::LenientConversion) noexcept {
     return Copy(srcBegin, srcEnd, dstBegin, dstEnd);
 }
 
 export template <Utf16 T, Utf16 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags = ConversionFlags::lenientConversion) noexcept {
+                                   ConversionFlags = ConversionFlags::LenientConversion) noexcept {
     return Copy(srcBegin, srcEnd, dstBegin, dstEnd);
 }
 
 export template <Utf32 T, Utf32 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd,
-                                   ConversionFlags = ConversionFlags::lenientConversion) noexcept {
+                                   ConversionFlags = ConversionFlags::LenientConversion) noexcept {
     return Copy(srcBegin, srcEnd, dstBegin, dstEnd);
 }
 
@@ -219,7 +219,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf32 T, Utf16 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
 
@@ -227,15 +227,15 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         char32_t ch = static_cast<char32_t>(*source++);
 
         if (target >= dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
         if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
             /* UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
             if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                if (flags == ConversionFlags::strictConversion) {
-                    result = ConversionResult::sourceIllegal;
+                if (flags == ConversionFlags::StrictConversion) {
+                    result = ConversionResult::SourceIllegal;
                     break;
                 } else {
                     *target++ = static_cast<U>(UNI_REPLACEMENT_CHAR);
@@ -244,15 +244,15 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                 *target++ = static_cast<U>(ch); /* normal case */
             }
         } else if (ch > UNI_MAX_LEGAL_UTF32) {
-            if (flags == ConversionFlags::strictConversion) {
-                result = ConversionResult::sourceIllegal;
+            if (flags == ConversionFlags::StrictConversion) {
+                result = ConversionResult::SourceIllegal;
             } else {
                 *target++ = static_cast<U>(UNI_REPLACEMENT_CHAR);
             }
         } else {
              /* target is a character in range 0xFFFF - 0x10FFFF. */
             if (target + 1 >= dstEnd) {
-                result = ConversionResult::targetExhausted;
+                result = ConversionResult::TargetExhausted;
                 break;
             }
 
@@ -299,7 +299,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf16 T, Utf32 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
     char32_t ch, ch2;
@@ -316,24 +316,24 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                 if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
                     ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
                     ++source;
-                } else if (flags == ConversionFlags::strictConversion) { /* it's an unpaired high surrogate */
-                    result = ConversionResult::sourceIllegal;
+                } else if (flags == ConversionFlags::StrictConversion) { /* it's an unpaired high surrogate */
+                    result = ConversionResult::SourceIllegal;
                     break;
                 }
             } else {      /* We don't have the 16 bits following the high surrogate. */
-                result = ConversionResult::sourceExhausted;
+                result = ConversionResult::SourceExhausted;
                 break;
             }
-        } else if (flags == ConversionFlags::strictConversion) {
+        } else if (flags == ConversionFlags::StrictConversion) {
             /* UTF-16 surrogate values are illegal in UTF-32 */
             if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
-                result = ConversionResult::sourceIllegal;
+                result = ConversionResult::SourceIllegal;
                 break;
             }
         }
 
         if (target >= dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
@@ -442,7 +442,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf16 T, Utf8 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
 
@@ -461,18 +461,18 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                 if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
                     ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
                     ++source;
-                } else if (flags == ConversionFlags::strictConversion) { /* it's an unpaired high surrogate */
-                    result = ConversionResult::sourceIllegal;
+                } else if (flags == ConversionFlags::StrictConversion) { /* it's an unpaired high surrogate */
+                    result = ConversionResult::SourceIllegal;
                     break;
                 }
             } else {      /* We don't have the 16 bits following the high surrogate. */
-                result = ConversionResult::sourceExhausted;
+                result = ConversionResult::SourceExhausted;
                 break;
             }
-        } else if (flags == ConversionFlags::strictConversion) {
+        } else if (flags == ConversionFlags::StrictConversion) {
             /* UTF-16 surrogate values are illegal in UTF-32 */
             if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
-                result = ConversionResult::sourceIllegal;
+                result = ConversionResult::SourceIllegal;
                 break;
             }
         }
@@ -503,7 +503,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 
         target += bytesToWrite;
         if (target > dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
@@ -652,7 +652,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf8 T, Utf16 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
 
@@ -662,13 +662,13 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         unsigned short extraBytesToRead = trailingBytesForUTF8[(char8_t)*source];
 
         if (source + extraBytesToRead >= srcEnd) {
-            result = ConversionResult::sourceExhausted;
+            result = ConversionResult::SourceExhausted;
             break;
         }
 
         /* Do this check whether lenient or strict */
         if (!isLegalUTF8(source, extraBytesToRead + 1)) {
-            result = ConversionResult::sourceIllegal;
+            result = ConversionResult::SourceIllegal;
             break;
         }
 
@@ -685,7 +685,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         ch -= offsetsFromUTF8[extraBytesToRead];
 
         if (target >= dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
@@ -693,8 +693,8 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
             /* Target is a character <= 0xFFFF */
             /* UTF-16 surrogate values are illegal in UTF-32 */
             if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                if (flags == ConversionFlags::strictConversion) {
-                    result = ConversionResult::sourceIllegal;
+                if (flags == ConversionFlags::StrictConversion) {
+                    result = ConversionResult::SourceIllegal;
                     break;
                 } else {
                     *target++ = static_cast<U>(UNI_REPLACEMENT_CHAR);
@@ -703,8 +703,8 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                 *target++ = static_cast<char16_t>(ch); /* normal case */
             }
         } else if (ch > UNI_MAX_UTF16) {
-            if (flags == ConversionFlags::strictConversion) {
-                result = ConversionResult::sourceIllegal;
+            if (flags == ConversionFlags::StrictConversion) {
+                result = ConversionResult::SourceIllegal;
                 break;                            /* Bail out; shouldn't continue */
             } else {
                 *target++ = static_cast<U>(UNI_REPLACEMENT_CHAR);
@@ -712,7 +712,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         } else {
              /* target is a character in range 0xFFFF - 0x10FFFF. */
             if (target + 1 >= dstEnd) {
-                result = ConversionResult::targetExhausted;
+                result = ConversionResult::TargetExhausted;
                 break;
             }
 
@@ -761,7 +761,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf32 T, Utf8 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
 
@@ -771,10 +771,10 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         const char32_t byteMask     = 0xBF;
         const char32_t byteMark     = 0x80;
 
-        if (flags == ConversionFlags::strictConversion) {
+        if (flags == ConversionFlags::StrictConversion) {
             /* UTF-16 surrogate values are illegal in UTF-32 */
             if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                result = ConversionResult::sourceIllegal;
+                result = ConversionResult::SourceIllegal;
                 break;
             }
         }
@@ -794,12 +794,12 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         } else {
             bytesToWrite = 3;
             ch           = UNI_REPLACEMENT_CHAR;
-            result       = ConversionResult::sourceIllegal;
+            result       = ConversionResult::SourceIllegal;
         }
 
         target += bytesToWrite;
         if (target > dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
@@ -845,7 +845,7 @@ constexpr size_t ConvertLength(T const* srcBegin, T const* srcEnd, U) noexcept {
 template <Utf8 T, Utf32 U>
 constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd, 
                                    ConversionFlags flags) noexcept {
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
     T const* source         = srcBegin;
     U* target               = dstBegin;
 
@@ -854,13 +854,13 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         unsigned short extraBytesToRead = trailingBytesForUTF8[(char8_t)*source];
 
         if (source + extraBytesToRead >= srcEnd) {
-            result = ConversionResult::sourceExhausted;
+            result = ConversionResult::SourceExhausted;
             break;
         }
 
         /* Do this check whether lenient or strict */
         if (!isLegalUTF8(source, extraBytesToRead + 1)) {
-            result = ConversionResult::sourceIllegal;
+            result = ConversionResult::SourceIllegal;
             break;
         }
 
@@ -879,7 +879,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
         ch -= offsetsFromUTF8[extraBytesToRead];
 
         if (target >= dstEnd) {
-            result = ConversionResult::targetExhausted;
+            result = ConversionResult::TargetExhausted;
             break;
         }
 
@@ -889,8 +889,8 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
              * over Plane 17 (> 0x10FFFF) is illegal.
              */
             if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
-                if (flags == ConversionFlags::strictConversion) {
-                    result = ConversionResult::sourceIllegal;
+                if (flags == ConversionFlags::StrictConversion) {
+                    result = ConversionResult::SourceIllegal;
                     break;
                 } else {
                     *target++ = UNI_REPLACEMENT_CHAR;
@@ -899,7 +899,7 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
                 *target++ = static_cast<U>(ch);
             }
         } else { /* i.e., ch > UNI_MAX_LEGAL_UTF32 */
-            result    = ConversionResult::sourceIllegal;
+            result    = ConversionResult::SourceIllegal;
             *target++ = UNI_REPLACEMENT_CHAR;
         }
     }
@@ -911,15 +911,15 @@ constexpr ConversionResult Convert(T const* srcBegin, T const* srcEnd, U* dstBeg
 
 template <typename T, typename U>
     requires (sizeof(T) == sizeof(U))
-inline constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd) noexcept {
+constexpr ConversionResult Copy(T const* srcBegin, T const* srcEnd, U* dstBegin, U* dstEnd) noexcept {
     size_t sourceLen        = static_cast<size_t>(srcEnd - srcBegin);
     size_t targetLen        = static_cast<size_t>(dstEnd - dstBegin);
     size_t copyLen          = sourceLen;
-    ConversionResult result = ConversionResult::conversionOK;
+    ConversionResult result = ConversionResult::ConversionOK;
 
     if (targetLen < sourceLen) {
         copyLen = targetLen;
-        result = ConversionResult::targetExhausted;
+        result = ConversionResult::TargetExhausted;
     }
     
     if (std::is_constant_evaluated()) {

@@ -58,15 +58,15 @@ inline bool AtomicSpinWait(T const volatile* loc, T val, int32 order) noexcept
     return AtomicSpinWaitLoop(loc, val, order);
 }
 
-inline CORE_API void AtomicPlatformWait(AtomicContention volatile* waiter,
+inline CORE_API void AtomicPlatformWait(AtomicContention volatile* waiter, // NOLINT
                                         AtomicContention const volatile* platform,
                                         AtomicContention value,
                                         size_t size) noexcept
 {
-    __atomic_fetch_add(waiter, AtomicContention(1), __ATOMIC_RELAXED);
+    __atomic_fetch_add(waiter, static_cast<AtomicContention>(1), __ATOMIC_RELAXED);
     __atomic_thread_fence(__ATOMIC_SEQ_CST);
     WaitOnAddress(platform, value, size);
-    __atomic_fetch_sub(waiter, AtomicContention(1), __ATOMIC_RELEASE);
+    __atomic_fetch_sub(waiter, static_cast<AtomicContention>(1), __ATOMIC_RELEASE);
 }
 
 inline CORE_API void AtomicPlatformNotify(AtomicContention const volatile* waiter,
@@ -96,7 +96,7 @@ public:
     AtomicContention waiter;
     AtomicContention platform;
 
-    constexpr AtomicEntry()
+    constexpr AtomicEntry() noexcept
         : waiter(0)
         , platform(0)
     {

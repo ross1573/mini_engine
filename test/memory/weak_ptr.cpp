@@ -5,7 +5,7 @@ import mini.test;
 using namespace mini;
 using namespace mini::test;
 
-static constexpr bool ConstexprWeakPtr()
+constexpr bool ConstexprWeakPtr()
 {
     SharedPtr<String> p = MakeShared<String>("string");
     WeakPtr<String> w1 = p;
@@ -40,13 +40,13 @@ int32 TestLock()
 
     TEST_ENSURE(w.Lock().Equals(p));
     {
-        w.Lock();
+        [[maybe_unused]] auto _ = w.Lock();
     }
     TEST_ENSURE(p.Valid());
 
     TEST_ENSURE(w2.Lock().Equals(p));
     {
-        w2.Lock();
+        [[maybe_unused]] auto _ = w2.Lock();
     }
     TEST_ENSURE(p.Valid());
 

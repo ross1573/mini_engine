@@ -7,7 +7,7 @@ namespace mini {
 struct Ignore {
 public:
     template <typename T>
-    constexpr Ignore const& operator=(T const&) const noexcept
+    constexpr Ignore const& operator=(T const& /*unused*/) const noexcept
     {
         return *this;
     }

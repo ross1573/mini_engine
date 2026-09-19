@@ -6,7 +6,7 @@ import :numeric;
 namespace mini::bit {
 
 template <UnsignedIntegralT T>
-[[nodiscard]] inline constexpr uint32 Clz(T x)
+[[nodiscard]] constexpr uint32 Clz(T x)
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     uint32 n = digits;
@@ -26,7 +26,7 @@ template <UnsignedIntegralT T>
 }
 
 template <UnsignedIntegralT T>
-[[nodiscard]] inline constexpr uint32 Ctz(T x)
+[[nodiscard]] constexpr uint32 Ctz(T x)
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     uint32 n = digits;

@@ -59,9 +59,9 @@
 #define TEST_RANGE_BASED_FOR_SUPPORT(...) static_assert(RangeBasedForUsableT<JOIN_VA_ARGS(__VA_ARGS__)>);
 
 template <typename T>
-concept RangeBasedForUsableT = requires(T& c, T const& cc) {
-    begin(c);
-    end(c);
-    cbegin(cc);
-    cend(cc);
+concept RangeBasedForUsableT = requires(T& container, T const& ccontainer) {
+    begin(container);
+    end(container);
+    cbegin(ccontainer);
+    cend(ccontainer);
 };

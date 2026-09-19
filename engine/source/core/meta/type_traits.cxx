@@ -7,9 +7,9 @@ export module mini.core:type_traits;
 template <typename T, T val>
 struct IntegralConstant {
     using ValueT = T;
-    inline static constexpr ValueT value = val;
-    inline constexpr operator ValueT() const noexcept { return val; }
-    inline constexpr ValueT operator()() const noexcept { return val; }
+    static constexpr ValueT value = val;
+    constexpr operator ValueT() const noexcept { return val; }
+    constexpr ValueT operator()() const noexcept { return val; }
 };
 
 namespace mini {

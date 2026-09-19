@@ -23,13 +23,13 @@ export template <typename T>
 concept DereferencableT = requires(T ele) { *ele; };
 
 template <typename T>
-inline constexpr void* MakeVoidPtr(T* ptr)
+constexpr void* MakeVoidPtr(T* ptr)
 {
     return const_cast<void*>(static_cast<const volatile void*>(ptr));
 }
 
 export template <AddressableT T>
-inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
+constexpr decltype(auto) ToAddress(T const& ele) noexcept
 {
     if constexpr (PointerT<T>) {
         return ele;
@@ -41,13 +41,13 @@ inline constexpr decltype(auto) ToAddress(T const& ele) noexcept
 }
 
 export template <typename T>
-inline constexpr decltype(auto) AddressOf(T& ele)
+constexpr decltype(auto) AddressOf(T& ele)
 {
     return BUILTIN_ADDRESS_OF(ele);
 }
 
 export template <typename T>
-inline constexpr decltype(auto) AddressOf(T const&& rval) = deleted_function("cannot get address of r-value");
+constexpr decltype(auto) AddressOf(T const&& rval) = deleted_function("cannot get address of r-value");
 
 template <typename T, typename U>
 consteval bool IsTriviallyOperatable()
@@ -66,7 +66,7 @@ consteval bool IsTriviallyOperatable()
 }
 
 export template <PointerT T, PointerT U>
-inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
+constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 {
     if consteval {
         return false;
@@ -76,7 +76,7 @@ inline constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
 }
 
 export template <PointerT T, PointerT U>
-inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
+constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 {
     if consteval {
         return false;
@@ -88,13 +88,13 @@ inline constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 // msvc won't evaluate placement new at compile time if there's no return.
 // this might be another stupid bug from msvc, since the expression has to be decorated with [[msvc::constexpr]]
 template <typename T, typename... Args>
-inline constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     MSVC_CONSTEXPR return ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
 }
 
 export template <NonArrT T, typename... Args>
-inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     ASSERT(ptr, "invalid location for object");
 
@@ -107,7 +107,7 @@ inline constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstr
 }
 
 export template <NoThrowDefaultConstructibleT T>
-inline constexpr void BeginLifetime(T* begin, T* end) noexcept
+constexpr void BeginLifetime(T* begin, T* end) noexcept
 {
     ASSERT(begin <= end, "invalid range");
 
@@ -119,7 +119,7 @@ inline constexpr void BeginLifetime(T* begin, T* end) noexcept
 }
 
 export template <NoThrowDefaultConstructibleT T>
-inline constexpr void BeginLifetime(T* loc) noexcept
+constexpr void BeginLifetime(T* loc) noexcept
 {
     if consteval {
         ConstructAt(loc);
@@ -127,7 +127,7 @@ inline constexpr void BeginLifetime(T* loc) noexcept
 }
 
 export template <NonArrT T>
-inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
+constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     ASSERT(ptr, "invalid location for object");
 
@@ -139,7 +139,7 @@ inline constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 }
 
 export template <typename T, typename... Args>
-inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
+constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 {
     for (; begin != end; ++begin) {
         ConstructAt(ToAddress(begin), ForwardArg<Args>(args)...);
@@ -147,7 +147,7 @@ inline constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
 }
 
 export template <typename T, typename U>
-inline constexpr void ConstructRange(T dest, U begin, U end)
+constexpr void ConstructRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
@@ -162,7 +162,7 @@ inline constexpr void ConstructRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void ConstructBackward(T dest, U begin, U end)
+constexpr void ConstructBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
@@ -177,7 +177,7 @@ inline constexpr void ConstructBackward(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveConstructRange(T dest, U begin, U end)
+constexpr void MoveConstructRange(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
@@ -192,7 +192,7 @@ inline constexpr void MoveConstructRange(T dest, U begin, U end)
 }
 
 export template <typename T, typename U>
-inline constexpr void MoveConstructBackward(T dest, U begin, U end)
+constexpr void MoveConstructBackward(T dest, U begin, U end)
 {
     if constexpr (IsTriviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
@@ -207,7 +207,7 @@ inline constexpr void MoveConstructBackward(T dest, U begin, U end)
 }
 
 export template <typename T>
-inline constexpr void DestructRange(T begin, T end)
+constexpr void DestructRange(T begin, T end)
 {
     for (; begin != end; ++begin) {
         DestructAt(ToAddress(begin));

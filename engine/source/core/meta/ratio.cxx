@@ -19,16 +19,16 @@ export template <typename T>
 concept RatioT = IsRatioT<T>;
 
 export template <RatioT R1, RatioT R2>
-using RatioAddT = decltype(R1{} + R2{});
+using RatioAddT = decltype(R1{ } + R2{ });
 
 export template <RatioT R1, RatioT R2>
-using RatioSubtractT = decltype(R1{} - R2{});
+using RatioSubtractT = decltype(R1{ } - R2{ });
 
 export template <RatioT R1, RatioT R2>
-using RatioMultiplyT = decltype(R1{} * R2{});
+using RatioMultiplyT = decltype(R1{ } * R2{ });
 
 export template <RatioT R1, RatioT R2>
-using RatioDivideT = decltype(R1{} / R2{});
+using RatioDivideT = decltype(R1{ } / R2{ });
 
 template <int64 NumN, int64 DenomN>
 class Ratio {
@@ -36,7 +36,7 @@ private:
     template <int64 NumU, int64 DenomU>
     friend class Ratio;
 
-    static constexpr int64 Sign(int64 n) { return n == 0 ? 0 : (n < 0 ? -1 : 1); }
+    static constexpr int64 Sign(int64 val) { return val == 0 ? 0 : (val < 0 ? -1 : 1); }
 
     static_assert(Abs(NumN) >= 0, "Numerator is out of range");
     static_assert(Abs(DenomN) >= 0, "Denominator is out of range");
@@ -48,8 +48,8 @@ private:
     static constexpr int64 gcd = Gcd(unum, uden);
 
 public:
-    static inline constexpr int64 num = sign * unum / gcd;
-    static inline constexpr int64 denom = uden / gcd;
+    static constexpr int64 num = sign * unum / gcd;
+    static constexpr int64 denom = uden / gcd;
 };
 
 template <int64 X, int64 Y>
@@ -96,7 +96,7 @@ consteval int64 CheckedMul()
 
     if constexpr (ux != 0 && uy != 0) {
         constexpr uint64 max = static_cast<uint64>(NumericLimit<int64>::max);
-        constexpr uint64 s = isNeg ? max + int64(1) : max;
+        constexpr uint64 s = isNeg ? max + static_cast<int64>(1) : max;
         static_assert(ux <= s / uy, "integer mul overflow");
     }
 
@@ -112,7 +112,7 @@ consteval auto Multiply(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
     constexpr int64 num = CheckedMul<x.num / gcd1, y.num / gcd2>();
     constexpr int64 den = CheckedMul<y.denom / gcd1, x.denom / gcd2>();
 
-    return Ratio<num, den>{};
+    return Ratio<num, den>{ };
 }
 
 template <int64 NumN, int64 DenomN, int64 NumU, int64 DenomU>
@@ -124,7 +124,7 @@ consteval auto Divide(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
     constexpr int64 num = CheckedMul<x.num / gcdNum, y.denom / gcdDen>();
     constexpr int64 den = CheckedMul<y.num / gcdNum, x.denom / gcdDen>();
 
-    return Ratio<num, den>{};
+    return Ratio<num, den>{ };
 }
 
 template <int64 NumN, int64 DenomN, int64 NumU, int64 DenomU>
@@ -183,7 +183,7 @@ consteval auto Compare(Ratio<NumN, DenomN> x, Ratio<NumU, DenomU> y)
     if constexpr (rx == 0 || ry == 0) {
         return rx <=> ry;
     } else {
-        return Compare(Ratio<y.denom, ry>{}, Ratio<x.denom, rx>{});
+        return Compare(Ratio<y.denom, ry>{ }, Ratio<x.denom, rx>{ });
     }
 }
 

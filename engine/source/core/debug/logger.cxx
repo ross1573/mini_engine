@@ -10,7 +10,7 @@ namespace mini {
 
 export class CORE_API Logger final : public LoggerBase {
 public:
-    enum class Level {
+    enum class Level : byte {
         debug = 0,
         info = 1,
         warn = 2,
@@ -23,39 +23,39 @@ public:
         SourceLocation const location;
 
         template <StringLikeT<char> T>
-        MessageContext(T const&, SourceLocation = SourceLocation::current());
+        MessageContext(T const& msg, SourceLocation loc = SourceLocation::current()) noexcept;
     };
 
 public:
-    Logger(StringView);
+    Logger(StringView category) noexcept;
 
     template <typename... Args>
-    void Log(Level, MessageContext, Args&&...);
+    void Log(Level level, MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Debug(MessageContext, Args&&...);
+    void Debug(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Info(MessageContext, Args&&...);
+    void Info(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Warn(MessageContext, Args&&...);
+    void Warn(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Error(MessageContext, Args&&...);
+    void Error(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Fatal(MessageContext, Args&&...);
+    void Fatal(MessageContext context, Args&&... args);
 };
 
 template <StringLikeT<char> T>
-Logger::MessageContext::MessageContext(T const& msg, SourceLocation loc)
+Logger::MessageContext::MessageContext(T const& msg, SourceLocation loc) noexcept
     : message(msg)
     , location(loc)
 {
 }
 
-Logger::Logger(StringView category)
+Logger::Logger(StringView category) noexcept
     : LoggerBase(category)
 {
 }
@@ -76,7 +76,7 @@ inline void Logger::Log(Level level, MessageContext context, Args&&... args)
 template <typename... Args>
 inline void Logger::Debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
-#if DEBUG
+#if !NODEBUGLOG
     Log(Level::debug, context, ForwardArg<Args>(args)...);
 #endif
 }

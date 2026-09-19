@@ -20,73 +20,73 @@ public:
     };
 
     constexpr Vector3() noexcept;
-    constexpr Vector3(float32, float32, float32) noexcept;
-    explicit constexpr Vector3(Float32ConvertibleT auto) noexcept;
+    constexpr Vector3(float32 x, float32 y, float32 z) noexcept;
+    explicit constexpr Vector3(Float32ConvertibleT auto val) noexcept;
 
-    /*constexpr*/ float32 Length() const noexcept;
-    /*constexpr*/ float32 LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 LengthSquared() const noexcept;
 
-    constexpr float32 Dot(Vector3 const&) const noexcept;
-    constexpr Vector3 Cross(Vector3 const&) const noexcept;
+    [[nodiscard]] constexpr float32 Dot(Vector3 const& vec) const noexcept;
+    [[nodiscard]] constexpr Vector3 Cross(Vector3 const& vec) const noexcept;
 
-    constexpr void Clamp(Vector3 const&, Vector3 const&) noexcept;
+    constexpr void Clamp(Vector3 const& min, Vector3 const& max) noexcept;
     /*constexpr*/ void Normalize() noexcept;
 
-    static constexpr float32 Dot(Vector3 const&, Vector3 const&) noexcept;
-    static constexpr Vector3 Cross(Vector3 const&, Vector3 const&) noexcept;
+    static constexpr float32 Dot(Vector3 const& lhs, Vector3 const& rhs) noexcept;
+    static constexpr Vector3 Cross(Vector3 const& lhs, Vector3 const& rhs) noexcept;
 
-    static /*constexpr*/ Vector3 Normalize(Vector3 const&) noexcept;
+    static /*constexpr*/ Vector3 Normalize(Vector3 const& vec) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector3 const&, Vector3 const&) noexcept;
-    static /*constexpr*/ float32 DistanceSquared(Vector3 const&, Vector3 const&) noexcept;
-    static constexpr Vector3 Lerp(Vector3 const&, Vector3 const&, float32) noexcept;
+    static /*constexpr*/ float32 Distance(Vector3 const& lhs, Vector3 const& rhs) noexcept;
+    static /*constexpr*/ float32 DistanceSquared(Vector3 const& lhs, Vector3 const& rhs) noexcept;
+    static constexpr Vector3 Lerp(Vector3 const& x, Vector3 const& y, float32 ratio) noexcept;
 
-    constexpr Vector3& operator+=(Vector3 const&) noexcept;
-    constexpr Vector3& operator-=(Vector3 const&) noexcept;
-    constexpr Vector3& operator*=(Float32ConvertibleT auto) noexcept;
-    constexpr Vector3& operator/=(Float32ConvertibleT auto) noexcept;
+    constexpr Vector3& operator+=(Vector3 const& vec) noexcept;
+    constexpr Vector3& operator-=(Vector3 const& vec) noexcept;
+    constexpr Vector3& operator*=(Float32ConvertibleT auto val) noexcept;
+    constexpr Vector3& operator/=(Float32ConvertibleT auto val) noexcept;
 
     constexpr Vector3 operator+() const noexcept;
     constexpr Vector3 operator-() const noexcept;
 
-    constexpr bool operator==(Vector3 const&) const noexcept;
+    constexpr bool operator==(Vector3 const& other) const noexcept;
 
     explicit constexpr operator Vector2() const noexcept;
 
-    static constexpr Vector3 Zero() noexcept { return Vector3(0.f, 0.f, 0.f); }
-    static constexpr Vector3 One() noexcept { return Vector3(1.f, 1.f, 1.f); }
-    static constexpr Vector3 UnitX() noexcept { return Vector3(1.f, 0.f, 0.f); }
-    static constexpr Vector3 UnitY() noexcept { return Vector3(0.f, 1.f, 0.f); }
-    static constexpr Vector3 UnitZ() noexcept { return Vector3(0.f, 0.f, 1.f); }
-    static constexpr Vector3 Up() noexcept { return Vector3(0.f, 1.f, 0.f); }
-    static constexpr Vector3 Down() noexcept { return Vector3(0.f, -1.f, 0.f); }
-    static constexpr Vector3 Left() noexcept { return Vector3(-1.f, 0.f, 0.f); }
-    static constexpr Vector3 Right() noexcept { return Vector3(1.f, 0.f, 0.f); }
-    static constexpr Vector3 Forward() noexcept { return Vector3(0.f, 0.f, 1.f); }
-    static constexpr Vector3 Backward() noexcept { return Vector3(0.f, 0.f, -1.f); }
+    static constexpr Vector3 Zero() noexcept { return { 0.f, 0.f, 0.f }; }
+    static constexpr Vector3 One() noexcept { return { 1.f, 1.f, 1.f }; }
+    static constexpr Vector3 UnitX() noexcept { return { 1.f, 0.f, 0.f }; }
+    static constexpr Vector3 UnitY() noexcept { return { 0.f, 1.f, 0.f }; }
+    static constexpr Vector3 UnitZ() noexcept { return { 0.f, 0.f, 1.f }; }
+    static constexpr Vector3 Up() noexcept { return { 0.f, 1.f, 0.f }; }
+    static constexpr Vector3 Down() noexcept { return { 0.f, -1.f, 0.f }; }
+    static constexpr Vector3 Left() noexcept { return { -1.f, 0.f, 0.f }; }
+    static constexpr Vector3 Right() noexcept { return { 1.f, 0.f, 0.f }; }
+    static constexpr Vector3 Forward() noexcept { return { 0.f, 0.f, 1.f }; }
+    static constexpr Vector3 Backward() noexcept { return { 0.f, 0.f, -1.f }; }
 };
 
-export constexpr Vector3 operator+(Vector3 const&, Vector3 const&) noexcept;
-export constexpr Vector3 operator-(Vector3 const&, Vector3 const&) noexcept;
-export constexpr Vector3 operator*(Vector3 const&, Float32ConvertibleT auto const) noexcept;
-export constexpr Vector3 operator/(Vector3 const&, Float32ConvertibleT auto const) noexcept;
-export constexpr Vector3 operator*(Float32ConvertibleT auto const, Vector3 const&) noexcept;
+export constexpr Vector3 operator+(Vector3 const& lhs, Vector3 const& rhs) noexcept;
+export constexpr Vector3 operator-(Vector3 const& lhs, Vector3 const& rhs) noexcept;
+export constexpr Vector3 operator*(Vector3 const& vec, Float32ConvertibleT auto val) noexcept;
+export constexpr Vector3 operator/(Vector3 const& vec, Float32ConvertibleT auto val) noexcept;
+export constexpr Vector3 operator*(Float32ConvertibleT auto val, Vector3 const& vec) noexcept;
 
-inline constexpr Vector3::Vector3() noexcept
+constexpr Vector3::Vector3() noexcept
     : x(0.f)
     , y(0.f)
     , z(0.f)
 {
 }
 
-inline constexpr Vector3::Vector3(float32 inX, float32 inY, float32 inZ) noexcept
+constexpr Vector3::Vector3(float32 inX, float32 inY, float32 inZ) noexcept
     : x(inX)
     , y(inY)
     , z(inZ)
 {
 }
 
-inline constexpr Vector3::Vector3(Float32ConvertibleT auto val) noexcept
+constexpr Vector3::Vector3(Float32ConvertibleT auto val) noexcept
     : x(static_cast<float32>(val))
     , y(static_cast<float32>(val))
     , z(static_cast<float32>(val))
@@ -103,21 +103,21 @@ inline /*constexpr*/ float32 Vector3::LengthSquared() const noexcept
     return Pow(x, 2.f) + Pow(y, 2.f) + Pow(z, 2.f);
 }
 
-inline constexpr float32 Vector3::Dot(Vector3 const& v) const noexcept
+constexpr float32 Vector3::Dot(Vector3 const& vec) const noexcept
 {
-    return Vector3::Dot(*this, v);
+    return Vector3::Dot(*this, vec);
 }
 
-inline constexpr Vector3 Vector3::Cross(Vector3 const& v) const noexcept
+constexpr Vector3 Vector3::Cross(Vector3 const& vec) const noexcept
 {
-    return Vector3::Cross(*this, v);
+    return Vector3::Cross(*this, vec);
 }
 
-inline constexpr void Vector3::Clamp(Vector3 const& v1, Vector3 const& v2) noexcept
+constexpr void Vector3::Clamp(Vector3 const& min, Vector3 const& max) noexcept
 {
-    x = (x < v1.x) ? v1.x : ((x > v2.x) ? v2.x : x);
-    y = (y < v1.y) ? v1.y : ((y > v2.y) ? v2.y : y);
-    z = (z < v1.z) ? v1.z : ((z > v2.z) ? v2.z : z);
+    x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
+    y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
+    z = (z < min.z) ? min.z : ((z > max.z) ? max.z : z);
 }
 
 inline /*constexpr*/ void Vector3::Normalize() noexcept
@@ -125,57 +125,57 @@ inline /*constexpr*/ void Vector3::Normalize() noexcept
     (*this) /= Length();
 }
 
-inline constexpr float32 Vector3::Dot(Vector3 const& v1, Vector3 const& v2) noexcept
+constexpr float32 Vector3::Dot(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
-    return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+    return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
 }
 
-inline constexpr Vector3 Vector3::Cross(Vector3 const& v1, Vector3 const& v2) noexcept
+constexpr Vector3 Vector3::Cross(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
     Vector3 result;
-    result.x = v1.y * v2.z - v1.z * v2.y;
-    result.y = v1.z * v2.x - v1.x * v2.z;
-    result.z = v1.x * v2.y - v1.y * v2.x;
+    result.x = (lhs.y * rhs.z) - (lhs.z * rhs.y);
+    result.y = (lhs.z * rhs.x) - (lhs.x * rhs.z);
+    result.z = (lhs.x * rhs.y) - (lhs.y * rhs.x);
     return result;
 }
 
-inline /*constexpr*/ Vector3 Vector3::Normalize(Vector3 const& v) noexcept
+inline /*constexpr*/ Vector3 Vector3::Normalize(Vector3 const& vec) noexcept
 {
-    return v / v.Length();
+    return vec / vec.Length();
 }
 
-inline /*constexpr*/ float32 Vector3::Distance(Vector3 const& v1, Vector3 const& v2) noexcept
+inline /*constexpr*/ float32 Vector3::Distance(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
-    return (v1 - v2).Length();
+    return (lhs - rhs).Length();
 }
 
-inline /*constexpr*/ float32 Vector3::DistanceSquared(Vector3 const& v1, Vector3 const& v2) noexcept
+inline /*constexpr*/ float32 Vector3::DistanceSquared(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
-    return (v1 - v2).LengthSquared();
+    return (lhs - rhs).LengthSquared();
 }
 
-inline constexpr Vector3 Vector3::Lerp(Vector3 const& v1, Vector3 const& v2, float32 t) noexcept
+constexpr Vector3 Vector3::Lerp(Vector3 const& x, Vector3 const& y, float32 ratio) noexcept
 {
-    return (v2 - v1) * t + v1;
+    return (y - x) * ratio + x;
 }
 
-inline constexpr Vector3& Vector3::operator+=(Vector3 const& v) noexcept
+constexpr Vector3& Vector3::operator+=(Vector3 const& vec) noexcept
 {
-    x += v.x;
-    y += v.y;
-    z += v.z;
+    x += vec.x;
+    y += vec.y;
+    z += vec.z;
     return *this;
 }
 
-inline constexpr Vector3& Vector3::operator-=(Vector3 const& v) noexcept
+constexpr Vector3& Vector3::operator-=(Vector3 const& vec) noexcept
 {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
+    x -= vec.x;
+    y -= vec.y;
+    z -= vec.z;
     return *this;
 }
 
-inline constexpr Vector3& Vector3::operator*=(Float32ConvertibleT auto val) noexcept
+constexpr Vector3& Vector3::operator*=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x *= fVal;
@@ -184,7 +184,7 @@ inline constexpr Vector3& Vector3::operator*=(Float32ConvertibleT auto val) noex
     return *this;
 }
 
-inline constexpr Vector3& Vector3::operator/=(Float32ConvertibleT auto val) noexcept
+constexpr Vector3& Vector3::operator/=(Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     x /= fVal;
@@ -193,71 +193,71 @@ inline constexpr Vector3& Vector3::operator/=(Float32ConvertibleT auto val) noex
     return *this;
 }
 
-inline constexpr Vector3 Vector3::operator+() const noexcept
+constexpr Vector3 Vector3::operator+() const noexcept
 {
-    return Vector3(x, y, z);
+    return { x, y, z };
 }
 
-inline constexpr Vector3 Vector3::operator-() const noexcept
+constexpr Vector3 Vector3::operator-() const noexcept
 {
-    return Vector3(-x, -y, -z);
+    return { -x, -y, -z };
 }
 
-inline constexpr bool Vector3::operator==(Vector3 const& v) const noexcept
+constexpr bool Vector3::operator==(Vector3 const& other) const noexcept
 {
-    return x == v.x && y == v.y && z == v.z;
+    return x == other.x && y == other.y && z == other.z;
 }
 
-inline constexpr Vector3::operator Vector2() const noexcept
+constexpr Vector3::operator Vector2() const noexcept
 {
-    return Vector2(x, y);
+    return { x, y };
 }
 
-inline constexpr Vector3 operator+(Vector3 const& v1, Vector3 const& v2) noexcept
+constexpr Vector3 operator+(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
     Vector3 result;
-    result.x = v1.x + v2.x;
-    result.y = v1.y + v2.y;
-    result.z = v1.z + v2.z;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
     return result;
 }
 
-inline constexpr Vector3 operator-(Vector3 const& v1, Vector3 const& v2) noexcept
+constexpr Vector3 operator-(Vector3 const& lhs, Vector3 const& rhs) noexcept
 {
     Vector3 result;
-    result.x = v1.x - v2.x;
-    result.y = v1.y - v2.y;
-    result.z = v1.z - v2.z;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
     return result;
 }
 
-inline constexpr Vector3 operator*(Vector3 const& v, Float32ConvertibleT auto val) noexcept
+constexpr Vector3 operator*(Vector3 const& vec, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector3 result;
-    result.x = v.x * fVal;
-    result.y = v.y * fVal;
-    result.z = v.z * fVal;
+    result.x = vec.x * fVal;
+    result.y = vec.y * fVal;
+    result.z = vec.z * fVal;
     return result;
 }
 
-inline constexpr Vector3 operator/(Vector3 const& v, Float32ConvertibleT auto val) noexcept
+constexpr Vector3 operator/(Vector3 const& vec, Float32ConvertibleT auto val) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector3 result;
-    result.x = v.x / fVal;
-    result.y = v.y / fVal;
-    result.z = v.z / fVal;
+    result.x = vec.x / fVal;
+    result.y = vec.y / fVal;
+    result.z = vec.z / fVal;
     return result;
 }
 
-inline constexpr Vector3 operator*(Float32ConvertibleT auto val, Vector3 const& v) noexcept
+constexpr Vector3 operator*(Float32ConvertibleT auto val, Vector3 const& vec) noexcept
 {
     const float32 fVal = static_cast<float32>(val);
     Vector3 result;
-    result.x = v.x * fVal;
-    result.y = v.y * fVal;
-    result.z = v.z * fVal;
+    result.x = vec.x * fVal;
+    result.y = vec.y * fVal;
+    result.z = vec.z * fVal;
     return result;
 }
 

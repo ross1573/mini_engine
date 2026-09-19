@@ -13,13 +13,13 @@ import :math_base;
 namespace mini {
 
 export template <IntegralT T>
-[[nodiscard]] inline constexpr T Min(T x, T y)
+[[nodiscard]] constexpr T Min(T x, T y)
 {
     return x < y ? x : y;
 }
 
 export template <FloatingT T>
-[[nodiscard]] inline constexpr T Min(T x, T y)
+[[nodiscard]] constexpr T Min(T x, T y)
 {
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
@@ -35,13 +35,13 @@ export template <FloatingT T>
 }
 
 export template <IntegralT T>
-[[nodiscard]] inline constexpr T Max(T x, T y)
+[[nodiscard]] constexpr T Max(T x, T y)
 {
     return x > y ? x : y;
 }
 
 export template <FloatingT T>
-[[nodiscard]] inline constexpr T Max(T x, T y)
+[[nodiscard]] constexpr T Max(T x, T y)
 {
     if !consteval {
         if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
@@ -57,7 +57,7 @@ export template <FloatingT T>
 }
 
 export template <IntegralT T>
-[[nodiscard]] inline constexpr T Abs(T num)
+[[nodiscard]] constexpr T Abs(T num)
 {
     if constexpr (UnsignedT<T>) {
         return num;
@@ -77,7 +77,7 @@ export template <IntegralT T>
 }
 
 export template <FloatingT T>
-[[nodiscard]] inline constexpr T Abs(T num)
+[[nodiscard]] constexpr T Abs(T num)
 {
     if constexpr (UnsignedT<T>) {
         return num;
@@ -114,14 +114,14 @@ template <IntegralT T>
 consteval auto PowIntResultTypeImpl()
 {
     if constexpr (SignedT<T>) {
-        return offset_t(0);
+        return offset_t{ 0 };
     } else {
-        return size_t(0);
+        return size_t{ 0 };
     }
 }
 
 export template <IntegralT T, IntegralT U>
-[[nodiscard]] inline constexpr auto PowInt(T base, U exp)
+[[nodiscard]] constexpr auto PowInt(T base, U exp)
     requires UnsignedT<U>
 {
     using ResultT = decltype(PowIntResultTypeImpl<T>());
@@ -160,7 +160,7 @@ export template <IntegralT T>
 }
 
 export template <IntegralT T, IntegralT U>
-[[nodiscard]] inline constexpr CommonT<T, U> Gcd(T x, U y)
+[[nodiscard]] constexpr CommonT<T, U> Gcd(T x, U y)
 {
     using ResultT = CommonT<T, U>;
     using UnsignedResultT = UnsignedOfT<ResultT>;
@@ -201,7 +201,7 @@ export template <IntegralT T, IntegralT U>
 }
 
 export template <IntegralT T, IntegralT U>
-[[nodiscard]] inline constexpr CommonT<T, U> Lcm(T x, U y)
+[[nodiscard]] constexpr CommonT<T, U> Lcm(T x, U y)
 {
     using ResultT = CommonT<T, U>;
 

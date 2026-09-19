@@ -18,7 +18,7 @@ public:
     char b;
 
     Unaligned() noexcept = default;
-    Unaligned(int32 n) noexcept { a = n; }
+    Unaligned(int32 num) noexcept { a = num; }
     operator int32() const noexcept { return a; }
 };
 
@@ -27,20 +27,20 @@ public:
     int32 v[5];
 
     NonAtomic() noexcept = default;
-    NonAtomic(int32 n) noexcept { memory::FillRange(&v[0], &v[5], n); }
+    NonAtomic(int32 num) noexcept { memory::FillRange(&v[0], &v[5], num); }
     operator int32() const noexcept { return v[0]; }
 };
 
-static void NoOp(benchmark::State& state)
+void NoOp(benchmark::State& state)
 {
-    for (; state.KeepRunning(););
+    for (; state.KeepRunning();) { }
 }
 
 BENCHMARK(NoOp);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicLoad(benchmark::State& state)
+void AtomicLoad(benchmark::State& state)
 {
     Atomic<T> a(1);
     int32 sum = 0;
@@ -58,7 +58,7 @@ static void AtomicLoad(benchmark::State& state)
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicLoad_std(benchmark::State& state)
+void AtomicLoad_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
     int32 sum = 0;
@@ -83,7 +83,7 @@ BENCHMARK_TEMPLATE(AtomicLoad_std, NonAtomic);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicStore(benchmark::State& state)
+void AtomicStore(benchmark::State& state)
 {
     Atomic<T> a(1);
     std::thread t([&a]() { a.Exchange(-1, MemoryOrder::relaxed); });
@@ -98,7 +98,7 @@ static void AtomicStore(benchmark::State& state)
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicStore_std(benchmark::State& state)
+void AtomicStore_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
     std::thread t([&a]() { a.exchange(-1, std::memory_order::relaxed); });
@@ -120,7 +120,7 @@ BENCHMARK_TEMPLATE(AtomicStore_std, NonAtomic);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicCompareExchange(benchmark::State& state)
+void AtomicCompareExchange(benchmark::State& state)
 {
     Atomic<T> a(1);
     std::thread t([&a]() {
@@ -137,7 +137,7 @@ static void AtomicCompareExchange(benchmark::State& state)
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicCompareExchange_std(benchmark::State& state)
+void AtomicCompareExchange_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
     std::thread t([&a]() {
@@ -159,7 +159,7 @@ BENCHMARK_TEMPLATE(AtomicCompareExchange_std, Unaligned);
 BENCHMARK_TEMPLATE(AtomicCompareExchange, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicCompareExchange_std, NonAtomic);
 
-static void AtomicFalseWait(benchmark::State& state)
+void AtomicFalseWait(benchmark::State& state)
 {
     Atomic<int32> a(1);
     std::thread t([&a]() {
@@ -174,7 +174,7 @@ static void AtomicFalseWait(benchmark::State& state)
     t.join();
 }
 
-static void AtomicFalseWait_std(benchmark::State& state)
+void AtomicFalseWait_std(benchmark::State& state)
 {
     std::atomic<int32> a(1);
     std::thread t([&a]() {
@@ -194,7 +194,7 @@ BENCHMARK(AtomicFalseWait_std);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicWait(benchmark::State& state)
+void AtomicWait(benchmark::State& state)
 {
     Atomic<T> a(0);
     std::thread t([&a]() {
@@ -219,7 +219,7 @@ static void AtomicWait(benchmark::State& state)
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicWait_std(benchmark::State& state)
+void AtomicWait_std(benchmark::State& state)
 {
     std::atomic<T> a(0);
     std::thread t([&a]() {
@@ -251,7 +251,7 @@ BENCHMARK_TEMPLATE(AtomicWait_std, NonAtomic);
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicWaitNotify(benchmark::State& state)
+void AtomicWaitNotify(benchmark::State& state)
 {
     Atomic<T> a(0);
     std::thread t([&a]() {
@@ -279,7 +279,7 @@ static void AtomicWaitNotify(benchmark::State& state)
 
 template <typename T>
     requires ConstructibleFromT<T, int32> && ConvertibleToT<T, int32>
-static void AtomicWaitNotify_std(benchmark::State& state)
+void AtomicWaitNotify_std(benchmark::State& state)
 {
     std::atomic<T> a(0);
     std::thread t([&a]() {
@@ -313,7 +313,7 @@ BENCHMARK_TEMPLATE(AtomicWaitNotify, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWaitNotify_std, NonAtomic);
 
 template <size_t ThreadN>
-static void AtomicSpinLock(benchmark::State& state)
+void AtomicSpinLock(benchmark::State& state)
 {
     Atomic<int32> atomic(1);
     Atomic<int32> lock(0);
@@ -332,7 +332,7 @@ static void AtomicSpinLock(benchmark::State& state)
     };
 
     for (size_t i = 0; i < ThreadN; ++i) {
-        threads.Push(std::thread([&spinLock]() {
+        threads.PushBack(std::thread([&spinLock]() {
             while (spinLock() > 0) { }
         }));
     }
@@ -349,7 +349,7 @@ static void AtomicSpinLock(benchmark::State& state)
 }
 
 template <size_t ThreadN>
-static void AtomicSpinLock_std(benchmark::State& state)
+void AtomicSpinLock_std(benchmark::State& state)
 {
     std::atomic<int32> atomic(1);
     std::atomic<int32> lock(0);
@@ -368,7 +368,7 @@ static void AtomicSpinLock_std(benchmark::State& state)
     };
 
     for (size_t i = 0; i < ThreadN; ++i) {
-        threads.Push(std::thread([&spinLock]() {
+        threads.PushBack(std::thread([&spinLock]() {
             while (spinLock() > 0) { }
         }));
     }

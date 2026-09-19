@@ -12,7 +12,7 @@ namespace mini {
 
 using NativeModuleHandle = HMODULE;
 
-NativeModuleHandle LoadModule(StringView name)
+NativeModuleHandle LoadModule(StringView name) noexcept
 {
     StringView prefix = MODULE_OUTPUT_PREFIX;
     StringView suffix = MODULE_OUTPUT_SUFFIX;
@@ -25,17 +25,17 @@ NativeModuleHandle LoadModule(StringView name)
     return LoadLibraryA(modulePath.Data());
 }
 
-NativeModuleHandle LoadMainProgram()
+NativeModuleHandle LoadMainProgram() noexcept
 {
     return GetModuleHandle(nullptr);
 }
 
-void UnloadModule(NativeModuleHandle handle)
+void UnloadModule(NativeModuleHandle handle) noexcept
 {
     FreeLibrary(handle);
 }
 
-void* LoadFunction(NativeModuleHandle handle, StringView name)
+void* LoadFunction(NativeModuleHandle handle, StringView name) noexcept
 {
     return GetProcAddress(handle, name.Data());
 }

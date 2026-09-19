@@ -12,7 +12,7 @@ namespace mini {
 
 using NativeModuleHandle = void*;
 
-NativeModuleHandle LoadModule(StringView name)
+NativeModuleHandle LoadModule(StringView name) noexcept
 {
     StringView prefix = MODULE_OUTPUT_PREFIX;
     StringView suffix = MODULE_OUTPUT_SUFFIX;
@@ -25,17 +25,17 @@ NativeModuleHandle LoadModule(StringView name)
     return dlopen(modulePath.Data(), RTLD_NOW | RTLD_LOCAL);
 }
 
-NativeModuleHandle LoadMainProgram()
+NativeModuleHandle LoadMainProgram() noexcept
 {
     return dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
 }
 
-void UnloadModule(NativeModuleHandle handle)
+void UnloadModule(NativeModuleHandle handle) noexcept
 {
     dlclose(handle);
 }
 
-void* LoadFunction(NativeModuleHandle handle, StringView name)
+void* LoadFunction(NativeModuleHandle handle, StringView name) noexcept
 {
     return dlsym(handle, name.Data());
 }

@@ -9,7 +9,7 @@ import :string_view;
 
 namespace mini {
 
-inline constexpr auto WriteFormatError(String& to, StringView const& msg, fmt::format_error const& error)
+constexpr String WriteFormatError(String& to, StringView msg, fmt::format_error const& error)
 {
     StringView errorMsg = error.what();
     StringView pre = errorMsg.Empty() ? "format failed" : "format failed with error: ";
@@ -20,12 +20,12 @@ inline constexpr auto WriteFormatError(String& to, StringView const& msg, fmt::f
     to.Append(" (", 2);
     to.Append(pre);
     to.Append(errorMsg);
-    to.Push(')');
+    to.PushBack(')');
     return to;
 }
 
 export template <typename... Args>
-inline constexpr void FormatTo(String& to, StringView msg, Args&&... args)
+constexpr void FormatTo(String& to, StringView msg, Args&&... args)
 {
     auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
     auto buf = fmt::memory_buffer();
@@ -37,11 +37,11 @@ inline constexpr void FormatTo(String& to, StringView msg, Args&&... args)
         return;
     }
 
-    return to.Append(buf.data(), buf.size());
+    to.Append(buf.data(), buf.size());
 }
 
 export template <typename... Args>
-inline constexpr String Format(StringView msg, Args&&... args)
+constexpr String Format(StringView msg, Args&&... args)
 {
     auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
     auto buf = fmt::memory_buffer();
@@ -58,7 +58,7 @@ inline constexpr String Format(StringView msg, Args&&... args)
 }
 
 export template <typename T>
-inline constexpr String ToString(T const& val, StringView fmt = "{}")
+constexpr String ToString(T const& val, StringView fmt = "{}")
 {
     return Format(fmt, val);
 }

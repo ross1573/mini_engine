@@ -6,6 +6,7 @@
             "hidden": true,
             "cacheVariables": {
                 "ASSERT_LEVEL": "Develop",
+                "DEBUG_LOG_LEVEL": "Develop",
 
                 "ENGINE_ARCHIVE_DIR": "${sourceDir}/lib",
                 "ENGINE_LIBRARY_DIR": "${sourceDir}/lib",

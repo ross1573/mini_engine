@@ -24,10 +24,10 @@ ModuleHandle::~ModuleHandle() noexcept
         try {
             callback();
         } catch (...) {
-            ENSURE(false,
-                   "exception occured while invoking AtExit callback {} on module {}",
-                   (void*)callback,
-                   m_libraryName) { }
+            debug::LogEnsure("ModuleHandle::~ModuleHandle()",
+                             "exception occured while invoking AtExit callback {} on module {}",
+                             reinterpret_cast<void*>(callback),
+                             m_libraryName);
         }
     }
 
@@ -53,25 +53,25 @@ bool ModuleHandle::AtExit(CallbackFunc func) noexcept
         return false;
     }
 
-    m_exitCallback.Push(func);
+    m_exitCallback.PushBack(func);
     return true;
 }
 
 bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
 {
     auto iter = Find(m_exitCallback.Begin(), m_exitCallback.End(), func);
-    if (iter.Valid() == false) {
+    if (!iter.Valid()) {
         return false;
     }
 
-    m_exitCallback.RemoveAt(iter);
+    m_exitCallback.Remove(iter);
     return true;
 }
 
 SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
 {
     if (libName.Empty()) [[unlikely]] {
-        return SharedPtr<ModuleHandle>();
+        return { };
     }
 
     return g_moduleLoader.Load(libName);
@@ -94,6 +94,9 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     try {
         interface = startFunc();
     } catch (...) {
+        debug::LogEnsure("__start_module()",
+                         "exception occured while invoking __start_module on module {}",
+                         m_libraryName);
     }
 
     ENSURE(interface, "failed to get interface object of module {}", name) {
@@ -126,7 +129,7 @@ bool ModuleLoader::Register(StringView name, LoaderRef::Loader loader)
         return false;
     }
 
-    m_registered.Push(LoaderRef{ .loader = loader, .name = name });
+    m_registered.PushBack(LoaderRef{ .loader = loader, .name = name });
     return true;
 }
 
@@ -134,14 +137,14 @@ PendingGuard::PendingGuard(Array<StringView>& pending, StringView target) noexce
     : m_pending(pending)
     , m_target(target)
 {
-    m_pending.Push(target);
+    m_pending.PushBack(target);
 }
 
 PendingGuard::~PendingGuard() noexcept
 {
     Array<StringView>::Iterator pendingIter = Find(m_pending.Begin(), m_pending.End(), m_target);
     if (pendingIter.Valid()) {
-        m_pending.RemoveAt(pendingIter);
+        m_pending.Remove(pendingIter);
     }
 }
 
@@ -153,7 +156,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
             return StaticCast<ModuleHandle>(modulefIter->handle.Lock());
         }
 
-        m_modules.RemoveAt(modulefIter);
+        m_modules.Remove(modulefIter);
     }
 
     if (FindCircularDependency(name)) {
@@ -162,7 +165,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
 
     PendingGuard guard(m_pending, name);
     SharedPtr<ModuleHandle> handle = LoadHandle(name);
-    if (handle.Valid() == false) {
+    if (!handle.Valid()) {
         return nullptr;
     }
 
@@ -171,7 +174,7 @@ SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
         return nullptr;
     }
 
-    m_modules.Push(ModuleRef{ .handle = handle, .name = name });
+    m_modules.PushBack(ModuleRef{ .handle = handle, .name = name });
     return handle;
 }
 
@@ -210,7 +213,9 @@ size_t ModuleLoader::Count() const noexcept
 {
     size_t count = 0;
     for (auto const& mod : m_modules) {
-        if (mod.handle.Valid()) ++count;
+        if (mod.handle.Valid()) {
+            ++count;
+        }
     }
 
     return count;

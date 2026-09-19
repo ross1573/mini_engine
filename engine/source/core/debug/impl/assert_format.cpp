@@ -18,6 +18,8 @@ constexpr size_t assertBufferRawSize = 2048;
 constexpr size_t assertSuffixSize = sizeof(assertSuffix);
 constexpr size_t assertBufferSize = assertBufferRawSize - assertSuffixSize;
 
+namespace {
+
 bool CopyString(char*& dest, size_t& destLen, char const* src, size_t srcLen) noexcept
 {
     size_t len = destLen > srcLen ? srcLen : destLen;
@@ -47,6 +49,8 @@ bool Copy2Characters(char*& dest, size_t& destLen, char const src[2], char const
     }
 }
 
+} // namespace
+
 extern "C++" size_t FormatHex(char* dest, char const* destEnd, uint64 src) noexcept
 {
     offset_t offsetLen = destEnd - dest;
@@ -64,9 +68,9 @@ extern "C++" size_t FormatHex(char* dest, char const* destEnd, uint64 src) noexc
     for (; len < bufferLen; ++len, mask <<= 4) {
         byte n = static_cast<byte>(src & mask);
         if (n > 9) {
-            buf[len] = 'A' + (n - 10);
+            buf[len] = static_cast<char>('A' + (n - 10));
         } else {
-            buf[len] = '0' + n;
+            buf[len] = static_cast<char>('0' + n);
         }
     }
 
@@ -91,7 +95,7 @@ extern "C++" size_t FormatInt(char* dest, char const* destEnd, int32 src) noexce
     char* begin = dest;
     char buf[10];
     for (; src > 0; ++len) {
-        buf[len] = '0' + src % 10;
+        buf[len] = static_cast<char>('0' + (src % 10));
         src /= 10;
     }
 
@@ -120,12 +124,18 @@ extern "C++" size_t FormatSourceLocation(char* dest, char const* destEnd, Source
 
     funcName = loc.function_name();
     funcLen = memory::StringLength(funcName);
-    if (!CopyString(dest, destLen, funcName, funcLen)) goto format_location_end;
-    if (!Copy2Characters(dest, destLen, " (", "  ")) goto format_location_end;
+    if (!CopyString(dest, destLen, funcName, funcLen)) {
+        goto format_location_end;
+    }
+    if (!Copy2Characters(dest, destLen, " (", "  ")) {
+        goto format_location_end;
+    }
 
     fileName = loc.file_name();
     fileLen = memory::StringLength(fileName);
-    if (!CopyString(dest, destLen, fileName, fileLen)) goto format_location_end;
+    if (!CopyString(dest, destLen, fileName, fileLen)) {
+        goto format_location_end;
+    }
     switch (destLen) {
         case 2: *(dest++) = ' '; [[unlikely]] [[fallthrough]];
         case 1: *(dest++) = ' '; [[unlikely]] [[fallthrough]];

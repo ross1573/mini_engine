@@ -23,7 +23,7 @@ public:
     ModuleInterface() noexcept = default;
     virtual ~ModuleInterface() noexcept = default;
 
-protected:
+public:
     ModuleInterface(ModuleInterface const&) = delete;
     ModuleInterface(ModuleInterface&&) = delete;
 
@@ -44,9 +44,9 @@ public:
 class CORE_API ModuleHandle {
 public:
     typedef NativeModuleHandle NativeModule;
-    typedef typename ModulePoilcy::CallbackFunc CallbackFunc;
-    typedef typename ModulePoilcy::ValidFunc ValidFunc;
-    typedef typename ModulePoilcy::DeleteFunc DeleteFunc;
+    typedef ModulePoilcy::CallbackFunc CallbackFunc;
+    typedef ModulePoilcy::ValidFunc ValidFunc;
+    typedef ModulePoilcy::DeleteFunc DeleteFunc;
 
 protected:
     ModulePoilcy const* m_policy;
@@ -60,14 +60,14 @@ public:
     ModuleHandle(ModuleHandle&&) noexcept = default;
     ~ModuleHandle() noexcept;
 
-    bool Valid() const noexcept;
+    [[nodiscard]] bool Valid() const noexcept;
 
     bool AtExit(CallbackFunc) noexcept;
     bool RemoveAtExit(CallbackFunc) noexcept;
 
-    String LibraryName() const noexcept { return m_libraryName; }
-    NativeModule NativeHandle() noexcept { return m_nativeModule; }
-    ModuleInterface* GetInterface() const noexcept { return m_interface.Get(); }
+    [[nodiscard]] String LibraryName() const noexcept { return m_libraryName; }
+    [[nodiscard]] NativeModule NativeHandle() noexcept { return m_nativeModule; }
+    [[nodiscard]] ModuleInterface* GetInterface() const noexcept { return m_interface.Get(); }
 
     ModuleHandle& operator=(ModuleHandle&&) noexcept = default;
 
@@ -76,12 +76,12 @@ public:
 
 class CORE_API DynamicModuleHandle : public ModuleHandle {
 public:
-    typedef typename ModuleHandle::NativeModule NativeModule;
+    typedef ModuleHandle::NativeModule NativeModule;
     typedef ModuleInterface* (*StartFunc)();
 
-    inline static constexpr ModulePoilcy policy = ModulePoilcy{
+    static constexpr ModulePoilcy policy = ModulePoilcy{
         .validator = [](NativeModule nativeModule) { return nativeModule != nullptr; },
-        .deleter = UnloadModule
+        .deleter = UnloadModule,
     };
 
 public:
@@ -101,10 +101,10 @@ public:
 
 class CORE_API StaticModuleHandle : public ModuleHandle {
 public:
-    typedef typename ModuleHandle::NativeModule NativeModule;
+    typedef ModuleHandle::NativeModule NativeModule;
 
     inline static NativeModule programHandle = LoadMainProgram();
-    inline static constexpr ModulePoilcy policy = ModulePoilcy{ .validator = nullptr, .deleter = nullptr };
+    static constexpr ModulePoilcy policy = ModulePoilcy{ .validator = nullptr, .deleter = nullptr };
 
 public:
     StaticModuleHandle(StringView name, ModuleInterface* interface) noexcept
@@ -129,8 +129,8 @@ private:
     friend class Module;
 
 public:
-    typedef typename Handle::NativeModule NativeModule;
-    typedef typename Handle::CallbackFunc CallbackFunc;
+    typedef Handle::NativeModule NativeModule;
+    typedef Handle::CallbackFunc CallbackFunc;
     typedef T Interface;
     typedef T& InterfaceReference;
     typedef T* InterfacePointer;
@@ -145,32 +145,31 @@ public:
     Module(Module const&) noexcept = default;
     Module(Module&&) noexcept = default;
 
-    explicit Module(StringView);
+    explicit Module(StringView name);
     template <UnboundAllocatorT AllocT>
-    Module(StringView, AllocT const&);
+    Module(StringView name, AllocT const& alloc);
     template <RelatedInterfaceToT<T> U>
-    Module(Module<U> const&) noexcept;
+    Module(Module<U> const& other) noexcept;
     template <RelatedInterfaceToT<T> U>
-    Module(Module<U>&&) noexcept;
-
-    bool Valid() const noexcept;
+    Module(Module<U>&& other) noexcept;
 
     template <UnboundAllocatorT AllocT>
-    void Load(StringView, AllocT const&);
-    void Load(StringView);
+    void Load(StringView name, AllocT const& alloc);
+    void Load(StringView name);
     void Release() noexcept;
 
-    bool AtExit(CallbackFunc) noexcept;
-    bool RemoveAtExit(CallbackFunc) noexcept;
+    bool AtExit(CallbackFunc func) noexcept;
+    bool RemoveAtExit(CallbackFunc func) noexcept;
 
-    String LibraryName() const noexcept;
-    InterfacePointer GetInterface() const noexcept;
-    NativeModule NativeHandle() const noexcept;
+    [[nodiscard]] bool Valid() const noexcept;
+    [[nodiscard]] String LibraryName() const noexcept;
+    [[nodiscard]] InterfacePointer GetInterface() const noexcept;
+    [[nodiscard]] NativeModule NativeHandle() const noexcept;
 
     template <RelatedInterfaceToT<T> U>
-    bool Equals(Module<U> const&) const noexcept;
+    [[nodiscard]] bool Equals(Module<U> const& other) const noexcept;
     template <RelatedInterfaceToT<T> U>
-    bool HandleEquals(Module<U> const&) const noexcept;
+    [[nodiscard]] bool HandleEquals(Module<U> const& other) const noexcept;
 
     InterfaceReference operator*() const noexcept;
     InterfacePointer operator->() const noexcept;
@@ -179,9 +178,9 @@ public:
     Module& operator=(Module&&) noexcept = default;
 
     template <RelatedInterfaceToT<T> U>
-    Module& operator=(Module<U> const&) noexcept;
+    Module& operator=(Module<U> const& other) noexcept;
     template <RelatedInterfaceToT<T> U>
-    Module& operator=(Module<U>&&) noexcept;
+    Module& operator=(Module<U>&& other) noexcept;
 
 private:
     Interface* QueryInterface() const noexcept;
@@ -189,8 +188,7 @@ private:
 
 template <ModuleInterfaceT T>
 inline Module<T>::Module() noexcept
-    : m_handle()
-    , m_interface(nullptr)
+    : m_interface(nullptr)
 {
 }
 
@@ -357,7 +355,7 @@ inline Module<T>& Module<T>::operator=(Module<U>&& other) noexcept
 template <ModuleInterfaceT T>
 inline Module<T>::Interface* Module<T>::QueryInterface() const noexcept
 {
-    if (m_handle.Valid() == false) [[unlikely]] {
+    if (!m_handle.Valid()) [[unlikely]] {
         return nullptr;
     }
 
@@ -365,9 +363,9 @@ inline Module<T>::Interface* Module<T>::QueryInterface() const noexcept
 }
 
 template <ModuleInterfaceT T, ModuleInterfaceT U>
-inline bool operator==(Module<T> const& l, Module<U> const& r) noexcept
+inline bool operator==(Module<T> const& lhs, Module<U> const& rhs) noexcept
 {
-    return l.Equals(r);
+    return lhs.Equals(rhs);
 }
 
 } // namespace mini

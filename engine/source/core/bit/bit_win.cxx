@@ -9,7 +9,7 @@ import :bit_base;
 
 namespace mini::bit {
 
-inline constexpr uint32 _clz(uint32 x)
+constexpr uint32 _clz(uint32 x)
 {
     if consteval {
         return Clz(x);
@@ -27,7 +27,7 @@ inline constexpr uint32 _clz(uint32 x)
 #endif // ARCH
 }
 
-inline constexpr uint32 _clzll(uint64 x)
+constexpr uint32 _clzll(uint64 x)
 {
     if consteval {
         return Clz(x);
@@ -53,7 +53,7 @@ inline constexpr uint32 _clzll(uint64 x)
 #endif // ARCH
 }
 
-inline constexpr uint32 _clzl(unsigned long x)
+constexpr uint32 _clzl(unsigned long x)
 {
     if constexpr (sizeof(unsigned long) == 4) {
         return _clz(x);
@@ -64,7 +64,7 @@ inline constexpr uint32 _clzl(unsigned long x)
     return Clz(x);
 }
 
-inline constexpr uint32 _ctz(uint32 x)
+constexpr uint32 _ctz(uint32 x)
 {
     if consteval {
         return Ctz(x);
@@ -82,7 +82,7 @@ inline constexpr uint32 _ctz(uint32 x)
 #endif // ARCH
 }
 
-inline constexpr uint32 _ctzll(uint64 x)
+constexpr uint32 _ctzll(uint64 x)
 {
     if consteval {
         return Ctz(x);
@@ -104,7 +104,7 @@ inline constexpr uint32 _ctzll(uint64 x)
 #endif // ARCH
 }
 
-inline constexpr uint32 _ctzl(unsigned long x)
+constexpr uint32 _ctzl(unsigned long x)
 {
     if constexpr (sizeof(unsigned long) == 4) {
         return _ctz(x);

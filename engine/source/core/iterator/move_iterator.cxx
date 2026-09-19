@@ -12,8 +12,8 @@ private:
     friend class MoveIterator;
 
 public:
-    typedef typename T::Value Value;
-    typedef typename T::Pointer Pointer;
+    typedef T::Value Value;
+    typedef T::Pointer Pointer;
     typedef RemoveRefT<typename T::Reference>&& Reference;
 
 protected:
@@ -21,23 +21,23 @@ protected:
 
 public:
     constexpr MoveIterator() noexcept = default;
-    explicit constexpr MoveIterator(T);
+    explicit constexpr MoveIterator(T iter);
 
-    constexpr T const& Base() const& noexcept;
-    constexpr T Base() && noexcept;
-    constexpr Pointer Address() const noexcept;
+    [[nodiscard]] constexpr T const& Base() const& noexcept;
+    [[nodiscard]] constexpr T Base() && noexcept;
+    [[nodiscard]] constexpr Pointer Address() const noexcept;
+    [[nodiscard]] constexpr bool Valid() const;
+    [[nodiscard]] constexpr bool ValidWith(MoveIterator const& other) const;
 
-    constexpr bool Valid() const;
-    constexpr bool ValidWith(MoveIterator const&) const;
     constexpr bool Increment();
     constexpr bool Decrement()
         requires BidrectionalIteratorT<T>;
-    constexpr bool Advance(offset_t)
+    constexpr bool Advance(offset_t offset)
         requires RandomAccessIteratorT<T>;
 
-    constexpr Pointer operator->() const;
-    constexpr Reference operator*() const;
-    constexpr Reference operator[](offset_t) const
+    [[nodiscard]] constexpr Pointer operator->() const;
+    [[nodiscard]] constexpr Reference operator*() const;
+    [[nodiscard]] constexpr Reference operator[](offset_t offset) const
         requires RandomAccessIteratorT<T>;
 
     constexpr MoveIterator& operator++();
@@ -46,133 +46,133 @@ public:
         requires BidrectionalIteratorT<T>;
     constexpr MoveIterator operator--(int32)
         requires BidrectionalIteratorT<T>;
-    constexpr MoveIterator& operator+=(offset_t)
+    constexpr MoveIterator& operator+=(offset_t offset)
         requires RandomAccessIteratorT<T>;
-    constexpr MoveIterator& operator-=(offset_t)
+    constexpr MoveIterator& operator-=(offset_t offset)
         requires RandomAccessIteratorT<T>;
-    constexpr MoveIterator operator+(offset_t) const
+    constexpr MoveIterator operator+(offset_t offset) const
         requires RandomAccessIteratorT<T>;
-    constexpr MoveIterator operator-(offset_t) const
+    constexpr MoveIterator operator-(offset_t offset) const
         requires RandomAccessIteratorT<T>;
 
     template <ForwardIteratorT U>
-    constexpr MoveIterator(MoveIterator<U> const&)
+    constexpr MoveIterator(MoveIterator<U> const& other)
         requires ConvertibleToT<U const&, T>;
 
     template <ForwardIteratorT U>
-    constexpr MoveIterator& operator=(MoveIterator<U> const&)
+    constexpr MoveIterator& operator=(MoveIterator<U> const& other)
         requires ConvertibleToT<U const&, T>;
 };
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::MoveIterator(T iter)
+constexpr MoveIterator<T>::MoveIterator(T iter)
     : m_iter(iter)
 {
 }
 
 template <ForwardIteratorT T>
 template <ForwardIteratorT U>
-inline constexpr MoveIterator<T>::MoveIterator(MoveIterator<U> const& o)
+constexpr MoveIterator<T>::MoveIterator(MoveIterator<U> const& other)
     requires ConvertibleToT<U const&, T>
-    : m_iter(o.m_iter)
+    : m_iter(other.m_iter)
 {
 }
 
 template <ForwardIteratorT T>
 template <ForwardIteratorT U>
-inline constexpr MoveIterator<T>& MoveIterator<T>::operator=(MoveIterator<U> const& o)
+constexpr MoveIterator<T>& MoveIterator<T>::operator=(MoveIterator<U> const& other)
     requires ConvertibleToT<U const&, T>
 {
-    m_iter = o.m_iter;
+    m_iter = other.m_iter;
     return *this;
 }
 
 template <ForwardIteratorT T>
-inline constexpr T const& MoveIterator<T>::Base() const& noexcept
+constexpr T const& MoveIterator<T>::Base() const& noexcept
 {
     return m_iter;
 }
 
 template <ForwardIteratorT T>
-inline constexpr T MoveIterator<T>::Base() && noexcept
+constexpr T MoveIterator<T>::Base() && noexcept
 {
     return MoveArg(m_iter);
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::Address() const noexcept
+constexpr MoveIterator<T>::Pointer MoveIterator<T>::Address() const noexcept
 {
     return m_iter.Address();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::Valid() const
+constexpr bool MoveIterator<T>::Valid() const
 {
     return m_iter.Valid();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::ValidWith(MoveIterator const& o) const
+constexpr bool MoveIterator<T>::ValidWith(MoveIterator const& other) const
 {
-    return m_iter.ValidWith(o.Base());
+    return m_iter.ValidWith(other.Base());
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::Increment()
+constexpr bool MoveIterator<T>::Increment()
 {
     return m_iter.Increment();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::Decrement()
+constexpr bool MoveIterator<T>::Decrement()
     requires BidrectionalIteratorT<T>
 {
     return m_iter.Decrement();
 }
 
 template <ForwardIteratorT T>
-inline constexpr bool MoveIterator<T>::Advance(offset_t s)
+constexpr bool MoveIterator<T>::Advance(offset_t offset)
     requires RandomAccessIteratorT<T>
 {
-    return m_iter.Advance(s);
+    return m_iter.Advance(offset);
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Pointer MoveIterator<T>::operator->() const
+constexpr MoveIterator<T>::Pointer MoveIterator<T>::operator->() const
 {
     return m_iter.operator->();
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator*() const
+constexpr MoveIterator<T>::Reference MoveIterator<T>::operator*() const
 {
     return static_cast<Reference>(*m_iter);
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>::Reference MoveIterator<T>::operator[](offset_t n) const
+constexpr MoveIterator<T>::Reference MoveIterator<T>::operator[](offset_t offset) const
     requires RandomAccessIteratorT<T>
 {
-    return static_cast<Reference>(m_iter[n]);
+    return static_cast<Reference>(m_iter[offset]);
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>& MoveIterator<T>::operator++()
+constexpr MoveIterator<T>& MoveIterator<T>::operator++()
 {
     ++m_iter;
     return *this;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator++(int32)
+constexpr MoveIterator<T> MoveIterator<T>::operator++(int32)
 {
-    MoveIterator<T> t(*this);
+    MoveIterator<T> tmp(*this);
     ++(*this);
-    return t;
+    return tmp;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>& MoveIterator<T>::operator--()
+constexpr MoveIterator<T>& MoveIterator<T>::operator--()
     requires BidrectionalIteratorT<T>
 {
     --m_iter;
@@ -180,95 +180,95 @@ inline constexpr MoveIterator<T>& MoveIterator<T>::operator--()
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator--(int32)
+constexpr MoveIterator<T> MoveIterator<T>::operator--(int32)
     requires BidrectionalIteratorT<T>
 {
-    MoveIterator<T> t(*this);
+    MoveIterator<T> tmp(*this);
     --(*this);
-    return t;
+    return tmp;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>& MoveIterator<T>::operator+=(offset_t n)
+constexpr MoveIterator<T>& MoveIterator<T>::operator+=(offset_t offset)
     requires RandomAccessIteratorT<T>
 {
-    m_iter += n;
+    m_iter += offset;
     return *this;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T>& MoveIterator<T>::operator-=(offset_t n)
+constexpr MoveIterator<T>& MoveIterator<T>::operator-=(offset_t offset)
     requires RandomAccessIteratorT<T>
 {
-    m_iter -= n;
+    m_iter -= offset;
     return *this;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator+(offset_t n) const
+constexpr MoveIterator<T> MoveIterator<T>::operator+(offset_t offset) const
     requires RandomAccessIteratorT<T>
 {
-    MoveIterator t(*this);
-    t += n;
-    return t;
+    MoveIterator tmp(*this);
+    tmp += offset;
+    return tmp;
 }
 
 template <ForwardIteratorT T>
-inline constexpr MoveIterator<T> MoveIterator<T>::operator-(offset_t n) const
+constexpr MoveIterator<T> MoveIterator<T>::operator-(offset_t offset) const
     requires RandomAccessIteratorT<T>
 {
-    MoveIterator t(*this);
-    t -= n;
-    return t;
+    MoveIterator tmp(*this);
+    tmp -= offset;
+    return tmp;
 }
 
 export template <RandomAccessIteratorT T>
-inline constexpr MoveIterator<T> operator+(offset_t n, MoveIterator<T> i)
+constexpr MoveIterator<T> operator+(offset_t offset, MoveIterator<T> iter)
 {
-    return i + n;
+    return iter + offset;
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr offset_t operator-(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr offset_t operator-(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() - r.Base();
+    return lhs.Base() - rhs.Base();
 }
 
 export template <ForwardIteratorT T, ForwardIteratorT U>
-inline constexpr bool operator==(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr bool operator==(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() == r.Base();
+    return lhs.Base() == rhs.Base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr bool operator<(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr bool operator<(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() < r.Base();
+    return lhs.Base() < rhs.Base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr bool operator>(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr bool operator>(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() > r.Base();
+    return lhs.Base() > rhs.Base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr bool operator<=(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr bool operator<=(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() <= r.Base();
+    return lhs.Base() <= rhs.Base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr bool operator>=(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr bool operator>=(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return l.Base() >= r.Base();
+    return lhs.Base() >= rhs.Base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
-inline constexpr auto operator<=>(MoveIterator<T> const& l, MoveIterator<U> const& r)
+constexpr auto operator<=>(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
     requires ThreeWayComparableWithT<T, U>
 {
-    return l.Base() <=> r.Base();
+    return lhs.Base() <=> rhs.Base();
 }
 
 } // namespace mini

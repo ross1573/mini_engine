@@ -11,56 +11,56 @@ namespace mini {
 export template <typename T>
 concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
                            !ConvertibleToT<size_t, T> &&             //
-                           requires(T i, T const j, size_t const n)  //
+                           requires(T iter, T const other)           //
 {
     requires !ReferenceT<typename T::Value>;
     requires PointerT<typename T::Pointer>;
     requires ReferenceT<typename T::Reference>;
 
-    { i.Valid() } -> ConvertibleToT<bool>;
-    { i.ValidWith(j) } -> ConvertibleToT<bool>;
-    { i.Increment() } -> ConvertibleToT<bool>;
+    { iter.Valid() } -> ConvertibleToT<bool>;
+    { iter.ValidWith(other) } -> ConvertibleToT<bool>;
+    { iter.Increment() } -> ConvertibleToT<bool>;
 
-    { i.Address() } -> SameAsT<typename T::Pointer>;
-    { i.operator->() } -> SameAsT<typename T::Pointer>;
+    { iter.Address() } -> SameAsT<typename T::Pointer>;
+    { iter.operator->() } -> SameAsT<typename T::Pointer>;
 
-    { *i } -> SameAsT<typename T::Reference>;
-    { ++i } -> SameAsT<T &>;
-    { i++ } -> SameAsT<T>;
+    { *iter } -> SameAsT<typename T::Reference>;
+    { ++iter } -> SameAsT<T &>;
+    { iter++ } -> SameAsT<T>;
 };
 
 export template <typename T>
 concept BidrectionalIteratorT = ForwardIteratorT<T> && //
-                                requires(T i)          //
+                                requires(T iter)       //
 {
-    { i.Decrement() } -> ConvertibleToT<bool>;
+    { iter.Decrement() } -> ConvertibleToT<bool>;
 
-    { --i } -> SameAsT<T &>;
-    { i-- } -> SameAsT<T>;
+    { --iter } -> SameAsT<T &>;
+    { iter-- } -> SameAsT<T>;
 };
 
 export template <typename T>
-concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&  //
-                                requires(T i, T const j, offset_t n, size_t s) //
+concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&    //
+                                requires(T iter, T const citer, offset_t offset) //
 {
-    { i.Advance(n) } -> ConvertibleToT<bool>;
+    { iter.Advance(offset) } -> ConvertibleToT<bool>;
 
-    { i += n } -> SameAsT<T &>;
-    { i -= n } -> SameAsT<T &>;
-    { j + n } -> SameAsT<T>;
-    { j - n } -> SameAsT<T>;
-    { n + j } -> SameAsT<T>;
-    { j - i } -> SameAsT<offset_t>;
-    { j[n] } -> SameAsT<typename T::Reference>;
+    { iter += offset } -> SameAsT<T &>;
+    { iter -= offset } -> SameAsT<T &>;
+    { citer + offset } -> SameAsT<T>;
+    { citer - offset } -> SameAsT<T>;
+    { offset + citer } -> SameAsT<T>;
+    { citer - iter } -> SameAsT<offset_t>;
+    { citer[offset] } -> SameAsT<typename T::Reference>;
 };
 
 export template <typename T, typename U>
 concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
-                                requires(T i, U v) { *i = ForwardArg<typename U::Value>(*v); };
+                                requires(T iter, U value) { *iter = ForwardArg<typename U::Value>(*value); };
 
 export template <typename T, typename U>
 concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> && //
-                               requires(T i, U v) { *i = MoveArg(*v); };
+                               requires(T iter, U value) { *iter = MoveArg(*value); };
 
 export template <typename Iter, typename T>
 concept ForwardIteratableByT = ForwardIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
@@ -76,45 +76,45 @@ concept RandomAccessIteratableByT = RandomAccessIteratorT<Iter> && ConvertibleTo
 namespace mini {
 
 export template <typename T>
-inline constexpr typename T::Iterator begin(T &c)
+constexpr T::Iterator begin(T &iter)
     requires ForwardIteratorT<typename T::Iterator>
 {
-    return c.Begin();
+    return iter.Begin();
 }
 
 export template <typename T>
-inline constexpr typename T::Iterator end(T &c)
+constexpr T::Iterator end(T &iter)
     requires ForwardIteratorT<typename T::Iterator>
 {
-    return c.End();
+    return iter.End();
 }
 
 export template <typename T>
-inline constexpr typename T::ConstIterator begin(T const &c)
+constexpr T::ConstIterator begin(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return c.Begin();
+    return iter.Begin();
 }
 
 export template <typename T>
-inline constexpr typename T::ConstIterator end(T const &c)
+constexpr T::ConstIterator end(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return c.End();
+    return iter.End();
 }
 
 export template <typename T>
-inline constexpr typename T::ConstIterator cbegin(T const &c)
+constexpr T::ConstIterator cbegin(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return c.Begin();
+    return iter.Begin();
 }
 
 export template <typename T>
-inline constexpr typename T::ConstIterator cend(T const &c)
+constexpr T::ConstIterator cend(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return c.End();
+    return iter.End();
 }
 
 } // namespace mini
@@ -124,27 +124,27 @@ export namespace std {
 template <mini::ForwardIteratorT T>
 struct iterator_traits<T> {
     typedef std::forward_iterator_tag iterator_category;
-    typedef typename T::Value value_type;
-    typedef typename T::Pointer pointer;
-    typedef typename T::Reference reference;
+    typedef T::Value value_type;
+    typedef T::Pointer pointer;
+    typedef T::Reference reference;
     typedef mini::offset_t difference_type;
 };
 
 template <mini::BidrectionalIteratorT T>
 struct iterator_traits<T> {
     typedef std::bidirectional_iterator_tag iterator_category;
-    typedef typename T::Value value_type;
-    typedef typename T::Pointer pointer;
-    typedef typename T::Reference reference;
+    typedef T::Value value_type;
+    typedef T::Pointer pointer;
+    typedef T::Reference reference;
     typedef mini::offset_t difference_type;
 };
 
 template <mini::RandomAccessIteratorT T>
 struct iterator_traits<T> {
     typedef std::random_access_iterator_tag iterator_category;
-    typedef typename T::Value value_type;
-    typedef typename T::Pointer pointer;
-    typedef typename T::Reference reference;
+    typedef T::Value value_type;
+    typedef T::Pointer pointer;
+    typedef T::Reference reference;
     typedef mini::offset_t difference_type;
 };
 
