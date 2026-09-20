@@ -1,9 +1,24 @@
+module;
+
+#include <Metal/MTL4CommandAllocator.hpp>
+#include <Metal/MTL4CommandBuffer.hpp>
+#include <Metal/MTL4CommandQueue.hpp>
+#include <Metal/MTLEvent.hpp>
+
 export module mini.metal4:renderer;
 
 import mini.core;
 import mini.graphics;
 import mini.apple;
 import :render_pass;
+
+export namespace MTL4 {
+
+using MTL4::CommandAllocator;
+using MTL4::CommandBuffer;
+using MTL4::CommandQueue;
+
+} // namespace MTL4
 
 namespace mini::metal4 {
 

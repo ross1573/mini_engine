@@ -19,12 +19,16 @@ struct VertexOut {
     float4 color;
 };
 
+struct FragmentOut {
+    float4 color [[color(0)]];
+};
+
 vertex VertexOut VertexMain(uint id [[vertex_id]])
 {
     return { .position = positions[id], .color = colors[id] };
 }
 
-fragment float4 FragmentMain(const VertexOut in [[stage_in]])
+fragment FragmentOut FragmentMain(const VertexOut in [[stage_in]])
 {
-    return in.color;
+    return { .color = in.color };
 }

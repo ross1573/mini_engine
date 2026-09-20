@@ -1,8 +1,19 @@
+module;
+
+#include <Metal/MTL4RenderCommandEncoder.hpp>
+#include <Metal/MTLRenderCommandEncoder.hpp>
+
 export module mini.metal4:common;
 
 import mini.core;
 import mini.apple;
 import mini.graphics;
+
+export namespace MTL {
+
+using MTL::PrimitiveType;
+
+} // namespace MTL
 
 namespace mini::metal4 {
 

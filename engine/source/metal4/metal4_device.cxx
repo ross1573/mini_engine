@@ -1,7 +1,17 @@
+module;
+
+#include <Metal/MTLDevice.hpp>
+
 export module mini.metal4:device;
 
 import mini.graphics;
 import mini.apple;
+
+export namespace MTL {
+
+using MTL::Device;
+
+} // namespace MTL
 
 namespace mini::metal4 {
 
@@ -21,5 +31,10 @@ public:
     [[nodiscard]] MTL::Device* MTLDevice() const { return m_device.Get(); }
     [[nodiscard]] MTL::Device* operator->() const noexcept { return m_device.operator->(); }
 };
+
+MTL::Device* CreateSystemDefaultDevice() noexcept
+{
+    return MTL::CreateSystemDefaultDevice();
+}
 
 } // namespace mini::metal4

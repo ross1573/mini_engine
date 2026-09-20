@@ -1,8 +1,18 @@
+module;
+
+#include <Metal/MTLBuffer.hpp>
+
 export module mini.metal4:buffer;
 
 import mini.core;
 import mini.graphics;
 import :resource;
+
+export namespace MTL {
+
+using MTL::Buffer;
+
+} // namespace MTL
 
 namespace mini::metal4 {
 

@@ -5,7 +5,6 @@ import mini.graphics;
 import mini.apple;
 import :log;
 import :common;
-import :buffer;
 import :render_pass;
 
 namespace mini::metal4 {

@@ -1,8 +1,21 @@
+module;
+
+#include <Metal/MTLDevice.hpp>
+#include <QuartzCore/CAMetalDrawable.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
+
 export module mini.metal4:swap_chain;
 
 import mini.core;
 import mini.graphics;
 import mini.apple;
+
+export namespace CA {
+
+using CA::MetalDrawable;
+using CA::MetalLayer;
+
+} // namespace CA
 
 namespace mini::metal4 {
 

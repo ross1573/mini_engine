@@ -9,7 +9,7 @@ import :buffer;
 namespace mini::metal4 {
 
 Device::Device()
-    : m_device(TransferShared(MTL::CreateSystemDefaultDevice()))
+    : m_device(TransferShared(CreateSystemDefaultDevice()))
 {
 }
 

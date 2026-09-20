@@ -1,8 +1,18 @@
+module;
+
+#include <Metal/MTLTexture.hpp>
+
 export module mini.metal4:texture;
 
 import mini.core;
 import mini.graphics;
 import :resource;
+
+namespace MTL {
+
+export using MTL::Texture;
+
+} // namespace MTL
 
 namespace mini::metal4 {
 

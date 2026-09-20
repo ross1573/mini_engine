@@ -1,3 +1,8 @@
+module;
+
+#include <Metal/MTL4FunctionDescriptor.hpp>
+#include <Metal/MTL4RenderPipeline.hpp>
+
 export module mini.metal4:render_pipeline;
 
 import mini.core;
@@ -5,6 +10,12 @@ import mini.apple;
 import :device;
 import :shader;
 import :compiler;
+
+export namespace MTL4 {
+
+using MTL4::RenderPipelineDescriptor;
+
+} // namespace MTL4
 
 namespace mini::metal4 {
 

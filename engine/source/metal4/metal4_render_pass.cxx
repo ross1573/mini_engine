@@ -1,3 +1,9 @@
+module;
+
+#include <Metal/MTL4ArgumentTable.hpp>
+#include <Metal/MTL4CommandBuffer.hpp>
+#include <Metal/MTL4RenderPass.hpp>
+
 export module mini.metal4:render_pass;
 
 import mini.core;
@@ -5,6 +11,32 @@ import mini.graphics;
 import :buffer;
 import :texture;
 import :render_pipeline;
+
+export namespace MTL {
+
+using MTL::ClearColor;
+using MTL::LoadAction;
+using MTL::RenderPassColorAttachmentDescriptor;
+using MTL::RenderStageFragment;
+using MTL::RenderStageMesh;
+using MTL::RenderStageObject;
+using MTL::RenderStages;
+using MTL::RenderStageTile;
+using MTL::RenderStageVertex;
+using MTL::ScissorRect;
+using MTL::StoreAction;
+using MTL::Viewport;
+
+} // namespace MTL
+
+export namespace MTL4 {
+
+using MTL4::ArgumentTable;
+using MTL4::ArgumentTableDescriptor;
+using MTL4::RenderCommandEncoder;
+using MTL4::RenderPassDescriptor;
+
+} // namespace MTL4
 
 namespace mini::metal4 {
 

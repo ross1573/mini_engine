@@ -1,9 +1,20 @@
+module;
+
+#include <Metal/Metal.hpp>
+
 export module mini.metal4:resource;
 
 import mini.core;
 import mini.apple;
 import mini.graphics;
 import :common;
+
+export namespace MTL {
+
+using MTL::GPUAddress;
+using MTL::Resource;
+
+} // namespace MTL
 
 namespace mini::metal4 {
 

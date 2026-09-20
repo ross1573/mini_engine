@@ -1,8 +1,27 @@
+module;
+
+#include <Metal/MTL4FunctionDescriptor.hpp>
+#include <Metal/MTL4LibraryFunctionDescriptor.hpp>
+#include <Metal/MTLLibrary.hpp>
+
 export module mini.metal4:shader;
 
 import mini.core;
 import mini.apple;
 import :device;
+
+export namespace MTL {
+
+using MTL::Library;
+
+} // namespace MTL
+
+export namespace MTL4 {
+
+using MTL4::FunctionDescriptor;
+using MTL4::LibraryFunctionDescriptor;
+
+} // namespace MTL4
 
 namespace mini::metal4 {
 
