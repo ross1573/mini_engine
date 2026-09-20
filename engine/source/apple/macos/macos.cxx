@@ -1,3 +1,7 @@
+module;
+
+#include "cocoa_application.h"
+
 export module mini.macos;
 
 export import :handle;
@@ -13,7 +17,6 @@ public:
     Macos() noexcept = default;
     ~Macos() noexcept final { m_handle = nullptr; }
 
-protected:
     platform::Handle* CreateHandle() final
     {
         m_handle = new macos::Handle();

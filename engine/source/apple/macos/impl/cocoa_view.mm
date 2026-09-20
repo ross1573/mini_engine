@@ -6,7 +6,8 @@
 
 - (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate frameRect:(NSRect)frameRect
 {
-    if (self = [super initWithFrame:frameRect]) {
+    self = [super initWithFrame:frameRect];
+    if (self != nullptr) {
         m_delegate = delegate;
     }
 

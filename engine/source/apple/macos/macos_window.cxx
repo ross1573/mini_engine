@@ -1,3 +1,7 @@
+module;
+
+#include "cocoa_window.h"
+
 export module mini.macos:window;
 
 import mini.core;

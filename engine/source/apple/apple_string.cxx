@@ -1,6 +1,7 @@
 export module mini.apple:string;
 
 import mini.core;
+import :foundation;
 import :shared_ptr;
 
 namespace mini {

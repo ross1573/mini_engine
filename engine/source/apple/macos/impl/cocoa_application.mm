@@ -10,7 +10,8 @@
 
 - (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self != nullptr) {
         m_delegate = delegate;
     }
 
@@ -63,7 +64,7 @@
 
 NSMenuItem* CreateAboutMenu()
 {
-    auto className = mini::options::name;
+    auto const* className = mini::options::name;
 
     NSString* classStr = [NSString stringWithUTF8String:className];
     NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];

@@ -1,0 +1,30 @@
+---
+WarningsAsErrors: '*'
+Checks: [
+  bugprone-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  misc-*,
+  objc-*,
+  clang-analyzer-*,
+  
+  -bugprone-easily-swappable-parameters,
+  -readability-convert-member-functions-to-static,
+  -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
+  -readability-redundant-declaration,
+  -readability-uppercase-literal-suffix,
+  -misc-use-internal-linkage,
+  -misc-non-private-member-variables-in-classes,
+]
+
+CheckOptions:
+  - key: readability-identifier-length.MinimumVariableNameLength
+    value: 0
+  - key: readability-identifier-length.MinimumParameterNameLength
+    value: 2
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: x|y|z|w|r|g|b|a|^[_]$
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'mini::StringView'

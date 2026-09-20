@@ -1,3 +1,7 @@
+module;
+
+#include "cocoa_application.h"
+
 export module mini.macos:handle;
 
 import mini.core;
@@ -24,8 +28,8 @@ public:
     NSApplication* GetNSApplication() const noexcept;
 
 protected:
-    void ApplicationWillFinishLaunching(NS::Notification*) final {}
-    void ApplicationDidFinishLaunching(NS::Notification*) final {}
+    void ApplicationWillFinishLaunching(NS::Notification*) final { }
+    void ApplicationDidFinishLaunching(NS::Notification*) final { }
 
     void OnKeyDown(uint32) final;
 };

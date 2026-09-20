@@ -3,7 +3,7 @@
 
 #include <QuartzCore/CAMetalLayer.hpp>
 
-#include "appkit.h"
+#include "cocoa_application.h"
 
 namespace mini::cocoa {
 

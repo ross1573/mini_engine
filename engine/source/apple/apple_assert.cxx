@@ -1,6 +1,7 @@
 export module mini.apple:assert;
 
 import mini.core;
+import :foundation;
 import :shared_ptr;
 
 namespace mini::debug {
@@ -78,11 +79,10 @@ APPLE_API void FormatNSError(char* dest, char const* destEnd, NS::Error* error)
 
 format_nserror_result:
     *(--dest) = '\0';
-    return;
 }
 
 export template <typename... Args>
-AssertFormatResult FormatAssert(char const* _, NS::Error* error, AssertFormatContext const& ctx, Args&&... args)
+AssertFormatResult FormatAssert(char const* /*expr*/, NS::Error* error, AssertFormatContext const& ctx, Args&&... args)
 {
     thread_local char errorBuffer[errorBufferSize] = { 0 };
 

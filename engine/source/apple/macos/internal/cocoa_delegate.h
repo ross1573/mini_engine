@@ -1,7 +1,6 @@
 #ifndef COCOA_DELEGATE_H
 #define COCOA_DELEGATE_H
 
-#include "appkit.h"
 #include "cocoa_application.h"
 #include "cocoa_window.h"
 

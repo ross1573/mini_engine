@@ -25,9 +25,11 @@
 
 - (instancetype)initWithDelegate:(mini::cocoa::Window*)delegate
 {
-    if (self = [super init]) {
+    self = [super init];
+    if (self != nullptr) {
         m_delegate = delegate;
     }
+
     return self;
 }
 
@@ -60,8 +62,8 @@ Window::Window(mini::cocoa::Application* application)
     auto height = options::height;
     auto fullScreen = options::fullscreen;
 
-    NSWindowStyleMask mask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled |
-                             NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
+    NSWindowStyleMask mask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable |
+                             NSWindowStyleMaskResizable;
 
     NSScreen* screen = [NSScreen mainScreen];
     NSRect windowRect = NSMakeRect(x, y, width, height);
@@ -129,7 +131,7 @@ bool Window::IsMaximized() const
 
 bool Window::IsFullScreen() const
 {
-    return m_window.styleMask & NSWindowStyleMaskFullScreen;
+    return (m_window.styleMask & NSWindowStyleMaskFullScreen) != 0u;
 }
 
 void Window::SetFullScreen(bool active)

@@ -2,6 +2,8 @@ module;
 
 #include <dlfcn.h>
 
+#include "cocoa_application.h"
+
 module mini.macos;
 
 import mini.core;

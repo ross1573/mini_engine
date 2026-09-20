@@ -1,6 +1,18 @@
+module;
+
+#include <QuartzCore/CAMetalDrawable.hpp>
+#include <QuartzCore/CAMetalLayer.hpp>
+
 export module mini.apple:window;
 
 import mini.platform;
+
+export namespace CA {
+
+using CA::MetalDrawable;
+using CA::MetalLayer;
+
+} // namespace CA
 
 namespace mini::apple {
 

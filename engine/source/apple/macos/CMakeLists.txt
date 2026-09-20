@@ -18,12 +18,6 @@ PRIVATE
     impl/cocoa_view.mm
 )
 
-target_precompile_headers(mini.macos
-PRIVATE
-    internal/cocoa_application.h
-    internal/cocoa_window.h
-)
-
 target_link_libraries(mini.macos
 PRIVATE
     mini.graphics
