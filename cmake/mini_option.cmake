@@ -57,8 +57,10 @@ macro (_clang_compile_options)
         $<$<CONFIG:Develop>:-O1>
         $<$<CONFIG:Release>:-O3>
         -g
-        -fno-limit-debug-info
+
         -ffast-math
+        -fno-implicit-modules # workaround for clang frontend crash
+        -fno-implicit-module-maps # workaround for clang frontend crash
 
         -Wall
         -Wextra

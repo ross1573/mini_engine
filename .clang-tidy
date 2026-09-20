@@ -30,6 +30,7 @@ Checks: [
   
   -bugprone-easily-swappable-parameters,
   -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
   -readability-uppercase-literal-suffix,
   -misc-non-private-member-variables-in-classes,
 ]
