@@ -64,7 +64,7 @@ export template <typename From, typename To>
 concept ImplicitlyConvertibleToT = std::is_convertible_v<From, To>;
 
 export template <typename From, typename To>
-concept ExplicitlyConvertibleToT = requires(From from) { static_cast<To>(from); };
+concept ExplicitlyConvertibleToT = requires { static_cast<To>(std::declval<From>()); };
 
 export template <typename From, typename To>
 concept ConvertibleToT = ImplicitlyConvertibleToT<From, To> && ExplicitlyConvertibleToT<From, To>;
