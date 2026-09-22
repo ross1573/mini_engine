@@ -103,7 +103,7 @@ BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
 BreakTemplateDeclarations: Yes
 CompactNamespaces: false
-Cpp11BracedListStyle: false
+Cpp11BracedListStyle: FunctionCall
 DerivePointerAlignment: true
 DisableFormat: false
 EmptyLineAfterAccessModifier: Never

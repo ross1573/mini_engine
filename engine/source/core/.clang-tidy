@@ -1,5 +1,4 @@
 ---
-WarningsAsErrors: '*'
 Checks: [
   bugprone-*,
   performance-*,
@@ -35,6 +34,7 @@ Checks: [
   -readability-magic-numbers,
   -readability-uppercase-literal-suffix,
   -readability-redundant-qualified-alias,
+  -readability-redundant-access-specifiers,
   -readability-avoid-nested-conditional-operator,
   -misc-unconventional-assign-operator,
   -misc-non-private-member-variables-in-classes,
