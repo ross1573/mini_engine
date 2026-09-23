@@ -83,9 +83,6 @@ ASSERT_API size_t FormatSourceLocation(char* dest, char const* destEnd, SourceLo
 ASSERT_API size_t FormatAssertLine(char* dest, char const* destEnd, char const** src, size_t count) noexcept;
 ASSERT_API size_t FormatAssertString(char* dest, char const* destEnd, char const* src) noexcept;
 }
-
-[[no_inline]] ASSERT_API void LogAssert(AssertFormatResult formatResult) noexcept;
-[[no_inline]] ASSERT_API void LogEnsure(AssertFormatResult formatResult) noexcept;
 [[no_inline]] ASSERT_API AssertFormatResult FormatAssert(char const* category,
                                                          char const* content,
                                                          char const* message,
@@ -101,68 +98,16 @@ AssertFormatResult FormatAssert(char const* category,
         return FormatAssert(category, content, ctx.message.data, ctx.location);
     }
 
-    thread_local char fmtBuffer[assertFormatMaxLength] = { 0 };
+    thread_local char fmtBuffer[assertFormatMaxLength] = {0};
     auto fmtMessage = fmt::string_view(ctx.message.data, ctx.message.size);
     try {
         fmt::vformat_to_n(fmtBuffer, assertFormatMaxLength, fmtMessage, fmt::make_format_args(args...));
     } catch (fmt::format_error const& error) {
-        char const* fmtError[] = { "format failed with error: ", error.what() };
+        char const* fmtError[] = {"format failed with error: ", error.what()};
         FormatAssertLine(fmtBuffer, fmtBuffer + assertFormatMaxLength, fmtError, sizeof(fmtError));
     }
 
     return FormatAssert(category, content, fmtBuffer, ctx.location);
-}
-
-export template <typename... Args>
-[[no_inline]] void LogAssert(char const* expr, AssertFormatContext ctx, Args&&... args) noexcept
-{
-    LogAssert(FormatAssert(assertExprCategory, expr, ctx, ForwardArg<Args>(args)...));
-}
-
-export [[no_inline]] ASSERT_API void LogAssert(char const* expr,
-                                               SourceLocation loc = SourceLocation::current()) noexcept
-{
-    LogAssert(FormatAssert(assertExprCategory, expr, nullptr, loc));
-}
-
-export template <typename T, typename... Args>
-[[no_inline]] void LogAssert(char const* expr, T error, AssertFormatContext ctx, Args&&... args) noexcept
-    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
-{
-    LogAssert(FormatAssert(expr, error, ctx, ForwardArg<Args>(args)...));
-}
-
-export template <typename T>
-[[no_inline]] void LogAssert(char const* expr, T error, SourceLocation loc = SourceLocation::current()) noexcept
-    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
-{
-    LogAssert(FormatAssert(expr, error, AssertFormatContext(loc)));
-}
-
-export template <typename... Args>
-[[no_inline]] void LogEnsure(char const* expr, AssertFormatContext ctx, Args&&... args) noexcept
-{
-    LogEnsure(FormatAssert(assertExprCategory, expr, ctx, ForwardArg<Args>(args)...));
-}
-
-export [[no_inline]] ASSERT_API void LogEnsure(char const* expr,
-                                               SourceLocation loc = SourceLocation::current()) noexcept
-{
-    LogEnsure(FormatAssert(assertExprCategory, expr, nullptr, loc));
-}
-
-export template <typename T, typename... Args>
-[[no_inline]] void LogEnsure(char const* expr, T error, AssertFormatContext ctx, Args&&... args) noexcept
-    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
-{
-    LogEnsure(FormatAssert(expr, error, ctx, ForwardArg<Args>(args)...));
-}
-
-export template <typename T>
-[[no_inline]] void LogEnsure(char const* expr, T error, SourceLocation loc = SourceLocation::current()) noexcept
-    requires(!ImplicitlyConvertibleToT<T, AssertFormatContext>)
-{
-    LogEnsure(FormatAssert(expr, error, AssertFormatContext(loc)));
 }
 
 } // namespace mini::debug

@@ -1,13 +1,3 @@
-module;
-
-#if HAS_BUILTIN(__builtin_unreachable)
-#  define BUILTIN_UNREACHABLE() __builtin_unreachable()
-#elif MSVC
-#  define BUILTIN_UNREACHABLE() __assume(false)
-#else
-#  define BUILTIN_UNREACHABLE()
-#endif // HAS_BUILTIN(__builtin_unreachable)
-
 export module mini.core:utility_operation;
 
 import :type_traits;

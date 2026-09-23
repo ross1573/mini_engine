@@ -7,24 +7,24 @@
 #include "debug/assert.h"
 
 #if MSVC
-#  define TEST_ENSURE(expr, ...)                            \
-      if consteval {                                        \
-          if (::mini::debug::EvaluateExpr(expr) == false) { \
-              memcpy(nullptr, nullptr, 0);                  \
-          }                                                 \
-      } else {                                              \
-          if (::mini::debug::EvaluateExpr(expr) == false) { \
-              return -1;                                    \
-          }                                                 \
+#  define TEST_ENSURE(expr, ...)                        \
+      if consteval {                                    \
+          if (::mini::debug::Evaluate(expr) == false) { \
+              memcpy(nullptr, nullptr, 0);              \
+          }                                             \
+      } else {                                          \
+          if (::mini::debug::Evaluate(expr) == false) { \
+              return -1;                                \
+          }                                             \
       }
 #else
 #  define TEST_ENSURE(expr, ...)                                          \
       if consteval {                                                      \
-          if (::mini::debug::EvaluateExpr(expr) == false) {               \
+          if (::mini::debug::Evaluate(expr) == false) {                   \
               memcpy(nullptr, nullptr, 0);                                \
           }                                                               \
       } else {                                                            \
-          if (::mini::debug::EvaluateExpr(expr) == false) {               \
+          if (::mini::debug::Evaluate(expr) == false) {                   \
               ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
               return -1;                                                  \
           }                                                               \

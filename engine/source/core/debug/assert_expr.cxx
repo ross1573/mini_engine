@@ -6,16 +6,16 @@ import :numeric;
 namespace mini::debug {
 
 export template <typename T>
-constexpr bool EvaluateExpr(T const&) = deleted_function("unable to evaluate expression");
+constexpr bool Evaluate(T const&) = deleted_function("unable to evaluate expression");
 
 export template <ValidatableT T>
-constexpr bool EvaluateExpr(T const& arg) noexcept
+constexpr bool Evaluate(T const& arg) noexcept
 {
     return arg.Valid();
 }
 
 export template <ExplicitlyConvertibleToT<bool> T>
-constexpr bool EvaluateExpr(T const& arg) noexcept
+constexpr bool Evaluate(T const& arg) noexcept
     requires(!ValidatableT<T>)
 {
     return static_cast<bool>(arg);

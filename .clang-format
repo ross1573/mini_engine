@@ -19,7 +19,7 @@ PenaltyBreakScopeResolution: 100
 PenaltyBreakString: 80
 PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
-PenaltyReturnTypeOnItsOwnLine: 120
+PenaltyReturnTypeOnItsOwnLine: 1000000
 
 WhitespaceSensitiveMacros:
   - STRINGIZE
