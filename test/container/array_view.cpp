@@ -67,7 +67,7 @@ template <typename T>
 
     for (size_t i = 0; i < arr.Size(); ++i) {
         TEST_ENSURE(TestElement(arr[i], span[i]));
-        TEST_ENSURE(TestElement(arr.At(i), span.at(i)));
+        TEST_ENSURE(TestElement(arr.At(i), span[i]));
     }
 
     return 0;
