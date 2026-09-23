@@ -38,8 +38,8 @@ export using U16String = BasicString<char16>;
 export using U32String = BasicString<char32>;
 
 template <typename T, typename U, typename AllocU>
-concept StringViewLikeT = StringLikeT<T, U> && AllocatorT<AllocU, U> &&
-                          !SameAsT<RemoveConstVolatileRefT<T>, BasicString<U, AllocU>>;
+concept StringLikeExceptStringT = StringLikeT<T, U> && AllocatorT<AllocU, U> &&
+                                  !SameAsT<RemoveConstVolatileRefT<T>, BasicString<U, AllocU>>;
 
 template <CharT T, AllocatorT<T> AllocT>
 class BasicString {
@@ -110,9 +110,9 @@ public:
     template <typename U>
     constexpr BasicString(U ch, size_t count, AllocT const& alloc = AllocT())
         requires AnyOfT<U, Value, ConstValue>;
-    template <StringViewLikeT<T, AllocT> U>
+    template <StringLikeExceptStringT<T, AllocT> U>
     constexpr BasicString(U const& src, AllocT const& alloc = AllocT());
-    template <StringViewLikeT<T, AllocT> U>
+    template <StringLikeExceptStringT<T, AllocT> U>
     constexpr BasicString(U const& src, size_t size, AllocT const& alloc = AllocT());
     template <ForwardIteratableByT<T> Iter>
     constexpr BasicString(Iter begin, Iter end, AllocT const& alloc = AllocT());
@@ -192,7 +192,7 @@ public:
 
     constexpr BasicString& operator=(BasicString const& other);
     constexpr BasicString& operator=(BasicString&& other) noexcept;
-    template <StringViewLikeT<T, AllocT> U>
+    template <StringLikeExceptStringT<T, AllocT> U>
     constexpr BasicString& operator=(U const& src);
 
     constexpr BasicString& operator+=(Value ch);
@@ -252,7 +252,7 @@ private:
 
 template <CharT T, AllocatorT<T> AllocT>
 constexpr BasicString<T, AllocT>::BasicString() noexcept
-    : m_alloc{ }
+    : m_alloc{}
 {
     InitEmpty();
 }
@@ -268,7 +268,7 @@ constexpr BasicString<T, AllocT>::~BasicString()
 
 template <CharT T, AllocatorT<T> AllocT>
 constexpr BasicString<T, AllocT>::BasicString(BasicString const& other)
-    : m_alloc{ }
+    : m_alloc{}
 {
     InitWithCopy(other);
 }
@@ -282,7 +282,7 @@ constexpr BasicString<T, AllocT>::BasicString(BasicString const& other, AllocT c
 
 template <CharT T, AllocatorT<T> AllocT>
 constexpr BasicString<T, AllocT>::BasicString(BasicString&& other) noexcept
-    : m_alloc{ }
+    : m_alloc{}
 {
     if (other.LargeCapacity() && m_alloc != other.m_alloc) {
         InitWithCopy(other);
@@ -351,7 +351,7 @@ constexpr BasicString<T, AllocT>::BasicString(U ch, size_t count, AllocT const& 
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <StringViewLikeT<T, AllocT> U>
+template <StringLikeExceptStringT<T, AllocT> U>
 constexpr BasicString<T, AllocT>::BasicString(U const& src, AllocT const& alloc)
     : m_alloc(alloc)
 {
@@ -361,7 +361,7 @@ constexpr BasicString<T, AllocT>::BasicString(U const& src, AllocT const& alloc)
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <StringViewLikeT<T, AllocT> U>
+template <StringLikeExceptStringT<T, AllocT> U>
 constexpr BasicString<T, AllocT>::BasicString(U const& src, size_t size, AllocT const& alloc)
     : m_alloc(alloc)
 {
@@ -1015,7 +1015,7 @@ constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(BasicString&
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-template <StringViewLikeT<T, AllocT> U>
+template <StringLikeExceptStringT<T, AllocT> U>
 constexpr BasicString<T, AllocT>& BasicString<T, AllocT>::operator=(U const& src)
 {
     Assign(src);
@@ -1108,7 +1108,7 @@ constexpr BasicString<T, AllocT>::ConstPointer BasicString<T, AllocT>::GetSliced
         return view.Data();
     } else {
         BasicStringView<T> view = src;
-        BasicStringView<T> subView = view.SubFirst(size);
+        BasicStringView<T> subView = view.SubFront(size);
         return subView.Data();
     }
 }
@@ -1535,7 +1535,7 @@ constexpr bool operator==(BasicString<T, AllocT> const& lhs, BasicString<U, Allo
     return memory::EqualRange(lbuf, rbuf, rbuf + size);
 }
 
-export template <CharT T, AllocatorT<T> AllocT, StringViewLikeT<T, AllocT> ViewU>
+export template <CharT T, AllocatorT<T> AllocT, StringLikeExceptStringT<T, AllocT> ViewU>
 constexpr bool operator==(BasicString<T, AllocT> const& str, ViewU const& view) noexcept
 {
     BasicStringView<T> lhs = str;
@@ -1543,7 +1543,7 @@ constexpr bool operator==(BasicString<T, AllocT> const& str, ViewU const& view) 
     return lhs == rhs;
 }
 
-export template <CharT T, AllocatorT<T> AllocT, CharT U, AllocatorT<U> AllocU, StringViewLikeT<U, AllocU> ViewU>
+export template <CharT T, AllocatorT<T> AllocT, CharT U, AllocatorT<U> AllocU, StringLikeExceptStringT<U, AllocU> ViewU>
 constexpr bool operator==(BasicString<T, AllocT> const& str, ViewU const& view) noexcept
     requires EqualityComparableWithT<T, U>
 {

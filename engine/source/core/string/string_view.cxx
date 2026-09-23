@@ -36,7 +36,7 @@ private:
     ConstPointer m_data;
     size_t m_size;
 
-    static constexpr T empty[1] = { '\0' };
+    static constexpr T empty[1] = {'\0'};
 
 public:
     constexpr BasicStringView() noexcept;
@@ -47,15 +47,15 @@ public:
 
     constexpr void Copy(Pointer dest, size_t index, size_t size) const noexcept;
     constexpr void Copy(Pointer dest, ConstIterator begin, ConstIterator end) const noexcept;
-    constexpr BasicStringView SubFirst(size_t size) const noexcept;
-    constexpr BasicStringView SubLast(size_t size) const noexcept;
-    constexpr BasicStringView SubString(size_t index, size_t size) const noexcept;
-    constexpr BasicStringView SubString(ConstIterator begin, ConstIterator end) const noexcept;
+    constexpr BasicStringView SubFront(size_t size) const noexcept;
+    constexpr BasicStringView SubBack(size_t size) const noexcept;
+    constexpr BasicStringView SubView(size_t index, size_t size) const noexcept;
+    constexpr BasicStringView SubView(ConstIterator begin, ConstIterator end) const noexcept;
 
-    constexpr void RemoveFirst();
-    constexpr void RemoveFirst(size_t size);
-    constexpr void RemoveLast();
-    constexpr void RemoveLast(size_t size);
+    constexpr void PopFront() noexcept;
+    constexpr void PopFront(size_t size) noexcept;
+    constexpr void PopBack() noexcept;
+    constexpr void PopBack(size_t size) noexcept;
 
     [[nodiscard]] constexpr ConstPointer Data() const noexcept;
     [[nodiscard]] constexpr ConstIterator Begin() const noexcept;
@@ -144,21 +144,21 @@ constexpr void BasicStringView<T>::Copy(Pointer dest, ConstIterator begin, Const
 }
 
 template <CharT T>
-constexpr BasicStringView<T> BasicStringView<T>::SubFirst(size_t size) const noexcept
+constexpr BasicStringView<T> BasicStringView<T>::SubFront(size_t size) const noexcept
 {
     size_t len = m_size < size ? m_size : size;
     return BasicStringView(m_data, len);
 }
 
 template <CharT T>
-constexpr BasicStringView<T> BasicStringView<T>::SubLast(size_t size) const noexcept
+constexpr BasicStringView<T> BasicStringView<T>::SubBack(size_t size) const noexcept
 {
     size_t len = m_size < size ? m_size : size;
     return BasicStringView(m_data + m_size - len, len);
 }
 
 template <CharT T>
-constexpr BasicStringView<T> BasicStringView<T>::SubString(size_t index, size_t size) const noexcept
+constexpr BasicStringView<T> BasicStringView<T>::SubView(size_t index, size_t size) const noexcept
 {
     AssertValidIndex(index);
     size_t end = m_size - index;
@@ -167,14 +167,14 @@ constexpr BasicStringView<T> BasicStringView<T>::SubString(size_t index, size_t 
 }
 
 template <CharT T>
-constexpr BasicStringView<T> BasicStringView<T>::SubString(ConstIterator begin, ConstIterator end) const noexcept
+constexpr BasicStringView<T> BasicStringView<T>::SubView(ConstIterator begin, ConstIterator end) const noexcept
 {
     AssertValidRange(begin, end);
     return BasicStringView(begin.Address(), static_cast<size_t>(end - begin));
 }
 
 template <CharT T>
-constexpr void BasicStringView<T>::RemoveFirst()
+constexpr void BasicStringView<T>::PopFront() noexcept
 {
     if (m_size != 0) [[likely]] {
         ++m_data;
@@ -183,7 +183,7 @@ constexpr void BasicStringView<T>::RemoveFirst()
 }
 
 template <CharT T>
-constexpr void BasicStringView<T>::RemoveFirst(size_t size)
+constexpr void BasicStringView<T>::PopFront(size_t size) noexcept
 {
     if (m_size < size) [[unlikely]] {
         size = m_size;
@@ -194,7 +194,7 @@ constexpr void BasicStringView<T>::RemoveFirst(size_t size)
 }
 
 template <CharT T>
-constexpr void BasicStringView<T>::RemoveLast()
+constexpr void BasicStringView<T>::PopBack() noexcept
 {
     if (m_size != 0) [[likely]] {
         --m_size;
@@ -202,7 +202,7 @@ constexpr void BasicStringView<T>::RemoveLast()
 }
 
 template <CharT T>
-constexpr void BasicStringView<T>::RemoveLast(size_t size)
+constexpr void BasicStringView<T>::PopBack(size_t size) noexcept
 {
     if (m_size < size) [[unlikely]] {
         size = m_size;
@@ -328,7 +328,7 @@ constexpr void BasicStringView<T>::AssertValidRange([[maybe_unused]] ConstIterat
 }
 
 export template <CharT T>
-constexpr bool operator==(BasicStringView<T> const& lhs, BasicStringView<T> const& rhs) noexcept
+constexpr bool operator==(BasicStringView<T> lhs, BasicStringView<T> rhs) noexcept
 {
     size_t size = lhs.Size();
     if (size != rhs.Size()) {
@@ -347,7 +347,7 @@ constexpr bool operator==(BasicStringView<T> const& lhs, BasicStringView<T> cons
 }
 
 export template <CharT T, CharT U>
-constexpr bool operator==(BasicStringView<T> const& lhs, BasicStringView<U> const& rhs) noexcept
+constexpr bool operator==(BasicStringView<T> lhs, BasicStringView<U> rhs) noexcept
     requires EqualityComparableWithT<T, U>
 {
     size_t size = lhs.Size();
@@ -361,7 +361,7 @@ constexpr bool operator==(BasicStringView<T> const& lhs, BasicStringView<U> cons
 }
 
 export template <CharT T, StringLikeT<T> U>
-constexpr bool operator==(BasicStringView<T> const& str, U const& src) noexcept
+constexpr bool operator==(BasicStringView<T> str, U const& src) noexcept
 {
     BasicStringView<T> view = src;
     size_t size = str.Size();
@@ -382,7 +382,7 @@ constexpr bool operator==(BasicStringView<T> const& str, U const& src) noexcept
 }
 
 export template <CharT T, CharT U, StringLikeT<U> ViewU>
-constexpr bool operator==(BasicStringView<T> const& str, ViewU const& src) noexcept
+constexpr bool operator==(BasicStringView<T> str, ViewU const& src) noexcept
     requires EqualityComparableWithT<T, U>
 {
     BasicStringView<U> view = src;
@@ -398,6 +398,6 @@ constexpr bool operator==(BasicStringView<T> const& str, ViewU const& src) noexc
 }
 
 export template <CharT T>
-constexpr bool operator==(BasicStringView<T> const& str, nullptr_t) = delete;
+constexpr bool operator==(BasicStringView<T> str, nullptr_t) = delete;
 
 } // namespace mini

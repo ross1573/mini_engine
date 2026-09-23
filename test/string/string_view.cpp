@@ -19,7 +19,7 @@ using namespace mini::test;
 template <typename T, typename CStr>
 constexpr int TestCtor()
 {
-    TEST_ENSURE(BasicStringView<T>{ } == CStr::e);
+    TEST_ENSURE(BasicStringView<T>{} == CStr::e);
 
     TEST_ENSURE(BasicStringView<T>(BasicString<T>(CStr::s)) == CStr::s);
     TEST_ENSURE(BasicStringView<T>(BasicStringView<T>(CStr::s)) == CStr::s);
@@ -38,7 +38,7 @@ template <typename T, typename CStr>
 constexpr int TestCopy()
 {
     BasicStringView<T> svs = CStr::s;
-    BasicString<T> ss{ };
+    BasicString<T> ss{};
     ss.Resize(svs.Size());
 
     svs.Copy(ss.Data(), 0, svs.Size());
@@ -49,10 +49,10 @@ constexpr int TestCopy()
 
     svs.Copy(ss.Data(), 5, svs.Size() - 5);
     ss.Resize(svs.Size() - 5);
-    TEST_ENSURE(svs.SubString(5, svs.Size() - 5) == ss);
+    TEST_ENSURE(svs.SubView(5, svs.Size() - 5) == ss);
 
     svs.Copy(ss.Data(), svs.Begin() + 5, svs.End());
-    TEST_ENSURE(svs.SubLast(svs.Size() - 5) == ss);
+    TEST_ENSURE(svs.SubBack(svs.Size() - 5) == ss);
 
     return 0;
 }
@@ -62,17 +62,17 @@ constexpr int TestSubString()
 {
     BasicStringView<T> sv = CStr::l;
 
-    BasicStringView<T> sv1 = sv.SubFirst(30);
+    BasicStringView<T> sv1 = sv.SubFront(30);
     TEST_ENSURE(sv1 == CStr::l_30);
 
-    BasicStringView<T> sv2 = sv.SubLast(10);
+    BasicStringView<T> sv2 = sv.SubBack(10);
     BasicString<T> s2(CStr::l + sv.Size() - 10);
     TEST_ENSURE(sv2 == s2);
 
-    BasicStringView<T> sv3 = sv.SubString(0, 30);
+    BasicStringView<T> sv3 = sv.SubView(0, 30);
     TEST_ENSURE(sv3 == CStr::l_30);
 
-    BasicStringView<T> sv4 = sv.SubString(sv.Begin() + 10, sv.End());
+    BasicStringView<T> sv4 = sv.SubView(sv.Begin() + 10, sv.End());
     BasicString<T> s4(CStr::l + 10);
     TEST_ENSURE(sv4 == s4);
 
@@ -85,19 +85,19 @@ constexpr int TestRemove()
     BasicStringView<T> sv = CStr::l;
     BasicString<T> s = CStr::l;
 
-    sv.RemoveFirst();
+    sv.PopFront();
     s.RemoveRange(0, 1);
     TEST_ENSURE(sv == s);
 
-    sv.RemoveFirst(5);
+    sv.PopFront(5);
     s.RemoveRange(0, 5);
     TEST_ENSURE(sv == s);
 
-    sv.RemoveLast();
+    sv.PopBack();
     s.PopBack();
     TEST_ENSURE(sv == s);
 
-    sv.RemoveLast(5);
+    sv.PopBack(5);
     s.PopBack(5);
     TEST_ENSURE(sv == s);
 

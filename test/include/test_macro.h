@@ -56,12 +56,16 @@
 #define RANDOM_ACCESS_ITERATOR_CONSTRAINTS(...)                                                     \
     ITER_CONSTRAINTS(RandomAccessIteratorT, std::random_access_iterator, JOIN_VA_ARGS(__VA_ARGS__))
 
-#define TEST_RANGE_BASED_FOR_SUPPORT(...) static_assert(RangeBasedForUsableT<JOIN_VA_ARGS(__VA_ARGS__)>);
+#define TEST_RANGE_BASED_FOR_SUPPORT(...)                           \
+    static_assert(requires(JOIN_VA_ARGS(__VA_ARGS__) & container) { \
+        begin(container);                                           \
+        end(container);                                             \
+    });
 
-template <typename T>
-concept RangeBasedForUsableT = requires(T& container, T const& ccontainer) {
-    begin(container);
-    end(container);
-    cbegin(ccontainer);
-    cend(ccontainer);
-};
+#define TEST_CONST_RANGE_BASED_FOR_SUPPORT(...)                          \
+    static_assert(requires(JOIN_VA_ARGS(__VA_ARGS__) const& container) { \
+        begin(container);                                                \
+        end(container);                                                  \
+        cbegin(container);                                               \
+        cend(container);                                                 \
+    });

@@ -6,6 +6,7 @@ import :utility_operation;
 import :memory_operation;
 import :algorithm;
 import :fixed_buffer;
+import :array_view;
 import :circular_iterator;
 
 namespace mini {
@@ -38,23 +39,32 @@ private:
 public:
     constexpr FixedQueue() noexcept;
     constexpr ~FixedQueue();
-    constexpr FixedQueue(FixedQueue const& other);
+    constexpr FixedQueue(FixedQueue const& other)
+        requires CopyableT<T>;
     constexpr FixedQueue(FixedQueue&& other) noexcept;
-    constexpr FixedQueue(InitializerList<T> initList);
+    template <ArrayLikeT<T> U>
+    constexpr FixedQueue(U const& arr)
+        requires CopyableT<T>;
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr FixedQueue(Iter begin, Iter end);
 
     template <typename... Args>
     constexpr void PushBack(Args&&... args)
         requires ConstructibleFromT<T, Args...>;
-    template <ForwardIteratableByT<T> Iter>
-    constexpr void Append(Iter begin, Iter end);
-    constexpr void Append(InitializerList<T> initList);
+
+    template <ArrayLikeT<T> U>
+    constexpr void Assign(U const& arr)
+        requires CopyableT<T>;
+    template <ArrayLikeT<T> U>
+    constexpr void Append(U const& arr)
+        requires CopyableT<T>;
+
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter begin, Iter end);
-    constexpr void Assign(InitializerList<T> initList);
+    template <ForwardIteratableByT<T> Iter>
+    constexpr void Append(Iter begin, Iter end);
 
-    constexpr T PopFirst();
+    constexpr Value PopFirst();
     constexpr void PopFront();
     constexpr void PopFront(size_t count);
     constexpr void Clear();
@@ -83,9 +93,12 @@ public:
     [[nodiscard]] constexpr Reference operator[](size_t index);
     [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
-    constexpr FixedQueue& operator=(FixedQueue const& other);
+    constexpr FixedQueue& operator=(FixedQueue const& other)
+        requires CopyableT<T>;
     constexpr FixedQueue& operator=(FixedQueue&& other) noexcept;
-    constexpr FixedQueue& operator=(InitializerList<T> initList);
+    template <ArrayLikeT<T> U>
+    constexpr FixedQueue& operator=(U const& arr)
+        requires CopyableT<T>;
 
 private:
     template <typename U>
@@ -116,6 +129,7 @@ constexpr FixedQueue<T, N>::~FixedQueue()
 
 template <MovableT T, size_t N>
 constexpr FixedQueue<T, N>::FixedQueue(FixedQueue const& other)
+    requires CopyableT<T>
     : m_buffer()
 {
     memory::ConstructRange(m_buffer.Data(), other.Begin(), other.End());
@@ -142,14 +156,20 @@ constexpr FixedQueue<T, N>::FixedQueue(FixedQueue&& other) noexcept
 }
 
 template <MovableT T, size_t N>
-constexpr FixedQueue<T, N>::FixedQueue(InitializerList<T> initList)
+template <ArrayLikeT<T> U>
+constexpr FixedQueue<T, N>::FixedQueue(U const& arr)
+    requires CopyableT<T>
     : m_buffer()
 {
-    AssertValidCapacity(initList.size());
-    memory::ConstructRange(m_buffer.Data(), initList.begin(), initList.end());
+    ArrayView<T> view = arr;
+    ConstPointer ptr = view.Data();
+    size_t size = view.Size();
+
+    AssertValidCapacity(size);
+    memory::ConstructRange(m_buffer.Data(), ptr, ptr + size);
     m_begin = 0;
-    m_end = initList.size();
-    m_size = initList.size();
+    m_end = size;
+    m_size = size;
 }
 
 template <MovableT T, size_t N>
@@ -175,24 +195,34 @@ constexpr void FixedQueue<T, N>::PushBack(Args&&... args)
 }
 
 template <MovableT T, size_t N>
-template <ForwardIteratableByT<T> Iter>
-constexpr void FixedQueue<T, N>::Append(Iter begin, Iter end)
+template <ArrayLikeT<T> U>
+constexpr void FixedQueue<T, N>::Assign(U const& arr)
+    requires CopyableT<T>
 {
-    size_t distance = Distance(begin, end);
-    switch (distance) {
-        [[unlikely]] case 0:
-            return;
-        case 1:  PushBack(ForwardArg<typename Iter::Value>(*begin)); return;
-        default: break;
+    ArrayView<T> view = arr;
+    ConstPointer ptr = view.Data();
+    size_t size = view.Size();
+    if (size == 0) [[unlikely]] {
+        Clear();
+        return;
     }
 
-    AppendRangeWithSize(begin, end, distance);
+    AssignRangeWithSize(ptr, ptr + size, size);
 }
 
 template <MovableT T, size_t N>
-constexpr void FixedQueue<T, N>::Append(InitializerList<T> initList)
+template <ArrayLikeT<T> U>
+constexpr void FixedQueue<T, N>::Append(U const& arr)
+    requires CopyableT<T>
 {
-    AppendRangeWithSize(initList.begin(), initList.end(), initList.size());
+    ArrayView<T> view = arr;
+    ConstPointer ptr = view.Data();
+    size_t size = view.Size();
+    if (size == 0) [[unlikely]] {
+        return;
+    }
+
+    AppendRangeWithSize(ptr, ptr + size, size);
 }
 
 template <MovableT T, size_t N>
@@ -209,15 +239,18 @@ constexpr void FixedQueue<T, N>::Assign(Iter begin, Iter end)
 }
 
 template <MovableT T, size_t N>
-constexpr void FixedQueue<T, N>::Assign(InitializerList<T> initList)
+template <ForwardIteratableByT<T> Iter>
+constexpr void FixedQueue<T, N>::Append(Iter begin, Iter end)
 {
-    size_t size = initList.size();
-    if (size == 0) [[unlikely]] {
-        Clear();
-        return;
+    size_t distance = Distance(begin, end);
+    switch (distance) {
+        [[unlikely]] case 0:
+            return;
+        case 1:  PushBack(ForwardArg<typename Iter::Value>(*begin)); return;
+        default: break;
     }
 
-    AssignRangeWithSize(initList.begin(), initList.end(), size);
+    AppendRangeWithSize(begin, end, distance);
 }
 
 template <MovableT T, size_t N>
@@ -446,6 +479,7 @@ constexpr T const& FixedQueue<T, N>::operator[](size_t index) const
 
 template <MovableT T, size_t N>
 constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue const& other)
+    requires CopyableT<T>
 {
     if (m_buffer == other.m_buffer) [[unlikely]] {
         return *this;
@@ -468,9 +502,11 @@ constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue&& other) noex
 }
 
 template <MovableT T, size_t N>
-constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(InitializerList<T> initList)
+template <ArrayLikeT<T> U>
+constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(U const& arr)
+    requires CopyableT<T>
 {
-    Assign(initList);
+    Assign(arr);
     return *this;
 }
 

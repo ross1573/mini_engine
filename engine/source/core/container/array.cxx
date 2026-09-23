@@ -1,17 +1,24 @@
 export module mini.core:array;
 
 import :type;
-import :initializer_list;
 import :utility_operation;
 import :memory_operation;
 import :algorithm;
 import :allocator;
 import :dynamic_buffer;
+import :array_view;
 import :array_iterator;
 
 namespace mini {
 
 export template <MovableT T, AllocatorT<T> AllocT = mini::Allocator<T>>
+class Array;
+
+template <typename T, typename ValueT, typename AllocT>
+concept ArrayLikeExceptArrayT = ArrayLikeT<T, ValueT> && AllocatorT<AllocT, ValueT> &&
+                                !SameAsT<RemoveConstVolatileRefT<T>, Array<ValueT, AllocT>>;
+
+template <MovableT T, AllocatorT<T> AllocT>
 class Array {
 private:
     typedef memory::DynamicBuffer<T, AllocT> Buffer;
@@ -39,13 +46,17 @@ public:
         requires CopyableT<T>;
     constexpr Array(Array&& other) noexcept;
     constexpr Array(Array&& other, AllocT const& alloc) noexcept;
-    constexpr Array(AllocT const& alloc) noexcept;
-    constexpr Array(AllocT&& alloc) noexcept;
-    constexpr Array(InitializerList<T> initList, AllocT const& alloc = AllocT());
+    explicit constexpr Array(AllocT const& alloc) noexcept;
+    explicit constexpr Array(AllocT&& alloc) noexcept;
     explicit constexpr Array(size_t capacity, AllocT const& alloc = AllocT());
-    template <ForwardIteratableByT<T> Iter>
-    explicit constexpr Array(Iter begin, Iter end, AllocT const& alloc = AllocT())
+    template <ArrayLikeExceptArrayT<T, AllocT> U>
+    constexpr Array(U const& arr, AllocT const& alloc = AllocT())
         requires CopyableT<T>;
+    template <ArrayLikeExceptArrayT<T, AllocT> U>
+    constexpr Array(U const& arr, size_t size, AllocT const& alloc = AllocT())
+        requires CopyableT<T>;
+    template <ForwardIteratableByT<T> Iter>
+    constexpr Array(Iter begin, Iter end, AllocT const& alloc = AllocT());
 
     template <typename... Args>
     constexpr void PushBack(Args&&... args)
@@ -57,19 +68,29 @@ public:
     constexpr void Insert(ConstIterator iter, Args&&... args)
         requires ConstructibleFromT<T, Args...>;
 
+    template <ArrayLikeT<T> U>
+    constexpr void Assign(U const& arr)
+        requires CopyableT<T>;
+    template <ArrayLikeT<T> U>
+    constexpr void Append(U const& arr)
+        requires CopyableT<T>;
+    template <ArrayLikeT<T> U>
+    constexpr void InsertRange(size_t index, U const& arr)
+        requires CopyableT<T>;
+    template <ArrayLikeT<T> U>
+    constexpr void InsertRange(ConstIterator iter, U const& arr)
+        requires CopyableT<T>;
+
     template <ForwardIteratableByT<T> Iter>
     constexpr void Assign(Iter begin, Iter end);
-    constexpr void Assign(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
     constexpr void Append(Iter begin, Iter end);
-    constexpr void Append(InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(size_t index, Iter begin, Iter end);
-    constexpr void InsertRange(size_t index, InitializerList<T> initList);
     template <ForwardIteratableByT<T> Iter>
     constexpr void InsertRange(ConstIterator iter, Iter begin, Iter end);
-    constexpr void InsertRange(ConstIterator iter, InitializerList<T> initList);
 
+    constexpr Value PopLast();
     constexpr void PopBack();
     constexpr void PopBack(size_t count);
     constexpr void Remove(size_t index);
@@ -110,10 +131,14 @@ public:
     constexpr Array& operator=(Array const& other)
         requires CopyableT<T>;
     constexpr Array& operator=(Array&& other) noexcept;
-    constexpr Array& operator=(InitializerList<T> initList);
+    template <ArrayLikeExceptArrayT<T, AllocT> U>
+    constexpr Array& operator=(U const& arr)
+        requires CopyableT<T>;
+
+    constexpr operator ArrayView<T>() const noexcept;
 
 private:
-    constexpr void SwapNewBuffer(Buffer& buffer);
+    constexpr void SwapNewBuffer(Buffer& buffer) noexcept;
     template <typename U>
     constexpr void AssignRangeWithSize(U begin, U end, size_t len);
     template <typename U>
@@ -163,14 +188,14 @@ constexpr Array<T, AllocT>::Array(Array const& other, AllocT const& alloc)
 
 template <MovableT T, AllocatorT<T> AllocT>
 constexpr Array<T, AllocT>::Array(Array&& other) noexcept
-    : m_size(Exchange(other.m_size, size_t{ 0 }))
-    , m_buffer(Exchange(other.m_buffer, { }))
+    : m_size(Exchange(other.m_size, size_t{0}))
+    , m_buffer(Exchange(other.m_buffer, {}))
 {
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
 constexpr Array<T, AllocT>::Array(Array&& other, AllocT const& alloc) noexcept
-    : m_size(Exchange(other.m_size, size_t{ 0 }))
+    : m_size(Exchange(other.m_size, size_t{0}))
     , m_buffer(MoveArg(other.m_buffer), alloc)
 {
 }
@@ -190,16 +215,6 @@ constexpr Array<T, AllocT>::Array(AllocT&& alloc) noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::Array(InitializerList<T> initList, AllocT const& alloc)
-    : m_size(0)
-    , m_buffer(alloc)
-{
-    m_buffer.Allocate(initList.size());
-    memory::ConstructRange(m_buffer.Data(), initList.begin(), initList.end());
-    m_size = initList.size();
-}
-
-template <MovableT T, AllocatorT<T> AllocT>
 constexpr Array<T, AllocT>::Array(size_t capacity, AllocT const& alloc)
     : m_size(0)
     , m_buffer(alloc)
@@ -208,9 +223,41 @@ constexpr Array<T, AllocT>::Array(size_t capacity, AllocT const& alloc)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeExceptArrayT<T, AllocT> U>
+constexpr Array<T, AllocT>::Array(U const& arr, AllocT const& alloc)
+    requires CopyableT<T>
+    : m_size(0)
+    , m_buffer(alloc)
+{
+    ArrayView<T> view = arr;
+    ConstPointer data = view.Data();
+    size_t size = view.Size();
+
+    m_buffer.Allocate(view.Size());
+    memory::ConstructRange(m_buffer.Data(), data, data + size);
+    m_size = size;
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeExceptArrayT<T, AllocT> U>
+constexpr Array<T, AllocT>::Array(U const& arr, size_t size, AllocT const& alloc)
+    requires CopyableT<T>
+    : m_size(0)
+    , m_buffer(alloc)
+{
+    ArrayView<T> view = arr;
+    ArrayView<T> subView = arr.SubFront(size);
+    ConstPointer data = subView.Data();
+    size_t subSize = subView.Size();
+
+    m_buffer.Allocate(size);
+    memory::ConstructRange(m_buffer.Data(), data, data + subSize);
+    m_size = subSize;
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
 constexpr Array<T, AllocT>::Array(Iter begin, Iter end, AllocT const& alloc)
-    requires CopyableT<T>
     : m_size(0)
     , m_buffer(alloc)
 {
@@ -297,6 +344,82 @@ constexpr void Array<T, AllocT>::Insert(ConstIterator iter, Args&&... args)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeT<T> U>
+constexpr void Array<T, AllocT>::Assign(U const& arr)
+    requires CopyableT<T>
+{
+    ArrayView<T> view = arr;
+    size_t size = view.Size();
+    if (size == 0) [[unlikely]] {
+        Clear();
+        return;
+    }
+
+    AssignRangeWithSize(view.Begin(), view.End(), size);
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeT<T> U>
+constexpr void Array<T, AllocT>::Append(U const& arr)
+    requires CopyableT<T>
+{
+    ArrayView<T> view = arr;
+    size_t size = view.Size();
+    if (size == 0) [[unlikely]] {
+        return;
+    }
+
+    AppendRangeWithSize(view.Begin(), view.End(), size);
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeT<T> U>
+constexpr void Array<T, AllocT>::InsertRange(size_t index, U const& arr)
+    requires CopyableT<T>
+{
+    if (index == m_size) {
+        Append(arr);
+        return;
+    }
+
+    ArrayView view = arr;
+    size_t size = view.Size();
+    switch (size) {
+        [[unlikely]] case 0:
+            return;
+        case 1:  Insert(index, *view.Data()); return;
+        default: break;
+    }
+
+    AssertValidIndex(index);
+    InsertRangeWithSize(index, view.Begin(), view.End(), size);
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+template <ArrayLikeT<T> U>
+constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, U const& arr)
+    requires CopyableT<T>
+{
+    size_t locDiff = static_cast<size_t>(iter - Begin());
+    if (locDiff == m_size) {
+        Append(arr);
+        return;
+    }
+
+    ArrayView<T> view = arr;
+    size_t size = view.Size();
+    switch (size) {
+        [[unlikely]] case 0:
+            return;
+        case 1:  Insert(iter, *view.Data()); return;
+        default: break;
+    }
+
+    AssertValidIterator(iter);
+    InsertRangeWithSize(locDiff, view.Begin(), view.End(), size);
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
 template <ForwardIteratableByT<T> Iter>
 constexpr void Array<T, AllocT>::Assign(Iter begin, Iter end)
 {
@@ -307,18 +430,6 @@ constexpr void Array<T, AllocT>::Assign(Iter begin, Iter end)
     }
 
     AssignRangeWithSize(begin, end, distance);
-}
-
-template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::Assign(InitializerList<T> initList)
-{
-    size_t len = initList.size();
-    if (len == 0) [[unlikely]] {
-        Clear();
-        return;
-    }
-
-    AssignRangeWithSize(initList.begin(), initList.end(), len);
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -334,12 +445,6 @@ constexpr void Array<T, AllocT>::Append(Iter begin, Iter end)
     }
 
     AppendRangeWithSize(begin, end, distance);
-}
-
-template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::Append(InitializerList<T> init)
-{
-    AppendRangeWithSize(init.begin(), init.end(), init.size());
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -361,17 +466,6 @@ constexpr void Array<T, AllocT>::InsertRange(size_t index, Iter begin, Iter end)
 
     AssertValidIndex(index);
     InsertRangeWithSize(index, begin, end, distance);
-}
-
-template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::InsertRange(size_t index, InitializerList<T> initList)
-{
-    if (index == m_size) {
-        Append(initList);
-        return;
-    }
-
-    InsertRangeWithSize(index, initList.begin(), initList.end(), initList.size());
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -397,16 +491,15 @@ constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, Iter begin, Ite
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::InsertRange(ConstIterator iter, InitializerList<T> init)
+constexpr Array<T, AllocT>::Value Array<T, AllocT>::PopLast()
 {
-    size_t locDiff = static_cast<size_t>(iter - Begin());
-    if (locDiff == m_size) {
-        Append(init);
-        return;
-    }
+    size_t index = m_size - 1;
+    AssertValidIndex(index);
 
-    AssertValidIterator(iter);
-    InsertRangeWithSize(locDiff, init.begin(), init.end(), init.size());
+    Pointer loc = m_buffer.Data() + index;
+    Value value = MoveArg(*loc);
+    memory::DestructAt(loc);
+    return value;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
@@ -714,19 +807,27 @@ constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array&& other) noexcept
     }
 
     SwapNewBuffer(other.m_buffer);
-    m_size = Exchange(other.m_size, size_t{ 0 });
+    m_size = Exchange(other.m_size, size_t{0});
     return *this;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(InitializerList<T> initList)
+template <ArrayLikeExceptArrayT<T, AllocT> U>
+constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(U const& arr)
+    requires CopyableT<T>
 {
-    Assign(initList);
+    Assign(arr);
     return *this;
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buffer)
+constexpr Array<T, AllocT>::operator ArrayView<T>() const noexcept
+{
+    return ArrayView<T>{m_buffer.Data(), m_size};
+}
+
+template <MovableT T, AllocatorT<T> AllocT>
+constexpr void Array<T, AllocT>::SwapNewBuffer(Buffer& buffer) noexcept
 {
     Pointer begin(m_buffer.Data());
     m_buffer.Swap(buffer);

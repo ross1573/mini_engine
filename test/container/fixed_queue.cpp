@@ -33,6 +33,7 @@ FACTORY(FooArgF);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedQueue<TestObject*, 1>::Iterator);
 
     TEST_RANGE_BASED_FOR_SUPPORT(FixedQueue<TestObject, 1>);
+    TEST_CONST_RANGE_BASED_FOR_SUPPORT(FixedQueue<TestObject, 1>);
 
     static_assert(sizeof(FixedQueue<TestObject, 1>::Iterator) == (alignof(void*) * 2) + (sizeof(size_t) * 2));
 }
@@ -69,8 +70,8 @@ constexpr int TestQueue(FixedQueue<T, CapN> const& que, Array<T> const& arr)
 template <typename T, typename FactoryT>
 constexpr int TestCtor()
 {
-    TEST_ENSURE((FixedQueue<T, 1>{ }.Size() == 0));
-    TEST_ENSURE((FixedQueue<T, 1>{ }.Capacity() == 1));
+    TEST_ENSURE((FixedQueue<T, 1>{}.Size() == 0));
+    TEST_ENSURE((FixedQueue<T, 1>{}.Capacity() == 1));
     TEST_ENSURE((FixedQueue<T, 16>().Size() == 0));
     TEST_ENSURE((FixedQueue<T, 16>().Capacity() == 16));
 
@@ -78,7 +79,7 @@ constexpr int TestCtor()
         FixedQueue<T, 20> arr;
         int count = 0;
         for (int i = 0; i < 20; ++i) {
-            arr.PushBack(FactoryT{ }(++count));
+            arr.PushBack(FactoryT{}(++count));
         }
 
         TEST_ENSURE((FixedQueue<T, 20>(arr) == arr));
@@ -86,10 +87,10 @@ constexpr int TestCtor()
         TEST_ENSURE((FixedQueue<T, 20>(arr.Begin(), arr.End()) == arr));
 
         InitializerList list = {
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
         };
 
         TEST_ENSURE(TestQueue(FixedQueue<T, 4>(list), Array<T>(list)) == 0);
@@ -106,12 +107,12 @@ constexpr int TestModify()
     int arrcount = 33;
     int veccount = 33;
 
-    que.PushBack(FactoryT{ }(++arrcount));
-    arr.PushBack(FactoryT{ }(++veccount));
+    que.PushBack(FactoryT{}(++arrcount));
+    arr.PushBack(FactoryT{}(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
-    que.PushBack(ArgFactoryT{ }(++arrcount));
-    arr.PushBack(ArgFactoryT{ }(++veccount));
+    que.PushBack(ArgFactoryT{}(++arrcount));
+    arr.PushBack(ArgFactoryT{}(++veccount));
     TEST_ENSURE(TestQueue(que, arr) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -128,10 +129,10 @@ constexpr int TestModify()
         que.Append(que2.Begin(), que2.End());
 
         InitializerList list = {
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
         };
 
         que.Append(list);
@@ -141,10 +142,10 @@ constexpr int TestModify()
         que2.Assign(list);
         TEST_ENSURE(TestQueue(que2, Array<T>(list)) == 0);
     } else {
-        que.PushBack(ArgFactoryT{ }(++arrcount));
-        que.PushBack(ArgFactoryT{ }(++arrcount));
-        arr.PushBack(ArgFactoryT{ }(++veccount));
-        arr.PushBack(ArgFactoryT{ }(++veccount));
+        que.PushBack(ArgFactoryT{}(++arrcount));
+        que.PushBack(ArgFactoryT{}(++arrcount));
+        arr.PushBack(ArgFactoryT{}(++veccount));
+        arr.PushBack(ArgFactoryT{}(++veccount));
     }
 
     que.PopFront();

@@ -109,6 +109,7 @@ PUBLIC
         container/trivial_buffer.cxx
 
         container/array.cxx
+        container/array_view.cxx
         container/fixed_array.cxx
         container/fixed_queue.cxx
 )

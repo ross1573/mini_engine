@@ -4,12 +4,14 @@
 #include "config.h"
 
 #if MSVC
-#  define BUILTIN_ASSERT() __debugbreak()
+#  define BUILTIN_TRAP() __debugbreak()
+#elif HAS_BUILTIN(__builtin_debugtrap)
+#  define BUILTIN_TRAP() __builtin_debugtrap()
 #elif HAS_BUILTIN(__builtin_trap)
-#  define BUILTIN_ASSERT() __builtin_trap()
+#  define BUILTIN_TRAP() __builtin_trap()
 #else
-#  include <assert.h>
-#  define BUILTIN_ASSERT() ::assert(#expr)
+#  include <signal.h>
+#  define BUILTIN_TRAP() raise(SIGTRAP)
 #endif
 
 #if NOASSERT
@@ -31,21 +33,21 @@
       const bool var = ::mini::debug::EvaluateExpr(expr) == false;    \
       if (var) [[unlikely]] {                                         \
           ::mini::debug::LogEnsure(#expr __VA_OPT__(, ) __VA_ARGS__); \
-          BUILTIN_ASSERT();                                           \
+          BUILTIN_TRAP();                                             \
       }                                                               \
       if (var) [[unlikely]]
 
 #  define ASSERT(expr, ...)                                           \
       if (::mini::debug::EvaluateExpr(expr) == false) [[unlikely]] {  \
           ::mini::debug::LogAssert(#expr __VA_OPT__(, ) __VA_ARGS__); \
-          BUILTIN_ASSERT();                                           \
+          BUILTIN_TRAP();                                             \
           ::mini::Unreachable();                                      \
       }
 
 #  define VERIFY(expr, ...)                                           \
       if (::mini::debug::EvaluateExpr(expr) == false) [[unlikely]] {  \
           ::mini::debug::LogAssert(#expr __VA_OPT__(, ) __VA_ARGS__); \
-          BUILTIN_ASSERT();                                           \
+          BUILTIN_TRAP();                                             \
           ::mini::Unreachable();                                      \
       }
 

@@ -34,6 +34,7 @@ FACTORY(FooArgF);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(FixedArray<TestObject*, 1>::Iterator);
 
     TEST_RANGE_BASED_FOR_SUPPORT(FixedArray<TestObject, 1>);
+    TEST_CONST_RANGE_BASED_FOR_SUPPORT(FixedArray<TestObject, 1>);
 
     static_assert(sizeof(FixedArray<TestObject, 1>::Iterator) == alignof(void*) * 2);
 }
@@ -69,8 +70,8 @@ constexpr int TestArray(FixedArray<T, CapN> const& arr, std::vector<T, StdAllocT
 template <typename T, typename FactoryT>
 constexpr int TestCtor()
 {
-    TEST_ENSURE((FixedArray<T, 1>{ }.Size() == 0));
-    TEST_ENSURE((FixedArray<T, 1>{ }.Capacity() == 1));
+    TEST_ENSURE((FixedArray<T, 1>{}.Size() == 0));
+    TEST_ENSURE((FixedArray<T, 1>{}.Capacity() == 1));
     TEST_ENSURE((FixedArray<T, 16>().Size() == 0));
     TEST_ENSURE((FixedArray<T, 16>().Capacity() == 16));
 
@@ -78,7 +79,7 @@ constexpr int TestCtor()
         FixedArray<T, 20> arr;
         int count = 0;
         for (int i = 0; i < 20; ++i) {
-            arr.PushBack(FactoryT{ }(++count));
+            arr.PushBack(FactoryT{}(++count));
         }
 
         TEST_ENSURE((FixedArray<T, 20>(arr) == arr));
@@ -86,10 +87,10 @@ constexpr int TestCtor()
         TEST_ENSURE((FixedArray<T, 20>(arr.Begin(), arr.End()) == arr));
 
         InitializerList list = {
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
-            FactoryT{ }(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
+            FactoryT{}(++count),
         };
 
         TEST_ENSURE(TestArray(FixedArray<T, 20>(list), std::vector<T>(list)) == 0);
@@ -106,12 +107,12 @@ constexpr int TestPush()
     int arrcount = 33;
     int veccount = 33;
 
-    arr.PushBack(FactoryT{ }(++arrcount));
-    vec.push_back(FactoryT{ }(++veccount));
+    arr.PushBack(FactoryT{}(++arrcount));
+    vec.push_back(FactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.PushBack(ArgFactoryT{ }(++arrcount));
-    vec.emplace_back(ArgFactoryT{ }(++veccount));
+    arr.PushBack(ArgFactoryT{}(++arrcount));
+    vec.emplace_back(ArgFactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -120,10 +121,10 @@ constexpr int TestPush()
         TEST_ENSURE(TestArray(arr, vec) == 0);
 
         InitializerList list = {
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
         };
 
         arr.Append(list);
@@ -142,12 +143,12 @@ constexpr int TestInsert()
     int arrcount = 33;
     int veccount = 33;
 
-    arr.Insert(0, FactoryT{ }(++arrcount));
-    vec.insert(vec.begin(), FactoryT{ }(++veccount));
+    arr.Insert(0, FactoryT{}(++arrcount));
+    vec.insert(vec.begin(), FactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Insert(0, ArgFactoryT{ }(++arrcount));
-    vec.emplace(vec.begin(), ArgFactoryT{ }(++veccount));
+    arr.Insert(0, ArgFactoryT{}(++arrcount));
+    vec.emplace(vec.begin(), ArgFactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -162,12 +163,12 @@ constexpr int TestInsert()
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 
-    arr.Insert(arr.Begin(), FactoryT{ }(++arrcount));
-    vec.insert(vec.begin(), FactoryT{ }(++veccount));
+    arr.Insert(arr.Begin(), FactoryT{}(++arrcount));
+    vec.insert(vec.begin(), FactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
-    arr.Insert(arr.Begin(), ArgFactoryT{ }(++arrcount));
-    vec.emplace(vec.begin(), ArgFactoryT{ }(++veccount));
+    arr.Insert(arr.Begin(), ArgFactoryT{}(++arrcount));
+    vec.emplace(vec.begin(), ArgFactoryT{}(++veccount));
     TEST_ENSURE(TestArray(arr, vec) == 0);
 
     if constexpr (CopyableT<T>) {
@@ -182,10 +183,10 @@ constexpr int TestInsert()
         TEST_ENSURE(TestArray(arr, vec) == 0);
 
         InitializerList list = {
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
-            FactoryT{ }(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
+            FactoryT{}(++arrcount),
         };
 
         arr.InsertRange(2, list);
@@ -206,8 +207,8 @@ constexpr int TestRemove()
 
     vec.reserve(32);
     for (int i = 0; i < 32; ++i) {
-        arr.PushBack(FactoryT{ }(++arrcount));
-        vec.push_back(FactoryT{ }(++veccount));
+        arr.PushBack(FactoryT{}(++arrcount));
+        vec.push_back(FactoryT{}(++veccount));
     }
 
     arr.PopBack();
@@ -243,8 +244,8 @@ constexpr int TestModify()
 
     vec.reserve(8);
     for (int i = 0; i < 8; ++i) {
-        arr.PushBack(FactoryT{ }(++arrcount));
-        vec.emplace_back(FactoryT{ }(++veccount));
+        arr.PushBack(FactoryT{}(++arrcount));
+        vec.emplace_back(FactoryT{}(++veccount));
     }
 
     if constexpr (CopyableT<T>) {
@@ -252,8 +253,8 @@ constexpr int TestModify()
         arr2.Assign(arr.Begin(), arr.End());
         TEST_ENSURE(arr == arr2);
 
-        arr.Resize(20, ArgFactoryT{ }(++arrcount));
-        vec.resize(20, ArgFactoryT{ }(++veccount));
+        arr.Resize(20, ArgFactoryT{}(++arrcount));
+        vec.resize(20, ArgFactoryT{}(++veccount));
         TEST_ENSURE(TestArray(arr, vec) == 0);
     }
 

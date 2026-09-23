@@ -42,4 +42,4 @@ CheckOptions:
   - key: readability-identifier-length.IgnoredParameterNames
     value: x|y|z|w|r|g|b|a|^[_]$
   - key: performance-unnecessary-value-param.AllowedTypes
-    value: 'mini::StringView'
+    value: 'mini::StringView;mini::ArrayView'

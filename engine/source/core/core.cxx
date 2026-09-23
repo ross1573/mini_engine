@@ -36,6 +36,7 @@ export import :array_iterator;
 export import :circular_iterator;
 
 export import :array;
+export import :array_view;
 export import :fixed_array;
 export import :fixed_queue;
 
