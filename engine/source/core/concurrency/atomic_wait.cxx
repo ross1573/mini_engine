@@ -40,7 +40,7 @@ inline bool AtomicSpinWaitLoop(T const volatile* loc, T val, int32 order) noexce
         }
 
         Clock::TimePoint tp = Clock::Now();
-        if ((tp - start) > MicroSeconds(4)) {
+        if ((tp - start) > Microseconds(4)) {
             break;
         }
     }

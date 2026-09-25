@@ -77,9 +77,9 @@ constexpr int TestDuration()
 
 int main()
 {
-    static_assert(TestDuration<NanoSeconds, std::chrono::nanoseconds>() == 0);
-    static_assert(TestDuration<MicroSeconds, std::chrono::microseconds>() == 0);
-    static_assert(TestDuration<MilliSeconds, std::chrono::milliseconds>() == 0);
+    static_assert(TestDuration<Nanoseconds, std::chrono::nanoseconds>() == 0);
+    static_assert(TestDuration<Microseconds, std::chrono::microseconds>() == 0);
+    static_assert(TestDuration<Milliseconds, std::chrono::milliseconds>() == 0);
     static_assert(TestDuration<Seconds, std::chrono::seconds>() == 0);
     static_assert(TestDuration<Minutes, std::chrono::minutes>() == 0);
     static_assert(TestDuration<Hours, std::chrono::hours>() == 0);

@@ -77,9 +77,9 @@ constexpr int TestTimePoint()
 
 int main()
 {
-    static_assert(TestTimePoint<TimePoint<NanoSeconds>, StdTp<std::chrono::nanoseconds>>() == 0);
-    static_assert(TestTimePoint<TimePoint<MicroSeconds>, StdTp<std::chrono::microseconds>>() == 0);
-    static_assert(TestTimePoint<TimePoint<MilliSeconds>, StdTp<std::chrono::milliseconds>>() == 0);
+    static_assert(TestTimePoint<TimePoint<Nanoseconds>, StdTp<std::chrono::nanoseconds>>() == 0);
+    static_assert(TestTimePoint<TimePoint<Microseconds>, StdTp<std::chrono::microseconds>>() == 0);
+    static_assert(TestTimePoint<TimePoint<Milliseconds>, StdTp<std::chrono::milliseconds>>() == 0);
     static_assert(TestTimePoint<TimePoint<Seconds>, StdTp<std::chrono::seconds>>() == 0);
     static_assert(TestTimePoint<TimePoint<Minutes>, StdTp<std::chrono::minutes>>() == 0);
     static_assert(TestTimePoint<TimePoint<Hours>, StdTp<std::chrono::hours>>() == 0);

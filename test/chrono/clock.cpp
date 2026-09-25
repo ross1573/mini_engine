@@ -31,7 +31,7 @@ void MiniClock()
     mini::Clock::Duration diff = end - start;
 
     mini::test::LogInfo("[{}ms] Elapsed: {}ns", MilliSecT, diff.Count());
-    static_assert(mini::SameAsT<decltype(diff), mini::NanoSeconds>);
+    static_assert(mini::SameAsT<decltype(diff), mini::Nanoseconds>);
 }
 
 template <mini::size_t MilliSecT>

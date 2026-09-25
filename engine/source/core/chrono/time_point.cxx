@@ -5,7 +5,7 @@ import :duration;
 
 namespace mini {
 
-export template <DurationT T = NanoSeconds>
+export template <DurationT T = Nanoseconds>
 class TimePoint;
 
 template <typename T>

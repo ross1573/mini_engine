@@ -15,7 +15,7 @@ inline TimePoint<T> ClockNow() noexcept
 {
     struct timespec ts;
     VERIFY(clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0, "clock_gettime of CLOCK_MONOTONIC_RAW");
-    return TimePoint<T>(Seconds(ts.tv_sec) + NanoSeconds(ts.tv_nsec));
+    return TimePoint<T>(Seconds(ts.tv_sec) + Nanoseconds(ts.tv_nsec));
 }
 
 } // namespace mini

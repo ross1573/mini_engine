@@ -8,9 +8,9 @@ namespace mini {
 export template <ArithmeticT T, RatioT PeriodT>
 class Duration;
 
-export using NanoSeconds = Duration<int64, Ratio<1, 1000000000>>;
-export using MicroSeconds = Duration<int64, Ratio<1, 1000000>>;
-export using MilliSeconds = Duration<int64, Ratio<1, 1000>>;
+export using Nanoseconds = Duration<int64, Ratio<1, 1000000000>>;
+export using Microseconds = Duration<int64, Ratio<1, 1000000>>;
+export using Milliseconds = Duration<int64, Ratio<1, 1000>>;
 export using Seconds = Duration<int64, Ratio<1, 1>>;
 export using Minutes = Duration<int32, Ratio<60, 1>>;
 export using Hours = Duration<int32, Ratio<3600, 1>>;
@@ -72,7 +72,7 @@ constexpr U DurationCast(Duration<T, PeriodT> const& from) noexcept
     using ToDuration = U;
     using ResultT = CommonT<typename FromDuration::Value, typename ToDuration::Value, int64>;
 
-    constexpr auto period = RatioDivideT<PeriodT, typename U::Period>{ };
+    constexpr auto period = RatioDivideT<PeriodT, typename U::Period>{};
     if constexpr (period.num == 1 && period.denom == 1) {
         return ToDuration(static_cast<ToDuration::Value>(from.Count()));
     } else if constexpr (period.num == 1) {

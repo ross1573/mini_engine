@@ -20,8 +20,6 @@
 
 #if MSVC
 #  define BUILTIN_TRAP() __debugbreak()
-#elif HAS_BUILTIN(__builtin_debugtrap)
-#  define BUILTIN_TRAP() __builtin_debugtrap()
 #elif HAS_BUILTIN(__builtin_trap)
 #  define BUILTIN_TRAP() __builtin_trap()
 #else

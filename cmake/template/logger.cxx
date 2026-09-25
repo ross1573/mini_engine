@@ -4,7 +4,7 @@ import mini.core;
 
 namespace @prefix@::@api@ {
 
-@api_define@::mini::Logger logger("@camel_case@");
+@api_define@ ::mini::Logger logger("@camel_case@");
 
 using Level = ::mini::Logger::Level;
 using MessageContext = ::mini::Logger::MessageContext;

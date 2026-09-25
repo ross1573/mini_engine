@@ -9,7 +9,7 @@ namespace mini {
 
 export class CORE_API Clock {
 public:
-    typedef NanoSeconds Duration;
+    typedef Nanoseconds Duration;
     typedef TimePoint<Duration> TimePoint;
 
 public:

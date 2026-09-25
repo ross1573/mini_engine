@@ -30,20 +30,20 @@ inline TimePoint<T> ClockNow() noexcept
     ignore = QueryPerformanceCounter(&count);
 
     if (freq.QuadPart == _10MHz) {
-        constexpr int64 multiplier = NanoSeconds::Period::denom / _10MHz;
-        return TimePoint<T>(NanoSeconds(count.QuadPart * multiplier));
+        constexpr int64 multiplier = Nanoseconds::Period::denom / _10MHz;
+        return TimePoint<T>(Nanoseconds(count.QuadPart * multiplier));
     } else if (freq.QuadPart == _24MHz) {
-        const int64 main = (count.QuadPart / _24MHz) * NanoSeconds::Period::denom;
-        const int64 sub = (count.QuadPart % _24MHz) * NanoSeconds::Period::denom / _24MHz;
-        return TimePoint<T>(NanoSeconds(main + sub));
+        const int64 main = (count.QuadPart / _24MHz) * Nanoseconds::Period::denom;
+        const int64 sub = (count.QuadPart % _24MHz) * Nanoseconds::Period::denom / _24MHz;
+        return TimePoint<T>(Nanoseconds(main + sub));
     }
 
     const int64 second = count.QuadPart / freq.QuadPart;
     const int64 fraction = count.QuadPart % freq.QuadPart;
-    const int64 duration = (second * NanoSeconds::Period::denom) +
-                           (fraction * NanoSeconds::Period::denom / freq.QuadPart);
+    const int64 duration = (second * Nanoseconds::Period::denom) +
+                           (fraction * Nanoseconds::Period::denom / freq.QuadPart);
 
-    return TimePoint<T>(NanoSeconds(duration));
+    return TimePoint<T>(Nanoseconds(duration));
 }
 
 } // namespace mini
