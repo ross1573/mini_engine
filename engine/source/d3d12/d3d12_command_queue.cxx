@@ -6,12 +6,20 @@ import mini.windows;
 
 export namespace mini::d3d12 {
 
+export enum class CommandType : int8 {
+    None = -1,
+
+    Direct,
+    Compute,
+    Copy,
+};
+
 class CommandQueue {
 private:
     SharedPtr<ID3D12CommandQueue> m_commandQueue;
     SharedPtr<ID3D12Fence> m_fence;
 
-    graphics::CommandType m_queueType;
+    CommandType m_queueType;
     D3D12_COMMAND_QUEUE_DESC m_queueDesc;
 
     HANDLE m_fenceHandle;
@@ -19,7 +27,7 @@ private:
     uint64 m_lastCompeletedFence;
 
 public:
-    CommandQueue(ID3D12Device*, graphics::CommandType);
+    CommandQueue(ID3D12Device*, CommandType);
     ~CommandQueue();
 
     void Wait(CommandQueue*);

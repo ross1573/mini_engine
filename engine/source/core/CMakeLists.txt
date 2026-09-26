@@ -141,6 +141,7 @@ PRIVATE
     $<$<PLATFORM_ID:Windows>:debug/impl/logger_win.cpp>
     $<$<PLATFORM_ID:Darwin>:debug/impl/logger_macos.cpp>
     debug/impl/assert_format.cpp
+    include/debug/assert.h
 )
 
 target_sources(mini.core
@@ -204,6 +205,8 @@ PUBLIC
         core.cxx
 
 PRIVATE
+    include/config.h
+    include/option.h
     $<$<PLATFORM_ID:Windows>:internal/win_include.h>
     interface.cpp
 )
