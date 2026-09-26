@@ -15,8 +15,8 @@ export template <MovableT T, AllocatorT<T> AllocT = mini::Allocator<T>>
 class Array;
 
 template <typename T, typename ValueT, typename AllocT>
-concept ArrayLikeExceptArrayT = ArrayLikeT<T, ValueT> && AllocatorT<AllocT, ValueT> &&
-                                !SameAsT<RemoveConstVolatileRefT<T>, Array<ValueT, AllocT>>;
+concept ArrayLikeExceptArrayT =
+    ArrayLikeT<T, ValueT> && AllocatorT<AllocT, ValueT> && !SameAsT<RemoveConstVolatileRefT<T>, Array<ValueT, AllocT>>;
 
 template <MovableT T, AllocatorT<T> AllocT>
 class Array {
@@ -497,8 +497,9 @@ constexpr Array<T, AllocT>::Value Array<T, AllocT>::PopLast()
     AssertValidIndex(index);
 
     Pointer loc = m_buffer.Data() + index;
-    Value value = MoveArg(*loc);
+    Value value{MoveArg(*loc)};
     memory::DestructAt(loc);
+    --m_size;
     return value;
 }
 
