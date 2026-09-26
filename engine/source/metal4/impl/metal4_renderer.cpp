@@ -5,91 +5,83 @@ import mini.graphics;
 import mini.apple;
 import :renderer;
 import :swap_chain;
-import :render_pass;
 
 namespace mini::metal4 {
 
-Renderer::Renderer(Device const& device)
-    : m_autoReleasePool(nullptr)
-    , m_commandQueue(nullptr)
-    , m_commandBuffer(nullptr)
-    , m_commandAllocator(nullptr)
-    , m_compiler(device)
-    , m_library(device, "mini.shader")
-    , m_renderPasses(1)
-    , m_renderPipelineStates(1)
+Renderer::Renderer(Device* device)
+    : m_device(device)
+    , m_commandAllocatorPool(device)
     , m_eventValue(0)
 {
     ASSERT(device);
 
-    m_commandQueue = TransferShared(device->newMTL4CommandQueue());
-    m_commandBuffer = TransferShared(device->newCommandBuffer());
-    m_commandAllocator = TransferShared(device->newCommandAllocator());
-    m_event = TransferShared(device->newSharedEvent());
+    m_commandQueue = MakeUnique<CommandQueue>(device);
+    m_commandBuffer = MakeUnique<CommandBuffer>(device);
+    m_compiler = MakeUnique<Compiler>(device);
+    m_library = MakeUnique<ShaderLibrary>(device, "mini.shader");
 
-    ENSURE(m_commandBuffer) {
-        return;
-    }
+    ASSERT(m_commandQueue);
+    ASSERT(m_commandBuffer);
+    ASSERT(m_compiler);
+    ASSERT(m_library);
 
-    RenderPass renderPass(device, m_commandBuffer.Get());
-    m_renderPasses.PushBack(MoveArg(renderPass));
+    m_vertexFunction = MakeUnique<ShaderFunction>(m_library.Get(), "VertexMain");
+    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library.Get(), "FragmentMain");
+    RenderPipelineDescriptor pipelineDesc(m_vertexFunction.Get(), m_fragmentFunction.Get());
+    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler.Get(), memory::AddressOf(pipelineDesc));
 
-    ShaderFunction vertexFunction(m_library, "VertexMain");
-    ShaderFunction fragmentFunction(m_library, "FragmentMain");
-    RenderPipelineDescriptor pipelineDesc(MoveArg(vertexFunction), MoveArg(fragmentFunction));
-    RenderPipelineState pipelineState(m_compiler, pipelineDesc);
-    m_renderPipelineStates.PushBack(MoveArg(pipelineState));
+    ASSERT(m_renderPipelineState);
+
+    m_event = MakeUnique<SharedEvent>(m_device);
+
+    ASSERT(m_event);
 }
 
 void Renderer::Render()
 {
-    m_event->waitUntilSignaledValue(m_eventValue, ~uint64{ 0 });
+    [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
-    NS::AutoreleasePool* autoReleasePool = NS::AutoreleasePool::alloc();
-    ENSURE(autoReleasePool != nullptr, "failed to allocate NS::AutoreleasePool") {
-        return;
-    }
+    m_commandAllocatorPool.Expire(m_eventValue);
+    m_event->Wait(m_eventValue);
+    ++m_eventValue;
 
-    m_autoReleasePool = TransferShared(autoReleasePool);
-    m_autoReleasePool->init();
+    UniquePtr<CommandAllocator> commandAllocator = m_commandAllocatorPool.Allocate();
+    m_commandBuffer->Begin(commandAllocator.Get());
 
-    CA::MetalDrawable* drawable = interface->GetSwapChain()->GetCurrentDrawable();
-    MTL::Texture* targetTexture = drawable->texture();
+    SwapChain* swapChain = interface->GetSwapChain();
+    UniquePtr<Texture> frameTexture = swapChain->FrameTexture();
+    graphics::RenderPassTargetAttachment targetAttachment{
+        frameTexture.Get(),
+        graphics::LoadAction::Clear,
+        graphics::StoreAction::Store,
+        Color::Clear(),
+    };
 
-    m_commandAllocator->reset();
-    m_commandBuffer->beginCommandBuffer(m_commandAllocator.Get());
+    graphics::RenderPassDescriptor renderPassDescriptor{
+        {targetAttachment},
+    };
 
-    for (RenderPass& renderPass : m_renderPasses) {
-        renderPass.Begin(targetTexture, Color::Clear());
-        renderPass.SetPipelineState(*m_renderPipelineStates.Begin());
+    // basic triangle pass
+    {
+        RenderPass renderPass{m_commandBuffer.Get(), renderPassDescriptor};
+        renderPass.SetPipelineState(m_renderPipelineState.Get());
         renderPass.DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
-        renderPass.End();
     }
 
-    m_commandBuffer->endCommandBuffer();
+    m_commandBuffer->End();
+    m_commandAllocatorPool.Pending(MoveArg(commandAllocator), m_eventValue);
+
+    m_commandQueue->Commit(m_commandBuffer.Get());
+    m_commandQueue->Signal(m_event.Get(), m_eventValue);
 }
 
 void Renderer::WaitForIdle()
 {
+    [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
+
     m_eventValue++;
-    m_commandQueue->signalEvent(m_event.Get(), m_eventValue);
-    m_event->waitUntilSignaledValue(m_eventValue, ~uint64{ 0 });
-}
-
-void Renderer::Execute()
-{
-    m_eventValue++;
-
-    CA::MetalDrawable* drawable = interface->GetSwapChain()->GetCurrentDrawable();
-    m_commandQueue->wait(drawable);
-
-    MTL4::CommandBuffer* commandBuffer = m_commandBuffer.Get();
-    m_commandQueue->commit(&commandBuffer, 1);
-
-    m_commandQueue->signalEvent(m_event.Get(), m_eventValue);
-    m_commandQueue->signalDrawable(drawable);
-
-    m_autoReleasePool.Reset();
+    m_commandQueue->Signal(m_event.Get(), m_eventValue);
+    m_event->Wait(m_eventValue);
 }
 
 } // namespace mini::metal4

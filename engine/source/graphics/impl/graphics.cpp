@@ -48,7 +48,6 @@ bool Graphics::LoadModule(StringView moduleName)
 void Graphics::RenderFrame()
 {
     m_renderer->Render();
-    m_renderer->Execute();
     m_swapChain->Present();
 }
 

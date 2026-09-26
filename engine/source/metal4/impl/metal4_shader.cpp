@@ -6,19 +6,20 @@ import :shader;
 
 namespace mini::metal4 {
 
-ShaderLibrary::ShaderLibrary(Device const& device, StringView name)
+ShaderLibrary::ShaderLibrary(Device* device, StringView file)
 {
-    String filePath = GetFilePath(name);
+    String filePath = GetFilePath(file);
     SharedPtr<NS::String> path = ToNSString(filePath);
     NS::URL* url = NS::URL::fileURLWithPath(path.Get());
     NS::Error* error;
 
-    m_library = TransferShared(device->newLibrary(url, &error));
+    m_library = TransferShared(device->MTLDevice()->newLibrary(url, &error));
     ENSURE(m_library, error, "failed to load shader library at {}", filePath.Data()) {
         return;
     }
 
-    SetName(name);
+    SharedPtr<NS::String> name = ToNSString(file);
+    m_library->setLabel(name.Get());
 }
 
 String ShaderLibrary::GetFilePath(StringView name)
@@ -34,7 +35,7 @@ String ShaderLibrary::GetFilePath(StringView name)
     return file;
 }
 
-ShaderFunction::ShaderFunction(ShaderLibrary const& lib, StringView const& name)
+ShaderFunction::ShaderFunction(ShaderLibrary* lib, StringView name)
 {
     SharedPtr<NS::String> nsName = ToNSString(name);
     SharedPtr<MTL4::LibraryFunctionDescriptor> desc = TransferShared(MTL4::LibraryFunctionDescriptor::alloc());
@@ -43,9 +44,8 @@ ShaderFunction::ShaderFunction(ShaderLibrary const& lib, StringView const& name)
     }
 
     desc->init();
-    desc->setLibrary(lib.MTLLibrary());
+    desc->setLibrary(lib->MTLLibrary());
     desc->setName(nsName.Get());
-
     m_descriptor = StaticCast<MTL4::FunctionDescriptor>(MoveArg(desc));
 }
 

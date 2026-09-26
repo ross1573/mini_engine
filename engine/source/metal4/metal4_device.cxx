@@ -27,9 +27,8 @@ public:
     [[nodiscard]] graphics::SwapChain* CreateSwapChain() final;
     [[nodiscard]] graphics::Renderer* CreateRenderer() final;
 
-    [[nodiscard]] graphics::API GetAPI() const final { return graphics::API::Metal4; }
-    [[nodiscard]] MTL::Device* MTLDevice() const { return m_device.Get(); }
-    [[nodiscard]] MTL::Device* operator->() const noexcept { return m_device.operator->(); }
+    [[nodiscard]] graphics::API GetAPI() const noexcept final { return graphics::API::Metal4; }
+    [[nodiscard]] MTL::Device* MTLDevice() const noexcept { return m_device.Get(); }
 };
 
 MTL::Device* CreateSystemDefaultDevice() noexcept

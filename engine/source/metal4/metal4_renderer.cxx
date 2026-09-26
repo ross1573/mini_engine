@@ -1,56 +1,37 @@
-module;
-
-#include <Metal/MTL4CommandAllocator.hpp>
-#include <Metal/MTL4CommandBuffer.hpp>
-#include <Metal/MTL4CommandQueue.hpp>
-#include <Metal/MTLEvent.hpp>
-
 export module mini.metal4:renderer;
 
 import mini.core;
 import mini.graphics;
 import mini.apple;
+import :event;
+import :command_queue;
+import :command_buffer;
 import :render_pass;
-
-export namespace MTL4 {
-
-using MTL4::CommandAllocator;
-using MTL4::CommandBuffer;
-using MTL4::CommandQueue;
-
-} // namespace MTL4
 
 namespace mini::metal4 {
 
 export class METAL4_API Renderer final : public graphics::Renderer {
 private:
-    SharedPtr<NS::AutoreleasePool> m_autoReleasePool;
-    SharedPtr<MTL4::CommandQueue> m_commandQueue;
-    SharedPtr<MTL4::CommandBuffer> m_commandBuffer;
-    SharedPtr<MTL4::CommandAllocator> m_commandAllocator;
+    Device* m_device;
 
-    Compiler m_compiler;
-    ShaderLibrary m_library;
+    UniquePtr<CommandQueue> m_commandQueue;
+    UniquePtr<CommandBuffer> m_commandBuffer;
+    CommandAllocatorPool m_commandAllocatorPool;
 
-    Array<RenderPass> m_renderPasses;
-    Array<RenderPipelineState> m_renderPipelineStates;
+    UniquePtr<Compiler> m_compiler;
+    UniquePtr<ShaderLibrary> m_library;
+    UniquePtr<ShaderFunction> m_vertexFunction;
+    UniquePtr<ShaderFunction> m_fragmentFunction;
+    UniquePtr<RenderPipelineState> m_renderPipelineState;
 
-    SharedPtr<MTL::SharedEvent> m_event;
+    UniquePtr<SharedEvent> m_event;
     uint64 m_eventValue;
 
 public:
-    Renderer(Device const&);
+    Renderer(Device* device);
 
     void WaitForIdle() final;
     void Render() final;
-    void Execute() final;
-
-    [[nodiscard]] MTL4::CommandQueue* MTL4CommandQueue() const noexcept;
 };
-
-MTL4::CommandQueue* Renderer::MTL4CommandQueue() const noexcept
-{
-    return m_commandQueue.Get();
-}
 
 } // namespace mini::metal4

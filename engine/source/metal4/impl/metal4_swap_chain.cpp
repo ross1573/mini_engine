@@ -7,19 +7,18 @@ import :swap_chain;
 
 namespace mini::metal4 {
 
-SwapChain::SwapChain(MTL::Device* device)
+SwapChain::SwapChain(Device* device)
     : m_layer(TransferShared(CA::MetalLayer::layer()))
-    , m_drawable(nullptr)
 {
     ASSERT(m_layer, "failed to retrieve MetalLayer object");
 
-    m_layer->setDevice(device);
+    m_layer->setDevice(device->MTLDevice());
     interface->GetWindow()->SetMetalLayer(m_layer.Get());
 }
 
 void SwapChain::Present()
 {
-    m_drawable->present();
+    m_drawable.Present();
     m_drawable.Reset();
 }
 
@@ -47,15 +46,28 @@ bool SwapChain::GetFullScreen() const
     return interface->GetWindow()->IsFullScreen();
 }
 
-CA::MetalDrawable* SwapChain::GetCurrentDrawable()
+UniquePtr<Texture> SwapChain::FrameTexture()
 {
-    if (m_drawable != nullptr) {
-        return m_drawable.Get();
+    if (!m_drawable.Valid()) {
+        SwapNextDrawable();
     }
 
+    return MakeUnique<Texture>(Texture(m_drawable.MTLTexture()));
+}
+
+Drawable* SwapChain::Drawable()
+{
+    if (!m_drawable.Valid()) {
+        SwapNextDrawable();
+    }
+
+    return memory::AddressOf(m_drawable);
+}
+
+void SwapChain::SwapNextDrawable()
+{
     m_drawable.Reset(m_layer->nextDrawable());
     ASSERT(m_drawable, "failed to retrieve next drawable");
-    return m_drawable.Get();
 }
 
 } // namespace mini::metal4

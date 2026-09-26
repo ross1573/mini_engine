@@ -24,17 +24,16 @@ private:
     String m_name;
 
 public:
-    explicit Compiler(Device const& device);
-    Compiler(Device const& device, StringView name);
+    explicit Compiler(Device* device);
+    Compiler(Device* device, StringView name);
 
     [[nodiscard]] bool Valid() const noexcept { return m_compiler.Valid(); }
     [[nodiscard]] String Name() const { return m_name; }
 
-    [[nodiscard]] MTL4::Compiler* MTL4Compiler() const noexcept { return m_compiler.Get(); }
-    [[nodiscard]] MTL4::Compiler* operator->() const noexcept { return m_compiler.operator->(); }
+    [[nodiscard]] MTL4::Compiler* MTLCompiler() const noexcept { return m_compiler.Get(); }
 
 private:
-    void InitWithDescriptor(Device const& device, SharedPtr<MTL4::CompilerDescriptor> const& desc);
+    void InitWithDescriptor(Device* device, SharedPtr<MTL4::CompilerDescriptor> const& desc);
 };
 
 } // namespace mini::metal4

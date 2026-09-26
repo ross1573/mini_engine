@@ -15,18 +15,11 @@ RenderPipelineDescriptor::RenderPipelineDescriptor()
     m_renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
 }
 
-RenderPipelineDescriptor::RenderPipelineDescriptor(ShaderFunction const& vertex, ShaderFunction const& fragment)
+RenderPipelineDescriptor::RenderPipelineDescriptor(ShaderFunction* vertex, ShaderFunction* fragment)
     : RenderPipelineDescriptor()
 {
     SetVertexFunction(vertex);
     SetFragmentFunction(fragment);
-}
-
-RenderPipelineDescriptor::RenderPipelineDescriptor(ShaderFunction&& vertex, ShaderFunction&& fragment)
-    : RenderPipelineDescriptor()
-{
-    SetVertexFunction(MoveArg(vertex));
-    SetFragmentFunction(MoveArg(fragment));
 }
 
 void RenderPipelineDescriptor::SetName(StringView name)
@@ -35,51 +28,31 @@ void RenderPipelineDescriptor::SetName(StringView name)
     m_renderPipelineDescriptor->setLabel(label.Get());
 }
 
-void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction const& vertex)
+void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction* vertex)
 {
     ENSURE(vertex, "invalid vertex function") {
         return;
     }
 
     m_vertex = vertex;
-    m_renderPipelineDescriptor->setVertexFunctionDescriptor(m_vertex.MTL4FunctionDescriptor());
+    m_renderPipelineDescriptor->setVertexFunctionDescriptor(m_vertex->MTLFunctionDescriptor());
 }
 
-void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction&& vertex)
-{
-    ENSURE(vertex, "invalid vertex function") {
-        return;
-    }
-
-    m_vertex = MoveArg(vertex);
-    m_renderPipelineDescriptor->setVertexFunctionDescriptor(m_vertex.MTL4FunctionDescriptor());
-}
-
-void RenderPipelineDescriptor::SetFragmentFunction(ShaderFunction const& fragment)
+void RenderPipelineDescriptor::SetFragmentFunction(ShaderFunction* fragment)
 {
     ENSURE(fragment, "invalid fragment function") {
         return;
     }
 
     m_fragment = fragment;
-    m_renderPipelineDescriptor->setFragmentFunctionDescriptor(m_fragment.MTL4FunctionDescriptor());
+    m_renderPipelineDescriptor->setFragmentFunctionDescriptor(m_fragment->MTLFunctionDescriptor());
 }
 
-void RenderPipelineDescriptor::SetFragmentFunction(ShaderFunction&& fragment)
-{
-    ENSURE(fragment, "invlaid fragment function") {
-        return;
-    }
-
-    m_fragment = MoveArg(fragment);
-    m_renderPipelineDescriptor->setFragmentFunctionDescriptor(m_fragment.MTL4FunctionDescriptor());
-}
-
-RenderPipelineState::RenderPipelineState(Compiler const& compiler, RenderPipelineDescriptor const& descriptor)
+RenderPipelineState::RenderPipelineState(Compiler* compiler, RenderPipelineDescriptor* descriptor)
 {
     NS::Error* error;
-    MTL4::RenderPipelineDescriptor* desc = descriptor.MTL4RenderPipelineDescriptor();
-    m_renderPipelineState = TransferShared(compiler->newRenderPipelineState(desc, nullptr, &error));
+    MTL4::RenderPipelineDescriptor* desc = descriptor->MTLRenderPipelineDescriptor();
+    m_renderPipelineState = TransferShared(compiler->MTLCompiler()->newRenderPipelineState(desc, nullptr, &error));
     ENSURE(m_renderPipelineState, error, "failed to create render pipeline state") {
         return;
     }

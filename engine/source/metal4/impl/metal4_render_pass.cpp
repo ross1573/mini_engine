@@ -9,119 +9,112 @@ import :render_pass;
 
 namespace mini::metal4 {
 
-RenderPass::RenderPass(Device const& device, MTL4::CommandBuffer* commandBuffer) noexcept
-    : m_commandBuffer(nullptr)
-    , m_renderCommandEncoder(nullptr)
-    , m_targetTexture()
+SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
+    graphics::RenderPassDescriptor const& renderPassDescriptor)
 {
-    ASSERT(device);
+    SharedPtr<MTL4::RenderPassDescriptor> desc = TransferShared(MTL4::RenderPassDescriptor::alloc());
+    ENSURE(desc.Valid(), "failed to allocate MTL4::RenderPassDescriptor") {
+        return nullptr;
+    }
+
+    desc->init();
+
+    Array<graphics::RenderPassTargetAttachment> const& targetAttachments = renderPassDescriptor.targetAttachments;
+    MTL::RenderPassColorAttachmentDescriptorArray* colorDescriptors = desc->colorAttachments();
+
+    for (size_t i = 0; i < targetAttachments.Size(); ++i) {
+        graphics::RenderPassTargetAttachment const& targetAttachment = targetAttachments[i];
+        Texture* texture = static_cast<Texture*>(targetAttachment.texture);
+        if (texture == nullptr) {
+            continue;
+        }
+
+        MTL::RenderPassColorAttachmentDescriptor* colorDescriptor = colorDescriptors->object(0);
+        colorDescriptor->setTexture(texture->MTLTexture());
+        colorDescriptor->setClearColor(MTLClearColor(targetAttachment.clearColor));
+        colorDescriptor->setLoadAction(MTLLoadAction(targetAttachment.loadAction));
+        colorDescriptor->setStoreAction(MTLStoreAction(targetAttachment.storeAction));
+    }
+
+    graphics::RenderPassDepthAttachment const& depthAttachment = renderPassDescriptor.depthAttachment;
+    Texture* depthTexture = static_cast<Texture*>(depthAttachment.texture);
+    if (depthTexture != nullptr) {
+        MTL::RenderPassDepthAttachmentDescriptor* depthDescriptor = desc->depthAttachment();
+        depthDescriptor->setTexture(depthTexture->MTLTexture());
+        depthDescriptor->setClearDepth(static_cast<float64>(depthAttachment.clearDepth));
+        depthDescriptor->setLoadAction(MTLLoadAction(depthAttachment.loadAction));
+        depthDescriptor->setStoreAction(MTLStoreAction(depthAttachment.storeAction));
+    }
+
+    graphics::RenderPassStencilAttachment const& stencilAttachment = renderPassDescriptor.stencilAttachment;
+    Texture* stencilTexture = static_cast<Texture*>(stencilAttachment.texture);
+    if (stencilTexture != nullptr) {
+        MTL::RenderPassStencilAttachmentDescriptor* stencilDescriptor = desc->stencilAttachment();
+        stencilDescriptor->setTexture(stencilTexture->MTLTexture());
+        stencilDescriptor->setClearStencil(stencilAttachment.clearStencil);
+        stencilDescriptor->setLoadAction(MTLLoadAction(stencilAttachment.loadAction));
+        stencilDescriptor->setStoreAction(MTLStoreAction(stencilAttachment.storeAction));
+    }
+
+    return desc;
+}
+
+RenderPass::RenderPass(CommandBuffer* commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept
+{
     ASSERT(commandBuffer);
 
-    m_renderPassDescriptor = TransferShared(MTL4::RenderPassDescriptor::alloc());
-    m_renderPassDescriptor->init();
-
-    // TODO: get descriptor values from argument
-    m_argumentTableDescriptor = TransferShared(MTL4::ArgumentTableDescriptor::alloc());
-    m_argumentTableDescriptor->init();
-    m_argumentTableDescriptor->setMaxBufferBindCount(1);
-    m_argumentTableDescriptor->setMaxSamplerStateBindCount(1);
-    m_argumentTableDescriptor->setMaxTextureBindCount(1);
-    m_argumentTableDescriptor->setSupportAttributeStrides(false);
-
-    NS::Error* error;
-    MTL4::ArgumentTableDescriptor* desc = m_argumentTableDescriptor.Get();
-    MTL4::ArgumentTable* argumentTable = device->newArgumentTable(desc, &error);
-    ENSURE(argumentTable, error, "failed to create MTL4::ArgumentTable") {
+    SharedPtr<MTL4::RenderPassDescriptor> desc = MTLRenderPassDescriptor(descriptor);
+    ENSURE(desc, "failed to create MTL4::RenderPassDescriptor") {
         return;
     }
 
-    m_argumentTable = TransferShared(argumentTable);
+    MTL4::CommandBuffer* mtlCommandBuffer = commandBuffer->MTLCommandBuffer();
+    MTL4::RenderCommandEncoder* mtlRenderEncoder = mtlCommandBuffer->renderCommandEncoder(desc.Get());
+    ENSURE(mtlRenderEncoder, "failed to create renderpass") {
+        return;
+    }
+
     m_commandBuffer = commandBuffer;
+    m_renderCommandEncoder = mtlRenderEncoder;
 }
 
 RenderPass::~RenderPass() noexcept
 {
-    m_commandBuffer = nullptr;
+    if (m_renderCommandEncoder != nullptr) [[likely]] {
+        m_renderCommandEncoder->endEncoding();
+    }
+
     m_renderCommandEncoder = nullptr;
+    m_commandBuffer = nullptr;
 }
 
 bool RenderPass::Valid() const noexcept
 {
-    return m_commandBuffer != nullptr && m_argumentTable.Valid();
-}
-
-bool RenderPass::Active() const noexcept
-{
-    return m_renderCommandEncoder != nullptr;
-}
-
-void RenderPass::Begin(MTL::Texture* targetTexture, Color const& color) noexcept
-{
-    m_targetTexture = targetTexture;
-
-    ASSERT(m_commandBuffer);
-    ASSERT(m_targetTexture);
-
-    MTL::RenderPassColorAttachmentDescriptor* colorAttachment = m_renderPassDescriptor->colorAttachments()->object(0);
-    MTL::ClearColor clearColor(static_cast<double>(color.r),
-                               static_cast<double>(color.g),
-                               static_cast<double>(color.b),
-                               static_cast<double>(color.a));
-
-    colorAttachment->setTexture(m_targetTexture);
-    colorAttachment->setLoadAction(MTL::LoadActionClear);
-    colorAttachment->setStoreAction(MTL::StoreActionStore);
-    colorAttachment->setClearColor(clearColor);
-    colorAttachment->clearColor();
-
-    MTL4::RenderPassDescriptor* renderPassDescriptor = m_renderPassDescriptor.Get();
-    MTL4::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor);
-
-    ENSURE(renderCommandEncoder != nullptr, "failed to create MTL4::RenderCommandEncoder") {
-        return;
-    }
-
-    m_renderCommandEncoder = renderCommandEncoder;
-}
-
-void RenderPass::End() noexcept
-{
-    ASSERT(Active());
-
-    m_renderCommandEncoder->endEncoding();
-    m_renderCommandEncoder = nullptr;
-    m_targetTexture = nullptr;
+    return m_commandBuffer != nullptr && m_renderCommandEncoder != nullptr;
 }
 
 void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
 {
-    ASSERT(Active());
+    ASSERT(Valid());
 
     MTL::PrimitiveType mtlPrimitive = MTLPrimitiveType(primitiveType);
-    MTL::RenderStages renderStages = MTL::RenderStageVertex;
+    // MTL::RenderStages renderStages = MTL::RenderStageVertex;
 
-    m_renderCommandEncoder->setArgumentTable(m_argumentTable.Get(), renderStages);
+    // m_renderCommandEncoder->setArgumentTable(m_argumentTable.Get(), renderStages);
     m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
-void RenderPass::SetVertexBuffer(Buffer const& buffer, uint64 index)
+void RenderPass::SetPipelineState(RenderPipelineState* state)
 {
-    ASSERT(Active());
-
-    MTL::GPUAddress gpuAddress = static_cast<MTL::GPUAddress>(buffer.GpuAddress());
-    m_argumentTable->setAddress(gpuAddress, index);
-}
-
-void RenderPass::SetPipelineState(RenderPipelineState const& state)
-{
+    ASSERT(Valid());
     ASSERT(state);
 
-    m_renderCommandEncoder->setRenderPipelineState(state.MTLRenderPipelineState());
+    m_renderCommandEncoder->setRenderPipelineState(state->MTLRenderPipelineState());
 }
 
 void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexcept
 {
-    ASSERT(Active());
+    ASSERT(Valid());
 
     MTL::Viewport viewport = {
         .originX = static_cast<double>(rect.x),
@@ -137,7 +130,7 @@ void RenderPass::SetViewport(Rect const& rect, float32 near, float32 far) noexce
 
 void RenderPass::SetScissorRect(RectInt const& rect) noexcept
 {
-    ASSERT(Active());
+    ASSERT(Valid());
 
     MTL::ScissorRect ScissorRect = {
         .x = static_cast<NS::UInteger>(rect.x),

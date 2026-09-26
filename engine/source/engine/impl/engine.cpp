@@ -12,6 +12,7 @@ namespace mini {
 
 Engine::Engine()
     : m_running(false)
+    , m_frameCount(0)
     , m_platform("mini.platform")
     , m_graphics("mini.graphics")
 {
@@ -34,7 +35,7 @@ void Engine::Launch()
     m_platform->PollEvents();
 
     m_running = true;
-    while (m_running) {
+    for (; m_running; ++m_frameCount) {
         m_graphics->RenderFrame();
         m_platform->PollEvents();
     }
@@ -66,6 +67,11 @@ void Engine::Abort(String const& msg)
 bool Engine::Running() noexcept
 {
     return engine != nullptr && engine->m_running;
+}
+
+uint64 Engine::FrameCount() noexcept
+{
+    return engine == nullptr ? 0 : engine->m_frameCount;
 }
 
 } // namespace mini

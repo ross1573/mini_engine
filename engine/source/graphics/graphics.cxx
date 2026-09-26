@@ -3,6 +3,10 @@ export module mini.graphics;
 import mini.core;
 
 export import :common;
+export import :resource;
+export import :buffer;
+export import :texture;
+export import :render_pass;
 export import :interface;
 export import :device;
 export import :renderer;
@@ -23,17 +27,17 @@ private:
 
 public:
     Graphics() noexcept;
-    ~Graphics() noexcept;
+    ~Graphics() noexcept override;
 
     bool LoadModule(StringView);
     void RenderFrame();
 
-    API CurrentAPI() const noexcept { return m_currentAPI; }
-    Module<Interface> CurrentModule() const noexcept { return m_currentModule; }
+    [[nodiscard]] API CurrentAPI() const noexcept { return m_currentAPI; }
+    [[nodiscard]] Module<Interface> CurrentModule() const noexcept { return m_currentModule; }
 
-    Device* GetDevice() const noexcept { return m_device.Get(); }
-    SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }
-    Renderer* GetRenderer() const noexcept { return m_renderer.Get(); }
+    [[nodiscard]] Device* GetDevice() const noexcept { return m_device.Get(); }
+    [[nodiscard]] SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }
+    [[nodiscard]] Renderer* GetRenderer() const noexcept { return m_renderer.Get(); }
 
     static void ChangeResolution(uint32, uint32, bool);
 

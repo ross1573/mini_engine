@@ -17,22 +17,29 @@ PUBLIC
         metal4_buffer.cxx
         metal4_texture.cxx
         metal4_shader.cxx
+        metal4_event.cxx
+        metal4_command_buffer.cxx
+        metal4_command_queue.cxx
+        metal4_render_pass.cxx
+        metal4_render_pipeline.cxx
         metal4_device.cxx
         metal4_swap_chain.cxx
         metal4_renderer.cxx
         metal4_compiler.cxx
-        metal4_render_pass.cxx
-        metal4_render_pipeline.cxx
 
 PRIVATE
     impl/metal4.cpp
+    impl/metal4_common.cpp
+    impl/metal4_resource.cpp
     impl/metal4_shader.cpp
+    impl/metal4_command_buffer.cpp
+    impl/metal4_command_queue.cpp
+    impl/metal4_render_pass.cpp
+    impl/metal4_render_pipeline.cpp
     impl/metal4_device.cpp
     impl/metal4_swap_chain.cpp
     impl/metal4_renderer.cpp
     impl/metal4_compiler.cpp
-    impl/metal4_render_pass.cpp
-    impl/metal4_render_pipeline.cpp
 )
 
 target_link_libraries(mini.metal4

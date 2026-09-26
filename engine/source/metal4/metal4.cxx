@@ -1,10 +1,16 @@
 export module mini.metal4;
 
+export import :common;
 export import :buffer;
+export import :texture;
+export import :shader;
+export import :command_buffer;
+export import :command_queue;
+export import :render_pass;
+export import :render_pipeline;
 export import :device;
 export import :swap_chain;
 export import :renderer;
-export import :render_pass;
 
 import mini.platform;
 import mini.graphics;

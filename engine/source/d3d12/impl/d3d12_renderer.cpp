@@ -41,13 +41,13 @@ void Renderer::Render()
 
     // begin
     {
-        D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
+        D3D12_RESOURCE_TRANSITION_BARRIER transition{};
         transition.pResource = m_currentBuffer->resource;
         transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-        D3D12_RESOURCE_BARRIER barrier{ };
+        D3D12_RESOURCE_BARRIER barrier{};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition = transition;
@@ -60,24 +60,27 @@ void Renderer::Render()
 
     // end
     {
-        D3D12_RESOURCE_TRANSITION_BARRIER transition{ };
+        D3D12_RESOURCE_TRANSITION_BARRIER transition{};
         transition.pResource = m_currentBuffer->resource;
         transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
-        D3D12_RESOURCE_BARRIER barrier{ };
+        D3D12_RESOURCE_BARRIER barrier{};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition = transition;
 
         m_commandList->ResourceBarrier(1, &barrier);
     }
+
+    m_commandList->Close();
+    m_commandQueue->ExecuteCommandList(m_commandList);
 }
 
 void Renderer::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
 {
-    D3D12_VIEWPORT d3dViewport{ };
+    D3D12_VIEWPORT d3dViewport{};
     d3dViewport.TopLeftX = rect.x;
     d3dViewport.TopLeftY = rect.y;
     d3dViewport.Width = rect.width;
@@ -96,12 +99,6 @@ void Renderer::SetScissorRect(RectInt const& rect)
 void Renderer::WaitForIdle()
 {
     m_commandQueue->WaitForIdle();
-}
-
-void Renderer::Execute()
-{
-    m_commandList->Close();
-    m_commandQueue->ExecuteCommandList(m_commandList);
 }
 
 } // namespace mini::d3d12

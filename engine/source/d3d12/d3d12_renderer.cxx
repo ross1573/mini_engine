@@ -8,6 +8,14 @@ import :swap_chain;
 
 export namespace mini::d3d12 {
 
+export enum class CommandType : int8 {
+    None = -1,
+
+    Direct,
+    Compute,
+    Copy,
+};
+
 class Renderer final : public graphics::Renderer {
 private:
     SharedPtr<ID3D12Device> m_device;
@@ -23,7 +31,6 @@ public:
 
     void WaitForIdle() final;
     void Render() final;
-    void Execute() final;
 
     // TODO: move to render pass
     void SetViewport(Rect const&, float32, float32);

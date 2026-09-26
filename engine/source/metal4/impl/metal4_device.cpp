@@ -15,12 +15,12 @@ Device::Device()
 
 graphics::SwapChain* Device::CreateSwapChain()
 {
-    return new SwapChain(m_device.Get());
+    return new SwapChain(this);
 }
 
 graphics::Renderer* Device::CreateRenderer()
 {
-    return new Renderer(*this);
+    return new Renderer(this);
 }
 
 } // namespace mini::metal4

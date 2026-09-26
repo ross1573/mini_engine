@@ -7,7 +7,7 @@ import :common;
 
 namespace mini::metal4 {
 
-Compiler::Compiler(Device const& device)
+Compiler::Compiler(Device* device)
 {
     ASSERT(device);
 
@@ -21,7 +21,7 @@ Compiler::Compiler(Device const& device)
     InitWithDescriptor(device, desc);
 }
 
-Compiler::Compiler(Device const& device, StringView name)
+Compiler::Compiler(Device* device, StringView name)
 {
     ASSERT(device);
 
@@ -41,10 +41,12 @@ Compiler::Compiler(Device const& device, StringView name)
     InitWithDescriptor(device, desc);
 }
 
-void Compiler::InitWithDescriptor(Device const& device, SharedPtr<MTL4::CompilerDescriptor> const& desc)
+void Compiler::InitWithDescriptor(Device* device, SharedPtr<MTL4::CompilerDescriptor> const& desc)
 {
+    ASSERT(device);
+
     NS::Error* error;
-    m_compiler = TransferShared(device->newCompiler(desc.Get(), &error));
+    m_compiler = TransferShared(device->MTLDevice()->newCompiler(desc.Get(), &error));
     ENSURE(m_compiler, error, "failed to create compiler {}", m_name.Data()) {
         return;
     }

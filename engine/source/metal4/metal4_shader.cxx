@@ -30,7 +30,7 @@ private:
     SharedPtr<MTL::Library> m_library;
 
 public:
-    ShaderLibrary(Device const& device, StringView name);
+    ShaderLibrary(Device* device, StringView file);
 
     void SetName(StringView name) { m_library->setLabel(ToNSString(name).Get()); }
 
@@ -38,7 +38,6 @@ public:
     [[nodiscard]] String Name() const { return ToString(m_library->label()); }
 
     [[nodiscard]] MTL::Library* MTLLibrary() const noexcept { return m_library.Get(); }
-    [[nodiscard]] MTL::Library* operator->() const noexcept { return m_library.operator->(); }
 
 private:
     static String GetFilePath(StringView name);
@@ -50,13 +49,12 @@ private:
     String m_name;
 
 public:
-    ShaderFunction() = default;
-    ShaderFunction(ShaderLibrary const& lib, StringView const& name);
+    ShaderFunction(ShaderLibrary* lib, StringView name);
 
     [[nodiscard]] bool Valid() const noexcept { return m_descriptor.Valid(); }
     [[nodiscard]] String Name() const { return m_name; }
 
-    [[nodiscard]] MTL4::FunctionDescriptor* MTL4FunctionDescriptor() const noexcept { return m_descriptor.Get(); }
+    [[nodiscard]] MTL4::FunctionDescriptor* MTLFunctionDescriptor() const noexcept { return m_descriptor.Get(); }
 };
 
 } // namespace mini::metal4

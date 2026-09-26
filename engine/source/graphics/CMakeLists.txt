@@ -9,6 +9,10 @@ PUBLIC
         graphics.cxx
         graphics_interface.cxx
         graphics_common.cxx
+        graphics_resource.cxx
+        graphics_buffer.cxx
+        graphics_texture.cxx
+        graphics_render_pass.cxx
         device.cxx
         renderer.cxx
         swap_chain.cxx

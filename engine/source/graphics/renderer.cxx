@@ -10,7 +10,6 @@ public:
 
     virtual void WaitForIdle() = 0;
     virtual void Render() = 0;
-    virtual void Execute() = 0;
 
 protected:
     Renderer() = default;
