@@ -10,6 +10,8 @@ If:
   ]
 Index:
   StandardLibrary: false
+Completion:
+  HeaderInsertion: Never
 Diagnostics:
   UnusedIncludes: None
   Suppress: [
