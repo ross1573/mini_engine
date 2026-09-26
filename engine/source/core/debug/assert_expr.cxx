@@ -14,6 +14,12 @@ constexpr bool Evaluate(T const& arg) noexcept
     return arg.Valid();
 }
 
+export template <ValidatableT T>
+constexpr bool Evaluate(T* arg) noexcept
+{
+    return arg != nullptr && arg->Valid();
+}
+
 export template <ExplicitlyConvertibleToT<bool> T>
 constexpr bool Evaluate(T const& arg) noexcept
     requires(!ValidatableT<T>)

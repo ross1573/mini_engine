@@ -96,7 +96,7 @@ constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructib
 export template <NonArrT T, typename... Args>
 constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    ASSERT(ptr, "invalid location for object");
+    ASSERT(ptr != nullptr, "invalid location for object");
 
     if consteval {
         ConstructAtImpl(ptr, ForwardArg<Args>(args)...);
@@ -129,7 +129,7 @@ constexpr void BeginLifetime(T* loc) noexcept
 export template <NonArrT T>
 constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
-    ASSERT(ptr, "invalid location for object");
+    ASSERT(ptr != nullptr, "invalid location for object");
 
     if constexpr (TrivialT<T>) {
         return;
