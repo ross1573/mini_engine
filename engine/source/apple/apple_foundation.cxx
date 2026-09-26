@@ -7,7 +7,6 @@ export module mini.apple:foundation;
 export namespace NS {
 
 using NS::Array;
-using NS::AutoreleasePool;
 using NS::Bundle;
 using NS::Condition;
 using NS::Data;
