@@ -53,8 +53,14 @@ function (_macos_set_exec_properties target)
         set(bundle_name $<TARGET_FILE_NAME:${target}>)
         set(dsym_path "${output_dir}/${ENGINE_RUNTIME_DEBUG_DIR}")
         set(dsym_file "${dsym_path}/${bundle_name}.dSYM")
-        set(lldb_cmd "settings append target.debug-file-search-paths ${ENGINE_RUNTIME_DEBUG_DIR}/")
-        file(WRITE "${output_dir}/.lldbinit" "${lldb_cmd}")
+        set(debug_path "${ENGINE_RUNTIME_DEBUG_DIR}/")
+        
+        configure_file(
+            "${ENGINE_PROJECT_DIR}/cmake/template/lldbinit"
+            "${output_dir}/.lldbinit"
+            @ONLY
+            NEWLINE_STYLE LF
+        )
 
         add_custom_command(TARGET ${target} POST_BUILD
             COMMAND ${DSYMUTIL_PROGRAM} "$<TARGET_FILE:${target}>" -o ${dsym_file}

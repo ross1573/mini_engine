@@ -1,0 +1,7 @@
+settings append target.debug-file-search-paths @debug_path@
+settings set target.env-vars METAL_DEBUG_ERROR_MODE=0
+settings set target.env-vars METAL_DEVICE_FORCE_COMMAND_BUFFER_ENHANCED_ERRORS=1
+settings set target.env-vars METAL_DEVICE_WRAPPER_TYPE=5
+settings set target.env-vars METAL_DIAGNOSTICS_ENABLED=1
+settings set target.env-vars METAL_LOAD_INTERPOSER=1
+settings set target.env-vars MTL_FORCE_COMMAND_BUFFER_ENHANCED_ERRORS=1
