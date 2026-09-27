@@ -5,13 +5,13 @@ import mini.graphics;
 import mini.apple;
 import :renderer;
 import :swap_chain;
+import :log;
 
 namespace mini::metal4 {
 
 Renderer::Renderer(Device* device)
     : m_device(device)
     , m_commandAllocatorPool(device)
-    , m_eventValue(0)
 {
     ASSERT(device);
 
@@ -33,6 +33,15 @@ Renderer::Renderer(Device* device)
     ASSERT(m_renderPipelineState);
 
     m_event = MakeUnique<SharedEvent>(m_device);
+    m_eventValue = 0;
+    m_frameValue = 0;
+
+    for (size_t i = 0; i < options::bufferCount; ++i) {
+        m_eventQueue.PushBack(uint64{0});
+    }
+
+    SwapChain* swapChain = interface->GetSwapChain();
+    m_commandQueue->AddResidencySet(swapChain->CAMetalLayer()->residencySet());
 
     ASSERT(m_event);
 }
@@ -41,15 +50,19 @@ void Renderer::Render()
 {
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
-    m_commandAllocatorPool.Expire(m_eventValue);
-    m_event->Wait(m_eventValue);
+    m_frameValue = m_eventQueue.PopFirst();
+    m_event->Wait(m_frameValue);
     ++m_eventValue;
+
+    SwapChain* swapChain = interface->GetSwapChain();
+    Drawable* drawable = swapChain->Drawable();
+    m_commandQueue->Wait(drawable);
+    m_commandAllocatorPool.Expire(m_frameValue);
 
     UniquePtr<CommandAllocator> commandAllocator = m_commandAllocatorPool.Allocate();
     m_commandBuffer->Begin(commandAllocator.Get());
 
-    SwapChain* swapChain = interface->GetSwapChain();
-    UniquePtr<Texture> frameTexture = swapChain->FrameTexture();
+    UniquePtr<Texture> frameTexture = drawable->FrameTexture();
     graphics::RenderPassTargetAttachment targetAttachment{
         frameTexture.Get(),
         graphics::LoadAction::Clear,
@@ -73,6 +86,7 @@ void Renderer::Render()
 
     m_commandQueue->Commit(m_commandBuffer.Get());
     m_commandQueue->Signal(m_event.Get(), m_eventValue);
+    m_eventQueue.PushBack(m_eventValue);
 }
 
 void Renderer::WaitForIdle()

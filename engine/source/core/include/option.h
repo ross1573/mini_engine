@@ -15,7 +15,7 @@ inline constexpr int height = 720;
 inline constexpr bool fullscreen = false;
 inline constexpr bool resizableWindow = true;
 inline constexpr unsigned char vsync = 0;
-inline constexpr unsigned char bufferCount = 2;
+inline constexpr unsigned char bufferCount = 3;
 
 #if PLATFORM_WINDOWS
 inline constexpr char const* graphicsModule = "mini.d3d12";

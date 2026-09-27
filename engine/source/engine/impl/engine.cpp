@@ -7,23 +7,24 @@ module mini.engine;
 import mini.core;
 import mini.platform;
 import mini.graphics;
+import :log;
 
 namespace mini {
 
 Engine::Engine()
     : m_running(false)
-    , m_frameCount(0)
+    , m_frameCount(1)
     , m_platform("mini.platform")
     , m_graphics("mini.graphics")
 {
-    ASSERT(engine == nullptr, "another instance of engine is created");
-    engine = this;
+    ASSERT(g_engine == nullptr, "another instance of engine is created");
+    g_engine = this;
 }
 
 Engine::~Engine() noexcept
 {
     ASSERT(m_running == false, "engine is still running");
-    engine = nullptr;
+    g_engine = nullptr;
 }
 
 void Engine::Launch()
@@ -34,10 +35,30 @@ void Engine::Launch()
     m_platform->GetWindow()->Show();
     m_platform->PollEvents();
 
-    m_running = true;
-    for (; m_running; ++m_frameCount) {
+    Clock::TimePoint frameStart;
+    Clock::TimePoint frameEnd;
+    Nanoseconds duration;
+    uint64 lastFrameCount = 0;
+
+    for (m_running = true; m_running; ++m_frameCount) {
+        frameStart = Clock::Now();
+
         m_graphics->RenderFrame();
         m_platform->PollEvents();
+
+        frameEnd = Clock::Now();
+        duration += frameEnd - frameStart;
+
+        Milliseconds milliseconds = DurationCast<Milliseconds>(duration);
+        if (milliseconds.Count() >= 1000) {
+            uint64 count = m_frameCount - lastFrameCount;
+            int64 ticks = milliseconds.Count();
+            float32 fps = static_cast<float32>(count) / static_cast<float32>(ticks) * 1000.f;
+            engine::LogInfo("fps: {}", fps);
+
+            lastFrameCount = m_frameCount;
+            duration = Nanoseconds(0);
+        }
     }
 }
 
@@ -48,30 +69,30 @@ void Engine::Shutdown()
 
 void Engine::Quit()
 {
-    if (engine != nullptr) {
-        engine->Shutdown();
+    if (g_engine != nullptr) {
+        g_engine->Shutdown();
     }
 }
 
 void Engine::Abort(String const& msg)
 {
-    if (engine == nullptr) {
+    if (g_engine == nullptr) {
         std::exit(-1);
         return;
     }
 
     Platform::AlertError(msg);
-    engine->m_running = false;
+    g_engine->m_running = false;
 }
 
 bool Engine::Running() noexcept
 {
-    return engine != nullptr && engine->m_running;
+    return g_engine != nullptr && g_engine->m_running;
 }
 
 uint64 Engine::FrameCount() noexcept
 {
-    return engine == nullptr ? 0 : engine->m_frameCount;
+    return g_engine == nullptr ? 0 : g_engine->m_frameCount;
 }
 
 } // namespace mini

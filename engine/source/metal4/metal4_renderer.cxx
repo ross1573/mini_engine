@@ -11,6 +11,9 @@ import :render_pass;
 namespace mini::metal4 {
 
 export class METAL4_API Renderer final : public graphics::Renderer {
+public:
+    static constexpr byte maxBufferCount = 3;
+
 private:
     Device* m_device;
 
@@ -25,7 +28,9 @@ private:
     UniquePtr<RenderPipelineState> m_renderPipelineState;
 
     UniquePtr<SharedEvent> m_event;
+    FixedQueue<uint64, maxBufferCount> m_eventQueue;
     uint64 m_eventValue;
+    uint64 m_frameValue;
 
 public:
     Renderer(Device* device);

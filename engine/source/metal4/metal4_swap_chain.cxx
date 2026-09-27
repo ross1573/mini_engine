@@ -38,6 +38,7 @@ public:
     void Reset(CA::MetalDrawable* drawable) { m_drawable.Reset(drawable); }
 
     [[nodiscard]] bool Valid() const noexcept { return m_drawable.Valid(); }
+    [[nodiscard]] UniquePtr<Texture> FrameTexture() const { return MakeUnique<Texture>(MTLTexture()); }
 
     [[nodiscard]] MTL::Drawable* MTLDrawable() const noexcept { return m_drawable.Get(); }
     [[nodiscard]] MTL::Texture* MTLTexture() const noexcept { return m_drawable->texture(); }
@@ -64,11 +65,9 @@ public:
     [[nodiscard]] uint8 GetVSync() const final { return 0; }                    // TODO
     [[nodiscard]] bool GetFullScreen() const final;
 
-    [[nodiscard]] UniquePtr<Texture> FrameTexture();
     [[nodiscard]] Drawable* Drawable();
 
-private:
-    void SwapNextDrawable();
+    [[nodiscard]] CA::MetalLayer* CAMetalLayer() const noexcept { return m_layer.Get(); }
 };
 
 } // namespace mini::metal4

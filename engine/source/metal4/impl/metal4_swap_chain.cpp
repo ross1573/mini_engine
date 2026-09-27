@@ -11,8 +11,13 @@ SwapChain::SwapChain(Device* device)
     : m_layer(TransferShared(CA::MetalLayer::layer()))
 {
     ASSERT(m_layer, "failed to retrieve MetalLayer object");
+    ASSERT(options::bufferCount > 0 && options::bufferCount < 4, "invalid frame buffer count");
 
     m_layer->setDevice(device->MTLDevice());
+    m_layer->setFramebufferOnly(true);
+    m_layer->setDisplaySyncEnabled(options::vsync > 0);
+    m_layer->setMaximumDrawableCount(Max(options::bufferCount, byte{2}));
+
     interface->GetWindow()->SetMetalLayer(m_layer.Get());
 }
 
@@ -46,28 +51,14 @@ bool SwapChain::GetFullScreen() const
     return interface->GetWindow()->IsFullScreen();
 }
 
-UniquePtr<Texture> SwapChain::FrameTexture()
-{
-    if (!m_drawable.Valid()) {
-        SwapNextDrawable();
-    }
-
-    return MakeUnique<Texture>(Texture(m_drawable.MTLTexture()));
-}
-
 Drawable* SwapChain::Drawable()
 {
     if (!m_drawable.Valid()) {
-        SwapNextDrawable();
+        m_drawable.Reset(m_layer->nextDrawable());
+        ASSERT(m_drawable, "failed to retrieve next drawable");
     }
 
     return memory::AddressOf(m_drawable);
-}
-
-void SwapChain::SwapNextDrawable()
-{
-    m_drawable.Reset(m_layer->nextDrawable());
-    ASSERT(m_drawable, "failed to retrieve next drawable");
 }
 
 } // namespace mini::metal4

@@ -16,7 +16,7 @@ private:
 
 public:
     Engine();
-    ~Engine() noexcept;
+    ~Engine() noexcept override;
 
     void Launch();
     void Shutdown();
@@ -28,6 +28,6 @@ public:
     static uint64 FrameCount() noexcept;
 };
 
-ENGINE_API Engine* engine = nullptr;
+ENGINE_API Engine* g_engine = nullptr;
 
 } // namespace mini

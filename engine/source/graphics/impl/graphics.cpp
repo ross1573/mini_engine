@@ -36,8 +36,8 @@ bool Graphics::LoadModule(StringView moduleName)
     LogInfo("{} device created", moduleName);
 
     m_currentAPI = m_device->GetAPI();
-    m_renderer = UniquePtr(m_device->CreateRenderer());
     m_swapChain = UniquePtr(m_device->CreateSwapChain());
+    m_renderer = UniquePtr(m_device->CreateRenderer());
 
     ENSURE(m_renderer) return false;
     ENSURE(m_swapChain) return false;
