@@ -8,7 +8,7 @@ namespace mini::metal4 {
 
 RenderPipelineDescriptor::RenderPipelineDescriptor()
 {
-    constexpr MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB;
+    constexpr MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
 
     m_renderPipelineDescriptor = TransferShared(MTL4::RenderPipelineDescriptor::alloc());
     m_renderPipelineDescriptor->init();

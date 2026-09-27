@@ -4,14 +4,7 @@ import :common;
 
 namespace mini::metal4 {
 
-LogState::LogState(Device* device, Logger::Level logLevel, LogHandler logHandler, size_t bufferSize)
-{
-    Init(device, logLevel, bufferSize);
-
-    m_logState->addLogHandler(logHandler);
-}
-
-void LogState::Init(Device* device, Logger::Level logLevel, size_t bufferSize)
+LogState::LogState(Device* device, Logger::Level level, LogHandler logHandler, size_t bufferSize)
 {
     ASSERT(device);
 
@@ -21,7 +14,7 @@ void LogState::Init(Device* device, Logger::Level logLevel, size_t bufferSize)
     }
 
     desc->init();
-    desc->setLevel(MTLLogLevel(logLevel));
+    desc->setLevel(MTLLogLevel(level));
     desc->setBufferSize(static_cast<int64>(bufferSize));
 
     NS::Error* error;
@@ -30,8 +23,24 @@ void LogState::Init(Device* device, Logger::Level logLevel, size_t bufferSize)
         return;
     }
 
-    m_logLevel = logLevel;
+    m_logLevel = level;
+    m_handler = logHandler;
     m_logState = TransferShared(logState);
+
+    auto blockHandler = ^(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* message) {
+        HandleLog(subSystem, category, logLevel, message);
+    };
+
+    m_logState->addLogHandler(blockHandler);
+}
+
+void LogState::HandleLog(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* message)
+{
+    if (m_handler == nullptr) {
+        return;
+    }
+
+    m_handler(ToString(subSystem), ToString(category), metal4::LogLevel(logLevel), ToString(message));
 }
 
 } // namespace mini::metal4

@@ -1,6 +1,7 @@
 module mini.metal4;
 
 import :command_buffer;
+import :log;
 
 namespace mini::metal4 {
 
@@ -36,18 +37,42 @@ CommandBuffer::CommandBuffer(Device* device)
     ASSERT(device);
 
     m_commandBuffer = TransferShared(device->MTLDevice()->newCommandBuffer());
+
+    if (options::gpuValidation) {
+        m_logState = MakeUnique<LogState>(device, Logger::Level::warn, &CommandBuffer::HandleLog);
+        m_commandBufferOptions = TransferShared(MTL4::CommandBufferOptions::alloc());
+        m_commandBufferOptions->init();
+        m_commandBufferOptions->setLogState(m_logState->MTLLogState());
+    }
 }
 
 void CommandBuffer::Begin(CommandAllocator const* allocator)
 {
     ASSERT(allocator);
 
-    m_commandBuffer->beginCommandBuffer(allocator->MTLCommandAllocator());
+    if (m_logState.Valid()) {
+        m_commandBuffer->beginCommandBuffer(allocator->MTLCommandAllocator(), m_commandBufferOptions.Get());
+    } else {
+        m_commandBuffer->beginCommandBuffer(allocator->MTLCommandAllocator());
+    }
 }
 
 void CommandBuffer::End()
 {
     m_commandBuffer->endCommandBuffer();
+}
+
+void CommandBuffer::HandleLog(StringView subSystem, StringView category, Logger::Level logLevel, StringView message)
+{
+    Log(logLevel,
+        "\n\nMetal validation failed\n"
+        "- category: {} ({})"
+        "- message: {}",
+        category,
+        subSystem,
+        message);
+
+    ENSURE(logLevel < Logger::Level::warn) { }
 }
 
 CommandAllocatorPool::CommandAllocatorPool(Device* device, size_t poolCapacity)
@@ -70,16 +95,12 @@ UniquePtr<CommandAllocator> CommandAllocatorPool::Allocate()
 
 void CommandAllocatorPool::Deallocate(UniquePtr<CommandAllocator>&& allocator)
 {
-    ASSERT(allocator);
-
     allocator->Reset();
     m_pool.PushBack(MoveArg(allocator));
 }
 
 void CommandAllocatorPool::Pending(UniquePtr<CommandAllocator>&& allocator, uint64 eventValue)
 {
-    ASSERT(allocator);
-
     m_pending.PushBack(MoveArg(allocator), eventValue);
 }
 

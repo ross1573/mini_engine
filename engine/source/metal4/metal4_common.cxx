@@ -106,11 +106,12 @@ export METAL4_API constexpr Logger::Level LogLevel(MTL::LogLevel logLevel) noexc
 
 export class METAL4_API LogState {
 public:
-    typedef void (*LogHandler)(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* mesage);
+    typedef void (*LogHandler)(StringView subSystem, StringView category, Logger::Level logLevel, StringView mesage);
 
 private:
     SharedPtr<MTL::LogState> m_logState;
     Logger::Level m_logLevel;
+    LogHandler m_handler;
 
     static constexpr size_t defaultBufferSize = static_cast<size_t>(1024 * 1024) /*1MB*/;
 
@@ -123,8 +124,7 @@ public:
     [[nodiscard]] MTL::LogState* MTLLogState() const noexcept { return m_logState.Get(); }
 
 private:
-    void Init(Device* device, Logger::Level level, size_t bufferSize);
-    static void HandleLog(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* mesage);
+    void HandleLog(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* message);
 };
 
 } // namespace mini::metal4

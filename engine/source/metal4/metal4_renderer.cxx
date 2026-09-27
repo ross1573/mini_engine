@@ -32,6 +32,8 @@ public:
 
     void WaitForIdle() final;
     void Render() final;
+
+    static void HandleRenderError(NS::Error* error);
 };
 
 } // namespace mini::metal4

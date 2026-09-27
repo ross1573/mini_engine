@@ -84,4 +84,16 @@ void Renderer::WaitForIdle()
     m_event->Wait(m_eventValue);
 }
 
+void Renderer::HandleRenderError(NS::Error* error)
+{
+    Renderer* renderer = interface->GetRenderer();
+    ASSERT(renderer);
+    ENSURE(error == nullptr,
+           error,
+           "failed on event value {}. (rendering: {}, signaled: {})",
+           renderer->m_eventValue,
+           renderer->m_frameValue,
+           renderer->m_event->SignaledValue()) { }
+}
+
 } // namespace mini::metal4

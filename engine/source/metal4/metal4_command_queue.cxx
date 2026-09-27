@@ -2,6 +2,7 @@ module;
 
 #include <Metal/MTL4CommandQueue.hpp>
 #include <Metal/MTL4CommitFeedback.hpp>
+#include <Metal/MTLResidencySet.hpp>
 
 export module mini.metal4:command_queue;
 
@@ -20,6 +21,12 @@ using MTL4::CommitOptions;
 
 } // namespace MTL4
 
+export namespace MTL {
+
+using MTL::ResidencySet;
+
+} // namespace MTL
+
 namespace mini::metal4 {
 
 export class METAL4_API CommandQueue {
@@ -34,6 +41,8 @@ public:
 
     void Commit(CommandBuffer const* commandBuffer);
     void Commit(ArrayView<CommandBuffer const*> commandBuffers);
+
+    void AddResidencySet(MTL::ResidencySet const* residencySet);
 
     void Wait(Drawable* drawable);
     void Wait(CommandQueue const* other);

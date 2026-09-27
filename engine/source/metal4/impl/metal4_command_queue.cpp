@@ -2,6 +2,7 @@ module mini.metal4;
 
 import mini.core;
 import mini.apple;
+import :renderer;
 import :command_queue;
 
 namespace mini::metal4 {
@@ -21,7 +22,7 @@ void CommandQueue::Commit(CommandBuffer const* commandBuffer)
 
     MTL4::CommandBuffer* buffer[] = {commandBuffer->MTLCommandBuffer()};
 
-    if (options::debugLayer) {
+    if (options::gpuValidation) {
         m_commandQueue->commit(buffer, 1, FeedbackHandlerOption().Get());
     } else {
         m_commandQueue->commit(buffer, 1);
@@ -42,7 +43,7 @@ void CommandQueue::Commit(ArrayView<CommandBuffer const*> commandBuffers)
         m_commitBuffer.PushBack(cmdBuf->MTLCommandBuffer());
     }
 
-    if (options::debugLayer) {
+    if (options::gpuValidation) {
         m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size(), FeedbackHandlerOption().Get());
     } else {
         m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size());
@@ -50,6 +51,11 @@ void CommandQueue::Commit(ArrayView<CommandBuffer const*> commandBuffers)
 
     m_commandQueue->signalEvent(m_event.MTLEvent(), ++m_eventValue);
     m_commitBuffer.Clear();
+}
+
+void CommandQueue::AddResidencySet(MTL::ResidencySet const* residencySet)
+{
+    m_commandQueue->addResidencySet(residencySet);
 }
 
 void CommandQueue::Wait(Drawable* drawable)
@@ -83,13 +89,8 @@ void CommandQueue::Signal(Event const* event, uint64 value)
 SharedPtr<MTL4::CommitOptions> CommandQueue::FeedbackHandlerOption()
 {
     SharedPtr<MTL4::CommitOptions> options = TransferShared(MTL4::CommitOptions::alloc()->init());
-    options->addFeedbackHandler(&CommandQueue::HandleCommitFeedback);
+    options->addFeedbackHandler(^(MTL4::CommitFeedback* feedback) { Renderer::HandleRenderError(feedback->error()); });
     return options;
-}
-
-void CommandQueue::HandleCommitFeedback(MTL4::CommitFeedback* feedback)
-{
-    ENSURE(feedback->error() == nullptr, feedback->error()) { }
 }
 
 } // namespace mini::metal4

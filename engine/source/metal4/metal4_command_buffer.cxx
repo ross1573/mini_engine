@@ -44,6 +44,7 @@ export class METAL4_API CommandBuffer {
 private:
     SharedPtr<MTL4::CommandBuffer> m_commandBuffer;
     SharedPtr<MTL4::CommandBufferOptions> m_commandBufferOptions;
+    UniquePtr<LogState> m_logState;
 
 public:
     explicit CommandBuffer(Device* device);
@@ -56,10 +57,9 @@ public:
     [[nodiscard]] String Name() const noexcept { return ToString(m_commandBuffer->label()); }
 
     [[nodiscard]] MTL4::CommandBuffer* MTLCommandBuffer() const noexcept { return m_commandBuffer.Get(); }
-    [[nodiscard]] MTL4::CommandBufferOptions* MTLCommandBufferOptions() const noexcept
-    {
-        return m_commandBufferOptions.Get();
-    }
+
+private:
+    static void HandleLog(StringView subSystem, StringView category, Logger::Level logLevel, StringView message);
 };
 
 class METAL4_API CommandAllocatorPool {

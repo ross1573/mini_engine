@@ -65,12 +65,13 @@ String Event::Name() const
 
 export class METAL4_API SharedEvent final : public Event {
 private:
-    uint64 m_lastValue;
+    uint64 m_signaledValue;
 
 public:
     explicit SharedEvent(Device* device);
 
     void Wait(uint64 value, Milliseconds timeout = Milliseconds::Max());
+    bool Signal(uint64 value);
 
     [[nodiscard]] uint64 SignaledValue();
 
@@ -78,7 +79,7 @@ public:
 };
 
 SharedEvent::SharedEvent(Device* device)
-    : m_lastValue(0)
+    : m_signaledValue(0)
 {
     ASSERT(device);
     m_event = TransferShared<MTL::Event>(device->MTLDevice()->newSharedEvent());
@@ -86,12 +87,12 @@ SharedEvent::SharedEvent(Device* device)
 
 void SharedEvent::Wait(uint64 value, Milliseconds timeout)
 {
-    if (m_lastValue >= value) {
+    if (m_signaledValue >= value) {
         return;
     }
 
-    m_lastValue = MTLSharedEvent()->signaledValue();
-    if (m_lastValue >= value) {
+    m_signaledValue = MTLSharedEvent()->signaledValue();
+    if (m_signaledValue >= value) {
         return;
     }
 
@@ -99,10 +100,21 @@ void SharedEvent::Wait(uint64 value, Milliseconds timeout)
     MTLSharedEvent()->waitUntilSignaledValue(value, tick);
 }
 
+bool SharedEvent::Signal(uint64 value)
+{
+    if (m_signaledValue >= value) {
+        return false;
+    }
+
+    MTLSharedEvent()->setSignaledValue(value);
+    m_signaledValue = value;
+    return true;
+}
+
 uint64 SharedEvent::SignaledValue()
 {
-    m_lastValue = MTLSharedEvent()->signaledValue();
-    return m_lastValue;
+    m_signaledValue = MTLSharedEvent()->signaledValue();
+    return m_signaledValue;
 }
 
 MTL::SharedEvent* SharedEvent::MTLSharedEvent() const noexcept
