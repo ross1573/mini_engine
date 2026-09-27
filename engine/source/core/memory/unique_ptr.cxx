@@ -6,10 +6,10 @@ import :utility_operation;
 
 namespace mini {
 
-export template <NonRefT T, DeleterT<T> DelT = DefaultDeleter<T>>
+export template <NonReferenceT T, DeleterT<T> DelT = DefaultDeleter<T>>
 class UniquePtr {
 private:
-    template <NonRefT U, DeleterT<U> DelU>
+    template <NonReferenceT U, DeleterT<U> DelU>
     friend class UniquePtr;
 
 public:
@@ -66,21 +66,21 @@ public:
     UniquePtr& operator=(UniquePtr const&) = delete;
 };
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr() noexcept
     : m_ptr(nullptr)
-    , m_deleter{ }
+    , m_deleter{}
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::~UniquePtr() noexcept
 {
     m_deleter(m_ptr);
     m_ptr = nullptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr&& other) noexcept
     : m_ptr(other.m_ptr)
     , m_deleter(MoveArg(other.m_deleter))
@@ -88,35 +88,35 @@ constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr&& other) noexcept
     other.m_ptr = nullptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr(Pointer ptr) noexcept
     : m_ptr(ptr)
-    , m_deleter{ }
+    , m_deleter{}
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr(Pointer ptr, DelT const& del) noexcept
     : m_ptr(ptr)
     , m_deleter(del)
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr(Pointer ptr, DelT&& del) noexcept
     : m_ptr(ptr)
     , m_deleter(MoveArg(del))
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::UniquePtr(nullptr_t) noexcept
     : m_ptr(nullptr)
-    , m_deleter{ }
+    , m_deleter{}
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
 constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr<T, DelU>&& other) noexcept
     requires ConvertibleToT<DelU, DelT>
@@ -125,13 +125,13 @@ constexpr UniquePtr<T, DelT>::UniquePtr(UniquePtr<T, DelU>&& other) noexcept
 {
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::Get() const noexcept
 {
     return m_ptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr bool UniquePtr<T, DelT>::Valid() const noexcept
 {
     if (m_ptr == nullptr) {
@@ -145,7 +145,7 @@ constexpr bool UniquePtr<T, DelT>::Valid() const noexcept
     return true;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::Detach() noexcept
 {
     Pointer tmp = m_ptr;
@@ -153,28 +153,28 @@ constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::Detach() noexcept
     return tmp;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr void UniquePtr<T, DelT>::Swap(UniquePtr& other) noexcept
 {
     mini::Swap(m_ptr, other.m_ptr);
     mini::Swap(m_deleter, other.m_deleter);
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr void UniquePtr<T, DelT>::Reset(nullptr_t) noexcept
 {
     m_deleter(m_ptr);
     m_ptr = nullptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr void UniquePtr<T, DelT>::Reset(Pointer ptr) noexcept
 {
     m_deleter(m_ptr);
     m_ptr = ptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U>
 constexpr void UniquePtr<T, DelT>::Reset(U* ptr) noexcept
 {
@@ -182,31 +182,31 @@ constexpr void UniquePtr<T, DelT>::Reset(U* ptr) noexcept
     m_ptr = static_cast<Pointer>(ptr);
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::operator->() const noexcept
 {
     return m_ptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Reference UniquePtr<T, DelT>::operator*() const noexcept
 {
     return *m_ptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::operator bool() const noexcept
 {
     return m_ptr != nullptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::operator Pointer() const noexcept
 {
     return m_ptr;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(nullptr_t) noexcept
 {
     m_deleter(m_ptr);
@@ -214,7 +214,7 @@ constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(nullptr_t) noexcept
     return *this;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr&& other) noexcept
 {
     m_deleter(m_ptr);
@@ -224,7 +224,7 @@ constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr&& other) n
     return *this;
 }
 
-template <NonRefT T, DeleterT<T> DelT>
+template <NonReferenceT T, DeleterT<T> DelT>
 template <PtrConvertibleToT<T> U, DeleterT<U> DelU>
 constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&& other) noexcept
     requires ConvertibleToT<DelU, DelT>
@@ -236,34 +236,34 @@ constexpr UniquePtr<T, DelT>& UniquePtr<T, DelT>::operator=(UniquePtr<U, DelU>&&
     return *this;
 }
 
-export template <NonRefT T, typename... Args>
+export template <NonReferenceT T, typename... Args>
 constexpr UniquePtr<T> MakeUnique(Args&&... args)
     requires ConstructibleFromT<T, Args...>
 {
     return UniquePtr<T>(new T(ForwardArg<Args>(args)...));
 }
 
-export template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+export template <NonReferenceT T, DeleterT<T> DelT, NonReferenceT U, DeleterT<U> DelU>
 constexpr bool operator==(UniquePtr<T, DelT> const& lhs, UniquePtr<U, DelU> const& rhs) noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return lhs.Get() == rhs.Get();
 }
 
-export template <NonRefT T, DeleterT<T> DelT, NonRefT U, DeleterT<U> DelU>
+export template <NonReferenceT T, DeleterT<T> DelT, NonReferenceT U, DeleterT<U> DelU>
 constexpr bool operator<=>(UniquePtr<T, DelT> const& lhs, UniquePtr<U, DelU> const& rhs) noexcept
     requires ThreeWayComparableWithT<T*, U*>
 {
     return lhs.Get() <=> rhs.Get();
 }
 
-export template <NonRefT T, DeleterT<T> DelT>
+export template <NonReferenceT T, DeleterT<T> DelT>
 constexpr bool operator==(UniquePtr<T, DelT> const& ptr, nullptr_t) noexcept
 {
     return ptr.Get() == nullptr;
 }
 
-export template <NonRefT T, DeleterT<T> DelT>
+export template <NonReferenceT T, DeleterT<T> DelT>
 constexpr bool operator<=>(UniquePtr<T, DelT> const& ptr, nullptr_t) noexcept
 {
     return ptr.Get() <=> nullptr;

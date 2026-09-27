@@ -17,7 +17,7 @@ export template <typename T>
 concept ReferenceT = std::is_reference_v<T>;
 
 export template <typename T>
-concept ArrT = std::is_array_v<T>;
+concept ArrayT = std::is_array_v<T>;
 
 export template <typename T>
 concept FunctionT = std::is_function_v<T>;
@@ -26,16 +26,16 @@ export template <typename T>
 concept FunctionPtrT = std::is_function_v<RemovePtrT<T>>;
 
 export template <typename T>
-concept NonPtrT = !PointerT<T>;
+concept NonPointerT = !PointerT<T>;
 
 export template <typename T>
-concept NonRefT = !ReferenceT<T>;
+concept NonReferenceT = !ReferenceT<T>;
 
 export template <typename T>
-concept NonArrT = !ArrT<T>;
+concept NonArrayT = !ArrayT<T>;
 
 export template <typename T>
-concept ValueT = NonPtrT<T> && NonRefT<T> && !std::is_array_v<T>;
+concept ValueT = NonPointerT<T> && NonReferenceT<T> && !std::is_array_v<T>;
 
 export template <typename T>
 concept AbstractT = std::is_abstract_v<T>;
@@ -73,7 +73,8 @@ export template <typename T, typename U>
 concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
 
 export template <typename From, typename To>
-concept PtrConvertibleToT = NonRefT<From> && NonRefT<To> && ConvertibleToT<From const volatile*, To const volatile*>;
+concept PtrConvertibleToT =
+    NonReferenceT<From> && NonReferenceT<To> && ConvertibleToT<From const volatile*, To const volatile*>;
 
 export template <typename T, typename U>
 concept AssignableFromT = std::assignable_from<T, U>;
@@ -82,12 +83,12 @@ export template <typename T, typename U>
 concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
 
 export template <typename Base, typename Derived>
-concept BaseOfT = std::is_base_of_v<Base, Derived> &&
-                  ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
+concept BaseOfT =
+    std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
 
 export template <typename Derived, typename Base>
-concept DerivedFromT = std::is_base_of_v<Base, Derived> &&
-                       ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
+concept DerivedFromT =
+    std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
 
 } // namespace mini
 
@@ -130,12 +131,12 @@ export template <typename T>
 concept CopyableT = std::copyable<T>;
 
 export template <typename T>
-concept NoThrowMovableT = MovableT<T> && std::is_nothrow_move_constructible_v<T> &&
-                          std::is_nothrow_move_assignable_v<T>;
+concept NoThrowMovableT =
+    MovableT<T> && std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_assignable_v<T>;
 
 export template <typename T>
-concept NoThrowCopyableT = NoThrowMovableT<T> && std::is_nothrow_copy_constructible_v<T> &&
-                           std::is_nothrow_copy_assignable_v<T>;
+concept NoThrowCopyableT =
+    NoThrowMovableT<T> && std::is_nothrow_copy_constructible_v<T> && std::is_nothrow_copy_assignable_v<T>;
 
 export template <typename T>
 concept TrivialT = std::is_trivially_copyable_v<T> && NoThrowDefaultConstructibleT<T> && NoThrowCopyableT<T>;

@@ -4,11 +4,11 @@ export import mini.core;
 
 export namespace mini {
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 class SharedPtr<T> {
 private:
-    template <NonRefT U>
+    template <NonReferenceT U>
     friend class SharedPtr;
 
 public:
@@ -44,7 +44,7 @@ public:
     template <PtrConvertibleToT<T> U>
     void Reset(U*) noexcept;
 
-    template <NonRefT U>
+    template <NonReferenceT U>
     constexpr bool Equals(SharedPtr<U> const&) const noexcept
         requires DerivedFromT<U, IUnknown> && EqualityComparableWithT<T*, U*>;
 
@@ -63,14 +63,14 @@ public:
     constexpr SharedPtr& operator=(SharedPtr<U>&&) noexcept;
 };
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::SharedPtr() noexcept
     : m_ptr(nullptr)
 {
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline SharedPtr<T>::~SharedPtr() noexcept
 {
@@ -80,7 +80,7 @@ inline SharedPtr<T>::~SharedPtr() noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
     : m_ptr(other.m_ptr)
@@ -90,7 +90,7 @@ inline SharedPtr<T>::SharedPtr(SharedPtr const& other) noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
     : m_ptr(other.m_ptr)
@@ -98,7 +98,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
     other.m_ptr = nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
@@ -109,7 +109,7 @@ inline SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
@@ -118,7 +118,7 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
     other.m_ptr = nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>::SharedPtr(U* ptr) noexcept
@@ -129,7 +129,7 @@ inline SharedPtr<T>::SharedPtr(U* ptr) noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U>
 inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Pointer ptr) noexcept
@@ -140,7 +140,7 @@ inline SharedPtr<T>::SharedPtr(SharedPtr<U> const&, Pointer ptr) noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <DerivedFromT<IUnknown> U>
 inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noexcept
@@ -149,28 +149,28 @@ inline constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other, Pointer ptr) noex
     other.m_ptr = nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::SharedPtr(nullptr_t) noexcept
     : m_ptr(nullptr)
 {
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::Get() const noexcept
 {
     return m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr bool SharedPtr<T>::Valid() const noexcept
 {
     return m_ptr != nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr void SharedPtr<T>::Swap(SharedPtr& o) noexcept
 {
@@ -179,7 +179,7 @@ inline constexpr void SharedPtr<T>::Swap(SharedPtr& o) noexcept
     o.m_ptr = tmp;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline void SharedPtr<T>::Reset() noexcept
 {
@@ -189,7 +189,7 @@ inline void SharedPtr<T>::Reset() noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline void SharedPtr<T>::Reset(U* ptr) noexcept
@@ -205,16 +205,16 @@ inline void SharedPtr<T>::Reset(U* ptr) noexcept
     }
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
-template <NonRefT U>
+template <NonReferenceT U>
 inline constexpr bool SharedPtr<T>::Equals(SharedPtr<U> const& other) const noexcept
     requires DerivedFromT<U, IUnknown> && EqualityComparableWithT<T*, U*>
 {
     return m_ptr == other.m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
@@ -222,7 +222,7 @@ inline constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
     return m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
@@ -230,28 +230,28 @@ inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcep
     return *m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::Pointer* SharedPtr<T>::operator&() noexcept
 {
     return &m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::operator bool() const noexcept
 {
     return m_ptr != nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>::operator Pointer() const noexcept
 {
     return m_ptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
@@ -268,7 +268,7 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
     return *this;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept
 {
@@ -282,7 +282,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexce
     return *this;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 {
@@ -294,7 +294,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
     return *this;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
@@ -312,7 +312,7 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
     return *this;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
     requires DerivedFromT<T, IUnknown>
 template <PtrConvertibleToT<T> U>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noexcept
@@ -327,58 +327,58 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noe
     return *this;
 }
 
-template <NonRefT T, UnboundAllocatorT AllocT, typename... Args>
+template <NonReferenceT T, UnboundAllocatorT AllocT, typename... Args>
     requires DerivedFromT<T, IUnknown>
 SharedPtr<T> AllocateShared(AllocT const&, Args&&...) = deleted_function("COM interface should not be "
                                                                          "constructed directly");
 
-template <NonRefT T, typename... Args>
+template <NonReferenceT T, typename... Args>
     requires DerivedFromT<T, IUnknown>
 SharedPtr<T> MakeShared(Args&&...) = deleted_function("COM interface should not be constructed directly");
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr bool operator==(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> && EqualityComparableWithT<T*, U*>
 {
     return l.Get() == r.Get();
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr auto operator<=>(SharedPtr<T> const& l, SharedPtr<U> const& r) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown> && ThreeWayComparableWithT<T*, U*>
 {
     return l.Get <=> r.Get();
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
 inline constexpr auto operator==(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, IUnknown>
 {
     return s.Get() == nullptr;
 }
 
-template <NonRefT T>
+template <NonReferenceT T>
 inline constexpr auto operator<=>(SharedPtr<T> const s, nullptr_t) noexcept
     requires DerivedFromT<T, IUnknown>
 {
     return s.Get() <=> nullptr;
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> StaticCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
     return SharedPtr<T>(other, static_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> StaticCast(SharedPtr<U>&& other)
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
     return SharedPtr<T>(MoveArg(other), static_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
@@ -391,7 +391,7 @@ inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U> const& other) noexcept
     return result;
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
@@ -405,28 +405,28 @@ inline constexpr SharedPtr<T> DynamicCast(SharedPtr<U>&& other) noexcept
     return result;
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> ConstCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
     return SharedPtr<T>(other, const_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> ConstCast(SharedPtr<U>&& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
     return SharedPtr<T>(MoveArg(other), const_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {
     return SharedPtr<T>(other, reinterpret_cast<T*>(other.Get()));
 }
 
-template <NonRefT T, NonRefT U>
+template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> ReinterpretCast(SharedPtr<U>&& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
 {

@@ -93,7 +93,7 @@ constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructib
     MSVC_CONSTEXPR return ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
 }
 
-export template <NonArrT T, typename... Args>
+export template <NonArrayT T, typename... Args>
 constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
     ASSERT(ptr != nullptr, "invalid location for object");
@@ -126,7 +126,7 @@ constexpr void BeginLifetime(T* loc) noexcept
     }
 }
 
-export template <NonArrT T>
+export template <NonArrayT T>
 constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     ASSERT(ptr != nullptr, "invalid location for object");

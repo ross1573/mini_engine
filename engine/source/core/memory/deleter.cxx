@@ -7,7 +7,7 @@ namespace mini {
 export template <typename T, typename Value>
 concept DeleterT = NoThrowCopyableT<T> && requires(T del, Value* ptr) { del(ptr); };
 
-export template <NonArrT T>
+export template <NonArrayT T>
 struct DefaultDeleter {
 public:
     constexpr void operator()(T* ptr) { delete ptr; }
