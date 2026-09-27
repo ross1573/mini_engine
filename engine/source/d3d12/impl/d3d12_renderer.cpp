@@ -31,6 +31,10 @@ Renderer::~Renderer()
     WaitForIdle();
 }
 
+void Renderer::Prepare()
+{
+}
+
 void Renderer::Render()
 {
     m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());

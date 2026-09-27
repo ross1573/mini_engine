@@ -21,8 +21,9 @@ public:
     Renderer(ID3D12Device*);
     ~Renderer();
 
-    void WaitForIdle() final;
+    void Prepare() final;
     void Render() final;
+    void WaitForIdle() final;
 
     // TODO: move to render pass
     void SetViewport(Rect const&, float32, float32);

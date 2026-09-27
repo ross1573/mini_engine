@@ -35,8 +35,9 @@ private:
 public:
     Renderer(Device* device);
 
-    void WaitForIdle() final;
+    void Prepare() final;
     void Render() final;
+    void WaitForIdle() final;
 
     static void HandleRenderError(NS::Error* error);
 };

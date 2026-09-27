@@ -25,13 +25,6 @@ Renderer::Renderer(Device* device)
     ASSERT(m_compiler);
     ASSERT(m_library);
 
-    m_vertexFunction = MakeUnique<ShaderFunction>(m_library.Get(), "VertexMain");
-    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library.Get(), "FragmentMain");
-    RenderPipelineDescriptor pipelineDesc(m_vertexFunction.Get(), m_fragmentFunction.Get());
-    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler.Get(), memory::AddressOf(pipelineDesc));
-
-    ASSERT(m_renderPipelineState);
-
     m_event = MakeUnique<SharedEvent>(m_device);
     m_eventValue = 0;
     m_frameValue = 0;
@@ -40,10 +33,20 @@ Renderer::Renderer(Device* device)
         m_eventQueue.PushBack(uint64{0});
     }
 
+    ASSERT(m_event);
+}
+
+void Renderer::Prepare()
+{
+    m_vertexFunction = MakeUnique<ShaderFunction>(m_library.Get(), "VertexMain");
+    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library.Get(), "FragmentMain");
+    RenderPipelineDescriptor pipelineDesc(m_vertexFunction.Get(), m_fragmentFunction.Get());
+    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler.Get(), memory::AddressOf(pipelineDesc));
+
     SwapChain* swapChain = interface->GetSwapChain();
     m_commandQueue->AddResidencySet(swapChain->CAMetalLayer()->residencySet());
 
-    ASSERT(m_event);
+    ASSERT(m_renderPipelineState);
 }
 
 void Renderer::Render()
