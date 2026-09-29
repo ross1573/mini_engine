@@ -51,8 +51,8 @@ public:
 
     constexpr Pointer operator->() const noexcept;
     constexpr Reference operator*() const noexcept;
-    explicit constexpr operator bool() const noexcept;
-    explicit constexpr operator Pointer() const noexcept;
+
+    constexpr operator PtrView<T>() const noexcept;
 
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
@@ -232,16 +232,9 @@ constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-constexpr SharedPtr<T>::operator bool() const noexcept
+constexpr SharedPtr<T>::operator PtrView<T>() const noexcept
 {
-    return m_ptr != nullptr;
-}
-
-template <NonReferenceT T>
-    requires DerivedFromT<T, NS::Object>
-constexpr SharedPtr<T>::operator Pointer() const noexcept
-{
-    return m_ptr;
+    return PtrView<T>(m_ptr);
 }
 
 template <NonReferenceT T>

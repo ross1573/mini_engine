@@ -50,9 +50,11 @@ public:
 
     constexpr Pointer operator->() const noexcept;
     constexpr Reference operator*() const noexcept;
-    constexpr Pointer* operator&() noexcept;
-    explicit constexpr operator bool() const noexcept;
-    constexpr operator Pointer() const noexcept; // TODO: this should be explicit..
+    constexpr Pointer* operator&() noexcept;           // TODO: remove
+    explicit constexpr operator bool() const noexcept; // TODO: remove
+    constexpr operator Pointer() const noexcept;       // TODO: remove
+
+    constexpr operator PtrView<T>() const noexcept;
 
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
@@ -228,6 +230,13 @@ inline constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcep
 {
     ASSERT(m_ptr, "nullpointer deference");
     return *m_ptr;
+}
+
+template <NonReferenceT T>
+    requires DerivedFromT<T, IUnknown>
+constexpr SharedPtr<T>::operator PtrView<T>() const noexcept
+{
+    return PtrView<T>(m_ptr);
 }
 
 template <NonReferenceT T>
