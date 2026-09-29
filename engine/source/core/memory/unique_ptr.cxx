@@ -1,8 +1,10 @@
 export module mini.core:unique_ptr;
 
 import :type;
+import :assert;
 import :deleter;
 import :utility_operation;
+import :ptr_view;
 
 namespace mini {
 
@@ -46,8 +48,8 @@ public:
 
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
-    explicit constexpr operator bool() const noexcept;
-    explicit constexpr operator Pointer() const noexcept;
+
+    constexpr operator PtrView<T>() const noexcept;
 
     constexpr UniquePtr& operator=(nullptr_t) noexcept;
     constexpr UniquePtr& operator=(UniquePtr&& other) noexcept;
@@ -185,25 +187,21 @@ constexpr void UniquePtr<T, DelT>::Reset(U* ptr) noexcept
 template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Pointer UniquePtr<T, DelT>::operator->() const noexcept
 {
+    ASSERT(Valid(), "deference on invalid object pointer");
     return m_ptr;
 }
 
 template <NonReferenceT T, DeleterT<T> DelT>
 constexpr UniquePtr<T, DelT>::Reference UniquePtr<T, DelT>::operator*() const noexcept
 {
+    ASSERT(Valid(), "deference on invalid object pointer");
     return *m_ptr;
 }
 
 template <NonReferenceT T, DeleterT<T> DelT>
-constexpr UniquePtr<T, DelT>::operator bool() const noexcept
+constexpr UniquePtr<T, DelT>::operator PtrView<T>() const noexcept
 {
-    return m_ptr != nullptr;
-}
-
-template <NonReferenceT T, DeleterT<T> DelT>
-constexpr UniquePtr<T, DelT>::operator Pointer() const noexcept
-{
-    return m_ptr;
+    return PtrView<T>(m_ptr);
 }
 
 template <NonReferenceT T, DeleterT<T> DelT>

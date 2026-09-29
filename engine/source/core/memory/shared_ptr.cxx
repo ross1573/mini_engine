@@ -1,11 +1,13 @@
 export module mini.core:shared_ptr;
 
 import :type;
+import :assert;
 import :utility_operation;
 import :memory_operation;
 import :allocator;
 import :deleter;
 import :shared_counter;
+import :ptr_view;
 
 namespace mini {
 
@@ -156,8 +158,8 @@ public:
 
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
-    explicit constexpr operator bool() const noexcept;
-    explicit constexpr operator Pointer() const noexcept;
+
+    constexpr operator PtrView<T>() const noexcept;
 
     constexpr SharedPtr& operator=(nullptr_t) noexcept;
     constexpr SharedPtr& operator=(SharedPtr const& other) noexcept;
@@ -374,25 +376,21 @@ constexpr bool SharedPtr<T>::OwnerEquals(SharedPtr<U> const& other) const noexce
 template <NonReferenceT T>
 constexpr SharedPtr<T>::Pointer SharedPtr<T>::operator->() const noexcept
 {
+    ASSERT(Valid(), "deference on invalid object pointer");
     return m_ptr;
 }
 
 template <NonReferenceT T>
 constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 {
+    ASSERT(Valid(), "deference on invalid object pointer");
     return *m_ptr;
 }
 
 template <NonReferenceT T>
-constexpr SharedPtr<T>::operator bool() const noexcept
+constexpr SharedPtr<T>::operator PtrView<T>() const noexcept
 {
-    return m_ptr != nullptr;
-}
-
-template <NonReferenceT T>
-constexpr SharedPtr<T>::operator Pointer() const noexcept
-{
-    return m_ptr;
+    return PtrView<T>(m_ptr);
 }
 
 template <NonReferenceT T>

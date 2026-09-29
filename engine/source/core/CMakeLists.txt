@@ -49,6 +49,7 @@ PUBLIC
         memory/unique_ptr.cxx
         memory/shared_ptr.cxx
         memory/weak_ptr.cxx
+        memory/ptr_view.cxx
 
 PRIVATE
     memory/cstring.h
