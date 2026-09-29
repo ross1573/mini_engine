@@ -207,7 +207,7 @@ PUBLIC
 PRIVATE
     include/config.h
     include/option.h
-    $<$<PLATFORM_ID:Windows>:internal/win_include.h>
+    $<$<PLATFORM_ID:Windows>:impl/win_include.h>
     impl/core.cpp
 )
 

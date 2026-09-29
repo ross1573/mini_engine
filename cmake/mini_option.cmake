@@ -7,7 +7,7 @@ macro (_msvc_compile_options)
         $<$<CONFIG:Develop>:/Ob2>
         $<$<CONFIG:Develop>:/Oi>
         $<$<CONFIG:Release>:/O2>
-        $<$<CONFIG:Release>:/Ob3>
+        $<$<CONFIG:Release>:/Ob2>
         /fp:fast
 
         /Wall
