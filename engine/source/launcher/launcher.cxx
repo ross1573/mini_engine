@@ -7,19 +7,27 @@ import :log;
 
 namespace mini {
 
-export void LaunchEngine()
+void LaunchEngine()
 {
     launcher::LogInfo("launching engine");
 
-    launcher::StaticInitialize();
-    launcher::LogInfo("static initialized");
-
-    Module<Core> core("mini.core");
     Module<Engine> engine("mini.engine");
 
     engine->Launch();
     engine.Release();
+}
 
+export void Launch()
+{
+    launcher::StaticInitialize();
+    {
+        Module<Core> core("mini.core");
+
+        LaunchEngine();
+
+        [[maybe_unused]] size_t remaining = core->ModuleCount();
+        ASSERT(remaining == 1, "{} module remaining", remaining);
+    }
     launcher::StaticCleanup();
 }
 

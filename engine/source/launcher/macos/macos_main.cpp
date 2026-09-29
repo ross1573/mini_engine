@@ -5,6 +5,6 @@ void NSApplicationInit();
 int main()
 {
     NSApplicationInit();
-    mini::LaunchEngine();
+    mini::Launch();
     return 0;
 }
