@@ -202,14 +202,13 @@ target_sources(mini.core
 PUBLIC
     FILE_SET core TYPE CXX_MODULES
     FILES
-        interface.cxx
         core.cxx
 
 PRIVATE
     include/config.h
     include/option.h
     $<$<PLATFORM_ID:Windows>:internal/win_include.h>
-    interface.cpp
+    impl/core.cpp
 )
 
 target_precompile_headers(mini.core 
@@ -224,7 +223,7 @@ PUBLIC
     include/
 
 PRIVATE
-    internal/
+    impl/
 )
 
 target_link_libraries(mini.core 

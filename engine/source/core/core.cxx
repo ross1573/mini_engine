@@ -66,4 +66,15 @@ export import :clock;
 export import :algorithm_memory;
 export import :algorithm;
 
-export import :interface;
+namespace mini {
+
+export class CORE_API Core final : public ModuleInterface {
+public:
+    ~Core() noexcept override
+    {
+        [[maybe_unused]] size_t remainingCount = g_moduleLoader.Count();
+        ASSERT(remainingCount == 0, "{} module remaining", remainingCount);
+    }
+};
+
+} // namespace mini
