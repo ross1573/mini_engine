@@ -18,7 +18,7 @@ Renderer::Renderer(Device* device)
     m_commandQueue = MakeUnique<CommandQueue>(device);
     m_commandBuffer = MakeUnique<CommandBuffer>(device);
     m_compiler = MakeUnique<Compiler>(device);
-    m_library = MakeUnique<ShaderLibrary>(device, "mini.shader");
+    m_library = MakeUnique<ShaderLibrary>(device, "mini.metal.shader");
 
     ASSERT(m_commandQueue);
     ASSERT(m_commandBuffer);
