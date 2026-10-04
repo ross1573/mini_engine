@@ -25,12 +25,15 @@ public:
     ~SharedPtr() noexcept;
     SharedPtr(SharedPtr const&) noexcept;
     constexpr SharedPtr(SharedPtr&&) noexcept;
-    template <PtrConvertibleToT<T> U>
-    SharedPtr(SharedPtr<U> const&) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr(SharedPtr<U>&&) noexcept;
-    template <PtrConvertibleToT<T> U>
-    explicit SharedPtr(U*) noexcept;
+    template <NonReferenceT U>
+    SharedPtr(SharedPtr<U> const&) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr SharedPtr(SharedPtr<U>&&) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    explicit SharedPtr(U*) noexcept
+        requires ConvertibleToT<U*, T*>;
     template <DerivedFromT<NS::Object> U>
     SharedPtr(SharedPtr<U> const&, Pointer) noexcept;
     template <DerivedFromT<NS::Object> U>
@@ -42,8 +45,9 @@ public:
 
     constexpr void Swap(SharedPtr&) noexcept;
     void Reset() noexcept;
-    template <PtrConvertibleToT<T> U>
-    void Reset(U*) noexcept;
+    template <NonReferenceT U>
+    void Reset(U*) noexcept
+        requires ConvertibleToT<U*, T*>;
 
     template <NonReferenceT U>
     constexpr bool Equals(SharedPtr<U> const&) const noexcept
@@ -57,10 +61,12 @@ public:
     SharedPtr& operator=(SharedPtr const&) noexcept;
     constexpr SharedPtr& operator=(SharedPtr&&) noexcept;
     constexpr SharedPtr& operator=(nullptr_t) noexcept;
-    template <PtrConvertibleToT<T> U>
-    SharedPtr& operator=(SharedPtr<U> const&) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr SharedPtr& operator=(SharedPtr<U>&&) noexcept;
+    template <NonReferenceT U>
+    SharedPtr& operator=(SharedPtr<U> const&) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr SharedPtr& operator=(SharedPtr<U>&&) noexcept
+        requires ConvertibleToT<U*, T*>;
 };
 
 template <NonReferenceT T>
@@ -100,8 +106,9 @@ constexpr SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 inline SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(other.m_ptr))
 {
     if (m_ptr) {
@@ -111,8 +118,9 @@ inline SharedPtr<T>::SharedPtr(SharedPtr<U> const& other) noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(other.m_ptr))
 {
     other.m_ptr = nullptr;
@@ -120,8 +128,9 @@ constexpr SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 inline SharedPtr<T>::SharedPtr(U* ptr) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(ptr))
 {
     if (m_ptr) {
@@ -191,8 +200,9 @@ inline void SharedPtr<T>::Reset() noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 inline void SharedPtr<T>::Reset(U* ptr) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
         m_ptr->release();
@@ -270,8 +280,9 @@ constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
         m_ptr->release();
@@ -300,8 +311,9 @@ constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 
 template <NonReferenceT T>
     requires DerivedFromT<T, NS::Object>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
         m_ptr->release();

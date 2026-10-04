@@ -29,7 +29,7 @@ public:
 
     template <typename U, typename CircularU>
     constexpr CircularIterator(CircularIterator<U, CircularU> const& other) noexcept
-        requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
+        requires ConvertibleToT<U*, T*> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
     [[nodiscard]] constexpr Pointer Address() const noexcept;
     [[nodiscard]] constexpr bool Valid() const noexcept;
@@ -56,7 +56,7 @@ public:
 
     template <typename U, typename CircularU>
     constexpr CircularIterator& operator=(CircularIterator<U, CircularU> const& other) noexcept
-        requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
+        requires ConvertibleToT<U*, T*> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>;
 
 protected:
     constexpr CircularIterator(size_t idx, size_t cap, Pointer begin, CircularT* base) noexcept;
@@ -88,8 +88,10 @@ constexpr CircularIterator<T, CircularT>::CircularIterator() noexcept
 }
 
 template <typename T, typename CircularT>
-constexpr CircularIterator<T, CircularT>::
-    CircularIterator(size_t idx, size_t cap, Pointer begin, CircularT* base) noexcept
+constexpr CircularIterator<T, CircularT>::CircularIterator(size_t idx,
+                                                           size_t cap,
+                                                           Pointer begin,
+                                                           CircularT* base) noexcept
     : m_offset(idx)
     , m_capacity(cap)
     , m_begin(begin)
@@ -100,7 +102,7 @@ constexpr CircularIterator<T, CircularT>::
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
 constexpr CircularIterator<T, CircularT>::CircularIterator(CircularIterator<U, CircularU> const& other) noexcept
-    requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
+    requires ConvertibleToT<U*, T*> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
     : m_offset(other.m_offset)
     , m_capacity(other.m_capacity)
     , m_begin(other.m_begin)
@@ -110,9 +112,9 @@ constexpr CircularIterator<T, CircularT>::CircularIterator(CircularIterator<U, C
 
 template <typename T, typename CircularT>
 template <typename U, typename CircularU>
-constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::
-operator=(CircularIterator<U, CircularU> const& other) noexcept
-    requires PtrConvertibleToT<U, T> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
+constexpr CircularIterator<T, CircularT>& CircularIterator<T, CircularT>::operator=(
+    CircularIterator<U, CircularU> const& other) noexcept
+    requires ConvertibleToT<U*, T*> && SameAsT<DecayT<CircularT>, DecayT<CircularU>>
 {
     m_offset = other.m_offset;
     m_capacity = other.m_capacity;

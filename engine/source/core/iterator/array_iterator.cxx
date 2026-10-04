@@ -27,7 +27,7 @@ public:
 
     template <typename U, typename ArrayU>
     constexpr ArrayIterator(ArrayIterator<U, ArrayU> const& other) noexcept
-        requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
+        requires ConvertibleToT<U*, T*> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
     [[nodiscard]] constexpr Pointer Address() const noexcept;
     [[nodiscard]] constexpr bool Valid() const noexcept;
@@ -54,7 +54,7 @@ public:
 
     template <typename U, typename ArrayU>
     constexpr ArrayIterator& operator=(ArrayIterator<U, ArrayU> const& other) noexcept
-        requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
+        requires ConvertibleToT<U*, T*> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
 protected:
     constexpr ArrayIterator(Pointer ptr, ArrayT* base) noexcept;
@@ -78,7 +78,7 @@ constexpr ArrayIterator<T, ArrayT>::ArrayIterator(Pointer ptr, ArrayT* base) noe
 template <typename T, typename ArrayT>
 template <typename U, typename ArrayU>
 constexpr ArrayIterator<T, ArrayT>::ArrayIterator(ArrayIterator<U, ArrayU> const& other) noexcept
-    requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
+    requires ConvertibleToT<U*, T*> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_array(other.m_array)
 {
@@ -87,7 +87,7 @@ constexpr ArrayIterator<T, ArrayT>::ArrayIterator(ArrayIterator<U, ArrayU> const
 template <typename T, typename ArrayT>
 template <typename U, typename ArrayU>
 constexpr ArrayIterator<T, ArrayT>& ArrayIterator<T, ArrayT>::operator=(ArrayIterator<U, ArrayU> const& other) noexcept
-    requires PtrConvertibleToT<U, T> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
+    requires ConvertibleToT<U*, T*> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
 {
     m_ptr = static_cast<T*>(other.m_ptr);
     m_array = other.m_array;

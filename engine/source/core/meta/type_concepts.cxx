@@ -75,10 +75,6 @@ concept ConvertibleToT = ImplicitlyConvertibleToT<From, To> && ExplicitlyConvert
 export template <typename T, typename U>
 concept ConvertibleWithT = ConvertibleToT<T, U> && ConvertibleToT<U, T>;
 
-export template <typename From, typename To>
-concept PtrConvertibleToT =
-    NonReferenceT<From> && NonReferenceT<To> && ConvertibleToT<From const volatile*, To const volatile*>;
-
 export template <typename T, typename U>
 concept AssignableFromT = std::assignable_from<T, U>;
 
@@ -86,12 +82,10 @@ export template <typename T, typename U>
 concept NoThrowAssignableFromT = AssignableFromT<T, U> && std::is_nothrow_assignable_v<T, U>;
 
 export template <typename Base, typename Derived>
-concept BaseOfT =
-    std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
+concept BaseOfT = std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived*, Base*>;
 
 export template <typename Derived, typename Base>
-concept DerivedFromT =
-    std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived const volatile*, Base const volatile*>;
+concept DerivedFromT = std::is_base_of_v<Base, Derived> && ImplicitlyConvertibleToT<Derived*, Base*>;
 
 } // namespace mini
 

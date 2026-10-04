@@ -29,12 +29,15 @@ public:
     constexpr WeakPtr(WeakPtr const& other) noexcept;
     constexpr WeakPtr(WeakPtr&& other) noexcept;
 
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr(WeakPtr<U> const& other) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr(WeakPtr<U>&& other) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr(SharedPtr<U> const& other) noexcept;
+    template <NonReferenceT U>
+    constexpr WeakPtr(WeakPtr<U> const& other) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr WeakPtr(WeakPtr<U>&& other) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr WeakPtr(SharedPtr<U> const& other) noexcept
+        requires ConvertibleToT<U*, T*>;
 
     [[nodiscard]] constexpr SharedPtr<T> Lock() const noexcept;
     [[nodiscard]] constexpr bool Valid() const noexcept;
@@ -52,12 +55,15 @@ public:
     constexpr WeakPtr& operator=(WeakPtr const& other) noexcept;
     constexpr WeakPtr& operator=(WeakPtr&& other) noexcept;
 
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr& operator=(WeakPtr<U> const& other) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr& operator=(WeakPtr<U>&& other) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr WeakPtr& operator=(SharedPtr<U> const& other) noexcept;
+    template <NonReferenceT U>
+    constexpr WeakPtr& operator=(WeakPtr<U> const& other) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr WeakPtr& operator=(WeakPtr<U>&& other) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr WeakPtr& operator=(SharedPtr<U> const& other) noexcept
+        requires ConvertibleToT<U*, T*>;
 };
 
 template <NonReferenceT T>
@@ -97,8 +103,9 @@ constexpr WeakPtr<T>::WeakPtr(WeakPtr&& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>::WeakPtr(WeakPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_counter(other.m_counter)
 {
@@ -108,8 +115,9 @@ constexpr WeakPtr<T>::WeakPtr(WeakPtr<U> const& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>::WeakPtr(WeakPtr<U>&& other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_counter(other.m_counter)
 {
@@ -118,8 +126,9 @@ constexpr WeakPtr<T>::WeakPtr(WeakPtr<U>&& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>::WeakPtr(SharedPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<T*>(other.m_ptr))
     , m_counter(other.m_counter)
 {
@@ -216,8 +225,9 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr&& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
         m_counter->ReleaseWeak();
@@ -234,8 +244,9 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U> const& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
         m_counter->ReleaseWeak();
@@ -250,8 +261,9 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(SharedPtr<U> const& other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
         m_counter->ReleaseWeak();

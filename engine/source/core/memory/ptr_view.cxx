@@ -26,14 +26,17 @@ public:
     constexpr PtrView() noexcept;
     constexpr ~PtrView() noexcept = default;
     constexpr PtrView(PtrView const& other) noexcept = default;
-    template <PtrConvertibleToT<T> U>
-    constexpr PtrView(PtrView<U> other) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr PtrView(U* ptr) noexcept;
+    template <NonReferenceT U>
+    constexpr PtrView(PtrView<U> other) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr PtrView(U* ptr) noexcept
+        requires ConvertibleToT<U*, T*>;
 
     constexpr void Reset() noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr void Reset(U* ptr) noexcept;
+    template <NonReferenceT U>
+    constexpr void Reset(U* ptr) noexcept
+        requires ConvertibleToT<U*, T*>;
 
     [[nodiscard]] constexpr bool Valid() const noexcept;
     [[nodiscard]] constexpr Pointer Get() const noexcept;
@@ -45,14 +48,16 @@ public:
 
     template <NonReferenceT U>
     constexpr operator U*() const noexcept
-        requires PtrConvertibleToT<T, U>;
+        requires ConvertibleToT<T*, U*>;
 
     constexpr PtrView& operator=(PtrView const& other) noexcept = default;
     constexpr PtrView& operator=(nullptr_t) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr PtrView& operator=(U* ptr) noexcept;
-    template <PtrConvertibleToT<T> U>
-    constexpr PtrView& operator=(PtrView<U> other) noexcept;
+    template <NonReferenceT U>
+    constexpr PtrView& operator=(U* ptr) noexcept
+        requires ConvertibleToT<U*, T*>;
+    template <NonReferenceT U>
+    constexpr PtrView& operator=(PtrView<U> other) noexcept
+        requires ConvertibleToT<U*, T*>;
 };
 
 template <NonReferenceT T>
@@ -62,15 +67,17 @@ constexpr PtrView<T>::PtrView() noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr PtrView<T>::PtrView(PtrView<U> other) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<Pointer>(other))
 {
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr PtrView<T>::PtrView(U* ptr) noexcept
+    requires ConvertibleToT<U*, T*>
     : m_ptr(static_cast<Pointer>(ptr))
 {
 }
@@ -82,8 +89,9 @@ constexpr void PtrView<T>::Reset() noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr void PtrView<T>::Reset(U* ptr) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     m_ptr = static_cast<Pointer>(ptr);
 }
@@ -137,7 +145,7 @@ constexpr PtrView<T>::Reference PtrView<T>::operator*() const noexcept
 template <NonReferenceT T>
 template <NonReferenceT U>
 constexpr PtrView<T>::operator U*() const noexcept
-    requires PtrConvertibleToT<T, U>
+    requires ConvertibleToT<T*, U*>
 {
     return m_ptr;
 }
@@ -150,16 +158,18 @@ constexpr PtrView<T>& PtrView<T>::operator=(nullptr_t) noexcept
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr PtrView<T>& PtrView<T>::operator=(U* ptr) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     m_ptr = static_cast<Pointer>(ptr);
     return *this;
 }
 
 template <NonReferenceT T>
-template <PtrConvertibleToT<T> U>
+template <NonReferenceT U>
 constexpr PtrView<T>& PtrView<T>::operator=(PtrView<U> other) noexcept
+    requires ConvertibleToT<U*, T*>
 {
     m_ptr = static_cast<Pointer>(other.m_ptr);
     return *this;
