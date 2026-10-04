@@ -49,7 +49,9 @@ public:
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
 
-    constexpr operator PtrView<T>() const noexcept;
+    template <NonReferenceT U>
+    constexpr operator PtrView<U>() const noexcept
+        requires PtrConvertibleToT<T, U>;
 
     constexpr UniquePtr& operator=(nullptr_t) noexcept;
     constexpr UniquePtr& operator=(UniquePtr&& other) noexcept;
@@ -199,9 +201,11 @@ constexpr UniquePtr<T, DelT>::Reference UniquePtr<T, DelT>::operator*() const no
 }
 
 template <NonReferenceT T, DeleterT<T> DelT>
-constexpr UniquePtr<T, DelT>::operator PtrView<T>() const noexcept
+template <NonReferenceT U>
+constexpr UniquePtr<T, DelT>::operator PtrView<U>() const noexcept
+    requires PtrConvertibleToT<T, U>
 {
-    return PtrView<T>(m_ptr);
+    return PtrView<U>(m_ptr);
 }
 
 template <NonReferenceT T, DeleterT<T> DelT>

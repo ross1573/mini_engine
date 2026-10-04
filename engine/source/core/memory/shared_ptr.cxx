@@ -159,7 +159,9 @@ public:
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
 
-    constexpr operator PtrView<T>() const noexcept;
+    template <NonReferenceT U>
+    constexpr operator PtrView<U>() const noexcept
+        requires PtrConvertibleToT<T, U>;
 
     constexpr SharedPtr& operator=(nullptr_t) noexcept;
     constexpr SharedPtr& operator=(SharedPtr const& other) noexcept;
@@ -388,9 +390,11 @@ constexpr SharedPtr<T>::Reference SharedPtr<T>::operator*() const noexcept
 }
 
 template <NonReferenceT T>
-constexpr SharedPtr<T>::operator PtrView<T>() const noexcept
+template <NonReferenceT U>
+constexpr SharedPtr<T>::operator PtrView<U>() const noexcept
+    requires PtrConvertibleToT<T, U>
 {
-    return PtrView<T>(m_ptr);
+    return PtrView<U>(m_ptr);
 }
 
 template <NonReferenceT T>

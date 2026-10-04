@@ -38,6 +38,9 @@ export template <typename T>
 concept ValueT = NonPointerT<T> && NonReferenceT<T> && !std::is_array_v<T>;
 
 export template <typename T>
+concept ConstT = std::is_const_v<T>;
+
+export template <typename T>
 concept AbstractT = std::is_abstract_v<T>;
 
 } // namespace mini
