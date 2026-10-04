@@ -62,6 +62,10 @@ public:
 
     [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
+    template <typename U>
+    constexpr operator ArrayView<U>() const noexcept
+        requires ConvertibleToT<T const*, U const*>;
+
     constexpr ArrayView& operator=(ArrayView const& other) noexcept = default;
     constexpr ArrayView& operator=(InitializerList<Value> initList) noexcept;
     template <size_t SizeN>
@@ -254,6 +258,14 @@ constexpr ArrayView<T>::ConstReference ArrayView<T>::operator[](size_t index) co
 {
     AssertValidIndex(index);
     return *(m_data + index);
+}
+
+template <typename T>
+template <typename U>
+constexpr ArrayView<T>::operator ArrayView<U>() const noexcept
+    requires ConvertibleToT<T const*, U const*>
+{
+    return ArrayView<U>(m_data, m_size);
 }
 
 template <typename T>

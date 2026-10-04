@@ -14,8 +14,8 @@ export template <MovableT T, size_t CapacityN>
 class FixedArray;
 
 template <typename T, typename ValueT, size_t CapacityN>
-concept ArrayLikeExceptFixedArrayT = ArrayLikeT<T, ValueT> &&
-                                     !SameAsT<RemoveConstVolatileRefT<T>, FixedArray<ValueT, CapacityN>>;
+concept ArrayLikeExceptFixedArrayT =
+    ArrayLikeT<T, ValueT> && !SameAsT<RemoveConstVolatileRefT<T>, FixedArray<ValueT, CapacityN>>;
 
 template <MovableT T, size_t CapacityN>
 class FixedArray {
@@ -129,7 +129,9 @@ public:
     constexpr FixedArray& operator=(U const& arr)
         requires CopyableT<T>;
 
-    constexpr operator ArrayView<T>() const noexcept;
+    template <MovableT U>
+    constexpr operator ArrayView<U>() const noexcept
+        requires ConvertibleToT<T const*, U const*>;
 
 private:
     template <typename U>
@@ -658,6 +660,14 @@ constexpr FixedArray<T, CapacityN>& FixedArray<T, CapacityN>::operator=(U const&
 {
     Assign(arr);
     return *this;
+}
+
+template <MovableT T, size_t CapacityN>
+template <MovableT U>
+constexpr FixedArray<T, CapacityN>::operator ArrayView<U>() const noexcept
+    requires ConvertibleToT<T const*, U const*>
+{
+    return ArrayView<U>(m_buffer, CapacityN);
 }
 
 template <MovableT T, size_t CapacityN>

@@ -135,7 +135,9 @@ public:
     constexpr Array& operator=(U const& arr)
         requires CopyableT<T>;
 
-    constexpr operator ArrayView<T>() const noexcept;
+    template <MovableT U>
+    constexpr operator ArrayView<U>() const noexcept
+        requires ConvertibleToT<T const*, U const*>;
 
 private:
     constexpr void SwapNewBuffer(Buffer& buffer) noexcept;
@@ -822,9 +824,11 @@ constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(U const& arr)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-constexpr Array<T, AllocT>::operator ArrayView<T>() const noexcept
+template <MovableT U>
+constexpr Array<T, AllocT>::operator ArrayView<U>() const noexcept
+    requires ConvertibleToT<T const*, U const*>
 {
-    return ArrayView<T>{m_buffer.Data(), m_size};
+    return ArrayView<U>{m_buffer.Data(), m_size};
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
