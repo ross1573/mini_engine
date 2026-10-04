@@ -26,7 +26,7 @@ public:
     constexpr SharedPtr(SharedPtr&&) noexcept;
     template <NonReferenceT U>
     SharedPtr(SharedPtr<U> const&) noexcept
-        requires ConvertibleToT<U*, T*>
+        requires ConvertibleToT<U*, T*>;
     template <NonReferenceT U>
     constexpr SharedPtr(SharedPtr<U>&&) noexcept
         requires ConvertibleToT<U*, T*>;
