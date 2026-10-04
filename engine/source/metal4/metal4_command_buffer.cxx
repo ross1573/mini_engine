@@ -28,8 +28,8 @@ private:
     SharedPtr<MTL4::CommandAllocator> m_commandAllocator;
 
 public:
-    explicit CommandAllocator(Device* device);
-    CommandAllocator(Device* device, StringView name);
+    explicit CommandAllocator(PtrView<Device> device);
+    CommandAllocator(PtrView<Device> device, StringView name);
 
     uint64 AllocatedSize() { return m_commandAllocator->allocatedSize(); }
     void Reset() { m_commandAllocator->reset(); }
@@ -47,10 +47,10 @@ private:
     UniquePtr<LogState> m_logState;
 
 public:
-    explicit CommandBuffer(Device* device);
+    explicit CommandBuffer(PtrView<Device> device);
 
     void SetName(StringView name) { m_commandBuffer->setLabel(ToNSString(name).Get()); }
-    void Begin(CommandAllocator const* allocator);
+    void Begin(PtrView<CommandAllocator const> allocator);
     void End();
 
     [[nodiscard]] bool Valid() const noexcept { return m_commandBuffer.Valid(); }
@@ -74,7 +74,7 @@ private:
     Array<PendingInfo> m_pending;
 
 public:
-    explicit CommandAllocatorPool(Device* device, size_t poolCapacity = options::bufferCount);
+    explicit CommandAllocatorPool(PtrView<Device> const& device, size_t poolCapacity = options::bufferCount);
 
     [[nodiscard]] UniquePtr<CommandAllocator> Allocate();
     void Deallocate(UniquePtr<CommandAllocator>&& allocator);

@@ -41,6 +41,9 @@ protected:
     SharedPtr<MTL::Resource> m_resource;
 
 public:
+    Resource() noexcept = default;
+    Resource(PtrView<MTL::Resource> resource) noexcept;
+
     void SetName(StringView name) { m_resource->setLabel(ToNSString(name).Get()); }
 
     [[nodiscard]] bool Valid() const noexcept { return m_resource.Valid(); }
@@ -49,5 +52,10 @@ public:
 
     [[nodiscard]] MTL::Resource* MTLResource() const noexcept { return m_resource.Get(); }
 };
+
+Resource::Resource(PtrView<MTL::Resource> resource) noexcept
+    : m_resource(TransferShared(resource.Get()))
+{
+}
 
 } // namespace mini::metal4

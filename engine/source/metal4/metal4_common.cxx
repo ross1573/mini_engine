@@ -116,7 +116,7 @@ private:
     static constexpr size_t defaultBufferSize = static_cast<size_t>(1024 * 1024) /*1MB*/;
 
 public:
-    LogState(Device* device, Logger::Level level, LogHandler logHandler, size_t bufferSize = defaultBufferSize);
+    LogState(PtrView<Device> device, Logger::Level level, LogHandler logHandler, size_t bufferSize = defaultBufferSize);
 
     [[nodiscard]] bool Valid() const noexcept { return m_logState.Valid(); }
     [[nodiscard]] Logger::Level LogLevel() const noexcept { return m_logLevel; }

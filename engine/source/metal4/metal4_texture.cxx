@@ -127,8 +127,8 @@ export class METAL4_API Texture
     : public graphics::Texture
     , public Resource {
 public:
-    explicit Texture(MTL::Texture* texture) noexcept;
-    Texture(Device* device, graphics::TextureDescriptor const& descriptor);
+    explicit Texture(PtrView<MTL::Texture> texture) noexcept;
+    Texture(PtrView<Device> device, graphics::TextureDescriptor const& descriptor);
     ~Texture() noexcept override = default;
 
     [[nodiscard]] uint64 GpuAddress() const override;

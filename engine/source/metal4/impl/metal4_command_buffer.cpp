@@ -5,14 +5,14 @@ import :log;
 
 namespace mini::metal4 {
 
-CommandAllocator::CommandAllocator(Device* device)
+CommandAllocator::CommandAllocator(PtrView<Device> device)
 {
     ASSERT(device);
 
     m_commandAllocator = TransferShared(device->MTLDevice()->newCommandAllocator());
 }
 
-CommandAllocator::CommandAllocator(Device* device, StringView name)
+CommandAllocator::CommandAllocator(PtrView<Device> device, StringView name)
 {
     ASSERT(device);
 
@@ -32,7 +32,7 @@ CommandAllocator::CommandAllocator(Device* device, StringView name)
     }
 }
 
-CommandBuffer::CommandBuffer(Device* device)
+CommandBuffer::CommandBuffer(PtrView<Device> device)
 {
     ASSERT(device);
 
@@ -46,7 +46,7 @@ CommandBuffer::CommandBuffer(Device* device)
     }
 }
 
-void CommandBuffer::Begin(CommandAllocator const* allocator)
+void CommandBuffer::Begin(PtrView<CommandAllocator const> allocator)
 {
     ASSERT(allocator);
 
@@ -75,7 +75,7 @@ void CommandBuffer::HandleLog(StringView subSystem, StringView category, Logger:
     ENSURE(logLevel < Logger::Level::warn) { }
 }
 
-CommandAllocatorPool::CommandAllocatorPool(Device* device, size_t poolCapacity)
+CommandAllocatorPool::CommandAllocatorPool(PtrView<Device> const& device, size_t poolCapacity)
     : m_device(device)
     , m_pool(poolCapacity)
     , m_pending(poolCapacity)

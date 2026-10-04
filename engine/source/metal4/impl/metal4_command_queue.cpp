@@ -7,7 +7,7 @@ import :command_queue;
 
 namespace mini::metal4 {
 
-CommandQueue::CommandQueue(Device* device)
+CommandQueue::CommandQueue(PtrView<Device> device)
     : m_event(device)
     , m_eventValue(0)
 {
@@ -16,14 +16,15 @@ CommandQueue::CommandQueue(Device* device)
     m_commandQueue = TransferShared(device->MTLDevice()->newMTL4CommandQueue());
 }
 
-void CommandQueue::Commit(CommandBuffer const* commandBuffer)
+void CommandQueue::Commit(PtrView<CommandBuffer const> commandBuffer)
 {
     ASSERT(commandBuffer);
 
     MTL4::CommandBuffer* buffer[] = {commandBuffer->MTLCommandBuffer()};
 
     if (options::gpuValidation) {
-        m_commandQueue->commit(buffer, 1, FeedbackHandlerOption().Get());
+        SharedPtr<MTL4::CommitOptions> option = FeedbackHandlerOption();
+        m_commandQueue->commit(buffer, 1, option.Get());
     } else {
         m_commandQueue->commit(buffer, 1);
     }
@@ -44,7 +45,8 @@ void CommandQueue::Commit(ArrayView<CommandBuffer const*> commandBuffers)
     }
 
     if (options::gpuValidation) {
-        m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size(), FeedbackHandlerOption().Get());
+        SharedPtr<MTL4::CommitOptions> option = FeedbackHandlerOption();
+        m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size(), option.Get());
     } else {
         m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size());
     }
@@ -53,33 +55,33 @@ void CommandQueue::Commit(ArrayView<CommandBuffer const*> commandBuffers)
     m_commitBuffer.Clear();
 }
 
-void CommandQueue::AddResidencySet(MTL::ResidencySet const* residencySet)
+void CommandQueue::AddResidencySet(PtrView<MTL::ResidencySet const> residencySet)
 {
     m_commandQueue->addResidencySet(residencySet);
 }
 
-void CommandQueue::Wait(Drawable* drawable)
+void CommandQueue::Wait(PtrView<Drawable const> drawable)
 {
     ASSERT(drawable);
 
     m_commandQueue->wait(drawable->MTLDrawable());
 }
 
-void CommandQueue::Wait(CommandQueue const* other)
+void CommandQueue::Wait(PtrView<CommandQueue const> other)
 {
     ASSERT(other);
 
     m_commandQueue->wait(other->m_event.MTLEvent(), other->m_eventValue);
 }
 
-void CommandQueue::Signal(Drawable* drawable)
+void CommandQueue::Signal(PtrView<Drawable const> drawable)
 {
     ASSERT(drawable);
 
     m_commandQueue->signalDrawable(drawable->MTLDrawable());
 }
 
-void CommandQueue::Signal(Event const* event, uint64 value)
+void CommandQueue::Signal(PtrView<Event const> event, uint64 value)
 {
     ASSERT(event);
 

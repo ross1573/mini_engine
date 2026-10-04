@@ -6,7 +6,7 @@ import :shader;
 
 namespace mini::metal4 {
 
-ShaderLibrary::ShaderLibrary(Device* device, StringView file)
+ShaderLibrary::ShaderLibrary(PtrView<Device> device, StringView file)
 {
     String filePath = GetFilePath(file);
     SharedPtr<NS::String> path = ToNSString(filePath);
@@ -35,7 +35,7 @@ String ShaderLibrary::GetFilePath(StringView name)
     return file;
 }
 
-ShaderFunction::ShaderFunction(ShaderLibrary* lib, StringView name)
+ShaderFunction::ShaderFunction(PtrView<ShaderLibrary> lib, StringView name)
 {
     SharedPtr<NS::String> nsName = ToNSString(name);
     SharedPtr<MTL4::LibraryFunctionDescriptor> desc = TransferShared(MTL4::LibraryFunctionDescriptor::alloc());

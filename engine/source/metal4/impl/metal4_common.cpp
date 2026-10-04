@@ -4,7 +4,7 @@ import :common;
 
 namespace mini::metal4 {
 
-LogState::LogState(Device* device, Logger::Level level, LogHandler logHandler, size_t bufferSize)
+LogState::LogState(PtrView<Device> device, Logger::Level level, LogHandler logHandler, size_t bufferSize)
 {
     ASSERT(device);
 

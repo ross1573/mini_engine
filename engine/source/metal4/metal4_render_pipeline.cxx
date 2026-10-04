@@ -27,11 +27,11 @@ private:
 
 public:
     RenderPipelineDescriptor();
-    RenderPipelineDescriptor(ShaderFunction* vertex, ShaderFunction* fragment);
+    RenderPipelineDescriptor(PtrView<ShaderFunction> vertex, PtrView<ShaderFunction> fragment);
 
     void SetName(StringView name);
-    void SetVertexFunction(ShaderFunction* vertex);
-    void SetFragmentFunction(ShaderFunction* fragment);
+    void SetVertexFunction(PtrView<ShaderFunction> vertex);
+    void SetFragmentFunction(PtrView<ShaderFunction> fragment);
 
     [[nodiscard]] String Name() const { return ToString(m_renderPipelineDescriptor->label()); }
     [[nodiscard]] ShaderFunction* VertexFunction() const { return m_vertex; }
@@ -62,7 +62,7 @@ private:
     SharedPtr<MTL::RenderPipelineState> m_renderPipelineState;
 
 public:
-    RenderPipelineState(Compiler* compiler, RenderPipelineDescriptor* descriptor);
+    RenderPipelineState(PtrView<Compiler> compiler, PtrView<RenderPipelineDescriptor> descriptor);
 
     [[nodiscard]] bool Valid() const noexcept { return m_renderPipelineState.Valid(); }
     [[nodiscard]] String Name() const { return ToString(m_renderPipelineState->label()); }

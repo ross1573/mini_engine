@@ -7,7 +7,7 @@ import :swap_chain;
 
 namespace mini::metal4 {
 
-SwapChain::SwapChain(Device* device)
+SwapChain::SwapChain(PtrView<Device> device)
     : m_layer(TransferShared(CA::MetalLayer::layer()))
 {
     ASSERT(m_layer, "failed to retrieve MetalLayer object");

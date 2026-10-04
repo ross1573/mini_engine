@@ -1,5 +1,3 @@
-module;
-#include <Metal/MTLTexture.hpp>
 module mini.metal4;
 
 import :buffer;
@@ -7,7 +5,13 @@ import :texture;
 
 namespace mini::metal4 {
 
-Buffer::Buffer(Device* device, graphics::BufferDescriptor const& descriptor)
+Buffer::Buffer(PtrView<MTL::Buffer> buffer)
+{
+    ASSERT(buffer);
+    m_resource = SharedPtr<MTL::Buffer>(buffer.Get());
+}
+
+Buffer::Buffer(PtrView<Device> device, graphics::BufferDescriptor const& descriptor)
 {
     ASSERT(device);
     ASSERT(descriptor.length > 0, "invalid buffer size {}.", descriptor.length);
@@ -37,13 +41,13 @@ SharedPtr<MTL::TextureDescriptor> MTLTextureDescriptor(graphics::TextureDescript
     return desc;
 }
 
-Texture::Texture(MTL::Texture* texture) noexcept
+Texture::Texture(PtrView<MTL::Texture> texture) noexcept
 {
     ASSERT(texture);
-    m_resource = SharedPtr<MTL::Texture>(texture);
+    m_resource = SharedPtr<MTL::Texture>(texture.Get());
 }
 
-Texture::Texture(Device* device, graphics::TextureDescriptor const& descriptor)
+Texture::Texture(PtrView<Device> device, graphics::TextureDescriptor const& descriptor)
 {
     SharedPtr<MTL::TextureDescriptor> desc = MTLTextureDescriptor(descriptor);
     ENSURE(desc, "invalid descriptor") {

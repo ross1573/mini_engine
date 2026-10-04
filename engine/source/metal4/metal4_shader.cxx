@@ -30,7 +30,7 @@ private:
     SharedPtr<MTL::Library> m_library;
 
 public:
-    ShaderLibrary(Device* device, StringView file);
+    ShaderLibrary(PtrView<Device> device, StringView file);
 
     void SetName(StringView name) { m_library->setLabel(ToNSString(name).Get()); }
 
@@ -49,7 +49,7 @@ private:
     String m_name;
 
 public:
-    ShaderFunction(ShaderLibrary* lib, StringView name);
+    ShaderFunction(PtrView<ShaderLibrary> lib, StringView name);
 
     [[nodiscard]] bool Valid() const noexcept { return m_descriptor.Valid(); }
     [[nodiscard]] String Name() const { return m_name; }

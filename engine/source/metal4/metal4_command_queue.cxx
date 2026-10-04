@@ -37,17 +37,17 @@ private:
     uint64 m_eventValue;
 
 public:
-    explicit CommandQueue(Device* device);
+    explicit CommandQueue(PtrView<Device> device);
 
-    void Commit(CommandBuffer const* commandBuffer);
+    void Commit(PtrView<CommandBuffer const> commandBuffer);
     void Commit(ArrayView<CommandBuffer const*> commandBuffers);
 
-    void AddResidencySet(MTL::ResidencySet const* residencySet);
+    void AddResidencySet(PtrView<MTL::ResidencySet const> residencySet);
 
-    void Wait(Drawable* drawable);
-    void Wait(CommandQueue const* other);
-    void Signal(Drawable* drawable);
-    void Signal(Event const* event, uint64 value);
+    void Wait(PtrView<Drawable const> drawable);
+    void Wait(PtrView<CommandQueue const> other);
+    void Signal(PtrView<Drawable const> drawable);
+    void Signal(PtrView<Event const> event, uint64 value);
 
     [[nodiscard]] bool Valid() const noexcept { return m_commandQueue.Valid(); }
     [[nodiscard]] uint64 EventValue() const noexcept { return m_eventValue; }

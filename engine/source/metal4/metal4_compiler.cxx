@@ -24,8 +24,8 @@ private:
     String m_name;
 
 public:
-    explicit Compiler(Device* device);
-    Compiler(Device* device, StringView name);
+    explicit Compiler(PtrView<Device> device);
+    Compiler(PtrView<Device> device, StringView name);
 
     [[nodiscard]] bool Valid() const noexcept { return m_compiler.Valid(); }
     [[nodiscard]] String Name() const { return m_name; }
@@ -33,7 +33,7 @@ public:
     [[nodiscard]] MTL4::Compiler* MTLCompiler() const noexcept { return m_compiler.Get(); }
 
 private:
-    void InitWithDescriptor(Device* device, SharedPtr<MTL4::CompilerDescriptor> const& desc);
+    void InitWithDescriptor(PtrView<Device> device, SharedPtr<MTL4::CompilerDescriptor> const& desc);
 };
 
 } // namespace mini::metal4

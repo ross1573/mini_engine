@@ -33,13 +33,13 @@ private:
     uint64 m_frameValue;
 
 public:
-    Renderer(Device* device);
+    Renderer(PtrView<Device> device);
 
     void Prepare() final;
     void Render() final;
     void WaitForIdle() final;
 
-    static void HandleRenderError(NS::Error* error);
+    static void HandleRenderError(PtrView<NS::Error> error);
 };
 
 } // namespace mini::metal4

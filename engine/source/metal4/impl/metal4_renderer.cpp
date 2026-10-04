@@ -9,7 +9,7 @@ import :log;
 
 namespace mini::metal4 {
 
-Renderer::Renderer(Device* device)
+Renderer::Renderer(PtrView<Device> device)
     : m_device(device)
     , m_commandAllocatorPool(device)
 {
@@ -38,10 +38,10 @@ Renderer::Renderer(Device* device)
 
 void Renderer::Prepare()
 {
-    m_vertexFunction = MakeUnique<ShaderFunction>(m_library.Get(), "VertexMain");
-    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library.Get(), "FragmentMain");
-    RenderPipelineDescriptor pipelineDesc(m_vertexFunction.Get(), m_fragmentFunction.Get());
-    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler.Get(), memory::AddressOf(pipelineDesc));
+    m_vertexFunction = MakeUnique<ShaderFunction>(m_library, "VertexMain");
+    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library, "FragmentMain");
+    RenderPipelineDescriptor pipelineDesc(m_vertexFunction, m_fragmentFunction);
+    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler, memory::AddressOf(pipelineDesc));
 
     SwapChain* swapChain = interface->GetSwapChain();
     m_commandQueue->AddResidencySet(swapChain->CAMetalLayer()->residencySet());
@@ -58,16 +58,15 @@ void Renderer::Render()
     ++m_eventValue;
 
     SwapChain* swapChain = interface->GetSwapChain();
-    Drawable* drawable = swapChain->Drawable();
-    m_commandQueue->Wait(drawable);
     m_commandAllocatorPool.Expire(m_frameValue);
 
     UniquePtr<CommandAllocator> commandAllocator = m_commandAllocatorPool.Allocate();
-    m_commandBuffer->Begin(commandAllocator.Get());
+    m_commandBuffer->Begin(commandAllocator);
 
+    Drawable* drawable = swapChain->Drawable();
     UniquePtr<Texture> frameTexture = drawable->FrameTexture();
     graphics::RenderPassTargetAttachment targetAttachment{
-        frameTexture.Get(),
+        frameTexture,
         graphics::LoadAction::Clear,
         graphics::StoreAction::Store,
         Color::Clear(),
@@ -79,16 +78,16 @@ void Renderer::Render()
 
     // basic triangle pass
     {
-        RenderPass renderPass{m_commandBuffer.Get(), renderPassDescriptor};
-        renderPass.SetPipelineState(m_renderPipelineState.Get());
+        RenderPass renderPass{m_commandBuffer, renderPassDescriptor};
+        renderPass.SetPipelineState(m_renderPipelineState);
         renderPass.DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }
 
     m_commandBuffer->End();
     m_commandAllocatorPool.Pending(MoveArg(commandAllocator), m_eventValue);
 
-    m_commandQueue->Commit(m_commandBuffer.Get());
-    m_commandQueue->Signal(m_event.Get(), m_eventValue);
+    m_commandQueue->Commit(m_commandBuffer);
+    m_commandQueue->Signal(m_event, m_eventValue);
     m_eventQueue.PushBack(m_eventValue);
 }
 
@@ -97,11 +96,11 @@ void Renderer::WaitForIdle()
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
     m_eventValue++;
-    m_commandQueue->Signal(m_event.Get(), m_eventValue);
+    m_commandQueue->Signal(m_event, m_eventValue);
     m_event->Wait(m_eventValue);
 }
 
-void Renderer::HandleRenderError(NS::Error* error)
+void Renderer::HandleRenderError(PtrView<NS::Error> error)
 {
     Renderer* renderer = interface->GetRenderer();
     ASSERT(renderer);

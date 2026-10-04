@@ -128,7 +128,7 @@ private:
     MTL4::RenderCommandEncoder* m_renderCommandEncoder;
 
 public:
-    RenderPass(CommandBuffer* commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept;
+    RenderPass(PtrView<CommandBuffer> commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept;
     RenderPass(RenderPass&& other) noexcept = default;
     ~RenderPass() noexcept;
 
@@ -136,7 +136,7 @@ public:
 
     void DrawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
 
-    void SetPipelineState(RenderPipelineState* state);
+    void SetPipelineState(PtrView<RenderPipelineState> state);
     void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
     void SetScissorRect(RectInt const&) noexcept;
 

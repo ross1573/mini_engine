@@ -56,8 +56,8 @@ export class METAL4_API Buffer
     : public graphics::Buffer
     , public Resource {
 public:
-    explicit Buffer(MTL::Buffer* buffer);
-    Buffer(Device* device, graphics::BufferDescriptor const& descriptor);
+    explicit Buffer(PtrView<MTL::Buffer> buffer);
+    Buffer(PtrView<Device> device, graphics::BufferDescriptor const& descriptor);
     ~Buffer() noexcept override = default;
 
     [[nodiscard]] size_t Size() const { return static_cast<size_t>(MTLBuffer()->length()); }

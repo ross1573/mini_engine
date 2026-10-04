@@ -50,7 +50,7 @@ private:
     Drawable m_drawable;
 
 public:
-    SwapChain(Device*);
+    SwapChain(PtrView<Device> device);
 
     [[nodiscard]] bool Valid() const noexcept final { return m_layer.Valid(); }
     void Present() final;

@@ -7,7 +7,7 @@ import :common;
 
 namespace mini::metal4 {
 
-Compiler::Compiler(Device* device)
+Compiler::Compiler(PtrView<Device> device)
 {
     ASSERT(device);
 
@@ -21,7 +21,7 @@ Compiler::Compiler(Device* device)
     InitWithDescriptor(device, desc);
 }
 
-Compiler::Compiler(Device* device, StringView name)
+Compiler::Compiler(PtrView<Device> device, StringView name)
 {
     ASSERT(device);
 
@@ -41,7 +41,7 @@ Compiler::Compiler(Device* device, StringView name)
     InitWithDescriptor(device, desc);
 }
 
-void Compiler::InitWithDescriptor(Device* device, SharedPtr<MTL4::CompilerDescriptor> const& desc)
+void Compiler::InitWithDescriptor(PtrView<Device> device, SharedPtr<MTL4::CompilerDescriptor> const& desc)
 {
     ASSERT(device);
 

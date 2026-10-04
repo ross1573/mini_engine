@@ -88,7 +88,7 @@ public:
     {
     }
 
-    RenderPassAttachment(Texture* texture, LoadAction loadAction, StoreAction storeAction) noexcept
+    RenderPassAttachment(PtrView<Texture> texture, LoadAction loadAction, StoreAction storeAction) noexcept
         : texture(texture)
         , loadAction(loadAction)
         , storeAction(storeAction)
@@ -103,17 +103,17 @@ public:
 public:
     RenderPassTargetAttachment() noexcept = default;
 
-    RenderPassTargetAttachment(Texture* texture) noexcept
+    RenderPassTargetAttachment(PtrView<Texture> texture) noexcept
         : RenderPassAttachment(texture, LoadAction::Undefined, StoreAction::Store)
     {
     }
 
-    RenderPassTargetAttachment(Texture* texture, LoadAction loadAction, StoreAction storeAction) noexcept
+    RenderPassTargetAttachment(PtrView<Texture> texture, LoadAction loadAction, StoreAction storeAction) noexcept
         : RenderPassAttachment(texture, loadAction, storeAction)
     {
     }
 
-    RenderPassTargetAttachment(Texture* texture,
+    RenderPassTargetAttachment(PtrView<Texture> texture,
                                LoadAction loadAction,
                                StoreAction storeAction,
                                Color clearColor) noexcept
@@ -130,17 +130,17 @@ public:
 public:
     RenderPassDepthAttachment() noexcept = default;
 
-    RenderPassDepthAttachment(Texture* texture) noexcept
+    RenderPassDepthAttachment(PtrView<Texture> texture) noexcept
         : RenderPassAttachment(texture, LoadAction::Clear, StoreAction::Undefined)
     {
     }
 
-    RenderPassDepthAttachment(Texture* texture, LoadAction loadAction, StoreAction storeAction) noexcept
+    RenderPassDepthAttachment(PtrView<Texture> texture, LoadAction loadAction, StoreAction storeAction) noexcept
         : RenderPassAttachment(texture, loadAction, storeAction)
     {
     }
 
-    RenderPassDepthAttachment(Texture* texture,
+    RenderPassDepthAttachment(PtrView<Texture> texture,
                               LoadAction loadAction,
                               StoreAction storeAction,
                               float32 clearDepth) noexcept
@@ -157,17 +157,17 @@ public:
 public:
     RenderPassStencilAttachment() noexcept = default;
 
-    RenderPassStencilAttachment(Texture* texture) noexcept
+    RenderPassStencilAttachment(PtrView<Texture> texture) noexcept
         : RenderPassAttachment(texture, LoadAction::Clear, StoreAction::Undefined)
     {
     }
 
-    RenderPassStencilAttachment(Texture* texture, LoadAction loadAction, StoreAction storeAction) noexcept
+    RenderPassStencilAttachment(PtrView<Texture> texture, LoadAction loadAction, StoreAction storeAction) noexcept
         : RenderPassAttachment(texture, loadAction, storeAction)
     {
     }
 
-    RenderPassStencilAttachment(Texture* texture,
+    RenderPassStencilAttachment(PtrView<Texture> texture,
                                 LoadAction loadAction,
                                 StoreAction storeAction,
                                 uint32 clearStencil) noexcept

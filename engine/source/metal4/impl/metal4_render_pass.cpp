@@ -59,7 +59,7 @@ SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
     return desc;
 }
 
-RenderPass::RenderPass(CommandBuffer* commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept
+RenderPass::RenderPass(PtrView<CommandBuffer> commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept
 {
     ASSERT(commandBuffer);
 
@@ -98,13 +98,11 @@ void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 ve
     ASSERT(Valid());
 
     MTL::PrimitiveType mtlPrimitive = MTLPrimitiveType(primitiveType);
-    // MTL::RenderStages renderStages = MTL::RenderStageVertex;
 
-    // m_renderCommandEncoder->setArgumentTable(m_argumentTable.Get(), renderStages);
     m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
-void RenderPass::SetPipelineState(RenderPipelineState* state)
+void RenderPass::SetPipelineState(PtrView<RenderPipelineState> state)
 {
     ASSERT(Valid());
     ASSERT(state);

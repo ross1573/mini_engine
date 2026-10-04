@@ -27,7 +27,7 @@ protected:
     Event(SharedPtr<MTL::Event>&& event) noexcept;
 
 public:
-    explicit Event(Device* device);
+    explicit Event(PtrView<Device> device);
 
     void SetName(StringView name);
 
@@ -47,7 +47,7 @@ Event::Event(SharedPtr<MTL::Event>&& event) noexcept
 {
 }
 
-Event::Event(Device* device)
+Event::Event(PtrView<Device> device)
 {
     ASSERT(device);
     m_event = TransferShared(device->MTLDevice()->newEvent());
@@ -68,7 +68,7 @@ private:
     uint64 m_signaledValue;
 
 public:
-    explicit SharedEvent(Device* device);
+    explicit SharedEvent(PtrView<Device> device);
 
     void Wait(uint64 value, Milliseconds timeout = Milliseconds::Max());
     bool Signal(uint64 value);
@@ -78,7 +78,7 @@ public:
     [[nodiscard]] MTL::SharedEvent* MTLSharedEvent() const noexcept;
 };
 
-SharedEvent::SharedEvent(Device* device)
+SharedEvent::SharedEvent(PtrView<Device> device)
     : m_signaledValue(0)
 {
     ASSERT(device);

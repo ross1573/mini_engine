@@ -15,7 +15,7 @@ RenderPipelineDescriptor::RenderPipelineDescriptor()
     m_renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
 }
 
-RenderPipelineDescriptor::RenderPipelineDescriptor(ShaderFunction* vertex, ShaderFunction* fragment)
+RenderPipelineDescriptor::RenderPipelineDescriptor(PtrView<ShaderFunction> vertex, PtrView<ShaderFunction> fragment)
     : RenderPipelineDescriptor()
 {
     SetVertexFunction(vertex);
@@ -28,7 +28,7 @@ void RenderPipelineDescriptor::SetName(StringView name)
     m_renderPipelineDescriptor->setLabel(label.Get());
 }
 
-void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction* vertex)
+void RenderPipelineDescriptor::SetVertexFunction(PtrView<ShaderFunction> vertex)
 {
     ENSURE(vertex, "invalid vertex function") {
         return;
@@ -38,7 +38,7 @@ void RenderPipelineDescriptor::SetVertexFunction(ShaderFunction* vertex)
     m_renderPipelineDescriptor->setVertexFunctionDescriptor(m_vertex->MTLFunctionDescriptor());
 }
 
-void RenderPipelineDescriptor::SetFragmentFunction(ShaderFunction* fragment)
+void RenderPipelineDescriptor::SetFragmentFunction(PtrView<ShaderFunction> fragment)
 {
     ENSURE(fragment, "invalid fragment function") {
         return;
@@ -48,7 +48,7 @@ void RenderPipelineDescriptor::SetFragmentFunction(ShaderFunction* fragment)
     m_renderPipelineDescriptor->setFragmentFunctionDescriptor(m_fragment->MTLFunctionDescriptor());
 }
 
-RenderPipelineState::RenderPipelineState(Compiler* compiler, RenderPipelineDescriptor* descriptor)
+RenderPipelineState::RenderPipelineState(PtrView<Compiler> compiler, PtrView<RenderPipelineDescriptor> descriptor)
 {
     NS::Error* error;
     MTL4::RenderPipelineDescriptor* desc = descriptor->MTLRenderPipelineDescriptor();
