@@ -44,7 +44,7 @@ public:
 
 export class GRAPHICS_API RenderPipelineState {
 public:
-    virtual ~RenderPipelineState() noexcept = 0;
+    virtual ~RenderPipelineState() noexcept = default;
 };
 
 } // namespace mini::graphics
