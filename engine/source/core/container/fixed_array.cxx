@@ -11,13 +11,6 @@ import :array_iterator;
 namespace mini {
 
 export template <MovableT T, size_t CapacityN>
-class FixedArray;
-
-template <typename T, typename ValueT, size_t CapacityN>
-concept ArrayLikeExceptFixedArrayT =
-    ArrayLikeT<T, ValueT> && !SameAsT<RemoveConstVolatileRefT<T>, FixedArray<ValueT, CapacityN>>;
-
-template <MovableT T, size_t CapacityN>
 class FixedArray {
 private:
     typedef memory::FixedBuffer<T, CapacityN> Buffer;
@@ -46,11 +39,9 @@ public:
     constexpr FixedArray(FixedArray const& other)
         requires CopyableT<T>;
     constexpr FixedArray(FixedArray&& other) noexcept;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-    constexpr FixedArray(U const& arr)
+    constexpr FixedArray(ArrayView<T> view)
         requires CopyableT<T>;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-    constexpr FixedArray(U const& arr, size_t size)
+    constexpr FixedArray(ArrayView<T> view, size_t size)
         requires CopyableT<T>;
     template <ForwardIteratableByT<T> Iter>
     constexpr FixedArray(Iter begin, Iter end);
@@ -65,16 +56,16 @@ public:
     constexpr void Insert(ConstIterator iter, Args&&... args)
         requires ConstructibleFromT<T, Args...>;
 
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+    template <ArrayLikeT<T> U>
     constexpr void Assign(U const& arr)
         requires CopyableT<T>;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+    template <ArrayLikeT<T> U>
     constexpr void Append(U const& arr)
         requires CopyableT<T>;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+    template <ArrayLikeT<T> U>
     constexpr void InsertRange(size_t index, U const& arr)
         requires CopyableT<T>;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+    template <ArrayLikeT<T> U>
     constexpr void InsertRange(ConstIterator iter, U const& arr)
         requires CopyableT<T>;
 
@@ -122,12 +113,11 @@ public:
     [[nodiscard]] constexpr Reference operator[](size_t index);
     [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
+    constexpr FixedArray& operator=(ArrayView<T> view)
+        requires CopyableT<T>;
     constexpr FixedArray& operator=(FixedArray const& other)
         requires CopyableT<T>;
     constexpr FixedArray& operator=(FixedArray&& other) noexcept;
-    template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-    constexpr FixedArray& operator=(U const& arr)
-        requires CopyableT<T>;
 
     template <MovableT U>
     constexpr operator ArrayView<U>() const noexcept
@@ -181,11 +171,9 @@ constexpr FixedArray<T, CapacityN>::FixedArray(FixedArray&& other) noexcept
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-constexpr FixedArray<T, CapacityN>::FixedArray(U const& arr)
+constexpr FixedArray<T, CapacityN>::FixedArray(ArrayView<T> view)
     requires CopyableT<T>
 {
-    ArrayView<T> view = arr;
     ConstPointer ptr = view.Data();
     size_t size = view.Size();
 
@@ -195,11 +183,9 @@ constexpr FixedArray<T, CapacityN>::FixedArray(U const& arr)
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-constexpr FixedArray<T, CapacityN>::FixedArray(U const& arr, size_t size)
+constexpr FixedArray<T, CapacityN>::FixedArray(ArrayView<T> view, size_t size)
     requires CopyableT<T>
 {
-    ArrayView<T> view = arr;
     ArrayView<T> subView = view.SubFront(size);
     ConstPointer ptr = subView.Data();
     size_t subSize = subView.Size();
@@ -263,7 +249,7 @@ constexpr void FixedArray<T, CapacityN>::Insert(ConstIterator iter, Args&&... ar
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+template <ArrayLikeT<T> U>
 constexpr void FixedArray<T, CapacityN>::Assign(U const& arr)
     requires CopyableT<T>
 {
@@ -279,7 +265,7 @@ constexpr void FixedArray<T, CapacityN>::Assign(U const& arr)
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+template <ArrayLikeT<T> U>
 constexpr void FixedArray<T, CapacityN>::Append(U const& arr)
     requires CopyableT<T>
 {
@@ -290,7 +276,7 @@ constexpr void FixedArray<T, CapacityN>::Append(U const& arr)
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+template <ArrayLikeT<T> U>
 constexpr void FixedArray<T, CapacityN>::InsertRange(size_t index, U const& arr)
     requires CopyableT<T>
 {
@@ -307,7 +293,7 @@ constexpr void FixedArray<T, CapacityN>::InsertRange(size_t index, U const& arr)
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
+template <ArrayLikeT<T> U>
 constexpr void FixedArray<T, CapacityN>::InsertRange(ConstIterator iter, U const& arr)
     requires CopyableT<T>
 {
@@ -654,11 +640,10 @@ constexpr FixedArray<T, CapacityN>& FixedArray<T, CapacityN>::operator=(FixedArr
 }
 
 template <MovableT T, size_t CapacityN>
-template <ArrayLikeExceptFixedArrayT<T, CapacityN> U>
-constexpr FixedArray<T, CapacityN>& FixedArray<T, CapacityN>::operator=(U const& arr)
+constexpr FixedArray<T, CapacityN>& FixedArray<T, CapacityN>::operator=(ArrayView<T> view)
     requires CopyableT<T>
 {
-    Assign(arr);
+    Assign(view);
     return *this;
 }
 

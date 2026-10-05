@@ -12,13 +12,6 @@ import :array_iterator;
 namespace mini {
 
 export template <MovableT T, AllocatorT<T> AllocT = mini::Allocator<T>>
-class Array;
-
-template <typename T, typename ValueT, typename AllocT>
-concept ArrayLikeExceptArrayT =
-    ArrayLikeT<T, ValueT> && AllocatorT<AllocT, ValueT> && !SameAsT<RemoveConstVolatileRefT<T>, Array<ValueT, AllocT>>;
-
-template <MovableT T, AllocatorT<T> AllocT>
 class Array {
 private:
     typedef memory::DynamicBuffer<T, AllocT> Buffer;
@@ -49,11 +42,9 @@ public:
     explicit constexpr Array(AllocT const& alloc) noexcept;
     explicit constexpr Array(AllocT&& alloc) noexcept;
     explicit constexpr Array(size_t capacity, AllocT const& alloc = AllocT());
-    template <ArrayLikeExceptArrayT<T, AllocT> U>
-    constexpr Array(U const& arr, AllocT const& alloc = AllocT())
+    constexpr Array(ArrayView<T> view, AllocT const& alloc = AllocT())
         requires CopyableT<T>;
-    template <ArrayLikeExceptArrayT<T, AllocT> U>
-    constexpr Array(U const& arr, size_t size, AllocT const& alloc = AllocT())
+    constexpr Array(ArrayView<T> view, size_t size, AllocT const& alloc = AllocT())
         requires CopyableT<T>;
     template <ForwardIteratableByT<T> Iter>
     constexpr Array(Iter begin, Iter end, AllocT const& alloc = AllocT());
@@ -128,12 +119,11 @@ public:
     [[nodiscard]] constexpr Reference operator[](size_t index);
     [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
+    constexpr Array& operator=(ArrayView<T> view)
+        requires CopyableT<T>;
     constexpr Array& operator=(Array const& other)
         requires CopyableT<T>;
     constexpr Array& operator=(Array&& other) noexcept;
-    template <ArrayLikeExceptArrayT<T, AllocT> U>
-    constexpr Array& operator=(U const& arr)
-        requires CopyableT<T>;
 
     template <MovableT U>
     constexpr operator ArrayView<U>() const noexcept
@@ -225,13 +215,11 @@ constexpr Array<T, AllocT>::Array(size_t capacity, AllocT const& alloc)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <ArrayLikeExceptArrayT<T, AllocT> U>
-constexpr Array<T, AllocT>::Array(U const& arr, AllocT const& alloc)
+constexpr Array<T, AllocT>::Array(ArrayView<T> view, AllocT const& alloc)
     requires CopyableT<T>
     : m_size(0)
     , m_buffer(alloc)
 {
-    ArrayView<T> view = arr;
     ConstPointer data = view.Data();
     size_t size = view.Size();
 
@@ -241,14 +229,12 @@ constexpr Array<T, AllocT>::Array(U const& arr, AllocT const& alloc)
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <ArrayLikeExceptArrayT<T, AllocT> U>
-constexpr Array<T, AllocT>::Array(U const& arr, size_t size, AllocT const& alloc)
+constexpr Array<T, AllocT>::Array(ArrayView<T> view, size_t size, AllocT const& alloc)
     requires CopyableT<T>
     : m_size(0)
     , m_buffer(alloc)
 {
-    ArrayView<T> view = arr;
-    ArrayView<T> subView = arr.SubFront(size);
+    ArrayView<T> subView = view.SubFront(size);
     ConstPointer data = subView.Data();
     size_t subSize = subView.Size();
 
@@ -815,11 +801,10 @@ constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(Array&& other) noexcept
 }
 
 template <MovableT T, AllocatorT<T> AllocT>
-template <ArrayLikeExceptArrayT<T, AllocT> U>
-constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(U const& arr)
+constexpr Array<T, AllocT>& Array<T, AllocT>::operator=(ArrayView<T> view)
     requires CopyableT<T>
 {
-    Assign(arr);
+    Assign(view);
     return *this;
 }
 

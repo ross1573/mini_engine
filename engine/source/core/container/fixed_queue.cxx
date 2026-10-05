@@ -42,8 +42,7 @@ public:
     constexpr FixedQueue(FixedQueue const& other)
         requires CopyableT<T>;
     constexpr FixedQueue(FixedQueue&& other) noexcept;
-    template <ArrayLikeT<T> U>
-    constexpr FixedQueue(U const& arr)
+    constexpr FixedQueue(ArrayView<T> arr)
         requires CopyableT<T>;
     template <ForwardIteratableByT<T> Iter>
     explicit constexpr FixedQueue(Iter begin, Iter end);
@@ -93,12 +92,11 @@ public:
     [[nodiscard]] constexpr Reference operator[](size_t index);
     [[nodiscard]] constexpr ConstReference operator[](size_t index) const;
 
+    constexpr FixedQueue& operator=(ArrayView<T> arr)
+        requires CopyableT<T>;
     constexpr FixedQueue& operator=(FixedQueue const& other)
         requires CopyableT<T>;
     constexpr FixedQueue& operator=(FixedQueue&& other) noexcept;
-    template <ArrayLikeT<T> U>
-    constexpr FixedQueue& operator=(U const& arr)
-        requires CopyableT<T>;
 
 private:
     template <typename U>
@@ -156,8 +154,7 @@ constexpr FixedQueue<T, N>::FixedQueue(FixedQueue&& other) noexcept
 }
 
 template <MovableT T, size_t N>
-template <ArrayLikeT<T> U>
-constexpr FixedQueue<T, N>::FixedQueue(U const& arr)
+constexpr FixedQueue<T, N>::FixedQueue(ArrayView<T> arr)
     requires CopyableT<T>
     : m_buffer()
 {
@@ -502,8 +499,7 @@ constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(FixedQueue&& other) noex
 }
 
 template <MovableT T, size_t N>
-template <ArrayLikeT<T> U>
-constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(U const& arr)
+constexpr FixedQueue<T, N>& FixedQueue<T, N>::operator=(ArrayView<T> arr)
     requires CopyableT<T>
 {
     Assign(arr);

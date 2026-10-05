@@ -1,5 +1,3 @@
-module;
-#include "debug/assert.h"
 export module mini.core:fixed_buffer;
 
 import :type;
