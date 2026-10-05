@@ -209,6 +209,7 @@ PRIVATE
     include/option.h
     $<$<PLATFORM_ID:Windows>:impl/win_include.h>
     impl/core.cpp
+    impl/option.cpp
 )
 
 target_precompile_headers(mini.core 

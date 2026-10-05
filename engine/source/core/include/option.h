@@ -4,29 +4,22 @@
 // should be saved into a file
 namespace mini::options {
 
-inline constexpr char const* name = "Mini Engine";
-inline constexpr char const* title = "Mini Engine";
+extern char const* name;
+extern char const* title;
 
-inline constexpr int x = 300;
-inline constexpr int y = 300;
-inline constexpr int width = 1280;
-inline constexpr int height = 720;
+extern int x;
+extern int y;
+extern int width;
+extern int height;
 
-inline constexpr bool fullscreen = false;
-inline constexpr bool resizableWindow = true;
-inline constexpr unsigned char vsync = 0;
-inline constexpr unsigned char bufferCount = 3;
+extern bool fullscreen;
+extern bool resizableWindow;
+extern unsigned char vsync;
+extern unsigned char bufferCount;
+extern char const* graphicsModule;
 
-#if PLATFORM_WINDOWS
-inline constexpr char const* graphicsModule = "mini.d3d12";
-#elif PLATFORM_MACOS
-inline constexpr char const* graphicsModule = "mini.metal4";
-#else
-inline constexpr char const* graphicsModule = nullptr;
-#endif
-
-inline constexpr bool debugLayer = true;
-inline constexpr bool gpuValidation = false;
+extern bool debugLayer;
+extern bool gpuValidation;
 
 } // namespace mini::options
 
