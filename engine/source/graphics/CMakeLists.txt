@@ -12,6 +12,8 @@ PUBLIC
         graphics_resource.cxx
         graphics_buffer.cxx
         graphics_texture.cxx
+        graphics_shader.cxx
+        graphics_render_pipeline.cxx
         graphics_render_pass.cxx
         device.cxx
         renderer.cxx

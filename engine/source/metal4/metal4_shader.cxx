@@ -25,7 +25,7 @@ using MTL4::LibraryFunctionDescriptor;
 
 namespace mini::metal4 {
 
-export class METAL4_API ShaderLibrary {
+export class METAL4_API ShaderLibrary : public graphics::ShaderLibrary {
 private:
     SharedPtr<MTL::Library> m_library;
 
@@ -34,8 +34,8 @@ public:
 
     void SetName(StringView name) { m_library->setLabel(ToNSString(name).Get()); }
 
-    [[nodiscard]] bool Valid() const noexcept { return m_library.Valid(); }
-    [[nodiscard]] String Name() const { return ToString(m_library->label()); }
+    [[nodiscard]] bool Valid() const noexcept final { return m_library.Valid(); }
+    [[nodiscard]] String Name() const final { return ToString(m_library->label()); }
 
     [[nodiscard]] MTL::Library* MTLLibrary() const noexcept { return m_library.Get(); }
 
@@ -43,7 +43,7 @@ private:
     static String GetFilePath(StringView name);
 };
 
-export class METAL4_API ShaderFunction {
+export class METAL4_API ShaderFunction : public graphics::ShaderFunction {
 private:
     SharedPtr<MTL4::FunctionDescriptor> m_descriptor;
     String m_name;
@@ -51,8 +51,8 @@ private:
 public:
     ShaderFunction(PtrView<ShaderLibrary> lib, StringView name);
 
-    [[nodiscard]] bool Valid() const noexcept { return m_descriptor.Valid(); }
-    [[nodiscard]] String Name() const { return m_name; }
+    [[nodiscard]] bool Valid() const noexcept final { return m_descriptor.Valid(); }
+    [[nodiscard]] String Name() const final { return m_name; }
 
     [[nodiscard]] MTL4::FunctionDescriptor* MTLFunctionDescriptor() const noexcept { return m_descriptor.Get(); }
 };

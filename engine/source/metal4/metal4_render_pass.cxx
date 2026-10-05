@@ -124,7 +124,6 @@ export METAL4_API SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
 
 export class METAL4_API RenderPass {
 private:
-    CommandBuffer* m_commandBuffer;
     MTL4::RenderCommandEncoder* m_renderCommandEncoder;
 
 public:

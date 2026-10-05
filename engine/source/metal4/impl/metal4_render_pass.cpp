@@ -29,7 +29,7 @@ SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
             continue;
         }
 
-        MTL::RenderPassColorAttachmentDescriptor* colorDescriptor = colorDescriptors->object(0);
+        MTL::RenderPassColorAttachmentDescriptor* colorDescriptor = colorDescriptors->object(i);
         colorDescriptor->setTexture(texture->MTLTexture());
         colorDescriptor->setClearColor(MTLClearColor(targetAttachment.clearColor));
         colorDescriptor->setLoadAction(MTLLoadAction(targetAttachment.loadAction));
@@ -74,7 +74,6 @@ RenderPass::RenderPass(PtrView<CommandBuffer> commandBuffer, graphics::RenderPas
         return;
     }
 
-    m_commandBuffer = commandBuffer;
     m_renderCommandEncoder = mtlRenderEncoder;
 }
 
@@ -85,12 +84,11 @@ RenderPass::~RenderPass() noexcept
     }
 
     m_renderCommandEncoder = nullptr;
-    m_commandBuffer = nullptr;
 }
 
 bool RenderPass::Valid() const noexcept
 {
-    return m_commandBuffer != nullptr && m_renderCommandEncoder != nullptr;
+    return m_renderCommandEncoder != nullptr;
 }
 
 void RenderPass::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)

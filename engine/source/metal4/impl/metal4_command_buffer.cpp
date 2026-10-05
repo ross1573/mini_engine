@@ -39,7 +39,8 @@ CommandBuffer::CommandBuffer(PtrView<Device> device)
     m_commandBuffer = TransferShared(device->MTLDevice()->newCommandBuffer());
 
     if (options::gpuValidation) {
-        m_logState = MakeUnique<LogState>(device, Logger::Level::warn, &CommandBuffer::HandleLog);
+        Logger::Level logLevel = RELEASE ? Logger::Level::warn : Logger::Level::debug;
+        m_logState = MakeUnique<LogState>(device, logLevel, &CommandBuffer::HandleLog);
         m_commandBufferOptions = TransferShared(MTL4::CommandBufferOptions::alloc());
         m_commandBufferOptions->init();
         m_commandBufferOptions->setLogState(m_logState->MTLLogState());
@@ -108,7 +109,7 @@ void CommandAllocatorPool::Expire(uint64 eventValue)
 {
     Array<PendingInfo>::Iterator iterator = m_pending.Begin();
     for (; iterator != m_pending.End();) {
-        if (iterator->eventValue < eventValue) {
+        if (iterator->eventValue <= eventValue) {
             ++iterator;
             continue;
         }

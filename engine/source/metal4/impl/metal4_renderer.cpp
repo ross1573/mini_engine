@@ -5,6 +5,7 @@ import mini.graphics;
 import mini.apple;
 import :renderer;
 import :swap_chain;
+import :common;
 import :log;
 
 namespace mini::metal4 {
@@ -38,14 +39,19 @@ Renderer::Renderer(PtrView<Device> device)
 
 void Renderer::Prepare()
 {
-    m_vertexFunction = MakeUnique<ShaderFunction>(m_library, "VertexMain");
-    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library, "FragmentMain");
-    RenderPipelineDescriptor pipelineDesc(m_vertexFunction, m_fragmentFunction);
-    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler, memory::AddressOf(pipelineDesc));
-
     SwapChain* swapChain = interface->GetSwapChain();
     m_commandQueue->AddResidencySet(swapChain->CAMetalLayer()->residencySet());
 
+    m_vertexFunction = MakeUnique<ShaderFunction>(m_library, "VertexMain");
+    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library, "FragmentMain");
+
+    graphics::RenderPipelineDescriptor pipelineDesc{
+        {graphics::RenderPipelineTargetAttachment(graphics::PixelFormat::BGRA8unorm)},
+        m_vertexFunction,
+        m_fragmentFunction,
+    };
+
+    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler, pipelineDesc);
     ASSERT(m_renderPipelineState);
 }
 
@@ -57,13 +63,13 @@ void Renderer::Render()
     m_event->Wait(m_frameValue);
     ++m_eventValue;
 
-    SwapChain* swapChain = interface->GetSwapChain();
     m_commandAllocatorPool.Expire(m_frameValue);
 
+    SwapChain* swapChain = interface->GetSwapChain();
+    Drawable* drawable = swapChain->Drawable();
     UniquePtr<CommandAllocator> commandAllocator = m_commandAllocatorPool.Allocate();
     m_commandBuffer->Begin(commandAllocator);
 
-    Drawable* drawable = swapChain->Drawable();
     UniquePtr<Texture> frameTexture = drawable->FrameTexture();
     graphics::RenderPassTargetAttachment targetAttachment{
         frameTexture,
@@ -78,7 +84,9 @@ void Renderer::Render()
 
     // basic triangle pass
     {
+        Rect rect{0, 0, static_cast<float>(options::width), static_cast<float>(options::height)};
         RenderPass renderPass{m_commandBuffer, renderPassDescriptor};
+        renderPass.SetViewport(rect, 0.f, 1.f);
         renderPass.SetPipelineState(m_renderPipelineState);
         renderPass.DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }

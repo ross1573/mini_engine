@@ -6,56 +6,52 @@ import :render_pipeline;
 
 namespace mini::metal4 {
 
-RenderPipelineDescriptor::RenderPipelineDescriptor()
+SharedPtr<MTL4::RenderPipelineDescriptor> MTLRenderPipelineDescriptor(
+    graphics::RenderPipelineDescriptor const& descriptor)
 {
-    constexpr MTL::PixelFormat pixelFormat = MTL::PixelFormat::PixelFormatBGRA8Unorm;
+    SharedPtr<MTL4::RenderPipelineDescriptor> desc = TransferShared(MTL4::RenderPipelineDescriptor::alloc());
+    ENSURE(desc.Valid(), "failed to allocate MTL4::RenderPipelineDescriptor") {
+        return nullptr;
+    }
 
-    m_renderPipelineDescriptor = TransferShared(MTL4::RenderPipelineDescriptor::alloc());
-    m_renderPipelineDescriptor->init();
-    m_renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat(pixelFormat);
+    desc->init();
+    desc->setLabel(ToNSString(descriptor.name).Get());
+
+    Array<graphics::RenderPipelineTargetAttachment> const& targetAttachments = descriptor.targetAttachments;
+    for (size_t i = 0; i < targetAttachments.Size(); ++i) {
+        graphics::RenderPipelineTargetAttachment const& targetAttachment = targetAttachments[i];
+        MTL4::RenderPipelineColorAttachmentDescriptor* colorDescriptor = desc->colorAttachments()->object(i);
+        colorDescriptor->setPixelFormat(MTLPixelFormat(targetAttachment.pixelFormat));
+    }
+
+    ENSURE(descriptor.vertexFunction) {
+    } else {
+        ShaderFunction* vertexFunction = static_cast<ShaderFunction*>(descriptor.vertexFunction);
+        desc->setVertexFunctionDescriptor(vertexFunction->MTLFunctionDescriptor());
+    }
+
+    ENSURE(descriptor.fragmentFunction) {
+    } else {
+        ShaderFunction* fragmentFunction = static_cast<ShaderFunction*>(descriptor.fragmentFunction);
+        desc->setFragmentFunctionDescriptor(fragmentFunction->MTLFunctionDescriptor());
+    }
+
+    return desc;
 }
 
-RenderPipelineDescriptor::RenderPipelineDescriptor(PtrView<ShaderFunction> vertex, PtrView<ShaderFunction> fragment)
-    : RenderPipelineDescriptor()
+RenderPipelineState::RenderPipelineState(PtrView<Compiler> compiler,
+                                         graphics::RenderPipelineDescriptor const& descriptor)
 {
-    SetVertexFunction(vertex);
-    SetFragmentFunction(fragment);
-}
-
-void RenderPipelineDescriptor::SetName(StringView name)
-{
-    SharedPtr<NS::String> label = ToNSString(name);
-    m_renderPipelineDescriptor->setLabel(label.Get());
-}
-
-void RenderPipelineDescriptor::SetVertexFunction(PtrView<ShaderFunction> vertex)
-{
-    ENSURE(vertex, "invalid vertex function") {
+    SharedPtr<MTL4::RenderPipelineDescriptor> desc = MTLRenderPipelineDescriptor(descriptor);
+    ENSURE(desc) {
         return;
     }
 
-    m_vertex = vertex;
-    m_renderPipelineDescriptor->setVertexFunctionDescriptor(m_vertex->MTLFunctionDescriptor());
-}
+    PtrView<NS::Error> error;
+    MTL::RenderPipelineState* pipelineState =
+        compiler->MTLCompiler()->newRenderPipelineState(desc.Get(), nullptr, &error);
 
-void RenderPipelineDescriptor::SetFragmentFunction(PtrView<ShaderFunction> fragment)
-{
-    ENSURE(fragment, "invalid fragment function") {
-        return;
-    }
-
-    m_fragment = fragment;
-    m_renderPipelineDescriptor->setFragmentFunctionDescriptor(m_fragment->MTLFunctionDescriptor());
-}
-
-RenderPipelineState::RenderPipelineState(PtrView<Compiler> compiler, PtrView<RenderPipelineDescriptor> descriptor)
-{
-    NS::Error* error;
-    MTL4::RenderPipelineDescriptor* desc = descriptor->MTLRenderPipelineDescriptor();
-    m_renderPipelineState = TransferShared(compiler->MTLCompiler()->newRenderPipelineState(desc, nullptr, &error));
-    ENSURE(m_renderPipelineState, error, "failed to create render pipeline state") {
-        return;
-    }
+    m_renderPipelineState = TransferShared(pipelineState);
 }
 
 } // namespace mini::metal4
