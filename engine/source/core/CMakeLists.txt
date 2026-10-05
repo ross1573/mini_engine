@@ -4,6 +4,7 @@ add_module(mini.core
 )
 
 generate_api_header(mini.core PUBLIC PREFIX mini API assert)
+generate_api_header(mini.core PUBLIC PREFIX mini API option)
 
 if (NOT BUILD_SHARED_LIBS)
     set_property(GLOBAL APPEND PROPERTY STATIC_MODULE_ENTRY "mini.core")

@@ -4,22 +4,22 @@
 // should be saved into a file
 namespace mini::options {
 
-extern char const* name;
-extern char const* title;
+OPTION_API extern char const* name;
+OPTION_API extern char const* title;
 
-extern int x;
-extern int y;
-extern int width;
-extern int height;
+OPTION_API extern int x;
+OPTION_API extern int y;
+OPTION_API extern int width;
+OPTION_API extern int height;
 
-extern bool fullscreen;
-extern bool resizableWindow;
-extern unsigned char vsync;
-extern unsigned char bufferCount;
-extern char const* graphicsModule;
+OPTION_API extern bool fullscreen;
+OPTION_API extern bool resizableWindow;
+OPTION_API extern unsigned char vsync;
+OPTION_API extern unsigned char bufferCount;
+OPTION_API extern char const* graphicsModule;
 
-extern bool debugLayer;
-extern bool gpuValidation;
+OPTION_API extern bool debugLayer;
+OPTION_API extern bool gpuValidation;
 
 } // namespace mini::options
 
