@@ -40,10 +40,10 @@ public:
 
     [[nodiscard]] constexpr bool Valid() const noexcept;
     [[nodiscard]] constexpr Pointer Get() const noexcept;
-    [[nodiscard]] constexpr Pointer* Address() const noexcept;
+    [[nodiscard]] constexpr Pointer* Address() noexcept;
 
+    [[nodiscard]] constexpr Pointer* operator&() noexcept;
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
-    [[nodiscard]] constexpr Pointer* operator&() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
 
     template <NonReferenceT U>
@@ -117,7 +117,13 @@ constexpr PtrView<T>::Pointer PtrView<T>::Get() const noexcept
 }
 
 template <NonReferenceT T>
-constexpr PtrView<T>::Pointer* PtrView<T>::Address() const noexcept
+constexpr PtrView<T>::Pointer* PtrView<T>::Address() noexcept
+{
+    return memory::AddressOf(m_ptr);
+}
+
+template <NonReferenceT T>
+constexpr PtrView<T>::Pointer* PtrView<T>::operator&() noexcept
 {
     return memory::AddressOf(m_ptr);
 }
@@ -127,12 +133,6 @@ constexpr PtrView<T>::Pointer PtrView<T>::operator->() const noexcept
 {
     ASSERT(Valid(), "deference on invalid object pointer");
     return m_ptr;
-}
-
-template <NonReferenceT T>
-constexpr PtrView<T>::Pointer* PtrView<T>::operator&() const noexcept
-{
-    return memory::AddressOf(m_ptr);
 }
 
 template <NonReferenceT T>
