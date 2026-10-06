@@ -71,24 +71,26 @@ void Renderer::Render()
     m_commandBuffer->Begin(commandAllocator);
 
     UniquePtr<Texture> frameTexture = drawable->FrameTexture();
-    graphics::RenderPassTargetAttachment targetAttachment{
+    graphics::RenderScopeTargetAttachment targetAttachment{
         frameTexture,
         graphics::LoadAction::Clear,
         graphics::StoreAction::Store,
         Color::Clear(),
     };
 
-    graphics::RenderPassDescriptor renderPassDescriptor{
+    graphics::RenderScopeDescriptor renderPassDescriptor{
         {targetAttachment},
     };
 
     // basic triangle pass
     {
         Rect rect{0, 0, static_cast<float>(options::width), static_cast<float>(options::height)};
-        RenderPass renderPass{m_commandBuffer, renderPassDescriptor};
-        renderPass.SetViewport(rect, 0.f, 1.f);
-        renderPass.SetPipelineState(m_renderPipelineState);
-        renderPass.DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
+        UniquePtr<RenderCommandEncoder> renderEncoder =
+            m_commandBuffer->AllocateRenderCommandEncoder(renderPassDescriptor);
+
+        renderEncoder->SetViewport(rect, 0.f, 1.f);
+        renderEncoder->SetPipelineState(m_renderPipelineState);
+        renderEncoder->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }
 
     m_commandBuffer->End();

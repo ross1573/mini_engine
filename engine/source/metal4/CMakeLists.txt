@@ -18,6 +18,7 @@ PUBLIC
         metal4_texture.cxx
         metal4_shader.cxx
         metal4_event.cxx
+        metal4_command_encoder.cxx
         metal4_command_buffer.cxx
         metal4_command_queue.cxx
         metal4_render_pass.cxx
@@ -32,9 +33,9 @@ PRIVATE
     impl/metal4_common.cpp
     impl/metal4_resource.cpp
     impl/metal4_shader.cpp
+    impl/metal4_command_encoder.cpp
     impl/metal4_command_buffer.cpp
     impl/metal4_command_queue.cpp
-    impl/metal4_render_pass.cpp
     impl/metal4_render_pipeline.cpp
     impl/metal4_device.cpp
     impl/metal4_swap_chain.cpp

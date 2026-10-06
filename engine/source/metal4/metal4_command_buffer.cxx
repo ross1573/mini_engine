@@ -9,8 +9,10 @@ export module mini.metal4:command_buffer;
 
 import mini.core;
 import mini.apple;
+import mini.graphics;
 import :device;
 import :common;
+import :command_encoder;
 
 export namespace MTL4 {
 
@@ -52,6 +54,9 @@ public:
     void SetName(StringView name) { m_commandBuffer->setLabel(ToNSString(name).Get()); }
     void Begin(PtrView<CommandAllocator const> allocator);
     void End();
+
+    [[nodiscard]] UniquePtr<RenderCommandEncoder> AllocateRenderCommandEncoder(
+        graphics::RenderScopeDescriptor const& descriptor) const;
 
     [[nodiscard]] bool Valid() const noexcept { return m_commandBuffer.Valid(); }
     [[nodiscard]] String Name() const noexcept { return ToString(m_commandBuffer->label()); }

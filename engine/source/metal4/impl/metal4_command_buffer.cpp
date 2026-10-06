@@ -63,6 +63,22 @@ void CommandBuffer::End()
     m_commandBuffer->endCommandBuffer();
 }
 
+UniquePtr<RenderCommandEncoder> CommandBuffer::AllocateRenderCommandEncoder(
+    graphics::RenderScopeDescriptor const& descriptor) const
+{
+    SharedPtr<MTL4::RenderPassDescriptor> desc = MTLRenderPassDescriptor(descriptor);
+    ENSURE(desc, "failed to create MTL4::RenderPassDescriptor") {
+        return nullptr;
+    }
+
+    MTL4::RenderCommandEncoder* mtlRenderCommandEncoder = MTLCommandBuffer()->renderCommandEncoder(desc.Get());
+    ENSURE(mtlRenderCommandEncoder, "failed to create renderpass") {
+        return nullptr;
+    }
+
+    return MakeUnique<RenderCommandEncoder>(mtlRenderCommandEncoder);
+}
+
 void CommandBuffer::HandleLog(StringView subSystem, StringView category, Logger::Level logLevel, StringView message)
 {
     Log(logLevel,

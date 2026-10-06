@@ -14,7 +14,8 @@ PUBLIC
         graphics_texture.cxx
         graphics_shader.cxx
         graphics_render_pipeline.cxx
-        graphics_render_pass.cxx
+        graphics_render_scope.cxx
+        graphics_render_encoder.cxx
         device.cxx
         renderer.cxx
         swap_chain.cxx

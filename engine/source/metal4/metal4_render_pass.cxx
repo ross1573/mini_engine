@@ -1,7 +1,6 @@
 module;
 
 #include <Metal/MTL4ArgumentTable.hpp>
-#include <Metal/MTL4RenderCommandEncoder.hpp>
 #include <Metal/MTL4RenderPass.hpp>
 
 export module mini.metal4:render_pass;
@@ -25,66 +24,15 @@ using MTL::RenderPassDepthAttachmentDescriptor;
 using MTL::RenderPassDescriptor;
 using MTL::RenderPassStencilAttachmentDescriptor;
 
-using MTL::RenderStageFragment;
-using MTL::RenderStageMesh;
-using MTL::RenderStageObject;
-using MTL::RenderStages;
-using MTL::RenderStageTile;
-using MTL::RenderStageVertex;
-
-using MTL::PrimitiveType;
-using MTL::ScissorRect;
-using MTL::Viewport;
-
 } // namespace MTL
 
 export namespace MTL4 {
 
-using MTL4::ArgumentTable;
-using MTL4::ArgumentTableDescriptor;
-using MTL4::RenderCommandEncoder;
 using MTL4::RenderPassDescriptor;
 
 } // namespace MTL4
 
 namespace mini::metal4 {
-
-export METAL4_API constexpr MTL::PrimitiveType MTLPrimitiveType(graphics::PrimitiveType primitiveType) noexcept
-{
-    switch (primitiveType) {
-        case graphics::PrimitiveType::Point:    return MTL::PrimitiveType::PrimitiveTypePoint;
-        case graphics::PrimitiveType::Line:     return MTL::PrimitiveType::PrimitiveTypeLine;
-        case graphics::PrimitiveType::Triangle: return MTL::PrimitiveType::PrimitiveTypeTriangle;
-    }
-
-    ASSERT(primitiveType == graphics::PrimitiveType::Triangle,
-           "invalid primitive type {}.",
-           static_cast<byte>(primitiveType));
-
-    return MTL::PrimitiveType::PrimitiveTypeTriangle;
-}
-
-export METAL4_API constexpr MTL::ScissorRect MTLScissorRect(graphics::ScissorRect scissorRect) noexcept
-{
-    return MTL::ScissorRect{
-        .x = static_cast<uint64>(scissorRect.x),
-        .y = static_cast<uint64>(scissorRect.y),
-        .width = static_cast<uint64>(scissorRect.width),
-        .height = static_cast<uint64>(scissorRect.height),
-    };
-}
-
-export METAL4_API constexpr MTL::Viewport MTLViewport(graphics::Viewport viewport) noexcept
-{
-    return MTL::Viewport{
-        .originX = static_cast<float64>(viewport.x),
-        .originY = static_cast<float64>(viewport.y),
-        .width = static_cast<float64>(viewport.width),
-        .height = static_cast<float64>(viewport.height),
-        .znear = static_cast<float64>(viewport.near),
-        .zfar = static_cast<float64>(viewport.far),
-    };
-}
 
 export METAL4_API constexpr MTL::ClearColor MTLClearColor(Color color) noexcept
 {
@@ -119,38 +67,54 @@ export METAL4_API constexpr MTL::StoreAction MTLStoreAction(graphics::StoreActio
     return MTL::StoreActionDontCare;
 }
 
-export METAL4_API SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
-    graphics::RenderPassDescriptor const& descriptor);
-
-export class METAL4_API RenderPass {
-private:
-    MTL4::RenderCommandEncoder* m_renderCommandEncoder;
-
-public:
-    RenderPass(PtrView<CommandBuffer> commandBuffer, graphics::RenderPassDescriptor const& descriptor) noexcept;
-    RenderPass(RenderPass&& other) noexcept = default;
-    ~RenderPass() noexcept;
-
-    [[nodiscard]] bool Valid() const noexcept;
-
-    void DrawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
-
-    void SetPipelineState(PtrView<RenderPipelineState> state);
-    void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
-    void SetScissorRect(RectInt const&) noexcept;
-
-    [[nodiscard]] MTL4::RenderCommandEncoder* MTLRenderCommandEncoder() const noexcept;
-
-    RenderPass& operator=(RenderPass&& other) noexcept = default;
-
-public:
-    RenderPass(RenderPass const& other) = deleted_function("render pass should be unique");
-    RenderPass& operator=(RenderPass const& other) = deleted_function("render pass should be unique");
-};
-
-MTL4::RenderCommandEncoder* RenderPass::MTLRenderCommandEncoder() const noexcept
+export SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
+    graphics::RenderScopeDescriptor const& renderScopeDescriptor)
 {
-    return m_renderCommandEncoder;
+    SharedPtr<MTL4::RenderPassDescriptor> desc = TransferShared(MTL4::RenderPassDescriptor::alloc());
+    ENSURE(desc.Valid(), "failed to allocate MTL4::RenderPassDescriptor") {
+        return nullptr;
+    }
+
+    desc->init();
+
+    Array<graphics::RenderScopeTargetAttachment> const& targetAttachments = renderScopeDescriptor.targetAttachments;
+    MTL::RenderPassColorAttachmentDescriptorArray* colorDescriptors = desc->colorAttachments();
+
+    for (size_t i = 0; i < targetAttachments.Size(); ++i) {
+        graphics::RenderScopeTargetAttachment const& targetAttachment = targetAttachments[i];
+        Texture* texture = static_cast<Texture*>(targetAttachment.texture);
+        if (texture == nullptr) {
+            continue;
+        }
+
+        MTL::RenderPassColorAttachmentDescriptor* colorDescriptor = colorDescriptors->object(i);
+        colorDescriptor->setTexture(texture->MTLTexture());
+        colorDescriptor->setClearColor(MTLClearColor(targetAttachment.clearColor));
+        colorDescriptor->setLoadAction(MTLLoadAction(targetAttachment.loadAction));
+        colorDescriptor->setStoreAction(MTLStoreAction(targetAttachment.storeAction));
+    }
+
+    graphics::RenderScopeDepthAttachment const& depthAttachment = renderScopeDescriptor.depthAttachment;
+    Texture* depthTexture = static_cast<Texture*>(depthAttachment.texture);
+    if (depthTexture != nullptr) {
+        MTL::RenderPassDepthAttachmentDescriptor* depthDescriptor = desc->depthAttachment();
+        depthDescriptor->setTexture(depthTexture->MTLTexture());
+        depthDescriptor->setClearDepth(static_cast<float64>(depthAttachment.clearDepth));
+        depthDescriptor->setLoadAction(MTLLoadAction(depthAttachment.loadAction));
+        depthDescriptor->setStoreAction(MTLStoreAction(depthAttachment.storeAction));
+    }
+
+    graphics::RenderScopeStencilAttachment const& stencilAttachment = renderScopeDescriptor.stencilAttachment;
+    Texture* stencilTexture = static_cast<Texture*>(stencilAttachment.texture);
+    if (stencilTexture != nullptr) {
+        MTL::RenderPassStencilAttachmentDescriptor* stencilDescriptor = desc->stencilAttachment();
+        stencilDescriptor->setTexture(stencilTexture->MTLTexture());
+        stencilDescriptor->setClearStencil(stencilAttachment.clearStencil);
+        stencilDescriptor->setLoadAction(MTLLoadAction(stencilAttachment.loadAction));
+        stencilDescriptor->setStoreAction(MTLStoreAction(stencilAttachment.storeAction));
+    }
+
+    return desc;
 }
 
 } // namespace mini::metal4
