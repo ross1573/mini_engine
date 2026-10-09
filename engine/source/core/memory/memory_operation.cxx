@@ -22,12 +22,6 @@ concept AddressableT = PointerT<T> || IndirectAddressableT<T>;
 export template <typename T>
 concept DereferencableT = requires(T ele) { *ele; };
 
-template <typename T>
-constexpr void* MakeVoidPtr(T* ptr)
-{
-    return const_cast<void*>(static_cast<const volatile void*>(ptr));
-}
-
 export template <AddressableT T>
 constexpr decltype(auto) ToAddress(T const& ele) noexcept
 {
@@ -86,7 +80,7 @@ constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
 }
 
 // msvc won't evaluate placement new at compile time if there's no return.
-// this might be another stupid bug from msvc, since the expression has to be decorated with [[msvc::constexpr]]
+// expression has to be decorated with [[msvc::constexpr]]
 template <typename T, typename... Args>
 constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
@@ -96,14 +90,15 @@ constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructib
 export template <NonArrayT T, typename... Args>
 constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    ASSERT(ptr != nullptr, "invalid location for object");
-
+#if MSVC
     if consteval {
         ConstructAtImpl(ptr, ForwardArg<Args>(args)...);
         return;
     }
+#endif
 
-    ::new (MakeVoidPtr(ptr)) T(ForwardArg<Args>(args)...);
+    ASSERT(ptr != nullptr, "invalid location for object");
+    ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
 }
 
 export template <NoThrowDefaultConstructibleT T>
