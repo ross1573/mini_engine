@@ -7,13 +7,18 @@ export module mini.metal4:buffer;
 import mini.core;
 import mini.graphics;
 import :resource;
-import :device;
 
 export namespace MTL {
 
 using MTL::Buffer;
 
 } // namespace MTL
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

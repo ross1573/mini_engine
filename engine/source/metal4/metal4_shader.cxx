@@ -8,7 +8,7 @@ export module mini.metal4:shader;
 
 import mini.core;
 import mini.apple;
-import :device;
+import mini.graphics;
 
 export namespace MTL {
 
@@ -22,6 +22,12 @@ using MTL4::FunctionDescriptor;
 using MTL4::LibraryFunctionDescriptor;
 
 } // namespace MTL4
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

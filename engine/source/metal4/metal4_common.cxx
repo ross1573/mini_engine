@@ -9,7 +9,6 @@ export module mini.metal4:common;
 import mini.core;
 import mini.apple;
 import mini.graphics;
-import :device;
 
 export namespace MTL {
 
@@ -19,6 +18,12 @@ using MTL::LogStateDescriptor;
 using MTL::PixelFormat;
 
 } // namespace MTL
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

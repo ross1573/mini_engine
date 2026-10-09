@@ -7,9 +7,6 @@ export module mini.metal4:render_pipeline;
 import mini.core;
 import mini.apple;
 import mini.graphics;
-import :device;
-import :shader;
-import :compiler;
 
 export namespace MTL {
 
@@ -26,10 +23,17 @@ using MTL4::RenderPipelineDescriptor;
 
 namespace mini::metal4 {
 
+class Device;
+class Compiler;
+
+} // namespace mini::metal4
+
+namespace mini::metal4 {
+
 export METAL4_API SharedPtr<MTL4::RenderPipelineDescriptor> MTLRenderPipelineDescriptor(
     graphics::RenderPipelineDescriptor const& descriptor);
 
-export class METAL4_API RenderPipelineState {
+export class METAL4_API RenderPipelineState : public graphics::RenderPipelineState {
 private:
     SharedPtr<MTL::RenderPipelineState> m_renderPipelineState;
 

@@ -33,6 +33,7 @@ PRIVATE
     impl/metal4_common.cpp
     impl/metal4_resource.cpp
     impl/metal4_shader.cpp
+    impl/metal4_event.cpp
     impl/metal4_command_encoder.cpp
     impl/metal4_command_buffer.cpp
     impl/metal4_command_queue.cpp

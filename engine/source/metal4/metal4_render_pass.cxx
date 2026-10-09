@@ -9,8 +9,6 @@ import mini.core;
 import mini.graphics;
 import :buffer;
 import :texture;
-import :command_buffer;
-import :render_pipeline;
 
 export namespace MTL {
 

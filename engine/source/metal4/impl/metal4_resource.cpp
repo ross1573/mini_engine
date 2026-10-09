@@ -1,5 +1,6 @@
 module mini.metal4;
 
+import :device;
 import :buffer;
 import :texture;
 

@@ -3,6 +3,8 @@ module mini.metal4;
 import mini.core;
 import mini.graphics;
 import mini.apple;
+import :command_encoder;
+import :render_pipeline;
 import :renderer;
 import :swap_chain;
 import :common;
@@ -84,11 +86,9 @@ void Renderer::Render()
 
     // basic triangle pass
     {
-        Rect rect{0, 0, static_cast<float>(options::width), static_cast<float>(options::height)};
         UniquePtr<RenderCommandEncoder> renderEncoder =
             m_commandBuffer->AllocateRenderCommandEncoder(renderPassDescriptor);
 
-        renderEncoder->SetViewport(rect, 0.f, 1.f);
         renderEncoder->SetPipelineState(m_renderPipelineState);
         renderEncoder->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }

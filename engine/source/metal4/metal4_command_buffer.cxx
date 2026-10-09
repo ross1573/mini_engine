@@ -3,16 +3,12 @@ module;
 #include <Metal/MTL4CommandAllocator.hpp>
 #include <Metal/MTL4CommandBuffer.hpp>
 
-#include "option.h"
-
 export module mini.metal4:command_buffer;
 
 import mini.core;
 import mini.apple;
 import mini.graphics;
-import :device;
 import :common;
-import :command_encoder;
 
 export namespace MTL4 {
 
@@ -22,6 +18,13 @@ using MTL4::CommandBuffer;
 using MTL4::CommandBufferOptions;
 
 } // namespace MTL4
+
+namespace mini::metal4 {
+
+class Device;
+class RenderCommandEncoder;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

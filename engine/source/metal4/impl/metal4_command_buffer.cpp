@@ -1,5 +1,7 @@
 module mini.metal4;
 
+import :device;
+import :command_encoder;
 import :command_buffer;
 import :log;
 

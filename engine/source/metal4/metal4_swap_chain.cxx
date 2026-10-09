@@ -6,9 +6,8 @@ module;
 export module mini.metal4:swap_chain;
 
 import mini.core;
-import mini.graphics;
 import mini.apple;
-import :device;
+import mini.graphics;
 import :texture;
 
 export namespace CA {
@@ -23,6 +22,12 @@ export namespace MTL {
 using MTL::Drawable;
 
 } // namespace MTL
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

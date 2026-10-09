@@ -6,7 +6,6 @@ export module mini.metal4:command_encoder;
 
 import mini.core;
 import mini.graphics;
-import :render_pipeline;
 
 export namespace MTL {
 
@@ -80,7 +79,7 @@ public:
 
     void DrawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
 
-    void SetPipelineState(PtrView<RenderPipelineState> state);
+    void SetPipelineState(PtrView<graphics::RenderPipelineState> state);
     void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
     void SetScissorRect(RectInt const&) noexcept;
 

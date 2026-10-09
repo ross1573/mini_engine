@@ -1,8 +1,5 @@
 module mini.metal4;
 
-import mini.core;
-import mini.platform;
-import mini.apple;
 import :swap_chain;
 
 namespace mini::metal4 {

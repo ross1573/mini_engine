@@ -8,10 +8,8 @@ export module mini.metal4:command_queue;
 
 import mini.core;
 import mini.apple;
-import :device;
 import :event;
 import :command_buffer;
-import :swap_chain;
 
 export namespace MTL4 {
 
@@ -26,6 +24,13 @@ export namespace MTL {
 using MTL::ResidencySet;
 
 } // namespace MTL
+
+namespace mini::metal4 {
+
+class Device;
+class Drawable;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

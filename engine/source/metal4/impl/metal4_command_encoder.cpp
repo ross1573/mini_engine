@@ -1,8 +1,5 @@
 module mini.metal4;
 
-import mini.core;
-import mini.graphics;
-import mini.apple;
 import :command_encoder;
 
 namespace mini::metal4 {
@@ -40,12 +37,13 @@ void RenderCommandEncoder::DrawPrimitives(graphics::PrimitiveType primitiveType,
     m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
-void RenderCommandEncoder::SetPipelineState(PtrView<RenderPipelineState> state)
+void RenderCommandEncoder::SetPipelineState(PtrView<graphics::RenderPipelineState> state)
 {
     ASSERT(Valid());
     ASSERT(state);
 
-    m_renderCommandEncoder->setRenderPipelineState(state->MTLRenderPipelineState());
+    PtrView<RenderPipelineState> pipelineState = StaticCast<RenderPipelineState>(state);
+    m_renderCommandEncoder->setRenderPipelineState(pipelineState->MTLRenderPipelineState());
 }
 
 void RenderCommandEncoder::SetViewport(Rect const& rect, float32 near, float32 far) noexcept

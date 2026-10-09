@@ -1,7 +1,5 @@
 module mini.metal4;
 
-import mini.core;
-import mini.apple;
 import :shader;
 
 namespace mini::metal4 {

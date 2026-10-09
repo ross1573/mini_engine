@@ -4,9 +4,17 @@ import mini.core;
 import mini.graphics;
 import mini.apple;
 import :event;
-import :command_queue;
+import :shader;
+import :compiler;
 import :command_buffer;
-import :render_pass;
+import :command_queue;
+import :render_pipeline;
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

@@ -1,8 +1,13 @@
 export module mini.graphics:render_pipeline;
 
 import mini.core;
-import :shader;
 import :common;
+
+namespace mini::graphics {
+
+class ShaderFunction;
+
+} // namespace mini::graphics
 
 namespace mini::graphics {
 

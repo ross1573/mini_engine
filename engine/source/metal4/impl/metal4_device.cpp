@@ -1,7 +1,5 @@
 module mini.metal4;
 
-import mini.graphics;
-import mini.apple;
 import :swap_chain;
 import :renderer;
 import :buffer;

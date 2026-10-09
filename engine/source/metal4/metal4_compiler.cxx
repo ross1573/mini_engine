@@ -6,7 +6,6 @@ export module mini.metal4:compiler;
 
 import mini.core;
 import mini.apple;
-import :device;
 
 export namespace MTL4 {
 
@@ -15,6 +14,12 @@ using MTL4::CompilerDescriptor;
 using MTL4::CompilerTaskOptions;
 
 } // namespace MTL4
+
+namespace mini::metal4 {
+
+class Device;
+
+} // namespace mini::metal4
 
 namespace mini::metal4 {
 

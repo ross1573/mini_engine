@@ -1,7 +1,12 @@
 export module mini.graphics:render_scope;
 
 import mini.core;
-import :texture;
+
+namespace mini::graphics {
+
+class Texture;
+
+} // namespace mini::graphics
 
 namespace mini::graphics {
 
