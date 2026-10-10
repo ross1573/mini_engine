@@ -16,9 +16,9 @@ PUBLIC
         graphics_render_pipeline.cxx
         graphics_render_scope.cxx
         graphics_render_encoder.cxx
-        device.cxx
-        renderer.cxx
-        swap_chain.cxx
+        graphics_device.cxx
+        graphics_renderer.cxx
+        graphics_swap_chain.cxx
 
 PRIVATE
     impl/graphics.cpp
