@@ -9,7 +9,6 @@ export module mini.metal4:command_queue;
 import mini.core;
 import mini.apple;
 import :event;
-import :command_buffer;
 
 export namespace MTL4 {
 
@@ -29,6 +28,7 @@ namespace mini::metal4 {
 
 class Device;
 class Drawable;
+class CommandBuffer;
 
 } // namespace mini::metal4
 

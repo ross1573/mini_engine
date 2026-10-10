@@ -24,7 +24,8 @@ private:
 
 public:
     constexpr PtrView() noexcept;
-    constexpr ~PtrView() noexcept = default;
+    constexpr ~PtrView() noexcept;
+    constexpr PtrView(nullptr_t) noexcept;
     constexpr PtrView(PtrView const& other) noexcept = default;
     template <NonReferenceT U>
     constexpr PtrView(PtrView<U> other) noexcept
@@ -62,6 +63,18 @@ public:
 
 template <NonReferenceT T>
 constexpr PtrView<T>::PtrView() noexcept
+    : m_ptr(nullptr)
+{
+}
+
+template <NonReferenceT T>
+constexpr PtrView<T>::~PtrView() noexcept
+{
+    m_ptr = nullptr;
+}
+
+template <NonReferenceT T>
+constexpr PtrView<T>::PtrView(nullptr_t) noexcept
     : m_ptr(nullptr)
 {
 }

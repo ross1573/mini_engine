@@ -3,7 +3,6 @@ export module mini.metal4:renderer;
 import mini.core;
 import mini.graphics;
 import mini.apple;
-import :event;
 import :shader;
 import :compiler;
 import :command_buffer;
@@ -13,6 +12,12 @@ import :render_pipeline;
 namespace mini::metal4 {
 
 class Device;
+class CommandQueue;
+class CommandBufferAllocator;
+class Compiler;
+class ShaderLibrary;
+class ShaderFunction;
+class RenderPipelineState;
 
 } // namespace mini::metal4
 
@@ -26,8 +31,7 @@ private:
     Device* m_device;
 
     UniquePtr<CommandQueue> m_commandQueue;
-    UniquePtr<CommandBuffer> m_commandBuffer;
-    CommandAllocatorPool m_commandAllocatorPool;
+    UniquePtr<CommandBufferAllocator> m_commandBufferAllocator;
 
     UniquePtr<Compiler> m_compiler;
     UniquePtr<ShaderLibrary> m_library;
@@ -35,9 +39,7 @@ private:
     UniquePtr<ShaderFunction> m_fragmentFunction;
     UniquePtr<RenderPipelineState> m_renderPipelineState;
 
-    UniquePtr<SharedEvent> m_event;
-    FixedQueue<uint64, maxBufferCount> m_eventQueue;
-    uint64 m_eventValue;
+    FixedQueue<uint64, maxBufferCount> m_frameQueue;
     uint64 m_frameValue;
 
 public:

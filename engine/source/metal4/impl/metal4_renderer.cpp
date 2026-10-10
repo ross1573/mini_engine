@@ -3,40 +3,30 @@ module mini.metal4;
 import mini.core;
 import mini.graphics;
 import mini.apple;
+import :common;
+import :event;
 import :command_encoder;
-import :render_pipeline;
 import :renderer;
 import :swap_chain;
-import :common;
-import :log;
 
 namespace mini::metal4 {
 
 Renderer::Renderer(PtrView<Device> device)
     : m_device(device)
-    , m_commandAllocatorPool(device)
 {
     ASSERT(device);
 
     m_commandQueue = MakeUnique<CommandQueue>(device);
-    m_commandBuffer = MakeUnique<CommandBuffer>(device);
+    m_commandBufferAllocator =
+        MakeUnique<CommandBufferAllocator>(device, m_commandQueue, size_t{1}, options::bufferCount);
+
     m_compiler = MakeUnique<Compiler>(device);
     m_library = MakeUnique<ShaderLibrary>(device, "mini.metal.shader");
 
-    ASSERT(m_commandQueue);
-    ASSERT(m_commandBuffer);
-    ASSERT(m_compiler);
-    ASSERT(m_library);
-
-    m_event = MakeUnique<SharedEvent>(m_device);
-    m_eventValue = 0;
     m_frameValue = 0;
-
     for (size_t i = 0; i < options::bufferCount; ++i) {
-        m_eventQueue.PushBack(uint64{0});
+        m_frameQueue.PushBack(uint64{0});
     }
-
-    ASSERT(m_event);
 }
 
 void Renderer::Prepare()
@@ -61,18 +51,14 @@ void Renderer::Render()
 {
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
-    m_frameValue = m_eventQueue.PopFirst();
-    m_event->Wait(m_frameValue);
-    ++m_eventValue;
-
-    m_commandAllocatorPool.Expire(m_frameValue);
+    m_frameValue = m_frameQueue.PopFirst();
+    m_commandBufferAllocator->Wait(m_frameValue);
 
     SwapChain* swapChain = interface->GetSwapChain();
     Drawable* drawable = swapChain->Drawable();
-    UniquePtr<CommandAllocator> commandAllocator = m_commandAllocatorPool.Allocate();
-    m_commandBuffer->Begin(commandAllocator);
-
     UniquePtr<Texture> frameTexture = drawable->FrameTexture();
+    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferAllocator->Allocate();
+
     graphics::RenderScopeTargetAttachment targetAttachment{
         frameTexture,
         graphics::LoadAction::Clear,
@@ -87,27 +73,24 @@ void Renderer::Render()
     // basic triangle pass
     {
         UniquePtr<RenderCommandEncoder> renderEncoder =
-            m_commandBuffer->AllocateRenderCommandEncoder(renderPassDescriptor);
+            commandBuffer->AllocateRenderCommandEncoder(renderPassDescriptor);
 
         renderEncoder->SetPipelineState(m_renderPipelineState);
         renderEncoder->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }
 
-    m_commandBuffer->End();
-    m_commandAllocatorPool.Pending(MoveArg(commandAllocator), m_eventValue);
-
-    m_commandQueue->Commit(m_commandBuffer);
-    m_commandQueue->Signal(m_event, m_eventValue);
-    m_eventQueue.PushBack(m_eventValue);
+    size_t frameValue = m_commandBufferAllocator->Commit(MoveArg(commandBuffer));
+    m_frameQueue.PushBack(frameValue);
 }
 
 void Renderer::WaitForIdle()
 {
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
-    m_eventValue++;
-    m_commandQueue->Signal(m_event, m_eventValue);
-    m_event->Wait(m_eventValue);
+    // TODO
+    SharedEvent sharedEvent(m_device);
+    m_commandQueue->Signal(memory::AddressOf(sharedEvent), 1);
+    sharedEvent.Wait(1);
 }
 
 void Renderer::HandleRenderError(PtrView<NS::Error> error)
@@ -116,10 +99,10 @@ void Renderer::HandleRenderError(PtrView<NS::Error> error)
     ASSERT(renderer);
     ENSURE(error == nullptr,
            error,
-           "failed on event value {}. (rendering: {}, signaled: {})",
-           renderer->m_eventValue,
-           renderer->m_frameValue,
-           renderer->m_event->SignaledValue()) { }
+           "failed on event value {}. (signaled: {}, presented: {})",
+           renderer->m_commandBufferAllocator->CommittedValue(),
+           renderer->m_commandBufferAllocator->SignaledValue(),
+           renderer->m_frameValue) { }
 }
 
 } // namespace mini::metal4

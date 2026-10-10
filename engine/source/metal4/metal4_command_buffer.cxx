@@ -9,6 +9,7 @@ import mini.core;
 import mini.apple;
 import mini.graphics;
 import :common;
+import :event;
 
 export namespace MTL4 {
 
@@ -22,6 +23,7 @@ using MTL4::CommandBufferOptions;
 namespace mini::metal4 {
 
 class Device;
+class CommandQueue;
 class RenderCommandEncoder;
 
 } // namespace mini::metal4
@@ -45,49 +47,97 @@ public:
     [[nodiscard]] MTL4::CommandAllocator* MTLCommandAllocator() const noexcept { return m_commandAllocator.Get(); }
 };
 
-export class METAL4_API CommandBuffer {
+export class METAL4_API CommandBufferOption {
 private:
-    SharedPtr<MTL4::CommandBuffer> m_commandBuffer;
-    SharedPtr<MTL4::CommandBufferOptions> m_commandBufferOptions;
-    UniquePtr<LogState> m_logState;
+    SharedPtr<MTL4::CommandBufferOptions> m_commandBufferOption;
+    LogState m_logState;
 
 public:
-    explicit CommandBuffer(PtrView<Device> device);
+    CommandBufferOption() noexcept = default;
+    explicit CommandBufferOption(PtrView<Device> device, Logger::Level logLevel);
 
-    void SetName(StringView name) { m_commandBuffer->setLabel(ToNSString(name).Get()); }
-    void Begin(PtrView<CommandAllocator const> allocator);
-    void End();
+    [[nodiscard]] bool Valid() const noexcept { return m_commandBufferOption.Valid(); }
+    [[nodiscard]] Logger::Level LogLevel() const noexcept { return m_logState.LogLevel(); }
 
-    [[nodiscard]] UniquePtr<RenderCommandEncoder> AllocateRenderCommandEncoder(
-        graphics::RenderScopeDescriptor const& descriptor) const;
-
-    [[nodiscard]] bool Valid() const noexcept { return m_commandBuffer.Valid(); }
-    [[nodiscard]] String Name() const noexcept { return ToString(m_commandBuffer->label()); }
-
-    [[nodiscard]] MTL4::CommandBuffer* MTLCommandBuffer() const noexcept { return m_commandBuffer.Get(); }
+    [[nodiscard]] MTL4::CommandBufferOptions* MTLCommandBufferOption() const noexcept;
+    [[nodiscard]] MTL::LogState* MTLLogState() const noexcept { return m_logState.MTLLogState(); }
 
 private:
     static void HandleLog(StringView subSystem, StringView category, Logger::Level logLevel, StringView message);
 };
 
-class METAL4_API CommandAllocatorPool {
+MTL4::CommandBufferOptions* CommandBufferOption::MTLCommandBufferOption() const noexcept
+{
+    return m_commandBufferOption.Get();
+}
+
+export class METAL4_API CommandBuffer {
 private:
-    struct PendingInfo {
-        UniquePtr<CommandAllocator> allocator;
+    SharedPtr<MTL4::CommandBuffer> m_commandBuffer;
+    UniquePtr<CommandAllocator> m_commandAllocator;
+    PtrView<CommandBufferOption> m_commandBufferOption;
+
+public:
+    explicit CommandBuffer(PtrView<Device> device, PtrView<CommandBufferOption> option = nullptr);
+
+    void SetName(StringView name) { m_commandBuffer->setLabel(ToNSString(name).Get()); }
+    void Begin(UniquePtr<CommandAllocator> allocator);
+    [[nodiscard]] UniquePtr<CommandAllocator> End();
+
+    [[nodiscard]] UniquePtr<RenderCommandEncoder> AllocateRenderCommandEncoder(
+        graphics::RenderScopeDescriptor const& descriptor) const;
+
+    [[nodiscard]] bool Valid() const noexcept { return m_commandBuffer.Valid(); }
+    [[nodiscard]] bool Active() const noexcept { return m_commandAllocator.Valid(); }
+    [[nodiscard]] String Name() const noexcept { return ToString(m_commandBuffer->label()); }
+
+    [[nodiscard]] MTL4::CommandBuffer* MTLCommandBuffer() const noexcept { return m_commandBuffer.Get(); }
+    [[nodiscard]] MTL4::CommandBufferOptions* MTLCommandBufferOption() const noexcept;
+};
+
+MTL4::CommandBufferOptions* CommandBuffer::MTLCommandBufferOption() const noexcept
+{
+    return m_commandBufferOption->MTLCommandBufferOption();
+}
+
+export class METAL4_API CommandBufferAllocator {
+private:
+    struct PendingContext {
+        UniquePtr<CommandAllocator> commandAllocator;
         uint64 eventValue;
     };
 
-    Device* m_device;
-    Array<UniquePtr<CommandAllocator>> m_pool;
-    Array<PendingInfo> m_pending;
+    PtrView<Device> m_device;
+    PtrView<CommandQueue> m_commandQueue;
+    CommandBufferOption m_commandBufferOption;
+
+    SharedEvent m_sharedEvent;
+    uint64 m_commitValue;
+
+    Array<UniquePtr<CommandBuffer>> m_commandBufferPool;
+    Array<UniquePtr<CommandAllocator>> m_commandAllocatorPool;
+    Array<PendingContext> m_pendingBuffer;
+    Array<CommandBuffer const*> m_commitBuffer;
 
 public:
-    explicit CommandAllocatorPool(PtrView<Device> const& device, size_t poolCapacity = options::bufferCount);
+    CommandBufferAllocator(PtrView<Device> device,
+                           PtrView<CommandQueue> commandQueue,
+                           size_t commandBufferCapacity,
+                           size_t commandAllocatorCapacity);
 
-    [[nodiscard]] UniquePtr<CommandAllocator> Allocate();
-    void Deallocate(UniquePtr<CommandAllocator>&& allocator);
-    void Pending(UniquePtr<CommandAllocator>&& allocator, uint64 eventValue);
-    void Expire(uint64 eventValue);
+    [[nodiscard]] UniquePtr<CommandBuffer> Allocate();
+    void Allocate(size_t size, Array<UniquePtr<CommandBuffer>>& commandBufferArray);
+
+    void Wait(uint64 commitValue);
+    uint64 Commit(UniquePtr<CommandBuffer> commandBuffer);
+    uint64 Commit(Array<UniquePtr<CommandBuffer>>& commandBufferArray);
+
+    [[nodiscard]] uint64 SignaledValue() noexcept { return m_sharedEvent.SignaledValue(); }
+    [[nodiscard]] uint64 CommittedValue() const noexcept { return m_commitValue; }
+
+private:
+    void AllocateCommandBuffer(size_t size);
+    void AllocateCommandAllocator(size_t size);
 };
 
 } // namespace mini::metal4
