@@ -59,8 +59,8 @@ macro (_clang_compile_options)
         -g
 
         -ffast-math
-        -fno-implicit-modules # workaround for clang frontend crash
-        -fno-implicit-module-maps # workaround for clang frontend crash
+        -Xclang 
+        -fno-validate-pch
 
         -Wall
         -Wextra

@@ -106,19 +106,23 @@ constexpr void BeginLifetime(T* begin, T* end) noexcept
 {
     ASSERT(begin <= end, "invalid range");
 
-    if consteval {
-        for (; begin != end; ++begin) {
-            ConstructAt(begin);
-        }
+    if !consteval {
+        return;
+    }
+
+    for (; begin != end; ++begin) {
+        ConstructAt(begin);
     }
 }
 
 export template <NoThrowDefaultConstructibleT T>
 constexpr void BeginLifetime(T* loc) noexcept
 {
-    if consteval {
-        ConstructAt(loc);
+    if !consteval {
+        return;
     }
+
+    ConstructAt(loc);
 }
 
 export template <NonArrayT T>
