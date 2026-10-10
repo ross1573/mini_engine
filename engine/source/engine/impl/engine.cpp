@@ -52,9 +52,9 @@ void Engine::Launch()
         Milliseconds milliseconds = DurationCast<Milliseconds>(duration);
         if (milliseconds.Count() >= 1000) {
             uint64 count = m_frameCount - lastFrameCount;
-            int64 ticks = milliseconds.Count();
-            float32 fps = static_cast<float32>(count) / static_cast<float32>(ticks) * 1000.f;
-            engine::LogInfo("fps: {}", fps);
+            float64 fmilli = DurationCast<FloatMilliseconds>(duration).Count();
+            float64 fps = static_cast<float64>(count) / fmilli * 1000.0;
+            engine::LogInfo("fps: {:.2f}", fps);
 
             lastFrameCount = m_frameCount;
             duration = Nanoseconds(0);

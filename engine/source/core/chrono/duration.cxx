@@ -8,13 +8,29 @@ namespace mini {
 export template <ArithmeticT T, RatioT PeriodT>
 class Duration;
 
-export using Nanoseconds = Duration<int64, Ratio<1, 1000000000>>;
-export using Microseconds = Duration<int64, Ratio<1, 1000000>>;
-export using Milliseconds = Duration<int64, Ratio<1, 1000>>;
-export using Seconds = Duration<int64, Ratio<1, 1>>;
-export using Minutes = Duration<int32, Ratio<60, 1>>;
-export using Hours = Duration<int32, Ratio<3600, 1>>;
-export using Days = Duration<int32, Ratio<86400, 1>>;
+using NanosecondPeriod = Ratio<1, 1000000000>;
+using MicrosecondPeriod = Ratio<1, 1000000>;
+using MillisecondPeriod = Ratio<1, 1000>;
+using SecondPeriod = Ratio<1, 1>;
+using MinutePeriod = Ratio<60, 1>;
+using HourPeriod = Ratio<3600, 1>;
+using DayPeriod = Ratio<86400, 1>;
+
+export using Nanoseconds = Duration<int64, NanosecondPeriod>;
+export using Microseconds = Duration<int64, MicrosecondPeriod>;
+export using Milliseconds = Duration<int64, MillisecondPeriod>;
+export using Seconds = Duration<int64, SecondPeriod>;
+export using Minutes = Duration<int32, MinutePeriod>;
+export using Hours = Duration<int32, HourPeriod>;
+export using Days = Duration<int32, DayPeriod>;
+
+export using FloatNanoseconds = Duration<float64, NanosecondPeriod>;
+export using FloatMicroseconds = Duration<float64, MicrosecondPeriod>;
+export using FloatMilliseconds = Duration<float64, MillisecondPeriod>;
+export using FloatSeconds = Duration<float64, SecondPeriod>;
+export using FloatMinutes = Duration<float64, MinutePeriod>;
+export using FloatHours = Duration<float64, HourPeriod>;
+export using FloatDays = Duration<float64, DayPeriod>;
 
 template <typename T>
 constexpr bool IsDurationT = false;
