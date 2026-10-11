@@ -63,10 +63,11 @@ function (add_module name)
         set(arg_INTERFACE "")
     endif()
     
-    target_include_directories(${name} 
-    PRIVATE 
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
+    set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    if (EXISTS ${include_dir})
+        target_include_directories(${name} PUBLIC "${include_dir}/")
+    endif()
+    target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
 
     set_property(GLOBAL APPEND PROPERTY MODULE_LIST ${name})
     set_target_properties(${name} PROPERTIES 

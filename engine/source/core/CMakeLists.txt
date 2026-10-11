@@ -221,9 +221,6 @@ PUBLIC
 )
 
 target_include_directories(mini.core
-PUBLIC
-    include/
-
 PRIVATE
     impl/
 )

@@ -22,9 +22,4 @@ PUBLIC
     metal.cpp
 )
 
-target_include_directories(mini.apple
-PUBLIC
-    include/
-)
-
 add_subdirectory(macos)

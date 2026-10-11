@@ -1,16 +1,11 @@
 macro (_msvc_compile_options)
-    add_compile_options(
-        $<$<CONFIG:Debug>:/Zi>
-        $<$<CONFIG:Debug>:/Od>
-        $<$<CONFIG:Develop>:/Zi>
-        $<$<CONFIG:Develop>:/O1>
-        $<$<CONFIG:Develop>:/Ob2>
-        $<$<CONFIG:Develop>:/Oi>
-        $<$<CONFIG:Release>:/O2>
-        $<$<CONFIG:Release>:/Ob2>
-        /fp:fast
+    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
+    set(CMAKE_CXX_FLAGS_DEVELOP "/Zi /O1 /Ob1")
+    set(CMAKE_CXX_FLAGS_RELEASE "/Oi /O2 /Ob2")
 
-        /Wall
+    add_compile_options(
+        /Wall    
+        /fp:fast
         /external:W0
         /external:anglebrackets
         /Zc:preprocessor
@@ -52,15 +47,13 @@ macro (_msvc_compile_options)
 endmacro()
 
 macro (_clang_compile_options)
-    add_compile_options(
-        $<$<CONFIG:Debug>:-O0>
-        $<$<CONFIG:Develop>:-O1>
-        $<$<CONFIG:Release>:-O3>
-        -g
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+    set(CMAKE_CXX_FLAGS_DEVELOP "-O1 -g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -g")
 
+    add_compile_options(
         -ffast-math
-        -Xclang 
-        -fno-validate-pch
+        # -Xclang -fno-validate-pch
 
         -Wall
         -Wextra

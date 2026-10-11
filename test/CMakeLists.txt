@@ -37,7 +37,6 @@ PUBLIC
         test.cxx
 )
 
-target_include_directories(mini.test PUBLIC include)
 target_link_libraries(mini.test PUBLIC mini.core)
 
 # TODO: address sanitizer hangs on some situations. 
