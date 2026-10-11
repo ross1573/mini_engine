@@ -83,7 +83,7 @@ template <NonReferenceT T>
 inline SharedPtr<T>::~SharedPtr() noexcept
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
         m_ptr = nullptr;
     }
 }
@@ -195,7 +195,7 @@ template <NonReferenceT T>
 inline void SharedPtr<T>::reset() noexcept
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
         m_ptr = nullptr;
     }
 }
@@ -207,7 +207,7 @@ inline void SharedPtr<T>::reset(U* ptr) noexcept
     requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
     }
 
     m_ptr = static_cast<T*>(ptr);
@@ -275,7 +275,7 @@ template <NonReferenceT T>
 inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr const& other) noexcept
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
     }
 
     m_ptr = other.m_ptr;
@@ -292,7 +292,7 @@ template <NonReferenceT T>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
     }
 
     m_ptr = other.m_ptr;
@@ -306,7 +306,7 @@ template <NonReferenceT T>
 inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(nullptr_t) noexcept
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
         m_ptr = nullptr;
     }
 
@@ -320,7 +320,7 @@ inline SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U> const& other) noexcept
     requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
     }
 
     m_ptr = static_cast<T*>(other.m_ptr);
@@ -339,7 +339,7 @@ inline constexpr SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noe
     requires ConvertibleToT<U*, T*>
 {
     if (m_ptr) {
-        m_ptr->release();
+        m_ptr->Release();
     }
 
     m_ptr = static_cast<T*>(other.m_ptr);
@@ -408,7 +408,7 @@ inline constexpr SharedPtr<T> dynamicCast(SharedPtr<U> const& other) noexcept
         return result;
     }
 
-    other->queryInterface(__uuidof(T), reinterpret_cast<void**>(&result));
+    other->QueryInterface(__uuidof(T), reinterpret_cast<void**>(&result));
     return result;
 }
 
@@ -421,7 +421,7 @@ inline constexpr SharedPtr<T> dynamicCast(SharedPtr<U>&& other) noexcept
         return result;
     }
 
-    other->queryInterface(__uuidof(T), reinterpret_cast<void**>(&result));
+    other->QueryInterface(__uuidof(T), reinterpret_cast<void**>(&result));
     other->reset();
     return result;
 }

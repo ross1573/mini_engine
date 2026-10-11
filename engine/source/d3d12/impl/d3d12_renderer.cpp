@@ -40,8 +40,8 @@ void Renderer::render()
     m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());
     m_currentBuffer = interface->swapChain()->GetCurrentBuffer();
 
-    VERIFY(m_commandAllocator->reset(), "failed to reset command allocator");
-    VERIFY(m_commandList->reset(m_commandAllocator, nullptr), "failed to reset command list");
+    VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
+    VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
 
     // begin
     {

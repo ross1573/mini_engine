@@ -34,7 +34,7 @@ SwapChain::SwapChain()
 {
     uint8 bufferCount = options::bufferCount;
     bool fullscreen = options::fullscreen;
-    m_vSync = options::setVSync;
+    m_vSync = options::vsyncRate;
 
     SharedPtr<IDXGISwapChain1> swapChain;
     auto window = interface->window();
@@ -84,7 +84,7 @@ SwapChain::SwapChain()
 
 void SwapChain::present()
 {
-    m_swapChain->present(m_vSync, (m_vSync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
+    m_swapChain->Present(m_vSync, (m_vSync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
     m_index = (uint8)m_swapChain->GetCurrentBackBufferIndex();
 }
 
@@ -108,7 +108,7 @@ void SwapChain::resizeFrameBuffer(uint32 width, uint32 height, bool fullscreen)
 
 void SwapChain::resizeBufferCount(uint8 count)
 {
-    ENSURE(count > 0 || count < MaxBackBuffer, "invalid swap chain count {}. max size is {}", count, MaxBackBuffer) {
+    ENSURE(count > 0 || count < maxFrameBuffer, "invalid swap chain count {}. max size is {}", count, maxFrameBuffer) {
         return;
     }
 

@@ -23,7 +23,7 @@ void notifyOnAddress(AtomicContention const volatile* addr, size_t)
 
 void notifyAllOnAddress(AtomicContention const volatile* addr, size_t)
 {
-    w void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
+    void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     ::WakeByAddressAll(loc);
 }
 

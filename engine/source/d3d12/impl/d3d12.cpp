@@ -27,7 +27,7 @@ D3D12::~D3D12() noexcept
     d3d12::interface = nullptr;
 }
 
-graphics::Device* D3D12::CreateDevice()
+graphics::Device* D3D12::createDevice()
 {
     return new d3d12::Device();
 }

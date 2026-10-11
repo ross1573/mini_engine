@@ -19,7 +19,7 @@ public:
     D3D12() noexcept;
     ~D3D12() noexcept;
 
-    graphics::Device* CreateDevice() final;
+    graphics::Device* createDevice() final;
 
     windows::Window* window() noexcept;
     d3d12::Device* device() noexcept;

@@ -1,18 +1,13 @@
 export module mini.graphics:interface;
 
 import mini.core;
+import :device;
 
 namespace mini {
 
 export class Graphics;
 
 }; // namespace mini
-
-namespace mini::graphics {
-
-class Device;
-
-} // namespace mini::graphics
 
 namespace mini::graphics {
 

@@ -4,7 +4,7 @@ import mini.core;
 import mini.graphics;
 import mini.windows;
 
-export namespace mini::d3d12 {
+namespace mini::d3d12 {
 
 export enum class CommandType : int8 {
     None = -1,
@@ -14,7 +14,7 @@ export enum class CommandType : int8 {
     Copy,
 };
 
-class CommandQueue {
+export class CommandQueue {
 private:
     SharedPtr<ID3D12CommandQueue> m_commandQueue;
     SharedPtr<ID3D12Fence> m_fence;
