@@ -8,7 +8,7 @@ import mini.core;
 
 namespace mini::graphics {
 
-export enum class API : byte {
+export enum class Api : byte {
     Null = 0,
 
     D3D12,
@@ -69,23 +69,23 @@ GRAPHICS_API const std::regex metal4_regex("[Mm][Ee][Tt][Aa][Ll]4");
 GRAPHICS_API const std::regex vulkan_regex("[Vv][Uu][Ll][Kk][Aa][Nn]");
 // NOLINTEND
 
-export GRAPHICS_API API ParseAPI(String const& str)
+export GRAPHICS_API Api parseApi(String const& str)
 {
-    char const* src = str.Data();
+    char const* src = str.data();
 
     if (std::regex_match(src, d3d12_regex)) {
-        return API::D3D12;
+        return Api::D3D12;
     }
 
     if (std::regex_match(src, metal4_regex)) {
-        return API::Metal4;
+        return Api::Metal4;
     }
 
     if (std::regex_match(src, vulkan_regex)) {
-        return API::Vulkan;
+        return Api::Vulkan;
     }
 
-    return API::Null;
+    return Api::Null;
 }
 
 } // namespace mini::graphics
@@ -93,14 +93,14 @@ export GRAPHICS_API API ParseAPI(String const& str)
 namespace fmt {
 
 template <>
-struct formatter<mini::graphics::API> : formatter<string_view> {
-    auto format(mini::graphics::API api, format_context& ctx) const
+struct formatter<mini::graphics::Api> : formatter<string_view> {
+    auto format(mini::graphics::Api api, format_context& ctx) const
     {
         string_view sv;
         switch (api) {
-            case mini::graphics::API::D3D12:  sv = string_view{"d3d12"}; break;
-            case mini::graphics::API::Metal4: sv = string_view{"metal4"}; break;
-            case mini::graphics::API::Vulkan: sv = string_view{"vulkan"}; break;
+            case mini::graphics::Api::D3D12:  sv = string_view{"d3d12"}; break;
+            case mini::graphics::Api::Metal4: sv = string_view{"metal4"}; break;
+            case mini::graphics::Api::Vulkan: sv = string_view{"vulkan"}; break;
 
             default: sv = string_view("null"); break;
         }

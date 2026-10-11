@@ -39,17 +39,17 @@ public:
     constexpr WeakPtr(SharedPtr<U> const& other) noexcept
         requires ConvertibleToT<U*, T*>;
 
-    [[nodiscard]] constexpr SharedPtr<T> Lock() const noexcept;
-    [[nodiscard]] constexpr bool Valid() const noexcept;
+    [[nodiscard]] constexpr SharedPtr<T> lock() const noexcept;
+    [[nodiscard]] constexpr bool valid() const noexcept;
 
-    constexpr void Reset() noexcept;
-    constexpr void Swap(WeakPtr& other) noexcept;
+    constexpr void reset() noexcept;
+    constexpr void swap(WeakPtr& other) noexcept;
 
     template <NonReferenceT U>
-    [[nodiscard]] constexpr bool OwnerEquals(WeakPtr<U> const& other) const noexcept
+    [[nodiscard]] constexpr bool ownerEquals(WeakPtr<U> const& other) const noexcept
         requires EqualityComparableWithT<T*, U*>;
     template <NonReferenceT U>
-    [[nodiscard]] constexpr bool OwnerEquals(SharedPtr<U> const& other) const noexcept
+    [[nodiscard]] constexpr bool ownerEquals(SharedPtr<U> const& other) const noexcept
         requires EqualityComparableWithT<T*, U*>;
 
     constexpr WeakPtr& operator=(WeakPtr const& other) noexcept;
@@ -77,7 +77,7 @@ template <NonReferenceT T>
 constexpr WeakPtr<T>::~WeakPtr() noexcept
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
         m_counter = nullptr;
         m_ptr = nullptr;
     }
@@ -89,7 +89,7 @@ constexpr WeakPtr<T>::WeakPtr(WeakPtr const& other) noexcept
     , m_counter(other.m_counter)
 {
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 }
 
@@ -110,7 +110,7 @@ constexpr WeakPtr<T>::WeakPtr(WeakPtr<U> const& other) noexcept
     , m_counter(other.m_counter)
 {
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 }
 
@@ -133,15 +133,15 @@ constexpr WeakPtr<T>::WeakPtr(SharedPtr<U> const& other) noexcept
     , m_counter(other.m_counter)
 {
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 }
 
 template <NonReferenceT T>
-constexpr SharedPtr<T> WeakPtr<T>::Lock() const noexcept
+constexpr SharedPtr<T> WeakPtr<T>::lock() const noexcept
 {
     SharedPtr<T> result;
-    result.m_counter = m_counter != nullptr ? m_counter->Lock() : nullptr;
+    result.m_counter = m_counter != nullptr ? m_counter->lock() : nullptr;
     if (result.m_counter) {
         result.m_ptr = m_ptr;
     }
@@ -150,31 +150,31 @@ constexpr SharedPtr<T> WeakPtr<T>::Lock() const noexcept
 }
 
 template <NonReferenceT T>
-constexpr bool WeakPtr<T>::Valid() const noexcept
+constexpr bool WeakPtr<T>::valid() const noexcept
 {
-    return m_counter != nullptr && m_counter->Count() != 0;
+    return m_counter != nullptr && m_counter->count() != 0;
 }
 
 template <NonReferenceT T>
-constexpr void WeakPtr<T>::Reset() noexcept
+constexpr void WeakPtr<T>::reset() noexcept
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
         m_counter = nullptr;
         m_ptr = nullptr;
     }
 }
 
 template <NonReferenceT T>
-constexpr void WeakPtr<T>::Swap(WeakPtr& other) noexcept
+constexpr void WeakPtr<T>::swap(WeakPtr& other) noexcept
 {
-    mini::Swap(m_ptr, other.m_ptr);
-    mini::Swap(m_counter, other.m_counter);
+    mini::swap(m_ptr, other.m_ptr);
+    mini::swap(m_counter, other.m_counter);
 }
 
 template <NonReferenceT T>
 template <NonReferenceT U>
-constexpr bool WeakPtr<T>::OwnerEquals(WeakPtr<U> const& other) const noexcept
+constexpr bool WeakPtr<T>::ownerEquals(WeakPtr<U> const& other) const noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return m_counter == other.m_counter;
@@ -182,7 +182,7 @@ constexpr bool WeakPtr<T>::OwnerEquals(WeakPtr<U> const& other) const noexcept
 
 template <NonReferenceT T>
 template <NonReferenceT U>
-constexpr bool WeakPtr<T>::OwnerEquals(SharedPtr<U> const& other) const noexcept
+constexpr bool WeakPtr<T>::ownerEquals(SharedPtr<U> const& other) const noexcept
     requires EqualityComparableWithT<T*, U*>
 {
     return m_counter == other.m_counter;
@@ -191,19 +191,19 @@ constexpr bool WeakPtr<T>::OwnerEquals(SharedPtr<U> const& other) const noexcept
 template <NonReferenceT T>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr const& other) noexcept
 {
-    if (m_counter == other.m_counter) {
+    if (this == addressof(other)) {
         return *this;
     }
 
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
     }
 
     m_ptr = other.m_ptr;
     m_counter = other.m_counter;
 
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 
     return *this;
@@ -213,7 +213,7 @@ template <NonReferenceT T>
 constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr&& other) noexcept
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
     }
 
     m_ptr = other.m_ptr;
@@ -230,14 +230,14 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U> const& other) noexcept
     requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
     }
 
     m_ptr = static_cast<T*>(other.m_ptr);
     m_counter = other.m_counter;
 
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 
     return *this;
@@ -249,7 +249,7 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) noexcept
     requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
     }
 
     m_ptr = static_cast<T*>(other.m_ptr);
@@ -266,14 +266,14 @@ constexpr WeakPtr<T>& WeakPtr<T>::operator=(SharedPtr<U> const& other) noexcept
     requires ConvertibleToT<U*, T*>
 {
     if (m_counter != nullptr) {
-        m_counter->ReleaseWeak();
+        m_counter->releaseWeak();
     }
 
     m_ptr = static_cast<T*>(other.m_ptr);
     m_counter = other.m_counter;
 
     if (m_counter != nullptr) {
-        m_counter->RetainWeak();
+        m_counter->retainWeak();
     }
 
     return *this;

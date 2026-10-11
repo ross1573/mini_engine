@@ -9,10 +9,10 @@
 #  define BUILTIN_WMEMCHR wmemchr
 #endif
 
-#if HAS_BUILTIN(__builtin_wmemcpy)
-#  define BUILTIN_WMEMCPY __builtin_wmemcpy
+#if HAS_BUILTIN(__builtin_wmemcopy)
+#  define BUILTIN_WMEMCPY __builtin_wmemcopy
 #else
-#  define BUILTIN_WMEMCPY wmemcpy
+#  define BUILTIN_WMEMCPY wmemcopy
 #endif
 
 #if HAS_BUILTIN(__builtin_wmemmove)

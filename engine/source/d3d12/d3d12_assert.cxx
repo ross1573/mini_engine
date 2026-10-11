@@ -5,10 +5,10 @@ import mini.core;
 namespace mini::debug {
 
 export template <typename... Args>
-AssertFormatResult FormatAssert(char const* _, ID3DBlob* error, AssertFormatContext ctx, Args&&... args)
+AssertFormatResult formatAssert(char const* _, ID3DBlob* error, AssertFormatContext ctx, Args&&... args)
 {
     char const* buffer = reinterpret_cast<char*>(error->GetBufferPointer());
-    FormatAssert("d3derror", buffer, ctx, ForwardArg<Args>(args)...);
+    formatAssert("d3derror", buffer, ctx, forwardCast<Args>(args)...);
 }
 
 } // namespace mini::debug

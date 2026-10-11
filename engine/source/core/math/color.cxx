@@ -33,12 +33,12 @@ public:
 
     constexpr bool operator==(Color const& other) const noexcept;
 
-    static constexpr Color White() noexcept { return { 1.0f, 1.f, 1.f, 1.f }; }
-    static constexpr Color Black() noexcept { return { 0.f, 0.f, 0.f, 1.f }; }
-    static constexpr Color Clear() noexcept { return { 0.f, 0.f, 0.f, 0.f }; }
-    static constexpr Color Red() noexcept { return { 1.f, 0.f, 0.f, 1.f }; }
-    static constexpr Color Green() noexcept { return { 0.f, 1.f, 0.f, 1.f }; }
-    static constexpr Color Blue() noexcept { return { 0.f, 0.f, 1.f, 1.f }; }
+    static constexpr Color white() noexcept { return {1.0f, 1.f, 1.f, 1.f}; }
+    static constexpr Color black() noexcept { return {0.f, 0.f, 0.f, 1.f}; }
+    static constexpr Color clear() noexcept { return {0.f, 0.f, 0.f, 0.f}; }
+    static constexpr Color red() noexcept { return {1.f, 0.f, 0.f, 1.f}; }
+    static constexpr Color green() noexcept { return {0.f, 1.f, 0.f, 1.f}; }
+    static constexpr Color blue() noexcept { return {0.f, 0.f, 1.f, 1.f}; }
 };
 
 export constexpr Color operator+(Color const& lhs, Color const& rhs) noexcept;
@@ -111,12 +111,12 @@ constexpr Color& Color::operator/=(Float32ConvertibleT auto val) noexcept
 
 constexpr Color Color::operator+() const noexcept
 {
-    return { r, g, b, a };
+    return {r, g, b, a};
 }
 
 constexpr Color Color::operator-() const noexcept
 {
-    return { -r, -g, -b, -a };
+    return {-r, -g, -b, -a};
 }
 
 constexpr bool Color::operator==(Color const& other) const noexcept

@@ -2,7 +2,11 @@
 
 import mini.test;
 
-using namespace mini;
+using mini::Ratio;
+using mini::RatioAddT;
+using mini::RatioDivideT;
+using mini::RatioMultiplyT;
+using mini::RatioSubtractT;
 
 template <typename R1, typename R2, typename Result>
 consteval void TestAdd()
@@ -10,7 +14,7 @@ consteval void TestAdd()
     auto result = R1{} + R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
-    static_assert(SameAsT<RatioAddT<R1, R2>, Result>);
+    static_assert(mini::SameAsT<RatioAddT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -19,7 +23,7 @@ consteval void TestSub()
     auto result = R1{} - R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
-    static_assert(SameAsT<RatioSubtractT<R1, R2>, Result>);
+    static_assert(mini::SameAsT<RatioSubtractT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -28,7 +32,7 @@ consteval void TestMul()
     auto result = R1{} * R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
-    static_assert(SameAsT<RatioMultiplyT<R1, R2>, Result>);
+    static_assert(mini::SameAsT<RatioMultiplyT<R1, R2>, Result>);
 }
 
 template <typename R1, typename R2, typename Result>
@@ -37,7 +41,7 @@ consteval void TestDiv()
     auto result = R1{} / R2{};
     static_assert(result.num == Result::num, "numerator does not match");
     static_assert(result.denom == Result::denom, "denominator does not match");
-    static_assert(SameAsT<RatioDivideT<R1, R2>, Result>);
+    static_assert(mini::SameAsT<RatioDivideT<R1, R2>, Result>);
 }
 
 int main()
@@ -67,8 +71,8 @@ int main()
     static_assert(Ratio<0, 3>{} > Ratio<-7, 6>{});
     static_assert(Ratio<0, 3>{} == Ratio<0, 6>{});
 
-    constexpr auto int64Max = NumericLimit<int64>::max;
-    constexpr auto int64Min = NumericLimit<int64>::min;
+    constexpr auto int64Max = mini::NumericLimit<mini::int64>::max;
+    constexpr auto int64Min = mini::NumericLimit<mini::int64>::min;
     TestAdd<Ratio<int64Max, 2>, Ratio<int64Min + 2, 2>, Ratio<1, 2>>();
     TestSub<Ratio<int64Max, 2>, Ratio<int64Max - 1, 2>, Ratio<1, 2>>();
     TestMul<Ratio<int64Max, 1>, Ratio<1, 1>, Ratio<int64Max, 1>>();

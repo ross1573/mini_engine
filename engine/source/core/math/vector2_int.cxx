@@ -24,13 +24,13 @@ public:
     explicit constexpr Vector2Int(Vector2 const& vec) noexcept;
     explicit constexpr Vector2Int(Int32ConvertibleT auto val) noexcept;
 
-    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
-    [[nodiscard]] constexpr size_t LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 length() const noexcept;
+    [[nodiscard]] constexpr size_t lengthSquared() const noexcept;
 
-    constexpr void Clamp(Vector2Int const& min, Vector2Int const& max) noexcept;
+    constexpr void clamp(Vector2Int const& min, Vector2Int const& max) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
-    static constexpr size_t DistanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
+    static /*constexpr*/ float32 distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
+    static constexpr size_t distanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
 
     constexpr Vector2Int& operator+=(Vector2Int const& ivec) noexcept;
     constexpr Vector2Int& operator-=(Vector2Int const& ivec) noexcept;
@@ -44,10 +44,10 @@ public:
 
     explicit constexpr operator Vector2() const noexcept;
 
-    static constexpr Vector2Int Zero() noexcept { return { 0, 0 }; }
-    static constexpr Vector2Int One() noexcept { return { 1, 1 }; }
-    static constexpr Vector2Int UnitX() noexcept { return { 1, 0 }; }
-    static constexpr Vector2Int UnitY() noexcept { return { 0, 1 }; }
+    static constexpr Vector2Int zero() noexcept { return {0, 0}; }
+    static constexpr Vector2Int one() noexcept { return {1, 1}; }
+    static constexpr Vector2Int unitX() noexcept { return {1, 0}; }
+    static constexpr Vector2Int unitY() noexcept { return {0, 1}; }
 };
 
 export constexpr Vector2Int operator+(Vector2Int const& lhs, Vector2Int const& rhs) noexcept;
@@ -86,30 +86,30 @@ constexpr Vector2Int::Vector2Int(Int32ConvertibleT auto val) noexcept
 {
 }
 
-inline /*constexpr*/ float32 Vector2Int::Length() const noexcept
+inline /*constexpr*/ float32 Vector2Int::length() const noexcept
 {
-    return Sqrt(static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u)));
+    return sqrt(static_cast<size_t>(pow(x, 2u) + pow(y, 2u)));
 }
 
-constexpr size_t Vector2Int::LengthSquared() const noexcept
+constexpr size_t Vector2Int::lengthSquared() const noexcept
 {
-    return static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u));
+    return static_cast<size_t>(pow(x, 2u) + pow(y, 2u));
 }
 
-constexpr void Vector2Int::Clamp(Vector2Int const& min, Vector2Int const& max) noexcept
+constexpr void Vector2Int::clamp(Vector2Int const& min, Vector2Int const& max) noexcept
 {
     x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
     y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
 }
 
-inline /*constexpr*/ float32 Vector2Int::Distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
+inline /*constexpr*/ float32 Vector2Int::distance(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
-    return (lhs - rhs).Length();
+    return (lhs - rhs).length();
 }
 
-constexpr size_t Vector2Int::DistanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
+constexpr size_t Vector2Int::distanceSquared(Vector2Int const& lhs, Vector2Int const& rhs) noexcept
 {
-    return (lhs - rhs).LengthSquared();
+    return (lhs - rhs).lengthSquared();
 }
 
 constexpr Vector2Int& Vector2Int::operator+=(Vector2Int const& vec) noexcept
@@ -144,12 +144,12 @@ constexpr Vector2Int& Vector2Int::operator/=(Int32ConvertibleT auto val) noexcep
 
 constexpr Vector2Int Vector2Int::operator+() const noexcept
 {
-    return { x, y };
+    return {x, y};
 }
 
 constexpr Vector2Int Vector2Int::operator-() const noexcept
 {
-    return { -x, -y };
+    return {-x, -y};
 }
 
 constexpr bool Vector2Int::operator==(Vector2Int const& vec) const noexcept

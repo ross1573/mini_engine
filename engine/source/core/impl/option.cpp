@@ -12,9 +12,9 @@ OPTION_API bool fullscreen = false;
 OPTION_API bool resizableWindow = true;
 
 #if PLATFORM_MACOS
-OPTION_API unsigned char vsync = 1;
+OPTION_API unsigned char vsyncRate = 1;
 #else
-OPTION_API unsigned char vsync = 0;
+OPTION_API unsigned char vsyncRate = 0;
 #endif
 OPTION_API unsigned char bufferCount = 3;
 

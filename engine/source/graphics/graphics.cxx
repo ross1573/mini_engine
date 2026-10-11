@@ -21,7 +21,7 @@ namespace mini {
 
 export class GRAPHICS_API Graphics final : public ModuleInterface {
 private:
-    API m_currentAPI;
+    Api m_currentAPI;
     Module<Interface> m_currentModule;
 
     UniquePtr<Device> m_device;
@@ -32,20 +32,20 @@ public:
     Graphics() noexcept;
     ~Graphics() noexcept override;
 
-    bool LoadModule(StringView);
-    void RenderFrame();
+    bool loadModule(StringView);
+    void renderFrame();
 
-    [[nodiscard]] API CurrentAPI() const noexcept { return m_currentAPI; }
-    [[nodiscard]] Module<Interface> CurrentModule() const noexcept { return m_currentModule; }
+    [[nodiscard]] Api api() const noexcept { return m_currentAPI; }
+    [[nodiscard]] Module<Interface> module() const noexcept { return m_currentModule; }
 
-    [[nodiscard]] Device* GetDevice() const noexcept { return m_device.Get(); }
-    [[nodiscard]] SwapChain* GetSwapChain() const noexcept { return m_swapChain.Get(); }
-    [[nodiscard]] Renderer* GetRenderer() const noexcept { return m_renderer.Get(); }
+    [[nodiscard]] Device* device() const noexcept { return m_device.get(); }
+    [[nodiscard]] SwapChain* swapChain() const noexcept { return m_swapChain.get(); }
+    [[nodiscard]] Renderer* renderer() const noexcept { return m_renderer.get(); }
 
-    static void ChangeResolution(uint32, uint32, bool);
+    static void changeResolution(uint32 width, uint32 height, bool fullscreen);
 
-    static bool IsDeviceCurrent() noexcept;
-    static bool IsDeviceCurrent(API) noexcept;
+    static bool current() noexcept;
+    static bool current(Api api) noexcept;
 };
 
 } // namespace mini

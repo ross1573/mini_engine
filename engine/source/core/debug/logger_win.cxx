@@ -13,7 +13,7 @@ protected:
     LoggerBase(StringView) noexcept;
     ~LoggerBase() noexcept = default;
 
-    void PrintMessage(byte, StringView) noexcept;
+    void printMessage(byte, StringView) noexcept;
 };
 
 } // namespace mini

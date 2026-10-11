@@ -7,66 +7,66 @@ import :memory_operation;
 namespace mini::memory {
 
 export template <typename T, typename U>
-constexpr void CopyRange(T dest, U begin, U end)
+constexpr void copyRange(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopy(dest, begin, static_cast<size_t>(end - begin));
+    if constexpr (triviallyOperatable<T, U>()) {
+        memcopy(dest, begin, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; begin != end; ++begin, ++dest) {
-        *ToAddress(dest) = *ToAddress(begin);
+        *address(dest) = *address(begin);
     }
 }
 
 export template <typename T, typename U>
-constexpr void CopyBackward(T dest, U begin, U end)
+constexpr void copyBackward(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
+    if constexpr (triviallyOperatable<T, U>()) {
+        memcopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; end != begin;) {
-        *ToAddress(--dest) = *ToAddress(--end);
+        *address(--dest) = *address(--end);
     }
 }
 
 export template <typename T, typename U>
-constexpr void MoveRange(T dest, U begin, U end)
+constexpr void moveRange(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopy(dest, begin, static_cast<size_t>(end - begin));
+    if constexpr (triviallyOperatable<T, U>()) {
+        memcopy(dest, begin, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; begin != end; ++begin, ++dest) {
-        *ToAddress(dest) = MoveArg(*ToAddress(begin));
+        *address(dest) = moveCast(*address(begin));
     }
 }
 
 export template <typename T, typename U>
-constexpr void MoveBackward(T dest, U begin, U end)
+constexpr void moveBackward(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
-        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
+    if constexpr (triviallyOperatable<T, U>()) {
+        memcopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; end != begin;) {
-        *ToAddress(--dest) = MoveArg(*ToAddress(--end));
+        *address(--dest) = moveCast(*address(--end));
     }
 }
 
 export template <typename T, typename U>
-constexpr bool EqualRange(T begin1, U begin2, U end2)
+constexpr bool equalRange(T begin1, U begin2, U end2)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
-        return MemCompare(begin1, begin2, static_cast<size_t>(end2 - begin2));
+    if constexpr (triviallyOperatable<T, U>()) {
+        return memcomp(begin1, begin2, static_cast<size_t>(end2 - begin2));
     }
 
     for (; begin2 != end2; ++begin1, ++begin2) {
-        if (*ToAddress(begin1) != *ToAddress(begin2)) {
+        if (*address(begin1) != *address(begin2)) {
             return false;
         }
     }
@@ -75,19 +75,19 @@ constexpr bool EqualRange(T begin1, U begin2, U end2)
 }
 
 export template <typename T, typename U>
-constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
+constexpr bool equalRange(T begin1, T end1, U begin2, U end2)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
+    if constexpr (triviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end2 - begin2);
         if (size != (end1 - begin1)) {
             return false;
         }
 
-        return MemCompare(begin1, begin2, size);
+        return memcomp(begin1, begin2, size);
     }
 
     for (; begin1 != end1 && begin2 != end2; ++begin1, ++begin2) {
-        if (*ToAddress(begin1) != *ToAddress(begin2)) {
+        if (*address(begin1) != *address(begin2)) {
             return false;
         }
     }
@@ -96,18 +96,18 @@ constexpr bool EqualRange(T begin1, T end1, U begin2, U end2)
 }
 
 export template <typename T, typename U>
-constexpr void FillRange(T begin, T end, U const& value)
+constexpr void fillRange(T begin, T end, U const& value)
 {
     for (; begin != end; ++begin) {
-        *ToAddress(begin) = value;
+        *address(begin) = value;
     }
 }
 
 export template <typename T, typename U>
-constexpr T Find(T first, T last, U const& value)
+constexpr T find(T first, T last, U const& value)
 {
     for (; first != last; ++first) {
-        if (*ToAddress(first) == value) {
+        if (*address(first) == value) {
             return first;
         }
     }
@@ -116,10 +116,10 @@ constexpr T Find(T first, T last, U const& value)
 }
 
 export template <typename T, typename PredT>
-constexpr T FindIf(T first, T last, PredT pred)
+constexpr T findIf(T first, T last, PredT pred)
 {
     for (; first != last; ++first) {
-        if (pred(*ToAddress(first))) {
+        if (pred(*address(first))) {
             return first;
         }
     }
@@ -128,10 +128,10 @@ constexpr T FindIf(T first, T last, PredT pred)
 }
 
 export template <typename T, typename PredT>
-constexpr T FindIfNot(T first, T last, PredT pred)
+constexpr T findIfNot(T first, T last, PredT pred)
 {
     for (; first != last; ++first) {
-        if (!pred(*ToAddress(first))) {
+        if (!pred(*address(first))) {
             return first;
         }
     }

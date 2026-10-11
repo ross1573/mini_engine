@@ -16,22 +16,22 @@ public:
     Window(Application*);
     virtual ~Window();
 
-    bool Valid() const noexcept { return m_window != nullptr; }
+    bool valid() const noexcept { return m_window != nullptr; }
 
-    void Show();
-    void Hide();
-    void Minimize();
-    void Maximize();
+    void show();
+    void hide();
+    void minimize();
+    void maximize();
 
-    bool IsMinimized() const;
-    bool IsMaximized() const;
-    bool IsFullScreen() const;
+    [[nodiscard]] bool minimized() const;
+    [[nodiscard]] bool maximized() const;
+    [[nodiscard]] bool fullScreen() const;
 
-    void SetFullScreen(bool);
-    void SetMetalLayer(CA::MetalLayer*);
+    void setFullScreen(bool);
+    void setMetalLayer(CA::MetalLayer*);
 
-    virtual bool ShouldClose() = 0;
-    virtual void WillClose() = 0;
+    virtual bool shouldClose() = 0;
+    virtual void willClose() = 0;
 };
 
 } // namespace mini::cocoa

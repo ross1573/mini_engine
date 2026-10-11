@@ -49,6 +49,6 @@
 #include <windows.h>
 
 #undef interface
-#undef CreateWindow;
+#undef createWindow;
 
 #endif // WIN_INCLUDE_H

@@ -13,14 +13,14 @@ namespace mini::debug {
 
 thread_local Logger assertLogger = Logger("Assert");
 
-void LogAssert(AssertFormatResult formatResult) noexcept
+void logAssert(AssertFormatResult formatResult) noexcept
 {
-    assertLogger.Fatal(formatResult.message);
+    assertLogger.fatal(formatResult.message);
 }
 
-void LogEnsure(AssertFormatResult formatResult) noexcept
+void logEnsure(AssertFormatResult formatResult) noexcept
 {
-    assertLogger.Fatal(formatResult.message);
+    assertLogger.fatal(formatResult.message);
 }
 
 } // namespace mini::debug
@@ -38,19 +38,19 @@ LoggerBase::~LoggerBase() noexcept
     os_release(m_logger);
 }
 
-void LoggerBase::PrintMessage(byte level, StringView msg) noexcept
+void LoggerBase::printMessage(byte level, StringView msg) noexcept
 {
     // delay initialization of the logger until first message has been fetched
     if (m_logger == nullptr) {
         StringView identifier = "com." ENGINE_PROJECT_AUTHOR "." ENGINE_PROJECT_NAME;
-        m_logger = os_log_create(identifier.Data(), m_category.Data());
+        m_logger = os_log_create(identifier.data(), m_category.data());
     }
 
-    LogLevel type = LoggerBase::GetLogType(level);
-    os_log_with_type(m_logger, type, "%s", msg.Data());
+    LogLevel type = LoggerBase::logType(level);
+    os_log_with_type(m_logger, type, "%s", msg.data());
 }
 
-LoggerBase::LogLevel LoggerBase::GetLogType(byte level) noexcept
+LoggerBase::LogLevel LoggerBase::logType(byte level) noexcept
 {
     LogLevel type;
     switch (level) {

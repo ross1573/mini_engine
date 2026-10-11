@@ -22,16 +22,16 @@ private:
 public:
     Device();
 
-    [[nodiscard]] bool Valid() const noexcept final { return m_device.Valid(); }
+    [[nodiscard]] bool valid() const noexcept final { return m_device.valid(); }
 
-    [[nodiscard]] graphics::SwapChain* CreateSwapChain() final;
-    [[nodiscard]] graphics::Renderer* CreateRenderer() final;
+    [[nodiscard]] graphics::SwapChain* createSwapChain() final;
+    [[nodiscard]] graphics::Renderer* createRenderer() final;
 
-    [[nodiscard]] graphics::API GetAPI() const noexcept final { return graphics::API::Metal4; }
-    [[nodiscard]] MTL::Device* MTLDevice() const noexcept { return m_device.Get(); }
+    [[nodiscard]] graphics::Api api() const noexcept final { return graphics::Api::Metal4; }
+    [[nodiscard]] MTL::Device* mtlDevice() const noexcept { return m_device.get(); }
 };
 
-MTL::Device* CreateSystemDefaultDevice() noexcept
+MTL::Device* createSystemDefaultDevice() noexcept
 {
     return MTL::CreateSystemDefaultDevice();
 }

@@ -2,32 +2,31 @@
 
 import mini.test;
 
-using namespace mini;
-using namespace mini::test;
+using mini::rebind;
 
 template <typename U>
-inline auto RebindAllocator(Allocator<TestObject>);
+inline auto rebind(mini::Allocator<TestObject>);
 
 template <>
-inline auto RebindAllocator<TestObject>(Allocator<TestObject> /*unused*/)
+inline auto rebind<TestObject>(mini::Allocator<TestObject> /*unused*/)
 {
-    return TestAlloc{ };
+    return TestAlloc{};
 }
 
-int main()
+mini::int32 main()
 {
-    auto&& r = RebindAllocator<TestObject>(Allocator<TestObject>{ });
-    auto&& r2 = RebindAllocator<ConstexprObject>(Allocator<ConstexprObject>{ });
-    auto&& r3 = RebindAllocator<TestObject>(TestAlloc{ });
+    auto&& r = rebind<TestObject>(mini::Allocator<TestObject>{});
+    auto&& r2 = rebind<ConstexprObject>(mini::Allocator<ConstexprObject>{});
+    auto&& r3 = rebind<TestObject>(TestAlloc{});
 
-    static_assert(AllocatorT<Allocator<TestObject>, TestObject>);
-    static_assert(AllocatorT<Allocator<int>, int>);
-    static_assert(RebindableWithT<Allocator<TestObject>, TestObject>);
-    static_assert(SameAsT<TestAlloc&&, decltype(r)>);
-    static_assert(SameAsT<TestAlloc&&, decltype(r3)>);
-    static_assert(SameAsT<Allocator<ConstexprObject>&&, decltype(r2)>);
+    static_assert(mini::AllocatorT<mini::Allocator<TestObject>, TestObject>);
+    static_assert(mini::AllocatorT<mini::Allocator<mini::int32>, mini::int32>);
+    static_assert(mini::RebindableWithT<mini::Allocator<TestObject>, TestObject>);
+    static_assert(mini::SameAsT<TestAlloc&&, decltype(r)>);
+    static_assert(mini::SameAsT<TestAlloc&&, decltype(r3)>);
+    static_assert(mini::SameAsT<mini::Allocator<ConstexprObject>&&, decltype(r2)>);
 
-    static_assert(Allocator<TestObject>{ } == Allocator<int>{ });
+    static_assert(mini::Allocator<TestObject>{} == mini::Allocator<mini::int32>{});
 
     return 0;
 }

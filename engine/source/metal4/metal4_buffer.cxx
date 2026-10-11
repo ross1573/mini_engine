@@ -22,7 +22,7 @@ class Device;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::ResourceOptions MTLBufferResourceOptions(
+export METAL4_API constexpr MTL::ResourceOptions mtlBufferResourceOptions(
     graphics::BufferCacheMode cacheMode,
     graphics::BufferStorageMode storageMode) noexcept
 {
@@ -65,10 +65,10 @@ public:
     Buffer(PtrView<Device> device, graphics::BufferDescriptor const& descriptor);
     ~Buffer() noexcept override = default;
 
-    [[nodiscard]] size_t Size() const { return static_cast<size_t>(MTLBuffer()->length()); }
-    [[nodiscard]] uint64 GpuAddress() const override { return static_cast<uint64>(MTLBuffer()->gpuAddress()); }
+    [[nodiscard]] size_t size() const { return static_cast<size_t>(mtlBuffer()->length()); }
+    [[nodiscard]] uint64 gpuAddress() const override { return static_cast<uint64>(mtlBuffer()->gpuAddress()); }
 
-    [[nodiscard]] MTL::Buffer* MTLBuffer() const noexcept { return static_cast<MTL::Buffer*>(m_resource.Get()); }
+    [[nodiscard]] MTL::Buffer* mtlBuffer() const noexcept { return static_cast<MTL::Buffer*>(m_resource.get()); }
 };
 
 } // namespace mini::metal4

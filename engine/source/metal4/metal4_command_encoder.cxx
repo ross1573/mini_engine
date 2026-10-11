@@ -30,7 +30,7 @@ using MTL4::RenderCommandEncoder;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::PrimitiveType MTLPrimitiveType(graphics::PrimitiveType primitiveType) noexcept
+export METAL4_API constexpr MTL::PrimitiveType mtlPrimitiveType(graphics::PrimitiveType primitiveType) noexcept
 {
     switch (primitiveType) {
         case graphics::PrimitiveType::Point:    return MTL::PrimitiveType::PrimitiveTypePoint;
@@ -45,7 +45,7 @@ export METAL4_API constexpr MTL::PrimitiveType MTLPrimitiveType(graphics::Primit
     return MTL::PrimitiveType::PrimitiveTypeTriangle;
 }
 
-export METAL4_API constexpr MTL::ScissorRect MTLScissorRect(graphics::ScissorRect scissorRect) noexcept
+export METAL4_API constexpr MTL::ScissorRect mtlScissorRect(graphics::ScissorRect scissorRect) noexcept
 {
     return MTL::ScissorRect{
         .x = static_cast<uint64>(scissorRect.x),
@@ -55,7 +55,7 @@ export METAL4_API constexpr MTL::ScissorRect MTLScissorRect(graphics::ScissorRec
     };
 }
 
-export METAL4_API constexpr MTL::Viewport MTLViewport(graphics::Viewport viewport) noexcept
+export METAL4_API constexpr MTL::Viewport mtlViewport(graphics::Viewport viewport) noexcept
 {
     return MTL::Viewport{
         .originX = static_cast<float64>(viewport.x),
@@ -75,20 +75,20 @@ public:
     explicit RenderCommandEncoder(PtrView<MTL4::RenderCommandEncoder> renderCommandEncoder) noexcept;
     ~RenderCommandEncoder() noexcept;
 
-    void Reset();
+    void reset();
 
-    void DrawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
+    void drawPrimitives(graphics::PrimitiveType primitive, uint64 vertexStart, uint64 vertexCount);
 
-    void SetPipelineState(PtrView<graphics::RenderPipelineState> state);
-    void SetViewport(Rect const& rect, float32 near, float32 far) noexcept;
-    void SetScissorRect(RectInt const&) noexcept;
+    void setPipelineState(PtrView<graphics::RenderPipelineState> state);
+    void setViewport(Rect const& rect, float32 near, float32 far) noexcept;
+    void setScissorRect(RectInt const&) noexcept;
 
-    [[nodiscard]] bool Valid() const noexcept;
+    [[nodiscard]] bool valid() const noexcept;
 
-    [[nodiscard]] MTL4::RenderCommandEncoder* MTLRenderCommandEncoder() const noexcept;
+    [[nodiscard]] MTL4::RenderCommandEncoder* mtlRenderCommandEncoder() const noexcept;
 };
 
-MTL4::RenderCommandEncoder* RenderCommandEncoder::MTLRenderCommandEncoder() const noexcept
+MTL4::RenderCommandEncoder* RenderCommandEncoder::mtlRenderCommandEncoder() const noexcept
 {
     return m_renderCommandEncoder;
 }

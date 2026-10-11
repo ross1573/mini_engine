@@ -44,25 +44,25 @@ private:
 public:
     explicit CommandQueue(PtrView<Device> device);
 
-    void Commit(PtrView<CommandBuffer const> commandBuffer);
-    void Commit(ArrayView<CommandBuffer const*> commandBuffers);
+    void commit(PtrView<CommandBuffer const> commandBuffer);
+    void commit(ArrayView<CommandBuffer const*> commandBuffers);
 
-    void AddResidencySet(PtrView<MTL::ResidencySet const> residencySet);
+    void addResidencySet(PtrView<MTL::ResidencySet const> residencySet);
 
-    void Wait(PtrView<Drawable const> drawable);
-    void Wait(PtrView<CommandQueue const> other);
-    void Signal(PtrView<Drawable const> drawable);
-    void Signal(PtrView<Event const> event, uint64 value);
+    void wait(PtrView<Drawable const> drawable);
+    void wait(PtrView<CommandQueue const> other);
+    void signal(PtrView<Drawable const> drawable);
+    void signal(PtrView<Event const> event, uint64 value);
 
-    [[nodiscard]] bool Valid() const noexcept { return m_commandQueue.Valid(); }
-    [[nodiscard]] uint64 EventValue() const noexcept { return m_eventValue; }
+    [[nodiscard]] bool valid() const noexcept { return m_commandQueue.valid(); }
+    [[nodiscard]] uint64 eventValue() const noexcept { return m_eventValue; }
 
-    [[nodiscard]] MTL4::CommandQueue* MTLCommandQueue() const noexcept { return m_commandQueue.Get(); }
-    [[nodiscard]] MTL::Event* MTLEvent() const noexcept { return m_event.MTLEvent(); }
+    [[nodiscard]] MTL4::CommandQueue* mtlCommandQueue() const noexcept { return m_commandQueue.get(); }
+    [[nodiscard]] MTL::Event* mtlEvent() const noexcept { return m_event.mtlEvent(); }
 
 private:
-    static SharedPtr<MTL4::CommitOptions> FeedbackHandlerOption();
-    static void HandleCommitFeedback(MTL4::CommitFeedback* feedback);
+    static SharedPtr<MTL4::CommitOptions> feedbackHandlerOption();
+    static void handleCommitFeedback(MTL4::CommitFeedback* feedback);
 };
 
 } // namespace mini::metal4

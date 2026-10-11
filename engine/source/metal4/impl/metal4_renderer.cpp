@@ -16,26 +16,26 @@ Renderer::Renderer(PtrView<Device> device)
 {
     ASSERT(device);
 
-    m_commandQueue = MakeUnique<CommandQueue>(device);
+    m_commandQueue = makeUnique<CommandQueue>(device);
     m_commandBufferAllocator =
-        MakeUnique<CommandBufferAllocator>(device, m_commandQueue, size_t{1}, options::bufferCount);
+        makeUnique<CommandBufferAllocator>(device, m_commandQueue, size_t{1}, options::bufferCount);
 
-    m_compiler = MakeUnique<Compiler>(device);
-    m_library = MakeUnique<ShaderLibrary>(device, "mini.metal.shader");
+    m_compiler = makeUnique<Compiler>(device);
+    m_library = makeUnique<ShaderLibrary>(device, "mini.metal.shader");
 
     m_frameValue = 0;
     for (size_t i = 0; i < options::bufferCount; ++i) {
-        m_frameQueue.PushBack(uint64{0});
+        m_frameQueue.pushBack(uint64{0});
     }
 }
 
-void Renderer::Prepare()
+void Renderer::prepare()
 {
-    SwapChain* swapChain = interface->GetSwapChain();
-    m_commandQueue->AddResidencySet(swapChain->CAMetalLayer()->residencySet());
+    SwapChain* swapChain = interface->swapChain();
+    m_commandQueue->addResidencySet(swapChain->caMetalLayer()->residencySet());
 
-    m_vertexFunction = MakeUnique<ShaderFunction>(m_library, "VertexMain");
-    m_fragmentFunction = MakeUnique<ShaderFunction>(m_library, "FragmentMain");
+    m_vertexFunction = makeUnique<ShaderFunction>(m_library, "VertexMain");
+    m_fragmentFunction = makeUnique<ShaderFunction>(m_library, "FragmentMain");
 
     graphics::RenderPipelineDescriptor pipelineDesc{
         {graphics::RenderPipelineTargetAttachment(graphics::PixelFormat::BGRA8unorm)},
@@ -43,27 +43,27 @@ void Renderer::Prepare()
         m_fragmentFunction,
     };
 
-    m_renderPipelineState = MakeUnique<RenderPipelineState>(m_compiler, pipelineDesc);
+    m_renderPipelineState = makeUnique<RenderPipelineState>(m_compiler, pipelineDesc);
     ASSERT(m_renderPipelineState);
 }
 
-void Renderer::Render()
+void Renderer::render()
 {
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
-    m_frameValue = m_frameQueue.PopFirst();
-    m_commandBufferAllocator->Wait(m_frameValue);
+    m_frameValue = m_frameQueue.popFirst();
+    m_commandBufferAllocator->wait(m_frameValue);
 
-    SwapChain* swapChain = interface->GetSwapChain();
-    Drawable* drawable = swapChain->Drawable();
-    UniquePtr<Texture> frameTexture = drawable->FrameTexture();
-    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferAllocator->Allocate();
+    SwapChain* swapChain = interface->swapChain();
+    Drawable* drawable = swapChain->drawable();
+    UniquePtr<Texture> frameTexture = drawable->frameTexture();
+    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferAllocator->allocate();
 
     graphics::RenderScopeTargetAttachment targetAttachment{
         frameTexture,
         graphics::LoadAction::Clear,
         graphics::StoreAction::Store,
-        Color::Clear(),
+        Color::clear(),
     };
 
     graphics::RenderScopeDescriptor renderPassDescriptor{
@@ -72,36 +72,35 @@ void Renderer::Render()
 
     // basic triangle pass
     {
-        UniquePtr<RenderCommandEncoder> renderEncoder =
-            commandBuffer->AllocateRenderCommandEncoder(renderPassDescriptor);
+        UniquePtr<RenderCommandEncoder> renderEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
-        renderEncoder->SetPipelineState(m_renderPipelineState);
-        renderEncoder->DrawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
+        renderEncoder->setPipelineState(m_renderPipelineState);
+        renderEncoder->drawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
     }
 
-    size_t frameValue = m_commandBufferAllocator->Commit(MoveArg(commandBuffer));
-    m_frameQueue.PushBack(frameValue);
+    size_t frameValue = m_commandBufferAllocator->commit(moveCast(commandBuffer));
+    m_frameQueue.pushBack(frameValue);
 }
 
-void Renderer::WaitForIdle()
+void Renderer::waitIdle()
 {
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
     // TODO
     SharedEvent sharedEvent(m_device);
-    m_commandQueue->Signal(memory::AddressOf(sharedEvent), 1);
-    sharedEvent.Wait(1);
+    m_commandQueue->signal(addressof(sharedEvent), 1);
+    sharedEvent.wait(1);
 }
 
-void Renderer::HandleRenderError(PtrView<NS::Error> error)
+void Renderer::handleRenderError(PtrView<NS::Error> error)
 {
-    Renderer* renderer = interface->GetRenderer();
+    Renderer* renderer = interface->renderer();
     ASSERT(renderer);
     ENSURE(error == nullptr,
            error,
            "failed on event value {}. (signaled: {}, presented: {})",
-           renderer->m_commandBufferAllocator->CommittedValue(),
-           renderer->m_commandBufferAllocator->SignaledValue(),
+           renderer->m_commandBufferAllocator->committedValue(),
+           renderer->m_commandBufferAllocator->signaledValue(),
            renderer->m_frameValue) { }
 }
 

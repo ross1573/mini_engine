@@ -15,7 +15,7 @@ namespace mini::d3d12 {
 
 SwapChainBuffer::SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* rtv)
     : resource(nullptr)
-    , descriptor{ }
+    , descriptor{}
     , rtvDesc(rtv)
 {
 }
@@ -23,10 +23,10 @@ SwapChainBuffer::SwapChainBuffer(D3D12_RENDER_TARGET_VIEW_DESC* rtv)
 SwapChain::SwapChain()
     : m_swapChain(nullptr)
     , m_buffers()
-    , m_swapChainDesc{ }
-    , m_sampleDesc{ }
-    , m_fullscreenDesc{ }
-    , m_rTVDesc{ }
+    , m_swapChainDesc{}
+    , m_sampleDesc{}
+    , m_fullscreenDesc{}
+    , m_rTVDesc{}
     , m_index(0)
     , m_vSync(0)
     , m_width(0)
@@ -34,15 +34,15 @@ SwapChain::SwapChain()
 {
     uint8 bufferCount = options::bufferCount;
     bool fullscreen = options::fullscreen;
-    m_vSync = options::vsync;
+    m_vSync = options::setVSync;
 
     SharedPtr<IDXGISwapChain1> swapChain;
-    auto window = interface->GetWindow();
-    auto factory = interface->GetDevice()->GetDXGIFactory();
-    auto renderer = interface->GetRenderer();
+    auto window = interface->window();
+    auto factory = interface->device()->GetDXGIFactory();
+    auto renderer = interface->renderer();
     auto commandQueue = renderer->GetCommandQueue()->GetD3D12CommandQueue();
 
-    RectInt size = window->GetSize();
+    RectInt size = window->size();
     m_width = static_cast<uint32>(size.width);
     m_height = static_cast<uint32>(size.height);
     ASSERT((m_width * m_height) > 0, "invalid width and height");
@@ -76,37 +76,37 @@ SwapChain::SwapChain()
         return;
     }
 
-    m_swapChain = DynamicCast<IDXGISwapChain3>(swapChain);
+    m_swapChain = dynamicCast<IDXGISwapChain3>(swapChain);
     ENSURE(m_swapChain, "IDXGISwapChain3 not supported") return;
 
     CreateBuffers(bufferCount);
 }
 
-void SwapChain::Present()
+void SwapChain::present()
 {
-    m_swapChain->Present(m_vSync, (m_vSync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
+    m_swapChain->present(m_vSync, (m_vSync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
     m_index = (uint8)m_swapChain->GetCurrentBackBufferIndex();
 }
 
-void SwapChain::ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen)
+void SwapChain::resizeFrameBuffer(uint32 width, uint32 height, bool fullscreen)
 {
     if (width * height <= 0) {
-        LogError("Cannot resize to {} x {}", width, height);
+        logError("Cannot resize to {} x {}", width, height);
         return;
     }
 
-    interface->GetRenderer()->WaitForIdle();
+    interface->renderer()->waitIdle();
 
     m_width = width;
     m_height = height;
     m_fullscreenDesc.Windowed = !fullscreen;
-    uint8 bufferCount = (uint8)m_buffers.Size();
+    uint8 bufferCount = (uint8)m_buffers.size();
 
     ReleaseBuffers();
     CreateBuffers(bufferCount);
 }
 
-void SwapChain::SetBackBufferCount(uint8 count)
+void SwapChain::resizeBufferCount(uint8 count)
 {
     ENSURE(count > 0 || count < MaxBackBuffer, "invalid swap chain count {}. max size is {}", count, MaxBackBuffer) {
         return;
@@ -116,17 +116,17 @@ void SwapChain::SetBackBufferCount(uint8 count)
     CreateBuffers(count);
 }
 
-void SwapChain::SetVSync(uint8 vSync)
+void SwapChain::setVSync(uint8 vSync)
 {
     m_vSync = vSync;
 }
 
-void SwapChain::SetFullScreen(bool fullscreen)
+void SwapChain::setFullScreen(bool fullscreen)
 {
-    interface->GetRenderer()->WaitForIdle();
+    interface->renderer()->waitIdle();
 
     if (FAILED(m_swapChain->SetFullscreenState(fullscreen, nullptr))) {
-        LogError("Failed to set fullscreen state");
+        logError("Failed to set fullscreen state");
     } else {
         m_fullscreenDesc.Windowed = !fullscreen;
     }
@@ -136,16 +136,16 @@ void SwapChain::SetFullScreen(bool fullscreen)
 
 void SwapChain::ReleaseBuffers()
 {
-    m_buffers.Clear();
+    m_buffers.clear();
     m_index = 0;
 }
 
 void SwapChain::CreateBuffers(uint8 count)
 {
-    ASSERT(m_buffers.Size() == 0, "swap chain buffer not released");
+    ASSERT(m_buffers.size() == 0, "swap chain buffer not released");
     ENSURE(m_width * m_height > 0, "invalid width and height") return;
 
-    Device* device = interface->GetDevice();
+    Device* device = interface->device();
     uint32 swapChainFlags = (m_vSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
     DXGI_FORMAT formatFlag = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -158,7 +158,7 @@ void SwapChain::CreateBuffers(uint8 count)
 
         m_swapChain->GetBuffer(i, IID_PPV_ARGS(&buffer.resource));
         device->CreateSwapChainBuffer(buffer);
-        m_buffers.PushBack(MoveArg(buffer));
+        m_buffers.pushBack(moveCast(buffer));
     }
 
     m_index = (uint8)m_swapChain->GetCurrentBackBufferIndex();

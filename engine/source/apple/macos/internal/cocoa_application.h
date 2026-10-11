@@ -15,22 +15,17 @@ public:
     Application();
     virtual ~Application() noexcept;
 
-    bool Valid() const noexcept;
+    bool valid() const noexcept { return m_application != nullptr; }
 
-    void Launch();
-    void PollEvents();
-    void AlertError(char const*);
+    void launch();
+    void pollEvents();
+    void alertError(char const*);
 
-    virtual void ApplicationWillFinishLaunching(NS::Notification*) = 0;
-    virtual void ApplicationDidFinishLaunching(NS::Notification*) = 0;
+    virtual void applicationWillFinishLaunching(NS::Notification*) = 0;
+    virtual void applicationDidFinishLaunching(NS::Notification*) = 0;
 
-    virtual void OnKeyDown(unsigned int keyCode) = 0;
+    virtual void onKeyDown(unsigned int keyCode) = 0;
 };
-
-inline bool Application::Valid() const noexcept
-{
-    return m_application != nullptr;
-}
 
 } // namespace mini::cocoa
 

@@ -14,64 +14,64 @@ Graphics::Graphics() noexcept
 
 Graphics::~Graphics() noexcept
 {
-    m_renderer.Reset();
-    m_swapChain.Reset();
-    m_device.Reset();
+    m_renderer.reset();
+    m_swapChain.reset();
+    m_device.reset();
 
-    m_currentAPI = API::Null;
+    m_currentAPI = Api::Null;
     graphics::interface = nullptr;
 }
 
-bool Graphics::LoadModule(StringView moduleName)
+bool Graphics::loadModule(StringView moduleName)
 {
-    m_currentModule.Load(moduleName);
+    m_currentModule.load(moduleName);
 
-    ENSURE(m_currentModule.Valid(), "failed to load graphics module") return false;
-    ENSURE(m_currentModule.GetInterface(), "module does not implement mini::graphics::Interface") return false;
+    ENSURE(m_currentModule.valid(), "failed to load graphics module") return false;
+    ENSURE(m_currentModule.interface(), "module does not implement mini::graphics::Interface") return false;
 
-    LogInfo("{} module loaded", moduleName);
+    logInfo("{} module loaded", moduleName);
 
-    m_device = UniquePtr(m_currentModule->CreateDevice());
+    m_device = UniquePtr(m_currentModule->createDevice());
     ENSURE(m_device, "failed to create graphic device") return false;
-    LogInfo("{} device created", moduleName);
+    logInfo("{} device created", moduleName);
 
-    m_currentAPI = m_device->GetAPI();
-    m_renderer = UniquePtr(m_device->CreateRenderer());
-    m_swapChain = UniquePtr(m_device->CreateSwapChain());
+    m_currentAPI = m_device->api();
+    m_renderer = UniquePtr(m_device->createRenderer());
+    m_swapChain = UniquePtr(m_device->createSwapChain());
 
-    m_renderer->Prepare();
+    m_renderer->prepare();
 
     ENSURE(m_renderer) return false;
     ENSURE(m_swapChain) return false;
-    LogInfo("{} initialized", moduleName);
+    logInfo("{} initialized", moduleName);
     return true;
 }
 
-void Graphics::RenderFrame()
+void Graphics::renderFrame()
 {
-    m_renderer->Render();
-    m_swapChain->Present();
+    m_renderer->render();
+    m_swapChain->present();
 }
 
-bool Graphics::IsDeviceCurrent() noexcept
+bool Graphics::current() noexcept
 {
-    return interface->GetDevice() != nullptr;
+    return interface->device() != nullptr;
 }
 
-bool Graphics::IsDeviceCurrent(API api) noexcept
+bool Graphics::current(Api api) noexcept
 {
-    return interface->GetDevice() != nullptr && interface->CurrentAPI() == api;
+    return interface->device() != nullptr && interface->api() == api;
 }
 
-void Graphics::ChangeResolution(uint32 width, uint32 height, bool fullscreen)
+void Graphics::changeResolution(uint32 width, uint32 height, bool fullscreen)
 {
-    SwapChain* swapChain = interface->GetSwapChain();
+    SwapChain* swapChain = interface->swapChain();
     if (swapChain == nullptr) [[unlikely]] {
-        // graphics::LogError("failed to change resolution. SwapChain is not initialized");
+        // graphics::logError("failed to change resolution. SwapChain is not initialized");
         return;
     }
 
-    swapChain->ResizeBackBuffer(width, height, fullscreen);
+    swapChain->resizeFrameBuffer(width, height, fullscreen);
 }
 
 } // namespace mini

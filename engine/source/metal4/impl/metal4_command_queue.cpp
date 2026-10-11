@@ -11,85 +11,85 @@ CommandQueue::CommandQueue(PtrView<Device> device)
 {
     ASSERT(device);
 
-    m_commandQueue = TransferShared(device->MTLDevice()->newMTL4CommandQueue());
+    m_commandQueue = transfer(device->mtlDevice()->newMTL4CommandQueue());
 }
 
-void CommandQueue::Commit(PtrView<CommandBuffer const> commandBuffer)
+void CommandQueue::commit(PtrView<CommandBuffer const> commandBuffer)
 {
     ASSERT(commandBuffer);
 
-    MTL4::CommandBuffer* buffer[] = {commandBuffer->MTLCommandBuffer()};
+    MTL4::CommandBuffer* buffer[] = {commandBuffer->mtlCommandBuffer()};
 
     if (options::gpuValidation) {
-        SharedPtr<MTL4::CommitOptions> option = FeedbackHandlerOption();
-        m_commandQueue->commit(buffer, 1, option.Get());
+        SharedPtr<MTL4::CommitOptions> option = feedbackHandlerOption();
+        m_commandQueue->commit(buffer, 1, option.get());
     } else {
         m_commandQueue->commit(buffer, 1);
     }
 
-    m_commandQueue->signalEvent(m_event.MTLEvent(), ++m_eventValue);
+    m_commandQueue->signalEvent(m_event.mtlEvent(), ++m_eventValue);
 }
 
-void CommandQueue::Commit(ArrayView<CommandBuffer const*> commandBuffers)
+void CommandQueue::commit(ArrayView<CommandBuffer const*> commandBuffers)
 {
-    if (commandBuffers.Size() == 0) [[unlikely]] {
+    if (commandBuffers.empty()) [[unlikely]] {
         return;
     }
 
-    m_commitBuffer.Reserve(commandBuffers.Size());
+    m_commitBuffer.reserve(commandBuffers.size());
     for (auto const& cmdBuf : commandBuffers) {
         ASSERT(cmdBuf);
-        m_commitBuffer.PushBack(cmdBuf->MTLCommandBuffer());
+        m_commitBuffer.pushBack(cmdBuf->mtlCommandBuffer());
     }
 
     if (options::gpuValidation) {
-        SharedPtr<MTL4::CommitOptions> option = FeedbackHandlerOption();
-        m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size(), option.Get());
+        SharedPtr<MTL4::CommitOptions> option = feedbackHandlerOption();
+        m_commandQueue->commit(m_commitBuffer.data(), m_commitBuffer.size(), option.get());
     } else {
-        m_commandQueue->commit(m_commitBuffer.Data(), m_commitBuffer.Size());
+        m_commandQueue->commit(m_commitBuffer.data(), m_commitBuffer.size());
     }
 
-    m_commandQueue->signalEvent(m_event.MTLEvent(), ++m_eventValue);
-    m_commitBuffer.Clear();
+    m_commandQueue->signalEvent(m_event.mtlEvent(), ++m_eventValue);
+    m_commitBuffer.clear();
 }
 
-void CommandQueue::AddResidencySet(PtrView<MTL::ResidencySet const> residencySet)
+void CommandQueue::addResidencySet(PtrView<MTL::ResidencySet const> residencySet)
 {
     m_commandQueue->addResidencySet(residencySet);
 }
 
-void CommandQueue::Wait(PtrView<Drawable const> drawable)
+void CommandQueue::wait(PtrView<Drawable const> drawable)
 {
     ASSERT(drawable);
 
-    m_commandQueue->wait(drawable->MTLDrawable());
+    m_commandQueue->wait(drawable->mtlDrawable());
 }
 
-void CommandQueue::Wait(PtrView<CommandQueue const> other)
+void CommandQueue::wait(PtrView<CommandQueue const> other)
 {
     ASSERT(other);
 
-    m_commandQueue->wait(other->m_event.MTLEvent(), other->m_eventValue);
+    m_commandQueue->wait(other->m_event.mtlEvent(), other->m_eventValue);
 }
 
-void CommandQueue::Signal(PtrView<Drawable const> drawable)
+void CommandQueue::signal(PtrView<Drawable const> drawable)
 {
     ASSERT(drawable);
 
-    m_commandQueue->signalDrawable(drawable->MTLDrawable());
+    m_commandQueue->signalDrawable(drawable->mtlDrawable());
 }
 
-void CommandQueue::Signal(PtrView<Event const> event, uint64 value)
+void CommandQueue::signal(PtrView<Event const> event, uint64 value)
 {
     ASSERT(event);
 
-    m_commandQueue->signalEvent(event->MTLEvent(), value);
+    m_commandQueue->signalEvent(event->mtlEvent(), value);
 }
 
-SharedPtr<MTL4::CommitOptions> CommandQueue::FeedbackHandlerOption()
+SharedPtr<MTL4::CommitOptions> CommandQueue::feedbackHandlerOption()
 {
-    SharedPtr<MTL4::CommitOptions> options = TransferShared(MTL4::CommitOptions::alloc()->init());
-    options->addFeedbackHandler(^(MTL4::CommitFeedback* feedback) { Renderer::HandleRenderError(feedback->error()); });
+    SharedPtr<MTL4::CommitOptions> options = transfer(MTL4::CommitOptions::alloc()->init());
+    options->addFeedbackHandler(^(MTL4::CommitFeedback* feedback) { Renderer::handleRenderError(feedback->error()); });
     return options;
 }
 

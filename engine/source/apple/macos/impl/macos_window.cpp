@@ -15,7 +15,7 @@ Window::Window(cocoa::Application* application)
 {
 }
 
-void Window::Resize(RectInt const&)
+void Window::resize([[maybe_unused]] RectInt const& windowSize)
 {
 }
 

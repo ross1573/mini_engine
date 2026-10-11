@@ -4,15 +4,21 @@ import mini.test;
 import convert_utf;
 
 #define TEST_CONVERT_UTF(from, to)           \
-    static_assert(TestConvertUTF(from, to)); \
-    TEST_ENSURE(TestConvertUTF(from, to));
+    static_assert(testConvertUTF(from, to)); \
+    TEST_ENSURE(testConvertUTF(from, to));
 
 #define TEST_STRING_CONVERT(from, to)           \
-    static_assert(TestStringConvert(from, to)); \
-    TEST_ENSURE(TestStringConvert(from, to));
+    static_assert(testStringConvert(from, to)); \
+    TEST_ENSURE(testStringConvert(from, to));
 
-using namespace mini;
-using namespace mini::test;
+using mini::BasicString;
+using mini::BasicStringConvert;
+using mini::BasicStringView;
+
+using mini::char16;
+using mini::char32;
+using mini::char8;
+using mini::wchar;
 
 constexpr char const* str = "hello world! 안녕하세요! おげんきですか";
 constexpr wchar const* wstr = L"hello world! 안녕하세요! おげんきですか";
@@ -21,26 +27,26 @@ constexpr char16 const* str16 = u"hello world! 안녕하세요! おげんきで�
 constexpr char32 const* str32 = U"hello world! 안녕하세요! おげんきですか";
 
 template <typename T, typename U>
-constexpr bool TestConvertUTF(T const* from, U const* to)
+constexpr bool testConvertUTF(T const* from, U const* to)
 {
     BasicString<T> src(from);
     BasicString<U> target(to);
 
-    size_t len = utf::ConvertLength(src.Data(), src.Data() + src.Size(), U(0));
+    size_t len = utf::ConvertLength(src.data(), src.data() + src.size(), U(0));
     BasicString<U> dst(U(0), len);
 
-    auto result = utf::Convert(src.Data(),
-                               src.Data() + src.Size(),
-                               dst.Data(),
-                               dst.Data() + dst.Size(),
+    auto result = utf::Convert(src.data(),
+                               src.data() + src.size(),
+                               dst.data(),
+                               dst.data() + dst.size(),
                                utf::ConversionFlags::StrictConversion);
     return result == utf::ConversionResult::ConversionOK && dst == target;
 }
 
 template <typename T, typename U>
-constexpr bool TestStringConvert(T const* from, U const* to)
+constexpr bool testStringConvert(T const* from, U const* to)
 {
-    BasicString<U> c = BasicStringConvert<U>(BasicString<T>(from)).ToString();
+    BasicString<U> c = BasicStringConvert<U>(BasicString<T>(from)).toString();
     if (c != to) {
         return false;
     }

@@ -12,7 +12,7 @@ namespace mini::bit {
 constexpr uint32 _clz(uint32 x)
 {
     if consteval {
-        return Clz(x);
+        return clz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -30,7 +30,7 @@ constexpr uint32 _clz(uint32 x)
 constexpr uint32 _clzll(uint64 x)
 {
     if consteval {
-        return Clz(x);
+        return clz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -61,13 +61,13 @@ constexpr uint32 _clzl(unsigned long x)
         return _clzll(x);
     }
 
-    return Clz(x);
+    return clz(x);
 }
 
 constexpr uint32 _ctz(uint32 x)
 {
     if consteval {
-        return Ctz(x);
+        return ctz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -85,7 +85,7 @@ constexpr uint32 _ctz(uint32 x)
 constexpr uint32 _ctzll(uint64 x)
 {
     if consteval {
-        return Ctz(x);
+        return ctz(x);
     }
 
 // TODO: optimize with AVX inst
@@ -112,7 +112,7 @@ constexpr uint32 _ctzl(unsigned long x)
         return _ctzll(x);
     }
 
-    return Ctz(x);
+    return ctz(x);
 }
 
 } // namespace mini::bit

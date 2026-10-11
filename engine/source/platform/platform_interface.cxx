@@ -19,8 +19,8 @@ protected:
     Platform* m_platform;
 
 public:
-    virtual Handle* CreateHandle() = 0;
-    virtual Window* CreateWindow() = 0;
+    [[nodiscard]] virtual Handle* createHandle() = 0;
+    [[nodiscard]] virtual Window* createWindow() = 0;
 
 protected:
     Interface() noexcept { m_platform = interface; }

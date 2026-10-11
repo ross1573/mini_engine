@@ -18,16 +18,16 @@ public:
     Engine();
     ~Engine() noexcept override;
 
-    void Launch();
-    void Shutdown();
+    void launch();
+    void shutdown();
 
-    static void Quit();
-    static void Abort(String const& = "");
+    static void quit();
+    static void abort(String const& = "");
 
-    static bool Running() noexcept;
-    static uint64 FrameCount() noexcept;
+    static bool running() noexcept;
+    static uint64 frameCount() noexcept;
 };
 
-ENGINE_API Engine* g_engine = nullptr;
+ENGINE_API Engine* instance = nullptr;
 
 } // namespace mini

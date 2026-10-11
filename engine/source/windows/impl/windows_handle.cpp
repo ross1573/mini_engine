@@ -37,29 +37,29 @@ Handle::Handle()
     RegisterClassExA(&wcex);
 }
 
-bool Handle::Valid() const noexcept
+bool Handle::valid() const noexcept
 {
     return m_instance != nullptr;
 }
 
-void Handle::PollEvents()
+void Handle::pollEvents()
 {
-    MSG msg{ };
+    MSG msg{};
 
     while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
 
         if (msg.message == WM_QUIT) {
-            Engine::Quit();
+            Engine::quit();
         }
     }
 }
 
-void Handle::AlertError(StringView const& msg)
+void Handle::alertError(StringView const& msg)
 {
-    HWND handle = interface->GetWindow()->GetHWND();
-    MessageBoxA(handle, msg.Data(), nullptr, MB_ICONERROR | MB_OK);
+    HWND handle = interface->window()->GetHWND();
+    MessageBoxA(handle, msg.data(), nullptr, MB_ICONERROR | MB_OK);
 }
 
 void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
@@ -72,13 +72,13 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
 
         case WM_KEYDOWN:
             switch (wParam) {
-                case VK_ESCAPE: Engine::Abort("escape"); break;
-                case 'Q':       Engine::Quit(); break;
+                case VK_ESCAPE: Engine::abort("escape"); break;
+                case 'Q':       Engine::quit(); break;
                 default:        break;
             }
             break;
 
-        case WM_SIZE: Graphics::ChangeResolution(LOWORD(lParam), HIWORD(lParam), false); break;
+        case WM_SIZE: Graphics::changeResolution(LOWORD(lParam), HIWORD(lParam), false); break;
 
         default: return;
     }
@@ -86,7 +86,7 @@ void Handle::ProcessMessage([[maybe_unused]] HWND hWnd,
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    Handle* handle = interface->GetHandle();
+    Handle* handle = interface->handle();
     handle->ProcessMessage(hWnd, message, wParam, lParam);
     return DefWindowProcA(hWnd, message, wParam, lParam);
 }

@@ -33,7 +33,7 @@ class Device;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::TextureType MTLTextureType(graphics::TextureType type) noexcept
+export METAL4_API constexpr MTL::TextureType mtlTextureType(graphics::TextureType type) noexcept
 {
     switch (type) {
         case graphics::TextureType::Texture1D:        return MTL::TextureType1D;
@@ -49,7 +49,7 @@ export METAL4_API constexpr MTL::TextureType MTLTextureType(graphics::TextureTyp
     return MTL::TextureType2D;
 }
 
-export METAL4_API constexpr MTL::TextureUsage MTLTextureUsage(graphics::TextureUsage usage) noexcept
+export METAL4_API constexpr MTL::TextureUsage mtlTextureUsage(graphics::TextureUsage usage) noexcept
 {
     switch (usage) {
         case graphics::TextureUsage::Undefined:    return MTL::TextureUsageUnknown;
@@ -62,7 +62,7 @@ export METAL4_API constexpr MTL::TextureUsage MTLTextureUsage(graphics::TextureU
     return MTL::TextureUsageUnknown;
 }
 
-export METAL4_API constexpr MTL::TextureSwizzle MTLTextureSwizzle(graphics::TextureSwizzle::Channel channel) noexcept
+export METAL4_API constexpr MTL::TextureSwizzle mtlTextureSwizzle(graphics::TextureSwizzle::Channel channel) noexcept
 {
     switch (channel) {
         case graphics::TextureSwizzle::Channel::Zero:  return MTL::TextureSwizzleZero;
@@ -79,7 +79,7 @@ export METAL4_API constexpr MTL::TextureSwizzle MTLTextureSwizzle(graphics::Text
     return MTL::TextureSwizzleZero;
 }
 
-export METAL4_API constexpr MTL::ResourceOptions MTLTextureResourceOptions(
+export METAL4_API constexpr MTL::ResourceOptions mtlTextureResourceOptions(
     graphics::TextureCacheMode cacheMode,
     graphics::TextureStorageMode storageMode) noexcept
 {
@@ -115,18 +115,18 @@ export METAL4_API constexpr MTL::ResourceOptions MTLTextureResourceOptions(
     return options;
 }
 
-export METAL4_API constexpr MTL::TextureSwizzleChannels MTLTextureSwizzleChannels(
+export METAL4_API constexpr MTL::TextureSwizzleChannels mtlTextureSwizzleChannels(
     graphics::TextureSwizzle swizzle) noexcept
 {
     return MTL::TextureSwizzleChannels{
-        MTLTextureSwizzle(swizzle.red),
-        MTLTextureSwizzle(swizzle.green),
-        MTLTextureSwizzle(swizzle.blue),
-        MTLTextureSwizzle(swizzle.alpha),
+        mtlTextureSwizzle(swizzle.red),
+        mtlTextureSwizzle(swizzle.green),
+        mtlTextureSwizzle(swizzle.blue),
+        mtlTextureSwizzle(swizzle.alpha),
     };
 }
 
-export METAL4_API SharedPtr<MTL::TextureDescriptor> MTLTextureDescriptor(graphics::TextureDescriptor const& descriptor);
+export METAL4_API SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescriptor const& descriptor);
 
 export class METAL4_API Texture
     : public graphics::Texture
@@ -136,14 +136,14 @@ public:
     Texture(PtrView<Device> device, graphics::TextureDescriptor const& descriptor);
     ~Texture() noexcept override = default;
 
-    [[nodiscard]] uint64 GpuAddress() const override;
+    [[nodiscard]] uint64 gpuAddress() const override;
 
-    [[nodiscard]] MTL::Texture* MTLTexture() const noexcept { return static_cast<MTL::Texture*>(m_resource.Get()); }
+    [[nodiscard]] MTL::Texture* mtlTexture() const noexcept { return static_cast<MTL::Texture*>(m_resource.get()); }
 };
 
-uint64 Texture::GpuAddress() const
+uint64 Texture::gpuAddress() const
 {
-    return static_cast<uint64>(MTLTexture()->gpuResourceID()._impl);
+    return static_cast<uint64>(mtlTexture()->gpuResourceID()._impl);
 }
 
 } // namespace mini::metal4

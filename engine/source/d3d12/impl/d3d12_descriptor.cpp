@@ -7,8 +7,8 @@ import :descriptor;
 namespace mini::d3d12 {
 
 DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 incrementSize)
-    : m_heap(MoveArg(heap))
-    , m_cpuHeapStart{ .ptr = 0 }
+    : m_heap(moveCast(heap))
+    , m_cpuHeapStart{.ptr = 0}
     , m_incrementSize(incrementSize)
     , m_currentIndex(0)
 {
@@ -18,7 +18,7 @@ DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 in
     m_cpuHeapStart = m_heap->GetCPUDescriptorHandleForHeapStart();
 }
 
-bool DescriptorHeap::Allocate(CPUOffsetT& offset)
+bool DescriptorHeap::allocate(CPUOffsetT& offset)
 {
     offset = GetOffset(m_currentIndex++);
     return true;
@@ -33,7 +33,7 @@ bool DescriptorHeap::Allocate(CPUOffsetT& offset)
     //}
 }
 
-void DescriptorHeap::Deallocate(CPUOffsetT)
+void DescriptorHeap::deallocate(CPUOffsetT)
 {
     // TODO
 }
@@ -41,13 +41,13 @@ void DescriptorHeap::Deallocate(CPUOffsetT)
 DescriptorHeap::CPUOffsetT DescriptorHeap::GetOffset(uint32 index) const noexcept
 {
     SIZE_T ptr = m_cpuHeapStart.ptr + ((SIZE_T)index * (SIZE_T)m_incrementSize);
-    return D3D12_CPU_DESCRIPTOR_HANDLE{ .ptr = ptr };
+    return D3D12_CPU_DESCRIPTOR_HANDLE{.ptr = ptr};
 }
 
 DescriptorAllocator::DescriptorAllocator(HeapTypeT type, uint32 size)
     : m_device(nullptr)
     , m_heapList(1)
-    , m_heapDesc{ }
+    , m_heapDesc{}
     , m_incrementSize(0)
 {
     m_heapDesc.Type = type;
@@ -65,23 +65,23 @@ bool DescriptorAllocator::Initialize(ID3D12Device* device)
     return AllocateHeap();
 }
 
-Descriptor DescriptorAllocator::Allocate()
+Descriptor DescriptorAllocator::allocate()
 {
-    CPUOffsetT offset = { .ptr = 0 };
-    for (size_t i = 0; i < m_heapList.Size(); ++i) {
-        if (m_heapList[i].Allocate(offset)) {
-            return { .offset = offset, .heapIndex = i };
+    CPUOffsetT offset = {.ptr = 0};
+    for (size_t i = 0; i < m_heapList.size(); ++i) {
+        if (m_heapList[i].allocate(offset)) {
+            return {.offset = offset, .heapIndex = i};
         }
     }
 
     ASSERT(false, "failed to allocate descriptor");
-    return { .offset = offset, .heapIndex = size_t(-1) };
+    return {.offset = offset, .heapIndex = size_t(-1)};
 }
 
-void DescriptorAllocator::Deallocate(Descriptor desc)
+void DescriptorAllocator::deallocate(Descriptor desc)
 {
-    ASSERT(m_heapList.Size() > desc.heapIndex);
-    m_heapList[desc.heapIndex].Deallocate(desc.offset);
+    ASSERT(m_heapList.size() > desc.heapIndex);
+    m_heapList[desc.heapIndex].deallocate(desc.offset);
 }
 
 bool DescriptorAllocator::AllocateHeap()
@@ -91,7 +91,7 @@ bool DescriptorAllocator::AllocateHeap()
         return false;
     }
 
-    m_heapList.PushBack(MoveArg(heap), m_incrementSize);
+    m_heapList.pushBack(moveCast(heap), m_incrementSize);
     return true;
 }
 

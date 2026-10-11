@@ -11,7 +11,7 @@ extern "C" int __stdcall wWinMain(void*, void*, wchar_t*, int)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    mini::Launch();
+    mini::launch();
 
 #if DEBUG
     ASSERT(_CrtCheckMemory());

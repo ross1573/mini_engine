@@ -7,7 +7,7 @@ import :module_initializer;
 extern "C" void __mini_core_start_module()
 {
     auto loader = []() constexpr static -> mini::ModuleInterface* { return new mini::Core(); };
-    mini::StaticModuleInitializer::Register("mini.core", loader);
+    mini::StaticModuleInitializer::registerUninitialized("mini.core", loader);
 }
 #else
 extern "C" CORE_API mini::ModuleInterface* __start_module()

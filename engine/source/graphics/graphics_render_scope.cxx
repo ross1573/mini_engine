@@ -45,7 +45,7 @@ public:
 
 export struct GRAPHICS_API RenderScopeTargetAttachment : public RenderScopeAttachment {
 public:
-    Color clearColor = Color::Clear();
+    Color clearColor = Color::clear();
 
 public:
     RenderScopeTargetAttachment() noexcept = default;

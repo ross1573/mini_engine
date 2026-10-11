@@ -13,8 +13,8 @@ namespace mini::debug {
 //       standard like strings aren't allowed
 export template <typename T>
 concept AssertFormatStringT = requires(T fmt) {
-    { fmt.Data() } -> ConvertibleToT<char const*>;
-    { fmt.Size() } -> ConvertibleToT<size_t>;
+    { fmt.data() } -> ConvertibleToT<char const*>;
+    { fmt.size() } -> ConvertibleToT<size_t>;
 };
 
 export struct ASSERT_API AssertFormatString {
@@ -31,7 +31,7 @@ public:
 
     constexpr AssertFormatString(char const* str) noexcept
         : data(str)
-        , size(memory::StringLength(str))
+        , size(memory::strlen(str))
     {
     }
 };
@@ -67,7 +67,7 @@ public:
 
     template <AssertFormatStringT T>
     constexpr AssertFormatContext(T str, SourceLocation loc = SourceLocation::current()) noexcept
-        : message(static_cast<char const*>(str.Data()), static_cast<size_t>(str.Size()))
+        : message(static_cast<char const*>(str.data()), static_cast<size_t>(str.size()))
         , location(loc)
     {
     }
@@ -77,25 +77,25 @@ constexpr size_t assertFormatMaxLength = 1024;
 ASSERT_API char const* assertExprCategory = "expression";
 
 extern "C++" { // format function which can be used on other modules
-ASSERT_API size_t FormatHex(char* dest, char const* destEnd, uint64 src) noexcept;
-ASSERT_API size_t FormatInt(char* dest, char const* destEnd, int32 src) noexcept;
-ASSERT_API size_t FormatSourceLocation(char* dest, char const* destEnd, SourceLocation const& loc) noexcept;
-ASSERT_API size_t FormatAssertLine(char* dest, char const* destEnd, char const** src, size_t count) noexcept;
-ASSERT_API size_t FormatAssertString(char* dest, char const* destEnd, char const* src) noexcept;
+ASSERT_API size_t formatHex(char* dest, char const* destEnd, uint64 src) noexcept;
+ASSERT_API size_t formatInt(char* dest, char const* destEnd, int32 src) noexcept;
+ASSERT_API size_t formatSourceLocation(char* dest, char const* destEnd, SourceLocation const& loc) noexcept;
+ASSERT_API size_t formatAssertLine(char* dest, char const* destEnd, char const** src, size_t count) noexcept;
+ASSERT_API size_t formatAssertString(char* dest, char const* destEnd, char const* src) noexcept;
 }
-[[no_inline]] ASSERT_API AssertFormatResult FormatAssert(char const* category,
+[[no_inline]] ASSERT_API AssertFormatResult formatAssert(char const* category,
                                                          char const* content,
                                                          char const* message,
                                                          SourceLocation location) noexcept;
 
 export template <typename... Args>
-AssertFormatResult FormatAssert(char const* category,
+AssertFormatResult formatAssert(char const* category,
                                 char const* content,
                                 AssertFormatContext const& ctx,
                                 Args&&... args) noexcept
 {
     if constexpr (sizeof...(Args) == 0) {
-        return FormatAssert(category, content, ctx.message.data, ctx.location);
+        return formatAssert(category, content, ctx.message.data, ctx.location);
     }
 
     thread_local char fmtBuffer[assertFormatMaxLength] = {0};
@@ -104,10 +104,10 @@ AssertFormatResult FormatAssert(char const* category,
         fmt::vformat_to_n(fmtBuffer, assertFormatMaxLength, fmtMessage, fmt::make_format_args(args...));
     } catch (fmt::format_error const& error) {
         char const* fmtError[] = {"format failed with error: ", error.what()};
-        FormatAssertLine(fmtBuffer, fmtBuffer + assertFormatMaxLength, fmtError, sizeof(fmtError));
+        formatAssertLine(fmtBuffer, fmtBuffer + assertFormatMaxLength, fmtError, sizeof(fmtError));
     }
 
-    return FormatAssert(category, content, fmtBuffer, ctx.location);
+    return formatAssert(category, content, fmtBuffer, ctx.location);
 }
 
 } // namespace mini::debug

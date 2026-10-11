@@ -6,68 +6,66 @@
 
 import mini.test;
 
-using namespace mini;
-
-template <FloatingT T>
+template <mini::FloatingT T>
 int TestMin(T a, T b)
 {
-    TEST_ENSURE(Min(a, b) == std::min(a, b));
+    TEST_ENSURE(mini::min(a, b) == std::min(a, b));
     return 0;
 }
 
-template <FloatingT T>
+template <mini::FloatingT T>
 int TestMax(T a, T b)
 {
-    TEST_ENSURE(Max(a, b) == std::max(a, b));
+    TEST_ENSURE(mini::max(a, b) == std::max(a, b));
     return 0;
 }
 
-template <ArithmeticT T>
+template <mini::ArithmeticT T>
 int TestAbs(T a)
 {
-    TEST_ENSURE(Abs(a) == std::abs(a));
+    TEST_ENSURE(mini::abs(a) == std::abs(a));
     return 0;
 }
 
-template <FloatingT T>
+template <mini::FloatingT T>
 int TestPow(T a, T b)
 {
-    TEST_ENSURE(Pow(a, b) == std::pow(a, b));
+    TEST_ENSURE(mini::pow(a, b) == std::pow(a, b));
     return 0;
 }
 
-template <IntegralT T, IntegralT U>
+template <mini::IntegralT T, mini::IntegralT U>
 int TestPowInt(T a, U b)
 {
-    TEST_ENSURE(PowInt(a, b) == static_cast<int64>(std::pow(a, b)));
+    TEST_ENSURE(mini::pow(a, b) == static_cast<mini::int64>(std::pow(a, b)));
     return 0;
 }
 
-template <IntegralT T>
+template <mini::IntegralT T>
 int TestSqrt(T a)
 {
-    TEST_ENSURE(Sqrt(a) == static_cast<float>(std::sqrt(a)));
+    TEST_ENSURE(mini::sqrt(a) == static_cast<float>(std::sqrt(a)));
     return 0;
 }
 
-template <FloatingT T>
+template <mini::FloatingT T>
 int TestSqrt(T a)
 {
-    TEST_ENSURE(Sqrt(a) == std::sqrt(a));
+    TEST_ENSURE(mini::sqrt(a) == std::sqrt(a));
     return 0;
 }
 
-template <IntegralT T, IntegralT U>
+template <mini::IntegralT T, mini::IntegralT U>
 int TestGcd(T a, U b)
 {
-    TEST_ENSURE(Gcd(a, b) == std::gcd(a, b));
+    TEST_ENSURE(mini::gcd(a, b) == std::gcd(a, b));
     return 0;
 }
 
-template <IntegralT T, IntegralT U>
+template <mini::IntegralT T, mini::IntegralT U>
 int TestLcm(T a, U b)
 {
-    TEST_ENSURE(Lcm(a, b) == std::lcm(a, b));
+    TEST_ENSURE(mini::lcm(a, b) == std::lcm(a, b));
     return 0;
 }
 

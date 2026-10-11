@@ -21,16 +21,16 @@ import mini.test;
 template <mini::size_t MilliSecT>
 void MiniClock()
 {
-    mini::Clock::TimePoint start = mini::Clock::Now();
+    mini::Clock::TimePoint start = mini::Clock::now();
 
     if constexpr (MilliSecT != 0) {
         SLEEP(MilliSecT);
     }
 
-    mini::Clock::TimePoint end = mini::Clock::Now();
+    mini::Clock::TimePoint end = mini::Clock::now();
     mini::Clock::Duration diff = end - start;
 
-    mini::test::LogInfo("[{}ms] Elapsed: {}ns", MilliSecT, diff.Count());
+    mini::test::logInfo("[{}ms] Elapsed: {}ns", MilliSecT, diff.count());
     static_assert(mini::SameAsT<decltype(diff), mini::Nanoseconds>);
 }
 
@@ -46,7 +46,7 @@ void StdClock()
     auto end = std::chrono::high_resolution_clock::now();
     auto diff = end - start;
 
-    mini::test::LogInfo("[{}ms] Standard Elapsed: {}ns", MilliSecT, diff.count());
+    mini::test::logInfo("[{}ms] Standard Elapsed: {}ns", MilliSecT, diff.count());
     static_assert(mini::SameAsT<decltype(diff), std::chrono::nanoseconds>);
 }
 

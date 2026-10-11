@@ -20,26 +20,25 @@ public:
     Window(cocoa::Application*);
     ~Window() noexcept = default;
 
-    bool Valid() const noexcept final { return Base::Valid(); }
+    void resize(RectInt const& windowSize) final;
+    void minimize() final { Base::minimize(); }
+    void maximize() final { Base::maximize(); }
+    void show() final { Base::show(); }
+    void hide() final { Base::hide(); }
+    void setFullScreen(bool active) final { Base::setFullScreen(active); }
+    void setMetalLayer(CA::MetalLayer* layer) final { Base::setMetalLayer(layer); }
 
-    void Resize(RectInt const& windowSize) final;
-    void Minimize() final { Base::Minimize(); }
-    void Maximize() final { Base::Maximize(); }
-    void Show() final { Base::Show(); }
-    void Hide() final { Base::Hide(); }
+    [[nodiscard]] bool valid() const noexcept final { return Base::valid(); }
+    [[nodiscard]] bool minimized() const final { return Base::minimized(); }
+    [[nodiscard]] bool maximized() const final { return Base::maximized(); }
+    [[nodiscard]] bool fullScreen() const final { return Base::fullScreen(); }
 
-    bool IsMinimized() const final { return Base::IsMinimized(); }
-    bool IsMaximized() const final { return Base::IsMaximized(); }
-    bool IsFullScreen() const { return Base::IsFullScreen(); }
-
-    void SetFullScreen(bool active) final { Base::SetFullScreen(active); }
-    void SetMetalLayer(CA::MetalLayer* layer) final { Base::SetMetalLayer(layer); }
-    RectInt GetSize() const final { return RectInt::Zero(); }
-    NSWindow* GetNSWindow() { return m_window; }
+    [[nodiscard]] RectInt size() const final { return RectInt::zero(); }
+    [[nodiscard]] NSWindow* nsWindow() { return m_window; }
 
 private:
-    bool ShouldClose() final { return true; }
-    void WillClose() final { Engine::Quit(); }
+    bool shouldClose() final { return true; }
+    void willClose() final { Engine::quit(); }
 };
 
 } // namespace mini::macos

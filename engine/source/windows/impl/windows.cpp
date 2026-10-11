@@ -16,22 +16,22 @@ Windows::~Windows() noexcept
     windows::interface = nullptr;
 }
 
-windows::Handle* Windows::GetHandle() noexcept
+windows::Handle* Windows::handle() noexcept
 {
-    return static_cast<windows::Handle*>(m_platform->GetHandle());
+    return static_cast<windows::Handle*>(m_platform->handle());
 }
 
-windows::Window* Windows::GetWindow() noexcept
+windows::Window* Windows::window() noexcept
 {
-    return static_cast<windows::Window*>(m_platform->GetWindow());
+    return static_cast<windows::Window*>(m_platform->window());
 }
 
-platform::Handle* Windows::CreateHandle()
+platform::Handle* Windows::createHandle()
 {
     return new windows::Handle();
 }
 
-platform::Window* Windows::CreateWindow()
+platform::Window* Windows::createWindow()
 {
     return new windows::Window();
 }

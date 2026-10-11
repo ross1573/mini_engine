@@ -13,7 +13,7 @@ constexpr char const* longStr = "Hello world from long string!";
 
 import mini.core;
 
-using namespace mini;
+using mini::String;
 
 void NoOp(benchmark::State& state)
 {
@@ -105,7 +105,7 @@ void CtorCopy_std(benchmark::State& state)
 void CtorMove(benchmark::State& state)
 {
     for (auto _ : state) {
-        String str(String{ shortStr });
+        String str(String{shortStr});
         benchmark::DoNotOptimize(str);
     }
 }
@@ -113,7 +113,7 @@ void CtorMove(benchmark::State& state)
 void CtorMove_std(benchmark::State& state)
 {
     for (auto _ : state) {
-        std::string str(std::string{ shortStr });
+        std::string str(std::string{shortStr});
         benchmark::DoNotOptimize(str);
     }
 }
@@ -122,7 +122,7 @@ void CtorIter(benchmark::State& state)
 {
     String str(shortStr);
     for (auto _ : state) {
-        String str2(str.Begin(), str.End());
+        String str2(str.begin(), str.end());
         benchmark::DoNotOptimize(str2);
     }
 }
@@ -213,9 +213,9 @@ void AssignMove(benchmark::State& state)
     String str(longStr);
     for (auto _ : state) {
         String str2;
-        str2 = MoveArg(str);
+        str2 = moveCast(str);
         benchmark::DoNotOptimize(str2);
-        str = MoveArg(str2);
+        str = moveCast(str2);
     }
 }
 
@@ -224,9 +224,9 @@ void AssignMove_std(benchmark::State& state)
     std::string str(longStr);
     for (auto _ : state) {
         std::string str2;
-        str2 = MoveArg(str);
+        str2 = moveCast(str);
         benchmark::DoNotOptimize(str2);
-        str = MoveArg(str2);
+        str = moveCast(str2);
     }
 }
 
@@ -270,7 +270,7 @@ void AppendShort(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
-        str.Append(shortStr);
+        str.append(shortStr);
         benchmark::DoNotOptimize(str);
     }
 }
@@ -288,8 +288,8 @@ void AppendLong(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
-        str.Append(shortStr);
-        str.Append(longStr);
+        str.append(shortStr);
+        str.append(longStr);
         benchmark::DoNotOptimize(str);
     }
 }
@@ -308,7 +308,7 @@ void InsertShort(benchmark::State& state)
 {
     for (auto _ : state) {
         String str(static_cast<char>(42), 3);
-        str.Insert(0, shortStr);
+        str.insert(0, shortStr);
         benchmark::DoNotOptimize(str);
     }
 }
@@ -326,8 +326,8 @@ void InsertLong(benchmark::State& state)
 {
     for (auto _ : state) {
         String str;
-        str.Insert(0, shortStr);
-        str.Insert(5, longStr);
+        str.insert(0, shortStr);
+        str.insert(5, longStr);
         benchmark::DoNotOptimize(str);
     }
 }

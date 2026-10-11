@@ -27,13 +27,13 @@ public:
     explicit constexpr Vector3Int(Vector3 const& vec) noexcept;
     explicit constexpr Vector3Int(Int32ConvertibleT auto val) noexcept;
 
-    [[nodiscard]] /*constexpr*/ float32 Length() const noexcept;
-    [[nodiscard]] constexpr size_t LengthSquared() const noexcept;
+    [[nodiscard]] /*constexpr*/ float32 length() const noexcept;
+    [[nodiscard]] constexpr size_t lengthSquared() const noexcept;
 
-    constexpr void Clamp(Vector3Int const& min, Vector3Int const& max) noexcept;
+    constexpr void clamp(Vector3Int const& min, Vector3Int const& max) noexcept;
 
-    static /*constexpr*/ float32 Distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
-    static constexpr size_t DistanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
+    static /*constexpr*/ float32 distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
+    static constexpr size_t distanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
 
     constexpr Vector3Int& operator+=(Vector3Int const& vec) noexcept;
     constexpr Vector3Int& operator-=(Vector3Int const& vec) noexcept;
@@ -49,17 +49,17 @@ public:
     constexpr explicit operator Vector2() const noexcept;
     constexpr explicit operator Vector3() const noexcept;
 
-    static constexpr Vector3Int Zero() noexcept { return { 0, 0, 0 }; }
-    static constexpr Vector3Int One() noexcept { return { 1, 1, 1 }; }
-    static constexpr Vector3Int UnitX() noexcept { return { 1, 0, 0 }; }
-    static constexpr Vector3Int UnitY() noexcept { return { 0, 1, 0 }; }
-    static constexpr Vector3Int UnitZ() noexcept { return { 0, 0, 1 }; }
-    static constexpr Vector3Int Up() noexcept { return { 0, 1, 0 }; }
-    static constexpr Vector3Int Down() noexcept { return { 0, -1, 0 }; }
-    static constexpr Vector3Int Left() noexcept { return { -1, 0, 0 }; }
-    static constexpr Vector3Int Right() noexcept { return { 1, 0, 0 }; }
-    static constexpr Vector3Int Forward() noexcept { return { 0, 0, 1 }; }
-    static constexpr Vector3Int Backward() noexcept { return { 0, 0, -1 }; }
+    static constexpr Vector3Int zero() noexcept { return {0, 0, 0}; }
+    static constexpr Vector3Int one() noexcept { return {1, 1, 1}; }
+    static constexpr Vector3Int unitX() noexcept { return {1, 0, 0}; }
+    static constexpr Vector3Int unitY() noexcept { return {0, 1, 0}; }
+    static constexpr Vector3Int unitZ() noexcept { return {0, 0, 1}; }
+    static constexpr Vector3Int up() noexcept { return {0, 1, 0}; }
+    static constexpr Vector3Int down() noexcept { return {0, -1, 0}; }
+    static constexpr Vector3Int left() noexcept { return {-1, 0, 0}; }
+    static constexpr Vector3Int right() noexcept { return {1, 0, 0}; }
+    static constexpr Vector3Int forward() noexcept { return {0, 0, 1}; }
+    static constexpr Vector3Int backward() noexcept { return {0, 0, -1}; }
 };
 
 export constexpr Vector3Int operator+(Vector3Int const& lhs, Vector3Int const& rhs) noexcept;
@@ -103,31 +103,31 @@ constexpr Vector3Int::Vector3Int(Int32ConvertibleT auto val) noexcept
 {
 }
 
-inline /*constexpr*/ float32 Vector3Int::Length() const noexcept
+inline /*constexpr*/ float32 Vector3Int::length() const noexcept
 {
-    return Sqrt(static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u)));
+    return sqrt(static_cast<size_t>(pow(x, 2u) + pow(y, 2u) + pow(z, 2u)));
 }
 
-constexpr size_t Vector3Int::LengthSquared() const noexcept
+constexpr size_t Vector3Int::lengthSquared() const noexcept
 {
-    return static_cast<size_t>(PowInt(x, 2u) + PowInt(y, 2u) + PowInt(z, 2u));
+    return static_cast<size_t>(pow(x, 2u) + pow(y, 2u) + pow(z, 2u));
 }
 
-constexpr void Vector3Int::Clamp(Vector3Int const& min, Vector3Int const& max) noexcept
+constexpr void Vector3Int::clamp(Vector3Int const& min, Vector3Int const& max) noexcept
 {
     x = (x < min.x) ? min.x : ((x > max.x) ? max.x : x);
     y = (y < min.y) ? min.y : ((y > max.y) ? max.y : y);
     z = (z < min.z) ? min.z : ((z > max.z) ? max.z : z);
 }
 
-inline /*constexpr*/ float32 Vector3Int::Distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
+inline /*constexpr*/ float32 Vector3Int::distance(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
-    return (lhs - rhs).Length();
+    return (lhs - rhs).length();
 }
 
-constexpr size_t Vector3Int::DistanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
+constexpr size_t Vector3Int::distanceSquared(Vector3Int const& lhs, Vector3Int const& rhs) noexcept
 {
-    return (lhs - rhs).LengthSquared();
+    return (lhs - rhs).lengthSquared();
 }
 
 constexpr Vector3Int& Vector3Int::operator+=(Vector3Int const& vec) noexcept
@@ -166,12 +166,12 @@ constexpr Vector3Int& Vector3Int::operator/=(Int32ConvertibleT auto val) noexcep
 
 constexpr Vector3Int Vector3Int::operator+() const noexcept
 {
-    return { x, y, z };
+    return {x, y, z};
 }
 
 constexpr Vector3Int Vector3Int::operator-() const noexcept
 {
-    return { -x, -y, -z };
+    return {-x, -y, -z};
 }
 
 constexpr bool Vector3Int::operator==(Vector3Int const& other) const noexcept
@@ -181,7 +181,7 @@ constexpr bool Vector3Int::operator==(Vector3Int const& other) const noexcept
 
 constexpr Vector3Int::operator Vector2Int() const noexcept
 {
-    return { x, y };
+    return {x, y};
 }
 
 constexpr Vector3Int::operator Vector2() const noexcept

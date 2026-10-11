@@ -7,10 +7,10 @@ function (generate_static_init target)
     generate_api_name(${target} API ${arg_API} PREFIX ${arg_PREFIX})
 
     if (NOT DEFINED args_INITIALIZE OR arg_INITIALIZE STREQUAL "")
-        set(args_INITIALIZE "StaticInitialize")
+        set(args_INITIALIZE "staticInitialize")
     endif()
     if (NOT DEFINED args_CLEANUP OR args_CLEANUP STREQUAL "")
-        set(args_CLEANUP "StaticCleanup")
+        set(args_CLEANUP "staticCleanup")
     endif()
 
     get_property(static_init GLOBAL PROPERTY STATIC_INIT)

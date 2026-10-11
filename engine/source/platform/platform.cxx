@@ -20,12 +20,12 @@ public:
     Platform() noexcept;
     ~Platform() noexcept;
 
-    void PollEvents();
+    void pollEvents();
 
-    Handle* GetHandle() const noexcept { return m_handle.Get(); }
-    Window* GetWindow() const noexcept { return m_window.Get(); }
+    [[nodiscard]] Handle* handle() const noexcept { return m_handle.get(); }
+    [[nodiscard]] Window* window() const noexcept { return m_window.get(); }
 
-    static void AlertError(StringView const&);
+    static void alertError(StringView const&);
 };
 
 } // namespace mini

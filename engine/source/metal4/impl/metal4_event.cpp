@@ -10,52 +10,52 @@ Event::Event(SharedPtr<MTL::Event> const& event) noexcept
 }
 
 Event::Event(SharedPtr<MTL::Event>&& event) noexcept
-    : m_event(MoveArg(event))
+    : m_event(moveCast(event))
 {
 }
 
 Event::Event(PtrView<Device> device)
 {
     ASSERT(device);
-    m_event = TransferShared(device->MTLDevice()->newEvent());
+    m_event = transfer(device->mtlDevice()->newEvent());
 }
 
 SharedEvent::SharedEvent(PtrView<Device> device)
     : m_signaledValue(0)
 {
     ASSERT(device);
-    m_event = TransferShared<MTL::Event>(device->MTLDevice()->newSharedEvent());
+    m_event = transfer<MTL::Event>(device->mtlDevice()->newSharedEvent());
 }
 
-void SharedEvent::Wait(uint64 value, Milliseconds timeout)
+void SharedEvent::wait(uint64 value, Milliseconds timeout)
 {
     if (m_signaledValue >= value) {
         return;
     }
 
-    m_signaledValue = MTLSharedEvent()->signaledValue();
+    m_signaledValue = mtlSharedEvent()->signaledValue();
     if (m_signaledValue >= value) {
         return;
     }
 
-    size_t tick = static_cast<size_t>(timeout.Count());
-    MTLSharedEvent()->waitUntilSignaledValue(value, tick);
+    size_t tick = static_cast<size_t>(timeout.count());
+    mtlSharedEvent()->waitUntilSignaledValue(value, tick);
 }
 
-bool SharedEvent::Signal(uint64 value)
+bool SharedEvent::signal(uint64 value)
 {
     if (m_signaledValue >= value) {
         return false;
     }
 
-    MTLSharedEvent()->setSignaledValue(value);
+    mtlSharedEvent()->setSignaledValue(value);
     m_signaledValue = value;
     return true;
 }
 
-uint64 SharedEvent::SignaledValue()
+uint64 SharedEvent::signaledValue()
 {
-    m_signaledValue = MTLSharedEvent()->signaledValue();
+    m_signaledValue = mtlSharedEvent()->signaledValue();
     return m_signaledValue;
 }
 

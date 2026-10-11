@@ -33,24 +33,24 @@ struct AtomicWaitableT<T> : TrueT {
     typedef uint64 Type;
 };
 
-inline void AtomicRelax()
+inline void atomicRelax()
 {
     PAUSE();
 }
 
-inline void WaitOnAddress(AtomicContention const volatile* addr, AtomicContention value, size_t size)
+inline void waitOnAddress(AtomicContention const volatile* addr, AtomicContention value, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wait_on_address(loc, value, size, OS_SYNC_WAIT_ON_ADDRESS_NONE);
 }
 
-inline void NotifyOnAddress(AtomicContention const volatile* addr, size_t size)
+inline void notifyOnAddress(AtomicContention const volatile* addr, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wake_by_address_any(loc, size, OS_SYNC_WAKE_BY_ADDRESS_NONE);
 }
 
-inline void NotifyAllOnAddress(AtomicContention const volatile* addr, size_t size)
+inline void notifyAllOnAddress(AtomicContention const volatile* addr, size_t size)
 {
     void* loc = const_cast<void*>(static_cast<void const volatile*>(addr));
     os_sync_wake_by_address_all(loc, size, OS_SYNC_WAKE_BY_ADDRESS_NONE);

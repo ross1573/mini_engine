@@ -1,10 +1,10 @@
 import mini.launcher;
 
-void NSApplicationInit();
+void nsApplicationInit();
 
 int main()
 {
-    NSApplicationInit();
-    mini::Launch();
+    nsApplicationInit();
+    mini::launch();
     return 0;
 }

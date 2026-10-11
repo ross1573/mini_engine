@@ -16,20 +16,20 @@ import :bit_platform;
 namespace mini::bit {
 
 export template <typename To, typename From>
-constexpr To BitCast(From const& from) noexcept
+constexpr To bitCast(From const& from) noexcept
     requires(sizeof(To) == sizeof(From))
 {
     if consteval {
         return BUILTIN_BIT_CAST(To, from);
     } else {
         To result;
-        BUILTIN_MEMCPY(memory::AddressOf(from), memory::AddressOf(result), sizeof(From));
+        BUILTIN_MEMCPY(addressof(from), addressof(result), sizeof(From));
         return result;
     }
 }
 
 export template <UnsignedIntegralT T>
-constexpr T RotateLeft(T num, int32 count) noexcept
+constexpr T rotateLeft(T num, int32 count) noexcept
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -55,7 +55,7 @@ constexpr T RotateLeft(T num, int32 count) noexcept
 }
 
 export template <UnsignedIntegralT T>
-constexpr T RotateRight(T num, int32 count) noexcept
+constexpr T rotateRight(T num, int32 count) noexcept
 {
     constexpr int32 digits = static_cast<int32>(NumericLimit<T>::digits);
 
@@ -81,7 +81,7 @@ constexpr T RotateRight(T num, int32 count) noexcept
 }
 
 export template <UnsignedIntegralT T>
-constexpr uint32 CountLeftZero(T num) noexcept
+constexpr uint32 countLeftZero(T num) noexcept
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CLZG) {
@@ -104,8 +104,8 @@ constexpr uint32 CountLeftZero(T num) noexcept
 
         constexpr uint32 ullDigits = NumericLimit<unsigned long long>::digits;
         while (true) {
-            num = RotateLeft(num, ullDigits);
-            iter = CountLeftZero(static_cast<unsigned long long>(num));
+            num = rotateLeft(num, ullDigits);
+            iter = countLeftZero(static_cast<unsigned long long>(num));
             if (iter != ullDigits) {
                 break;
             }
@@ -118,13 +118,13 @@ constexpr uint32 CountLeftZero(T num) noexcept
 }
 
 export template <UnsignedIntegralT T>
-constexpr uint32 CountLeftOne(T num) noexcept
+constexpr uint32 countLeftOne(T num) noexcept
 {
-    return num != NumericLimit<T>::max ? CountLeftZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
+    return num != NumericLimit<T>::max ? countLeftZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }
 
 export template <UnsignedIntegralT T>
-constexpr uint32 CountRightZero(T num) noexcept
+constexpr uint32 countRightZero(T num) noexcept
 {
     constexpr uint32 digits = NumericLimit<T>::digits;
     if constexpr (HAS_BUILTIN_CTZG) {
@@ -149,14 +149,14 @@ constexpr uint32 CountRightZero(T num) noexcept
             num >>= ullDigits;
         }
 
-        return result + CountRightZero(static_cast<unsigned long long>(num));
+        return result + countRightZero(static_cast<unsigned long long>(num));
     }
 }
 
 export template <UnsignedIntegralT T>
-constexpr uint32 CountRightOne(T num) noexcept
+constexpr uint32 countRightOne(T num) noexcept
 {
-    return num != NumericLimit<T>::max ? CountRightZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
+    return num != NumericLimit<T>::max ? countRightZero(static_cast<T>(~num)) : NumericLimit<T>::digits;
 }
 
 } // namespace mini::bit

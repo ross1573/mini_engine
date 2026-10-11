@@ -14,10 +14,10 @@ public:
     Handle();
     ~Handle() noexcept = default;
 
-    bool Valid() const noexcept final;
+    bool valid() const noexcept final;
 
-    void PollEvents() final;
-    void AlertError(StringView const&) final;
+    void pollEvents() final;
+    void alertError(StringView const&) final;
     void ProcessMessage(HWND, uint32, WPARAM, LPARAM);
 
     HINSTANCE GetHINSTANCE() const { return m_instance; }

@@ -11,7 +11,7 @@ import :time_point;
 
 namespace mini {
 
-inline LARGE_INTEGER GetFrequency() noexcept
+inline LARGE_INTEGER getFrequency() noexcept
 {
     LARGE_INTEGER freq;
     ignore = QueryPerformanceFrequency(&freq);
@@ -19,12 +19,12 @@ inline LARGE_INTEGER GetFrequency() noexcept
 }
 
 template <DurationT T>
-inline TimePoint<T> ClockNow() noexcept
+inline TimePoint<T> clockNow() noexcept
 {
     constexpr int64 _10MHz = 10'000'000; // common on X86/X64
     constexpr int64 _24MHz = 24'000'000; // common on ARM64
 
-    static const LARGE_INTEGER freq = GetFrequency();
+    static const LARGE_INTEGER freq = getFrequency();
 
     LARGE_INTEGER count;
     ignore = QueryPerformanceCounter(&count);
@@ -40,8 +40,8 @@ inline TimePoint<T> ClockNow() noexcept
 
     const int64 second = count.QuadPart / freq.QuadPart;
     const int64 fraction = count.QuadPart % freq.QuadPart;
-    const int64 duration = (second * Nanoseconds::Period::denom) +
-                           (fraction * Nanoseconds::Period::denom / freq.QuadPart);
+    const int64 duration =
+        (second * Nanoseconds::Period::denom) + (fraction * Nanoseconds::Period::denom / freq.QuadPart);
 
     return TimePoint<T>(Nanoseconds(duration));
 }

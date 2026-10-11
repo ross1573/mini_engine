@@ -13,7 +13,7 @@ public:
     typedef TimePoint<Duration> TimePoint;
 
 public:
-    static TimePoint Now() noexcept { return ClockNow<Duration>(); }
+    static TimePoint now() noexcept { return clockNow<Duration>(); }
 };
 
 } // namespace mini

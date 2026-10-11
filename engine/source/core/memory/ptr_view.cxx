@@ -34,14 +34,14 @@ public:
     constexpr PtrView(U* ptr) noexcept
         requires ConvertibleToT<U*, T*>;
 
-    constexpr void Reset() noexcept;
+    constexpr void reset() noexcept;
     template <NonReferenceT U>
-    constexpr void Reset(U* ptr) noexcept
+    constexpr void reset(U* ptr) noexcept
         requires ConvertibleToT<U*, T*>;
 
-    [[nodiscard]] constexpr bool Valid() const noexcept;
-    [[nodiscard]] constexpr Pointer Get() const noexcept;
-    [[nodiscard]] constexpr Pointer* Address() noexcept;
+    [[nodiscard]] constexpr bool valid() const noexcept;
+    [[nodiscard]] constexpr Pointer get() const noexcept;
+    [[nodiscard]] constexpr Pointer* address() noexcept;
 
     [[nodiscard]] constexpr Pointer* operator&() noexcept;
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
@@ -96,62 +96,62 @@ constexpr PtrView<T>::PtrView(U* ptr) noexcept
 }
 
 template <NonReferenceT T>
-constexpr void PtrView<T>::Reset() noexcept
+constexpr void PtrView<T>::reset() noexcept
 {
     m_ptr = nullptr;
 }
 
 template <NonReferenceT T>
 template <NonReferenceT U>
-constexpr void PtrView<T>::Reset(U* ptr) noexcept
+constexpr void PtrView<T>::reset(U* ptr) noexcept
     requires ConvertibleToT<U*, T*>
 {
     m_ptr = static_cast<Pointer>(ptr);
 }
 
 template <NonReferenceT T>
-constexpr bool PtrView<T>::Valid() const noexcept
+constexpr bool PtrView<T>::valid() const noexcept
 {
     if (m_ptr == nullptr) {
         return false;
     }
 
     if constexpr (ValidatableT<T>) {
-        return m_ptr->Valid();
+        return m_ptr->valid();
     }
 
     return true;
 }
 
 template <NonReferenceT T>
-constexpr PtrView<T>::Pointer PtrView<T>::Get() const noexcept
+constexpr PtrView<T>::Pointer PtrView<T>::get() const noexcept
 {
     return m_ptr;
 }
 
 template <NonReferenceT T>
-constexpr PtrView<T>::Pointer* PtrView<T>::Address() noexcept
+constexpr PtrView<T>::Pointer* PtrView<T>::address() noexcept
 {
-    return memory::AddressOf(m_ptr);
+    return addressof(m_ptr);
 }
 
 template <NonReferenceT T>
 constexpr PtrView<T>::Pointer* PtrView<T>::operator&() noexcept
 {
-    return memory::AddressOf(m_ptr);
+    return addressof(m_ptr);
 }
 
 template <NonReferenceT T>
 constexpr PtrView<T>::Pointer PtrView<T>::operator->() const noexcept
 {
-    ASSERT(Valid(), "deference on invalid object pointer");
+    ASSERT(valid(), "deference on invalid object pointer");
     return m_ptr;
 }
 
 template <NonReferenceT T>
 constexpr PtrView<T>::Reference PtrView<T>::operator*() const noexcept
 {
-    ASSERT(Valid(), "deference on invalid object pointer");
+    ASSERT(valid(), "deference on invalid object pointer");
     return *m_ptr;
 }
 
@@ -191,49 +191,49 @@ constexpr PtrView<T>& PtrView<T>::operator=(PtrView<U> other) noexcept
 export template <NonReferenceT T, NonReferenceT U>
 constexpr bool operator==(PtrView<T> lhs, PtrView<U> rhs) noexcept
 {
-    return lhs.Get() == rhs.Get();
+    return lhs.get() == rhs.get();
 }
 
 export template <NonReferenceT T, NonReferenceT U>
 constexpr auto operator<=>(PtrView<T> lhs, PtrView<U> rhs) noexcept
 {
-    return lhs.Get() <=> rhs.Get();
+    return lhs.get() <=> rhs.get();
 }
 
 export template <NonReferenceT T>
 constexpr bool operator==(PtrView<T> ptr, nullptr_t) noexcept
 {
-    return ptr.Get() == nullptr;
+    return ptr.get() == nullptr;
 }
 
 export template <NonReferenceT T>
 constexpr auto operator<=>(PtrView<T> ptr, nullptr_t) noexcept
 {
-    return ptr.Get() <=> nullptr;
+    return ptr.get() <=> nullptr;
 }
 
 export template <NonReferenceT T, NonReferenceT U>
-constexpr PtrView<T> StaticCast(PtrView<U> other) noexcept
+constexpr PtrView<T> staticCast(PtrView<U> other) noexcept
 {
-    return PtrView<T>(static_cast<PtrView<T>::Pointer>(other.Get()));
+    return PtrView<T>(static_cast<PtrView<T>::Pointer>(other.get()));
 }
 
 export template <NonReferenceT T, NonReferenceT U>
-constexpr PtrView<T> DynamicCast(PtrView<U> other) noexcept
+constexpr PtrView<T> dynamicCast(PtrView<U> other) noexcept
 {
-    return PtrView<T>(dynamic_cast<PtrView<T>::Pointer>(other.Get()));
+    return PtrView<T>(dynamic_cast<PtrView<T>::Pointer>(other.get()));
 }
 
 export template <NonReferenceT T, NonReferenceT U>
-constexpr PtrView<T> ConstCast(PtrView<U> other) noexcept
+constexpr PtrView<T> constCast(PtrView<U> other) noexcept
 {
-    return PtrView<T>(const_cast<PtrView<T>::Pointer>(other.Get()));
+    return PtrView<T>(const_cast<PtrView<T>::Pointer>(other.get()));
 }
 
 export template <NonReferenceT T, NonReferenceT U>
-constexpr PtrView<T> ReinterpretCast(PtrView<U> other) noexcept
+constexpr PtrView<T> reinterpretCast(PtrView<U> other) noexcept
 {
-    return PtrView<T>(reinterpret_cast<PtrView<T>::Pointer>(other.Get()));
+    return PtrView<T>(reinterpret_cast<PtrView<T>::Pointer>(other.get()));
 }
 
 } // namespace mini

@@ -26,17 +26,17 @@ public:
     Window();
     ~Window() noexcept = default;
 
-    bool Valid() const noexcept final;
+    bool valid() const noexcept final;
 
-    void Resize(RectInt const&) final;
-    void Minimize() final;
-    void Maximize() final;
-    void Show() final;
-    void Hide() final;
+    void resize(RectInt const&) final;
+    void minimize() final;
+    void maximize() final;
+    void show() final;
+    void hide() final;
 
-    RectInt GetSize() const final { return m_rect; }
-    bool IsMinimized() const final { return m_state == Minimized; }
-    bool IsMaximized() const final { return m_state == Maximized; }
+    RectInt size() const final { return m_rect; }
+    bool minimized() const final { return m_state == Minimized; }
+    bool maximized() const final { return m_state == Maximized; }
 
     HWND GetHWND() const { return m_windowHandle; }
 };

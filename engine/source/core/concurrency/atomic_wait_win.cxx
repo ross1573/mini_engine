@@ -51,13 +51,13 @@ struct AtomicWaitableT<T> : TrueT {
     typedef uint64 Type;
 };
 
-CORE_API inline void AtomicRelax()
+CORE_API inline void atomicRelax()
 {
     PAUSE();
 }
 
-CORE_API void WaitOnAddress(AtomicContention const volatile*, AtomicContention, size_t);
-CORE_API void NotifyOnAddress(AtomicContention const volatile*, size_t);
-CORE_API void NotifyAllOnAddress(AtomicContention const volatile*, size_t);
+CORE_API void waitOnAddress(AtomicContention const volatile*, AtomicContention, size_t);
+CORE_API void notifyOnAddress(AtomicContention const volatile*, size_t);
+CORE_API void notifyAllOnAddress(AtomicContention const volatile*, size_t);
 
 } // namespace mini

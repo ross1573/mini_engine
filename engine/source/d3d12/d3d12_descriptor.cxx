@@ -26,8 +26,8 @@ private:
 public:
     DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&&, uint32);
 
-    bool Allocate(CPUOffsetT&);
-    void Deallocate(CPUOffsetT);
+    bool allocate(CPUOffsetT&);
+    void deallocate(CPUOffsetT);
 
     CPUOffsetT GetOffset(uint32) const noexcept;
 };
@@ -50,8 +50,8 @@ public:
 
     bool Initialize(ID3D12Device*);
 
-    Descriptor Allocate();
-    void Deallocate(Descriptor);
+    Descriptor allocate();
+    void deallocate(Descriptor);
 
     uint32 GetIncrementalSize() const { return m_incrementSize; }
 

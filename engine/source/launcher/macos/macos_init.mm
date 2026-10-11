@@ -1,6 +1,6 @@
 #import <Appkit/NSApplication.h>
 
-void NSApplicationInit()
+extern void nsApplicationInit()
 {
     [NSApplication sharedApplication];
 }

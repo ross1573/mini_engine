@@ -5,19 +5,19 @@ module;
 #  pragma clang diagnostic ignored "-Watomic-alignment"
 #endif
 
-#define diagnose_store(order)                                                                                          \
+#define DIAGNOSE_STORE(order)                                                                                          \
     static_diagnose_error(((order) == __ATOMIC_ACQUIRE || (order) == __ATOMIC_ACQ_REL || (order) == __ATOMIC_CONSUME), \
                           "invalid memory order on atomic store operation")
 
-#define diagnose_load(order)                                                            \
+#define DIAGNOSE_LOAD(order)                                                            \
     static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic load operation")
 
-#define diagnose_compare_exchange(order)                                                \
+#define DIAGNOSE_COMPARE_EXCHANGE(order)                                                \
     static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic exchange operation")
 
-#define diagnose_wait(order)                                                            \
+#define DIAGNOSE_WAIT(order)                                                            \
     static_diagnose_error(((order) == __ATOMIC_RELEASE || (order) == __ATOMIC_ACQ_REL), \
                           "invalid memory order on atomic wait operation")
 
@@ -49,80 +49,80 @@ public:
     constexpr Atomic(Value value) noexcept;
     constexpr ~Atomic() noexcept = default;
 
-    void Store(Value value, MemoryOrder order) noexcept;
-    void Store(Value value, MemoryOrder order) volatile noexcept;
-    Value Load(MemoryOrder order) const noexcept;
-    Value Load(MemoryOrder order) const volatile noexcept;
-    Value Exchange(Value value, MemoryOrder order) noexcept;
-    Value Exchange(Value value, MemoryOrder order) volatile noexcept;
+    void store(Value value, MemoryOrder order) noexcept;
+    void store(Value value, MemoryOrder order) volatile noexcept;
+    Value load(MemoryOrder order) const noexcept;
+    Value load(MemoryOrder order) const volatile noexcept;
+    Value exchange(Value value, MemoryOrder order) noexcept;
+    Value exchange(Value value, MemoryOrder order) volatile noexcept;
 
-    bool CompareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept;
-    bool CompareExchangeStrong(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
-    bool CompareExchangeStrong(Value& expected,
+    bool compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept;
+    bool compareExchangeStrong(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
+    bool compareExchangeStrong(Value& expected,
                                Value desired,
                                MemoryOrder success,
                                MemoryOrder failure) volatile noexcept;
 
-    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) noexcept;
-    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) volatile noexcept;
-    bool CompareExchangeWeak(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
-    bool CompareExchangeWeak(Value& expected,
+    bool compareExchangeWeak(Value& expected, Value desired, MemoryOrder order) noexcept;
+    bool compareExchangeWeak(Value& expected, Value desired, MemoryOrder order) volatile noexcept;
+    bool compareExchangeWeak(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
+    bool compareExchangeWeak(Value& expected,
                              Value desired,
                              MemoryOrder success,
                              MemoryOrder failure) volatile noexcept;
 
-    Value FetchAdd(Value value, MemoryOrder order) noexcept
+    Value fetchAdd(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchAdd(Value value, MemoryOrder order) volatile noexcept
+    Value fetchAdd(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchSub(Value value, MemoryOrder order) noexcept
+    Value fetchSub(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchSub(Value value, MemoryOrder order) volatile noexcept
+    Value fetchSub(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchAnd(Value value, MemoryOrder order) noexcept
+    Value fetchAnd(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchAnd(Value value, MemoryOrder order) volatile noexcept
+    Value fetchAnd(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchXor(Value value, MemoryOrder order) noexcept
+    Value fetchXor(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchXor(Value value, MemoryOrder order) volatile noexcept
+    Value fetchXor(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
-    Value FetchOr(Value value, MemoryOrder order) noexcept
+    Value fetchOr(Value value, MemoryOrder order) noexcept
         requires IntegralT<Value>;
-    Value FetchOr(Value value, MemoryOrder order) volatile noexcept
+    Value fetchOr(Value value, MemoryOrder order) volatile noexcept
         requires IntegralT<Value>;
 
-    Value FetchAdd(Value value, MemoryOrder order) noexcept
+    Value fetchAdd(Value value, MemoryOrder order) noexcept
         requires FloatingT<Value>;
-    Value FetchAdd(Value value, MemoryOrder order) volatile noexcept
+    Value fetchAdd(Value value, MemoryOrder order) volatile noexcept
         requires FloatingT<Value>;
-    Value FetchSub(Value value, MemoryOrder order) noexcept
+    Value fetchSub(Value value, MemoryOrder order) noexcept
         requires FloatingT<Value>;
-    Value FetchSub(Value value, MemoryOrder order) volatile noexcept
+    Value fetchSub(Value value, MemoryOrder order) volatile noexcept
         requires FloatingT<Value>;
 
-    Value FetchAdd(offset_t offset, MemoryOrder order) noexcept
+    Value fetchAdd(offset_t offset, MemoryOrder order) noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchAdd(offset_t offset, MemoryOrder order) volatile noexcept
+    Value fetchAdd(offset_t offset, MemoryOrder order) volatile noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchSub(offset_t offset, MemoryOrder order) noexcept
+    Value fetchSub(offset_t offset, MemoryOrder order) noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
-    Value FetchSub(offset_t offset, MemoryOrder order) volatile noexcept
+    Value fetchSub(offset_t offset, MemoryOrder order) volatile noexcept
         requires(PointerT<Value> && !FunctionPtrT<T>);
 
-    void Wait(Value old, MemoryOrder order) const noexcept;
-    void Wait(Value old, MemoryOrder order) const volatile noexcept;
-    void Notify() const noexcept;
-    void Notify() const volatile noexcept;
-    void NotifyAll() const noexcept;
-    void NotifyAll() const volatile noexcept;
+    void wait(Value old, MemoryOrder order) const noexcept;
+    void wait(Value old, MemoryOrder order) const volatile noexcept;
+    void notify() const noexcept;
+    void notify() const volatile noexcept;
+    void notifyAll() const noexcept;
+    void notifyAll() const volatile noexcept;
 
-    bool IsLockFree() const noexcept;
-    bool IsLockFree() const volatile noexcept;
-    static constexpr bool IsAlwaysLockFree() noexcept;
+    bool lockFree() const noexcept;
+    bool lockFree() const volatile noexcept;
+    static constexpr bool alwaysLockFree() noexcept;
 
-    static void ThreadFence(MemoryOrder order) noexcept;
-    static void SignalFence(MemoryOrder order) noexcept;
+    static void threadFence(MemoryOrder order) noexcept;
+    static void signalFence(MemoryOrder order) noexcept;
 
     explicit operator Value() const noexcept;
     explicit operator Value() const volatile noexcept;
@@ -149,227 +149,223 @@ constexpr Atomic<T>::Atomic(Value val) noexcept
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Store(Value val, MemoryOrder order) noexcept [[diagnose_store(order)]]
+inline void Atomic<T>::store(Value val, MemoryOrder order) noexcept [[DIAGNOSE_STORE(order)]]
 {
-    __atomic_store(memory::AddressOf(m_value.value), memory::AddressOf(val), static_cast<int>(order));
+    __atomic_store(addressof(m_value.value), addressof(val), static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Store(Value val, MemoryOrder order) volatile noexcept [[diagnose_store(order)]]
+inline void Atomic<T>::store(Value val, MemoryOrder order) volatile noexcept [[DIAGNOSE_STORE(order)]]
 {
-    __atomic_store(memory::AddressOf(m_value.value), memory::AddressOf(val), static_cast<int>(order));
+    __atomic_store(addressof(m_value.value), addressof(val), static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const noexcept [[diagnose_load(order)]]
+inline Atomic<T>::Value Atomic<T>::load(MemoryOrder order) const noexcept [[DIAGNOSE_LOAD(order)]]
 {
     Value result;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(result), static_cast<int>(order));
+    __atomic_load(addressof(m_value.value), addressof(result), static_cast<int>(order));
     return result;
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::Load(MemoryOrder order) const volatile noexcept [[diagnose_load(order)]]
+inline Atomic<T>::Value Atomic<T>::load(MemoryOrder order) const volatile noexcept [[DIAGNOSE_LOAD(order)]]
 {
     Value result;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(result), static_cast<int>(order));
+    __atomic_load(addressof(m_value.value), addressof(result), static_cast<int>(order));
     return result;
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::Exchange(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::exchange(Value val, MemoryOrder order) noexcept
 {
     Value result;
-    __atomic_exchange(memory::AddressOf(m_value.value),
-                      memory::AddressOf(val),
-                      memory::AddressOf(result),
-                      static_cast<int>(order));
+    __atomic_exchange(addressof(m_value.value), addressof(val), addressof(result), static_cast<int>(order));
     return result;
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::Exchange(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::exchange(Value val, MemoryOrder order) volatile noexcept
 {
     Value result;
-    __atomic_exchange(memory::AddressOf(m_value.value),
-                      memory::AddressOf(val),
-                      memory::AddressOf(result),
-                      static_cast<int>(order));
+    __atomic_exchange(addressof(m_value.value), addressof(val), addressof(result), static_cast<int>(order));
     return result;
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeStrong(Value& expected,
+inline bool Atomic<T>::compareExchangeStrong(Value& expected,
                                              Value desired,
                                              MemoryOrder success,
-                                             MemoryOrder failure) noexcept [[diagnose_compare_exchange(failure)]]
+                                             MemoryOrder failure) noexcept [[DIAGNOSE_COMPARE_EXCHANGE(failure)]]
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      false,
                                      static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::
-    CompareExchangeStrong(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) volatile noexcept
-    [[diagnose_compare_exchange(failure)]]
+inline bool Atomic<T>::compareExchangeStrong(Value& expected,
+                                             Value desired,
+                                             MemoryOrder success,
+                                             MemoryOrder failure) volatile noexcept
+    [[DIAGNOSE_COMPARE_EXCHANGE(failure)]]
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      false,
                                      static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept
+inline bool Atomic<T>::compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      false,
                                      static_cast<int>(order),
-                                     FailureOrder(order));
+                                     failureOrder(order));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeWeak(Value& expected,
+inline bool Atomic<T>::compareExchangeWeak(Value& expected,
                                            Value desired,
                                            MemoryOrder success,
-                                           MemoryOrder failure) noexcept [[diagnose_compare_exchange(failure)]]
+                                           MemoryOrder failure) noexcept [[DIAGNOSE_COMPARE_EXCHANGE(failure)]]
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      true,
                                      static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeWeak(Value& expected,
+inline bool Atomic<T>::compareExchangeWeak(Value& expected,
                                            Value desired,
                                            MemoryOrder success,
-                                           MemoryOrder failure) volatile noexcept [[diagnose_compare_exchange(failure)]]
+                                           MemoryOrder failure) volatile noexcept [[DIAGNOSE_COMPARE_EXCHANGE(failure)]]
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      true,
                                      static_cast<int>(success),
                                      static_cast<int>(failure));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) noexcept
+inline bool Atomic<T>::compareExchangeWeak(Value& expected, Value desired, MemoryOrder order) noexcept
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      true,
                                      static_cast<int>(order),
-                                     FailureOrder(order));
+                                     failureOrder(order));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::CompareExchangeWeak(Value& expected, Value desired, MemoryOrder order) volatile noexcept
+inline bool Atomic<T>::compareExchangeWeak(Value& expected, Value desired, MemoryOrder order) volatile noexcept
 {
-    return __atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                     memory::AddressOf(expected),
-                                     memory::AddressOf(desired),
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
                                      true,
                                      static_cast<int>(order),
-                                     FailureOrder(order));
+                                     failureOrder(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(Value val, MemoryOrder order) noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_add(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_add(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(Value val, MemoryOrder order) volatile noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_add(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_add(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(Value val, MemoryOrder order) noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_sub(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_sub(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(Value val, MemoryOrder order) volatile noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_sub(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_sub(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAnd(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAnd(Value val, MemoryOrder order) noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_and(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_and(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAnd(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAnd(Value val, MemoryOrder order) volatile noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_and(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_and(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchXor(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchXor(Value val, MemoryOrder order) noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_xor(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_xor(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchXor(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchXor(Value val, MemoryOrder order) volatile noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_xor(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_xor(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchOr(Value val, MemoryOrder order) noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_or(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_or(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchOr(Value val, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchOr(Value val, MemoryOrder order) volatile noexcept
     requires IntegralT<Value>
 {
-    return __atomic_fetch_or(memory::AddressOf(m_value.value), val, static_cast<int>(order));
+    return __atomic_fetch_or(addressof(m_value.value), val, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(Value value, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(Value value, MemoryOrder order) noexcept
     requires FloatingT<Value>
 {
     Value old;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(old), __ATOMIC_RELAXED);
+    __atomic_load(addressof(m_value.value), addressof(old), __ATOMIC_RELAXED);
 
     Value tmp = old + value;
-    while (!__atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                      memory::AddressOf(old),
-                                      memory::AddressOf(tmp),
+    while (!__atomic_compare_exchange(addressof(m_value.value),
+                                      addressof(old),
+                                      addressof(tmp),
                                       true,
                                       static_cast<int>(order),
-                                      FailureOrder(order))) {
+                                      failureOrder(order))) {
         tmp = old + value;
     }
 
@@ -377,19 +373,19 @@ inline Atomic<T>::Value Atomic<T>::FetchAdd(Value value, MemoryOrder order) noex
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(Value value, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(Value value, MemoryOrder order) volatile noexcept
     requires FloatingT<Value>
 {
     Value old;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(old), __ATOMIC_RELAXED);
+    __atomic_load(addressof(m_value.value), addressof(old), __ATOMIC_RELAXED);
 
     Value tmp = old + value;
-    while (!__atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                      memory::AddressOf(old),
-                                      memory::AddressOf(tmp),
+    while (!__atomic_compare_exchange(addressof(m_value.value),
+                                      addressof(old),
+                                      addressof(tmp),
                                       true,
                                       static_cast<int>(order),
-                                      FailureOrder(order))) {
+                                      failureOrder(order))) {
         tmp = old + value;
     }
 
@@ -397,19 +393,19 @@ inline Atomic<T>::Value Atomic<T>::FetchAdd(Value value, MemoryOrder order) vola
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(Value value, MemoryOrder order) noexcept
     requires FloatingT<Value>
 {
     Value old;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(old), __ATOMIC_RELAXED);
+    __atomic_load(addressof(m_value.value), addressof(old), __ATOMIC_RELAXED);
 
     Value tmp = old - value;
-    while (!__atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                      memory::AddressOf(old),
-                                      memory::AddressOf(tmp),
+    while (!__atomic_compare_exchange(addressof(m_value.value),
+                                      addressof(old),
+                                      addressof(tmp),
                                       true,
                                       static_cast<int>(order),
-                                      FailureOrder(order))) {
+                                      failureOrder(order))) {
         tmp = old - value;
     }
 
@@ -417,19 +413,19 @@ inline Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) noex
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(Value value, MemoryOrder order) volatile noexcept
     requires FloatingT<Value>
 {
     Value old;
-    __atomic_load(memory::AddressOf(m_value.value), memory::AddressOf(old), __ATOMIC_RELAXED);
+    __atomic_load(addressof(m_value.value), addressof(old), __ATOMIC_RELAXED);
 
     Value tmp = old - value;
-    while (!__atomic_compare_exchange(memory::AddressOf(m_value.value),
-                                      memory::AddressOf(old),
-                                      memory::AddressOf(tmp),
+    while (!__atomic_compare_exchange(addressof(m_value.value),
+                                      addressof(old),
+                                      addressof(tmp),
                                       true,
                                       static_cast<int>(order),
-                                      FailureOrder(order))) {
+                                      failureOrder(order))) {
         tmp = old - value;
     }
 
@@ -437,89 +433,89 @@ inline Atomic<T>::Value Atomic<T>::FetchSub(Value value, MemoryOrder order) vola
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(offset_t offset, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(offset_t offset, MemoryOrder order) noexcept
     requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     offset_t diff = static_cast<offset_t>(sizeof(RemovePtrT<Value>));
-    return __atomic_fetch_add(memory::AddressOf(m_value.value), offset * diff, static_cast<int>(order));
+    return __atomic_fetch_add(addressof(m_value.value), offset * diff, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchAdd(offset_t offset, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchAdd(offset_t offset, MemoryOrder order) volatile noexcept
     requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     offset_t diff = static_cast<offset_t>(sizeof(RemovePtrT<Value>));
-    return __atomic_fetch_add(memory::AddressOf(m_value.value), offset * diff, static_cast<int>(order));
+    return __atomic_fetch_add(addressof(m_value.value), offset * diff, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(offset_t offset, MemoryOrder order) noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(offset_t offset, MemoryOrder order) noexcept
     requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     offset_t diff = static_cast<offset_t>(sizeof(RemovePtrT<Value>));
-    return __atomic_fetch_sub(memory::AddressOf(m_value.value), offset * diff, static_cast<int>(order));
+    return __atomic_fetch_sub(addressof(m_value.value), offset * diff, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline Atomic<T>::Value Atomic<T>::FetchSub(offset_t offset, MemoryOrder order) volatile noexcept
+inline Atomic<T>::Value Atomic<T>::fetchSub(offset_t offset, MemoryOrder order) volatile noexcept
     requires(PointerT<Value> && !FunctionPtrT<T>)
 {
     offset_t diff = static_cast<offset_t>(sizeof(RemovePtrT<Value>));
-    return __atomic_fetch_sub(memory::AddressOf(m_value.value), offset * diff, static_cast<int>(order));
+    return __atomic_fetch_sub(addressof(m_value.value), offset * diff, static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Wait(Value old, MemoryOrder order) const noexcept [[diagnose_wait(order)]]
+inline void Atomic<T>::wait(Value old, MemoryOrder order) const noexcept [[DIAGNOSE_WAIT(order)]]
 {
-    __atomic_wait(memory::AddressOf(m_value.value), old, static_cast<int32>(order));
+    __atomic_wait(addressof(m_value.value), old, static_cast<int32>(order));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Wait(Value old, MemoryOrder order) const volatile noexcept [[diagnose_wait(order)]]
+inline void Atomic<T>::wait(Value old, MemoryOrder order) const volatile noexcept [[DIAGNOSE_WAIT(order)]]
 {
-    __atomic_wait(memory::AddressOf(m_value.value), old, static_cast<int32>(order));
+    __atomic_wait(addressof(m_value.value), old, static_cast<int32>(order));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Notify() const noexcept
+inline void Atomic<T>::notify() const noexcept
 {
-    __atomic_notify_one(memory::AddressOf(m_value.value));
+    __atomic_notify_one(addressof(m_value.value));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::Notify() const volatile noexcept
+inline void Atomic<T>::notify() const volatile noexcept
 {
-    __atomic_notify_one(memory::AddressOf(m_value.value));
+    __atomic_notify_one(addressof(m_value.value));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::NotifyAll() const noexcept
+inline void Atomic<T>::notifyAll() const noexcept
 {
-    __atomic_notify_all(memory::AddressOf(m_value.value));
+    __atomic_notify_all(addressof(m_value.value));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::NotifyAll() const volatile noexcept
+inline void Atomic<T>::notifyAll() const volatile noexcept
 {
-    __atomic_notify_all(memory::AddressOf(m_value.value));
+    __atomic_notify_all(addressof(m_value.value));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::IsLockFree() const noexcept
+inline bool Atomic<T>::lockFree() const noexcept
 {
-    void const* loc = static_cast<void const*>(memory::AddressOf(m_value.value));
+    void const* loc = static_cast<void const*>(addressof(m_value.value));
     return __atomic_is_lock_free(sizeof(Base), const_cast<void*>(loc));
 }
 
 template <TrivialT T>
-inline bool Atomic<T>::IsLockFree() const volatile noexcept
+inline bool Atomic<T>::lockFree() const volatile noexcept
 {
-    void const volatile* loc = static_cast<void const volatile*>(memory::AddressOf(m_value.value));
+    void const volatile* loc = static_cast<void const volatile*>(addressof(m_value.value));
     return __atomic_is_lock_free(sizeof(Base), const_cast<void*>(loc));
 }
 
 template <TrivialT T>
-constexpr bool Atomic<T>::IsAlwaysLockFree() noexcept
+constexpr bool Atomic<T>::alwaysLockFree() noexcept
 {
     return __atomic_always_lock_free(sizeof(Base), nullptr);
 }
@@ -527,35 +523,35 @@ constexpr bool Atomic<T>::IsAlwaysLockFree() noexcept
 template <TrivialT T>
 inline Atomic<T>::operator Value() const noexcept
 {
-    return Load(MemoryOrder::sequential);
+    return load(MemoryOrder::Sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::operator Value() const volatile noexcept
 {
-    return Load(MemoryOrder::sequential);
+    return load(MemoryOrder::Sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) noexcept
 {
-    return Store(val, MemoryOrder::sequential);
+    return store(val, MemoryOrder::Sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) volatile noexcept
 {
-    return Store(val, MemoryOrder::sequential);
+    return store(val, MemoryOrder::Sequential);
 }
 
 template <TrivialT T>
-inline void Atomic<T>::ThreadFence(MemoryOrder order) noexcept
+inline void Atomic<T>::threadFence(MemoryOrder order) noexcept
 {
     __atomic_thread_fence(static_cast<int>(order));
 }
 
 template <TrivialT T>
-inline void Atomic<T>::SignalFence(MemoryOrder order) noexcept
+inline void Atomic<T>::signalFence(MemoryOrder order) noexcept
 {
     __atomic_signal_fence(static_cast<int>(order));
 }

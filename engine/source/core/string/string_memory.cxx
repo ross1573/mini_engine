@@ -11,7 +11,7 @@ import :numeric;
 namespace mini::memory {
 
 export template <CharT T>
-constexpr T const* StringSearch(T const* str, T value) noexcept
+constexpr T const* strfind(T const* str, T value) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -26,7 +26,7 @@ constexpr T const* StringSearch(T const* str, T value) noexcept
 }
 
 export template <CharT T>
-constexpr T const* StringSearch(T const* str, T value, size_t count) noexcept
+constexpr T const* strfind(T const* str, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -46,7 +46,7 @@ constexpr T const* StringSearch(T const* str, T value, size_t count) noexcept
 }
 
 export template <CharT T>
-constexpr size_t StringLength(T const* str) noexcept
+constexpr size_t strlen(T const* str) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -63,14 +63,14 @@ constexpr size_t StringLength(T const* str) noexcept
 }
 
 export template <CharT T>
-constexpr size_t StringLength(T const* str, size_t count) noexcept
+constexpr size_t strlen(T const* str, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
-            void const* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char{ 0 }, count);
+            void const* ptr = BUILTIN_MEMCHR(reinterpret_cast<char const*>(str), char{0}, count);
             return ptr == nullptr ? 0 : static_cast<size_t>(static_cast<T const*>(ptr) - str);
         } else if constexpr (SameAsT<T, wchar>) {
-            wchar const* end = BUILTIN_WMEMCHR(str, wchar{ 0 }, count);
+            wchar const* end = BUILTIN_WMEMCHR(str, wchar{0}, count);
             return end == nullptr ? 0 : static_cast<size_t>(end - str);
         }
     }
@@ -81,7 +81,7 @@ constexpr size_t StringLength(T const* str, size_t count) noexcept
 }
 
 export template <CharT T>
-constexpr T* StringFill(T* dest, T value, size_t count) noexcept
+constexpr T* strfill(T* dest, T value, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -100,7 +100,7 @@ constexpr T* StringFill(T* dest, T value, size_t count) noexcept
 }
 
 export template <CharT T>
-constexpr int32 StringCompare(T const* lhs, T const* rhs) noexcept
+constexpr int32 strcomp(T const* lhs, T const* rhs) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {
@@ -128,7 +128,7 @@ constexpr int32 StringCompare(T const* lhs, T const* rhs) noexcept
 }
 
 export template <CharT T>
-constexpr int32 StringCompare(T const* lhs, T const* rhs, size_t count) noexcept
+constexpr int32 strcomp(T const* lhs, T const* rhs, size_t count) noexcept
 {
     if !consteval {
         if constexpr (AnyOfT<T, char, char8>) {

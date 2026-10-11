@@ -11,7 +11,7 @@ import :time_point;
 namespace mini {
 
 template <DurationT T>
-inline TimePoint<T> ClockNow() noexcept
+inline TimePoint<T> clockNow() noexcept
 {
     struct timespec ts;
     VERIFY(clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0, "clock_gettime of CLOCK_MONOTONIC_RAW");

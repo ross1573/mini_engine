@@ -32,7 +32,7 @@ using MTL4::RenderPassDescriptor;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::ClearColor MTLClearColor(Color color) noexcept
+export METAL4_API constexpr MTL::ClearColor mtlClearColor(Color color) noexcept
 {
     return MTL::ClearColor{
         static_cast<double>(color.r),
@@ -42,7 +42,7 @@ export METAL4_API constexpr MTL::ClearColor MTLClearColor(Color color) noexcept
     };
 }
 
-export METAL4_API constexpr MTL::LoadAction MTLLoadAction(graphics::LoadAction loadAction) noexcept
+export METAL4_API constexpr MTL::LoadAction mtlLoadAction(graphics::LoadAction loadAction) noexcept
 {
     switch (loadAction) {
         case graphics::LoadAction::Undefined: return MTL::LoadActionDontCare;
@@ -54,7 +54,7 @@ export METAL4_API constexpr MTL::LoadAction MTLLoadAction(graphics::LoadAction l
     return MTL::LoadActionDontCare;
 }
 
-export METAL4_API constexpr MTL::StoreAction MTLStoreAction(graphics::StoreAction storeAction) noexcept
+export METAL4_API constexpr MTL::StoreAction mtlStoreAction(graphics::StoreAction storeAction) noexcept
 {
     switch (storeAction) {
         case graphics::StoreAction::Undefined: return MTL::StoreActionDontCare;
@@ -65,11 +65,11 @@ export METAL4_API constexpr MTL::StoreAction MTLStoreAction(graphics::StoreActio
     return MTL::StoreActionDontCare;
 }
 
-export SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
+export SharedPtr<MTL4::RenderPassDescriptor> mtlRenderPassDescriptor(
     graphics::RenderScopeDescriptor const& renderScopeDescriptor)
 {
-    SharedPtr<MTL4::RenderPassDescriptor> desc = TransferShared(MTL4::RenderPassDescriptor::alloc());
-    ENSURE(desc.Valid(), "failed to allocate MTL4::RenderPassDescriptor") {
+    SharedPtr<MTL4::RenderPassDescriptor> desc = transfer(MTL4::RenderPassDescriptor::alloc());
+    ENSURE(desc.valid(), "failed to allocate MTL4::RenderPassDescriptor") {
         return nullptr;
     }
 
@@ -78,7 +78,7 @@ export SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
     Array<graphics::RenderScopeTargetAttachment> const& targetAttachments = renderScopeDescriptor.targetAttachments;
     MTL::RenderPassColorAttachmentDescriptorArray* colorDescriptors = desc->colorAttachments();
 
-    for (size_t i = 0; i < targetAttachments.Size(); ++i) {
+    for (size_t i = 0; i < targetAttachments.size(); ++i) {
         graphics::RenderScopeTargetAttachment const& targetAttachment = targetAttachments[i];
         Texture* texture = static_cast<Texture*>(targetAttachment.texture);
         if (texture == nullptr) {
@@ -86,30 +86,30 @@ export SharedPtr<MTL4::RenderPassDescriptor> MTLRenderPassDescriptor(
         }
 
         MTL::RenderPassColorAttachmentDescriptor* colorDescriptor = colorDescriptors->object(i);
-        colorDescriptor->setTexture(texture->MTLTexture());
-        colorDescriptor->setClearColor(MTLClearColor(targetAttachment.clearColor));
-        colorDescriptor->setLoadAction(MTLLoadAction(targetAttachment.loadAction));
-        colorDescriptor->setStoreAction(MTLStoreAction(targetAttachment.storeAction));
+        colorDescriptor->setTexture(texture->mtlTexture());
+        colorDescriptor->setClearColor(mtlClearColor(targetAttachment.clearColor));
+        colorDescriptor->setLoadAction(mtlLoadAction(targetAttachment.loadAction));
+        colorDescriptor->setStoreAction(mtlStoreAction(targetAttachment.storeAction));
     }
 
     graphics::RenderScopeDepthAttachment const& depthAttachment = renderScopeDescriptor.depthAttachment;
     Texture* depthTexture = static_cast<Texture*>(depthAttachment.texture);
     if (depthTexture != nullptr) {
         MTL::RenderPassDepthAttachmentDescriptor* depthDescriptor = desc->depthAttachment();
-        depthDescriptor->setTexture(depthTexture->MTLTexture());
+        depthDescriptor->setTexture(depthTexture->mtlTexture());
         depthDescriptor->setClearDepth(static_cast<float64>(depthAttachment.clearDepth));
-        depthDescriptor->setLoadAction(MTLLoadAction(depthAttachment.loadAction));
-        depthDescriptor->setStoreAction(MTLStoreAction(depthAttachment.storeAction));
+        depthDescriptor->setLoadAction(mtlLoadAction(depthAttachment.loadAction));
+        depthDescriptor->setStoreAction(mtlStoreAction(depthAttachment.storeAction));
     }
 
     graphics::RenderScopeStencilAttachment const& stencilAttachment = renderScopeDescriptor.stencilAttachment;
     Texture* stencilTexture = static_cast<Texture*>(stencilAttachment.texture);
     if (stencilTexture != nullptr) {
         MTL::RenderPassStencilAttachmentDescriptor* stencilDescriptor = desc->stencilAttachment();
-        stencilDescriptor->setTexture(stencilTexture->MTLTexture());
+        stencilDescriptor->setTexture(stencilTexture->mtlTexture());
         stencilDescriptor->setClearStencil(stencilAttachment.clearStencil);
-        stencilDescriptor->setLoadAction(MTLLoadAction(stencilAttachment.loadAction));
-        stencilDescriptor->setStoreAction(MTLStoreAction(stencilAttachment.storeAction));
+        stencilDescriptor->setLoadAction(mtlLoadAction(stencilAttachment.loadAction));
+        stencilDescriptor->setStoreAction(mtlStoreAction(stencilAttachment.storeAction));
     }
 
     return desc;

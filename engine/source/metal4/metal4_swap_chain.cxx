@@ -38,15 +38,15 @@ private:
 public:
     Drawable() noexcept = default;
 
-    void Present() { m_drawable->present(); }
-    void Reset() { m_drawable.Reset(); }
-    void Reset(CA::MetalDrawable* drawable) { m_drawable.Reset(drawable); }
+    void present() { m_drawable->present(); }
+    void reset() { m_drawable.reset(); }
+    void reset(CA::MetalDrawable* drawable) { m_drawable.reset(drawable); }
 
-    [[nodiscard]] bool Valid() const noexcept { return m_drawable.Valid(); }
-    [[nodiscard]] UniquePtr<Texture> FrameTexture() const { return MakeUnique<Texture>(MTLTexture()); }
+    [[nodiscard]] bool valid() const noexcept { return m_drawable.valid(); }
+    [[nodiscard]] UniquePtr<Texture> frameTexture() const { return makeUnique<Texture>(mtlTexture()); }
 
-    [[nodiscard]] MTL::Drawable* MTLDrawable() const noexcept { return m_drawable.Get(); }
-    [[nodiscard]] MTL::Texture* MTLTexture() const noexcept { return m_drawable->texture(); }
+    [[nodiscard]] MTL::Drawable* mtlDrawable() const noexcept { return m_drawable.get(); }
+    [[nodiscard]] MTL::Texture* mtlTexture() const noexcept { return m_drawable->texture(); }
 };
 
 export class METAL4_API SwapChain final : public graphics::SwapChain {
@@ -57,22 +57,22 @@ private:
 public:
     SwapChain(PtrView<Device> device);
 
-    [[nodiscard]] bool Valid() const noexcept final { return m_layer.Valid(); }
-    void Present() final;
+    [[nodiscard]] bool valid() const noexcept final { return m_layer.valid(); }
+    void present() final;
 
-    void ResizeBackBuffer(uint32 width, uint32 height, bool fullscreen) final;
-    void SetBackBufferCount(uint8 count) final;
-    void SetVSync(uint8 vsync) final;
-    void SetFullScreen(bool fullscreen) final;
+    void resizeFrameBuffer(uint32 width, uint32 height, bool fullscreen) final;
+    void resizeBufferCount(uint8 count) final;
+    void setVSync(uint8 setVSync) final;
+    void setFullScreen(bool fullscreen) final;
 
-    [[nodiscard]] Vector2Int GetBackBufferSize() const final { return {0, 0}; } // TODO
-    [[nodiscard]] uint8 GetBackBufferCount() const final { return 0; }          // TODO
-    [[nodiscard]] uint8 GetVSync() const final { return 0; }                    // TODO
-    [[nodiscard]] bool GetFullScreen() const final;
+    [[nodiscard]] Vector2Int frameBufferSize() const final { return {0, 0}; } // TODO
+    [[nodiscard]] uint8 bufferCount() const final { return 0; }               // TODO
+    [[nodiscard]] uint8 vsync() const final { return 0; }                     // TODO
+    [[nodiscard]] bool fullScreen() const final;
 
-    [[nodiscard]] Drawable* Drawable();
+    [[nodiscard]] Drawable* drawable();
 
-    [[nodiscard]] CA::MetalLayer* CAMetalLayer() const noexcept { return m_layer.Get(); }
+    [[nodiscard]] CA::MetalLayer* caMetalLayer() const noexcept { return m_layer.get(); }
 };
 
 } // namespace mini::metal4

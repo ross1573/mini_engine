@@ -14,7 +14,7 @@ OPTION_API extern int height;
 
 OPTION_API extern bool fullscreen;
 OPTION_API extern bool resizableWindow;
-OPTION_API extern unsigned char vsync;
+OPTION_API extern unsigned char vsyncRate;
 OPTION_API extern unsigned char bufferCount;
 OPTION_API extern char const* graphicsModule;
 

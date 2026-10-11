@@ -18,10 +18,10 @@ namespace mini::apple {
 
 export class APPLE_API Window : public platform::Window {
 public:
-    virtual bool IsFullScreen() const = 0;
+    virtual bool fullScreen() const = 0;
 
-    virtual void SetFullScreen(bool) = 0;
-    virtual void SetMetalLayer(CA::MetalLayer*) = 0;
+    virtual void setFullScreen(bool) = 0;
+    virtual void setMetalLayer(CA::MetalLayer*) = 0;
 };
 
 } // namespace mini::apple

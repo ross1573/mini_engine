@@ -7,28 +7,28 @@ import :log;
 
 namespace mini {
 
-void LaunchEngine()
+void launchEngine()
 {
-    launcher::LogInfo("launching engine");
+    launcher::logInfo("launching engine");
 
     Module<Engine> engine("mini.engine");
 
-    engine->Launch();
-    engine.Release();
+    engine->launch();
+    engine.release();
 }
 
-export void Launch()
+export void launch()
 {
-    launcher::StaticInitialize();
+    launcher::staticInitialize();
     {
         Module<Core> core("mini.core");
 
-        LaunchEngine();
+        launchEngine();
 
-        [[maybe_unused]] size_t remaining = core->ModuleCount();
+        [[maybe_unused]] size_t remaining = core->moduleCount();
         ASSERT(remaining == 1, "{} module remaining", remaining);
     }
-    launcher::StaticCleanup();
+    launcher::staticCleanup();
 }
 
 } // namespace mini

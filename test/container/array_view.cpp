@@ -5,51 +5,54 @@
 
 import mini.test;
 
-using namespace mini;
-using namespace mini::test;
+using mini::Array;
+using mini::ArrayIterator;
+using mini::ArrayView;
+using mini::InitializerList;
 
 #define TEST_ARRAY_VIEW(func, type, ...)                         \
     static_assert(func<type __VA_OPT__(, ) __VA_ARGS__>() == 0); \
     TEST_ENSURE((func<type __VA_OPT__(, ) __VA_ARGS__>() == 0));
 
-#define FACTORY(name, ...)                                   \
-    using name = decltype([](int32 count) {                  \
-        String str("Hello world! This is a long string 0."); \
-        *(str.End() - 2) = static_cast<char>(count);         \
-        return __VA_ARGS__(str);                             \
+#define FACTORY(name, ...)                                         \
+    using name = decltype([](mini::int32 count) {                  \
+        mini::String str("Hello world! This is a long string 0."); \
+        *(str.end() - 2) = static_cast<char>(count);               \
+        return __VA_ARGS__(str);                                   \
     });
 
-using IntPtrF = decltype([](int) {
-    static const int dummy = 0;
-    return const_cast<int*>(&dummy);
+using IntPtrF = decltype([](mini::int32) {
+    static const mini::int32 dummy = 0;
+    return const_cast<mini::int32*>(&dummy);
 });
 
-FACTORY(UniquePtrF, MakeUnique<ConstexprObject>);
+FACTORY(UniquePtrF, makeUnique<ConstexprObject>);
 FACTORY(StdUniquePtrF, std::make_unique<ConstexprObject>);
 FACTORY(ConstexprFooF, ConstexprObject);
 FACTORY(FooF, TestObject);
 FACTORY(FooArgF);
 
-[[maybe_unused]] constexpr void ArrayConstraints()
+[[maybe_unused]] constexpr void arrayConstraints()
 {
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<int>::ConstIterator);
-    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<int*>::ConstIterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<mini::int32>::ConstIterator);
+    RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<mini::int32*>::ConstIterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<TestObject>::ConstIterator);
     RANDOM_ACCESS_ITERATOR_CONSTRAINTS(ArrayView<TestObject*>::ConstIterator);
 
     TEST_CONST_RANGE_BASED_FOR_SUPPORT(ArrayView<TestObject>);
 
-    static_assert(sizeof(ArrayView<TestObject>::ConstIterator) == alignof(void*) * 2);
+    using TestObjectIterator = ArrayView<TestObject>::ConstIterator;
+    using TestObjectArrayIterator = ArrayIterator<TestObject const, ArrayView<TestObject> const>;
     static_assert(sizeof(ArrayView<TestObject>) == 16);
-    static_assert(SameAsT<ArrayIterator<TestObject const, ArrayView<TestObject> const>,
-                          ArrayView<TestObject>::ConstIterator>);
+    static_assert(sizeof(TestObjectIterator) == alignof(void*) * 2);
+    static_assert(mini::SameAsT<TestObjectArrayIterator, TestObjectIterator>);
 }
 
 template <typename T>
-[[no_inline]] constexpr int TestArrayView(ArrayView<T> arr, std::span<T> span)
+[[no_inline]] constexpr mini::int32 testArrayView(ArrayView<T> arr, std::span<T> span)
 {
-    constexpr auto TestElement = [](T const& lhs, T const& rhs) -> bool {
-        if constexpr (memory::DereferencableT<T>) {
+    constexpr auto testElement = [](T const& lhs, T const& rhs) -> bool {
+        if constexpr (mini::DereferencableT<T>) {
             if (lhs == nullptr || rhs == nullptr) {
                 return lhs == rhs;
             }
@@ -58,25 +61,25 @@ template <typename T>
         return lhs == rhs;
     };
 
-    TEST_ENSURE(arr.Size() == span.size());
+    TEST_ENSURE(arr.size() == span.size());
 
-    if (arr.Size() != 0) {
-        TEST_ENSURE(TestElement(arr.First(), span.front()));
-        TEST_ENSURE(TestElement(arr.Last(), span.back()));
+    if (!arr.empty()) {
+        TEST_ENSURE(testElement(arr.first(), span.front()));
+        TEST_ENSURE(testElement(arr.last(), span.back()));
     }
 
-    for (size_t i = 0; i < arr.Size(); ++i) {
-        TEST_ENSURE(TestElement(arr[i], span[i]));
-        TEST_ENSURE(TestElement(arr.At(i), span[i]));
+    for (size_t i = 0; i < arr.size(); ++i) {
+        TEST_ENSURE(testElement(arr[i], span[i]));
+        TEST_ENSURE(testElement(arr.at(i), span[i]));
     }
 
     return 0;
 }
 
 template <typename T, typename FactoryT>
-[[no_inline]] constexpr int TestCtor()
+[[no_inline]] constexpr mini::int32 testCtor()
 {
-    int32 count = 0;
+    mini::int32 count = 0;
     InitializerList list = {
         FactoryT{}(++count),
         FactoryT{}(++count),
@@ -91,20 +94,20 @@ template <typename T, typename FactoryT>
         FactoryT{}(++count),
     };
 
-    TEST_ENSURE(ArrayView<T>().Size() == 0);
-    TEST_ENSURE(ArrayView<T>(array).Size() == 4);
-    TEST_ENSURE(ArrayView<T>(list).Size() == list.size());
-    TEST_ENSURE(ArrayView<T>(list.begin(), list.size()).Size() == list.size());
-    TEST_ENSURE(ArrayView<T>(Array<T>{}).Size() == 0);
-    TEST_ENSURE(ArrayView<T>(ArrayView<T>{}).Size() == 0);
+    TEST_ENSURE(ArrayView<T>().empty());
+    TEST_ENSURE(ArrayView<T>(array).size() == 4);
+    TEST_ENSURE(ArrayView<T>(list).size() == list.size());
+    TEST_ENSURE(ArrayView<T>(list.begin(), list.size()).size() == list.size());
+    TEST_ENSURE(ArrayView<T>(Array<T>{}).empty());
+    TEST_ENSURE(ArrayView<T>(ArrayView<T>{}).empty());
 
     return 0;
 }
 
 template <typename T, typename FactoryT>
-[[no_inline]] constexpr int TestSubArray()
+[[no_inline]] constexpr mini::int32 testSubArray()
 {
-    int32 count = 0;
+    mini::int32 count = 0;
     T array[] = {
         FactoryT{}(++count),
         FactoryT{}(++count),
@@ -114,27 +117,27 @@ template <typename T, typename FactoryT>
 
     ArrayView<T> view{array};
     std::span<T> span{array};
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
 
-    ArrayView<T> frontView = view.SubFront(3);
+    ArrayView<T> frontView = view.subFront(3);
     std::span<T> frontSpan = span.subspan(0, 3);
-    TEST_ENSURE(TestArrayView(frontView, frontSpan) == 0);
+    TEST_ENSURE(testArrayView(frontView, frontSpan) == 0);
 
-    ArrayView<T> backView = view.SubBack(3);
+    ArrayView<T> backView = view.subBack(3);
     std::span<T> backSpan = span.subspan(span.size() - 3, 3);
-    TEST_ENSURE(TestArrayView(backView, backSpan) == 0);
+    TEST_ENSURE(testArrayView(backView, backSpan) == 0);
 
-    ArrayView<T> subView = view.SubView(1, 2);
+    ArrayView<T> subview = view.subView(1, 2);
     std::span<T> subSpan = span.subspan(1, 2);
-    TEST_ENSURE(TestArrayView(subView, subSpan) == 0);
+    TEST_ENSURE(testArrayView(subview, subSpan) == 0);
 
     return 0;
 }
 
 template <typename T, typename FactoryT>
-[[no_inline]] constexpr int TestModify()
+[[no_inline]] constexpr mini::int32 testModify()
 {
-    int32 count = 0;
+    mini::int32 count = 0;
     T array[] = {
         FactoryT{}(++count),
         FactoryT{}(++count),
@@ -145,32 +148,32 @@ template <typename T, typename FactoryT>
 
     ArrayView<T> view{array};
     std::span<T> span{array};
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
 
     ArrayView<T> view2 = view;
-    view2.PopFront();
-    TEST_ENSURE(TestArrayView(view2, span.subspan(1, static_cast<size_t>(count) - 1)) == 0);
+    view2.popFront();
+    TEST_ENSURE(testArrayView(view2, span.subspan(1, static_cast<size_t>(count) - 1)) == 0);
 
     ArrayView<T> view3 = view;
-    view3.PopFront(3);
-    TEST_ENSURE(TestArrayView(view3, span.subspan(3, static_cast<size_t>(count) - 3)) == 0);
+    view3.popFront(3);
+    TEST_ENSURE(testArrayView(view3, span.subspan(3, static_cast<size_t>(count) - 3)) == 0);
 
     ArrayView<T> view4 = view;
-    view4.PopBack();
-    TEST_ENSURE(TestArrayView(view4, span.subspan(0, static_cast<size_t>(count) - 1)) == 0);
+    view4.popBack();
+    TEST_ENSURE(testArrayView(view4, span.subspan(0, static_cast<size_t>(count) - 1)) == 0);
 
     ArrayView<T> view5 = view;
-    view5.PopBack(3);
-    TEST_ENSURE(TestArrayView(view5, span.subspan(0, static_cast<size_t>(count) - 3)) == 0);
+    view5.popBack(3);
+    TEST_ENSURE(testArrayView(view5, span.subspan(0, static_cast<size_t>(count) - 3)) == 0);
 
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
     return 0;
 }
 
 template <typename T, typename FactoryT>
-[[no_inline]] constexpr int TestOperator()
+[[no_inline]] constexpr mini::int32 testOperator()
 {
-    int32 count = 0;
+    mini::int32 count = 0;
     T array[] = {
         FactoryT{}(++count),
         FactoryT{}(++count),
@@ -179,7 +182,7 @@ template <typename T, typename FactoryT>
         FactoryT{}(++count),
     };
 
-    int32 initListCount = 0;
+    mini::int32 initListCount = 0;
     InitializerList list = {
         FactoryT{}(++initListCount),
         FactoryT{}(++initListCount),
@@ -190,45 +193,45 @@ template <typename T, typename FactoryT>
 
     ArrayView<T> view = array;
     std::span<T> span{array};
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
 
     ArrayView<T> view2 = view;
-    TEST_ENSURE(TestArrayView(view2, span) == 0);
+    TEST_ENSURE(testArrayView(view2, span) == 0);
 
     view = list;
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
 
     view = array;
-    TEST_ENSURE(TestArrayView(view, span) == 0);
+    TEST_ENSURE(testArrayView(view, span) == 0);
 
     return 0;
 }
 
-int main()
+mini::int32 main()
 {
-    TEST_ARRAY_VIEW(TestCtor, int*, IntPtrF);
-    TEST_ARRAY_VIEW(TestCtor, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
-    TEST_ARRAY_VIEW(TestCtor, UniquePtr<ConstexprObject>, UniquePtrF);
-    TEST_ARRAY_VIEW(TestCtor, ConstexprObject, ConstexprFooF);
-    TEST_ENSURE((TestCtor<TestObject, FooF>() == 0));
+    TEST_ARRAY_VIEW(testCtor, mini::int32*, IntPtrF);
+    TEST_ARRAY_VIEW(testCtor, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
+    TEST_ARRAY_VIEW(testCtor, mini::UniquePtr<ConstexprObject>, UniquePtrF);
+    TEST_ARRAY_VIEW(testCtor, ConstexprObject, ConstexprFooF);
+    TEST_ENSURE((testCtor<TestObject, FooF>() == 0));
 
-    TEST_ARRAY_VIEW(TestSubArray, int*, IntPtrF);
-    TEST_ARRAY_VIEW(TestSubArray, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
-    TEST_ARRAY_VIEW(TestSubArray, UniquePtr<ConstexprObject>, UniquePtrF);
-    TEST_ARRAY_VIEW(TestSubArray, ConstexprObject, ConstexprFooF);
-    TEST_ENSURE((TestSubArray<TestObject, FooF>() == 0));
+    TEST_ARRAY_VIEW(testSubArray, mini::int32*, IntPtrF);
+    TEST_ARRAY_VIEW(testSubArray, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
+    TEST_ARRAY_VIEW(testSubArray, mini::UniquePtr<ConstexprObject>, UniquePtrF);
+    TEST_ARRAY_VIEW(testSubArray, ConstexprObject, ConstexprFooF);
+    TEST_ENSURE((testSubArray<TestObject, FooF>() == 0));
 
-    TEST_ARRAY_VIEW(TestModify, int*, IntPtrF);
-    TEST_ARRAY_VIEW(TestModify, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
-    TEST_ARRAY_VIEW(TestModify, UniquePtr<ConstexprObject>, UniquePtrF);
-    TEST_ARRAY_VIEW(TestModify, ConstexprObject, ConstexprFooF);
-    TEST_ENSURE((TestModify<TestObject, FooF>() == 0));
+    TEST_ARRAY_VIEW(testModify, mini::int32*, IntPtrF);
+    TEST_ARRAY_VIEW(testModify, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
+    TEST_ARRAY_VIEW(testModify, mini::UniquePtr<ConstexprObject>, UniquePtrF);
+    TEST_ARRAY_VIEW(testModify, ConstexprObject, ConstexprFooF);
+    TEST_ENSURE((testModify<TestObject, FooF>() == 0));
 
-    TEST_ARRAY_VIEW(TestOperator, int*, IntPtrF);
-    TEST_ARRAY_VIEW(TestOperator, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
-    TEST_ARRAY_VIEW(TestOperator, UniquePtr<ConstexprObject>, UniquePtrF);
-    TEST_ARRAY_VIEW(TestOperator, ConstexprObject, ConstexprFooF);
-    TEST_ENSURE((TestOperator<TestObject, FooF>() == 0));
+    TEST_ARRAY_VIEW(testOperator, mini::int32*, IntPtrF);
+    TEST_ARRAY_VIEW(testOperator, std::unique_ptr<ConstexprObject>, StdUniquePtrF);
+    TEST_ARRAY_VIEW(testOperator, mini::UniquePtr<ConstexprObject>, UniquePtrF);
+    TEST_ARRAY_VIEW(testOperator, ConstexprObject, ConstexprFooF);
+    TEST_ENSURE((testOperator<TestObject, FooF>() == 0));
 
     return 0;
 }

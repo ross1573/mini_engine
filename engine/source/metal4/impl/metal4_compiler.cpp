@@ -5,49 +5,27 @@ import :common;
 
 namespace mini::metal4 {
 
-Compiler::Compiler(PtrView<Device> device)
-{
-    ASSERT(device);
-
-    SharedPtr<MTL4::CompilerDescriptor> desc = TransferShared(MTL4::CompilerDescriptor::alloc());
-    ENSURE(desc) {
-        return;
-    }
-
-    desc->init();
-
-    InitWithDescriptor(device, desc);
-}
-
 Compiler::Compiler(PtrView<Device> device, StringView name)
 {
     ASSERT(device);
 
-    SharedPtr<NS::String> label = ToNSString(name);
-    SharedPtr<MTL4::CompilerDescriptor> desc = TransferShared(MTL4::CompilerDescriptor::alloc());
-    ENSURE(desc) {
-        return;
+    SharedPtr<MTL4::CompilerDescriptor> desc = transfer(MTL4::CompilerDescriptor::alloc()->init());
+
+    if (!name.empty()) {
+        SharedPtr<NS::String> label = toNSString(name);
+        if (label.valid()) {
+            desc->setLabel(label.get());
+            m_name = name;
+        }
     }
-
-    desc->init();
-    desc->setLabel(label.Get());
-
-    if (label.Valid()) {
-        m_name = name;
-    }
-
-    InitWithDescriptor(device, desc);
-}
-
-void Compiler::InitWithDescriptor(PtrView<Device> device, SharedPtr<MTL4::CompilerDescriptor> const& desc)
-{
-    ASSERT(device);
 
     NS::Error* error;
-    m_compiler = TransferShared(device->MTLDevice()->newCompiler(desc.Get(), &error));
-    ENSURE(m_compiler, error, "failed to create compiler {}", m_name.Data()) {
+    MTL4::Compiler* compiler = device->mtlDevice()->newCompiler(desc.get(), &error);
+    ENSURE(compiler, error, "failed to create compiler {}", m_name.data()) {
         return;
     }
+
+    m_compiler = transfer(compiler);
 }
 
 } // namespace mini::metal4

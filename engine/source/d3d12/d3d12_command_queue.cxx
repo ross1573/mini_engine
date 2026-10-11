@@ -30,9 +30,9 @@ public:
     CommandQueue(ID3D12Device*, CommandType);
     ~CommandQueue();
 
-    void Wait(CommandQueue*);
+    void wait(CommandQueue*);
     void WaitForFence(uint64);
-    void WaitForIdle();
+    void waitIdle();
 
     uint64 ExecuteCommandList(ID3D12CommandList*);
 

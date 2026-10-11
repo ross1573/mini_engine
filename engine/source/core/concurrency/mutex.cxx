@@ -12,14 +12,14 @@ private:
     MutexT m_mutex;
 
 public:
-    Mutex() noexcept { MutexInitialize(m_mutex); }
+    Mutex() noexcept { mutexInitialize(m_mutex); }
     ~Mutex() noexcept = default;
 
-    void Lock() { MutexLock(m_mutex); }
-    void Unlock() { MutexUnlock(m_mutex); }
-    bool TryLock() { return MutexTryLock(m_mutex); }
+    void lock() { mutexLock(m_mutex); }
+    void unlock() { mutexUnlock(m_mutex); }
+    bool tryLock() { return mutexTryLock(m_mutex); }
 
-    MutexT* GetNativeHandle() noexcept { return &m_mutex; }
+    MutexT* nativeHandle() noexcept { return &m_mutex; }
 
 public:
     Mutex(Mutex const&) = delete;
@@ -33,14 +33,14 @@ private:
     MutexT m_mutex;
 
 public:
-    RecursiveMutex() { RecursiveMutexInitialize(m_mutex); }
+    RecursiveMutex() { recursiveMutexInitialize(m_mutex); }
     ~RecursiveMutex() noexcept = default;
 
-    void Lock() { RecursiveMutexLock(m_mutex); }
-    void Unlock() { RecursiveMutexUnlock(m_mutex); }
-    bool TryLock() { return RecursiveMutexTryLock(m_mutex); }
+    void lock() { recursiveMutexLock(m_mutex); }
+    void unlock() { recursiveMutexUnlock(m_mutex); }
+    bool tryLock() { return recursiveMutexTryLock(m_mutex); }
 
-    MutexT* GetNativeHandle() noexcept { return &m_mutex; }
+    MutexT* nativeHandle() noexcept { return &m_mutex; }
 
 public:
     RecursiveMutex(RecursiveMutex const&) = delete;

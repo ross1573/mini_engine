@@ -9,58 +9,58 @@ import :string_view;
 
 namespace mini {
 
-constexpr String WriteFormatError(String& to, StringView msg, fmt::format_error const& error)
+constexpr String writeFormatError(String& to, StringView msg, fmt::format_error const& error)
 {
     StringView errorMsg = error.what();
-    StringView pre = errorMsg.Empty() ? "format failed" : "format failed with error: ";
-    size_t totalLen = to.Size() + msg.Size() + pre.Size() + errorMsg.Size() + 3;
+    StringView pre = errorMsg.empty() ? "format failed" : "format failed with error: ";
+    size_t totalLen = to.size() + msg.size() + pre.size() + errorMsg.size() + 3;
 
-    to.Reserve(totalLen);
-    to.Append(msg);
-    to.Append(" (", 2);
-    to.Append(pre);
-    to.Append(errorMsg);
-    to.PushBack(')');
+    to.reserve(totalLen);
+    to.append(msg);
+    to.append(" (", 2);
+    to.append(pre);
+    to.append(errorMsg);
+    to.pushBack(')');
     return to;
 }
 
 export template <typename... Args>
-constexpr void FormatTo(String& to, StringView msg, Args&&... args)
+constexpr void formatTo(String& to, StringView msg, Args&&... args)
 {
-    auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
+    auto fmtMsg = fmt::string_view(msg.data(), msg.size());
     auto buf = fmt::memory_buffer();
 
     try {
         fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
     } catch (fmt::format_error const& error) {
-        WriteFormatError(to, msg, error);
+        writeFormatError(to, msg, error);
         return;
     }
 
-    to.Append(buf.data(), buf.size());
+    to.append(buf.data(), buf.size());
 }
 
 export template <typename... Args>
-constexpr String Format(StringView msg, Args&&... args)
+constexpr String format(StringView msg, Args&&... args)
 {
-    auto fmtMsg = fmt::string_view(msg.Data(), msg.Size());
+    auto fmtMsg = fmt::string_view(msg.data(), msg.size());
     auto buf = fmt::memory_buffer();
 
     try {
         fmt::vformat_to(fmt::appender(buf), fmtMsg, fmt::make_format_args(args...));
     } catch (fmt::format_error const& error) {
         String result;
-        WriteFormatError(result, msg, error);
+        writeFormatError(result, msg, error);
         return result;
     }
 
-    return { buf.data(), buf.size() };
+    return {buf.data(), buf.size()};
 }
 
 export template <typename T>
-constexpr String ToString(T const& val, StringView fmt = "{}")
+constexpr String toString(T const& val, StringView fmt = "{}")
 {
-    return Format(fmt, val);
+    return format(fmt, val);
 }
 
 } // namespace mini
@@ -71,7 +71,7 @@ template <mini::CharT T, mini::AllocatorT<T> AllocT>
 struct formatter<mini::BasicString<T, AllocT>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicString<T, AllocT> const& str, format_context& ctx) const
     {
-        basic_string_view<T> sv = fmt::basic_string_view<T>(str.Data(), str.Size());
+        basic_string_view<T> sv = fmt::basic_string_view<T>(str.data(), str.size());
         return formatter<basic_string_view<T>>::format(sv, ctx);
     }
 };
@@ -83,7 +83,7 @@ template <mini::CharT T>
 struct formatter<mini::BasicStringView<T>, T> : formatter<basic_string_view<T>, T> {
     auto format(mini::BasicStringView<T> const& str, format_context& ctx) const
     {
-        basic_string_view<T> sv = fmt::basic_string_view<T>(str.Data(), str.Size());
+        basic_string_view<T> sv = fmt::basic_string_view<T>(str.data(), str.size());
         return formatter<basic_string_view<T>>::format(sv, ctx);
     }
 };

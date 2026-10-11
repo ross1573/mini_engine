@@ -20,13 +20,13 @@ private:
 public:
     Device();
 
-    virtual bool Valid() const noexcept { return m_device.Valid(); }
+    virtual bool valid() const noexcept { return m_device.valid(); }
 
     void CreateSwapChainBuffer(SwapChainBuffer&);
-    graphics::SwapChain* CreateSwapChain() final;
-    graphics::Renderer* CreateRenderer() final;
+    graphics::SwapChain* createSwapChain() final;
+    graphics::Renderer* createRenderer() final;
 
-    graphics::API GetAPI() const final { return graphics::API::D3D12; }
+    graphics::Api api() const final { return graphics::Api::D3D12; }
     IDXGIFactory4* GetDXGIFactory() const { return m_factory; }
     IDXGIAdapter* GetDXGIAdapter() const { return m_adapter; }
     ID3D12Device* GetD3D12Device() const { return m_device; }

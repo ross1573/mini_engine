@@ -11,7 +11,7 @@ namespace mini::windows {
 
 Window::Window()
     : m_windowHandle(nullptr)
-    , m_rect{ }
+    , m_rect{}
     , m_isShowing(false)
     , m_state(Default)
 {
@@ -19,7 +19,7 @@ Window::Window()
     auto titleName = options::title;
     m_rect = RectInt(options::x, options::y, options::width, options::height);
 
-    HINSTANCE instance = interface->GetHandle()->GetHINSTANCE();
+    HINSTANCE instance = interface->handle()->GetHINSTANCE();
     uint32 styleEx = WS_EX_APPWINDOW;
     uint32 style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 
@@ -43,20 +43,20 @@ Window::Window()
     SetMenu(m_windowHandle, 0);
 }
 
-bool Window::Valid() const noexcept
+bool Window::valid() const noexcept
 {
     return m_windowHandle != nullptr;
 }
 
-void Window::Resize(RectInt const& rect)
+void Window::resize(RectInt const& rect)
 {
     m_rect = rect;
     SetWindowPos(m_windowHandle, nullptr, m_rect.x, m_rect.y, m_rect.width, m_rect.height, 0);
 }
 
-void Window::Minimize()
+void Window::minimize()
 {
-    if (IsMinimized()) {
+    if (minimized()) {
         return;
     }
 
@@ -64,9 +64,9 @@ void Window::Minimize()
     m_state = Minimized;
 }
 
-void Window::Maximize()
+void Window::maximize()
 {
-    if (IsMaximized()) {
+    if (maximized()) {
         return;
     }
 
@@ -74,7 +74,7 @@ void Window::Maximize()
     m_state = Maximized;
 }
 
-void Window::Show()
+void Window::show()
 {
     if (m_isShowing) {
         return;
@@ -84,7 +84,7 @@ void Window::Show()
     m_isShowing = true;
 }
 
-void Window::Hide()
+void Window::hide()
 {
     if (!m_isShowing) {
         return;

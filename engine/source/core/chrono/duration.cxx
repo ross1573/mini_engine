@@ -33,13 +33,13 @@ export using FloatHours = Duration<float64, HourPeriod>;
 export using FloatDays = Duration<float64, DayPeriod>;
 
 template <typename T>
-constexpr bool IsDurationT = false;
+constexpr bool durationType = false;
 
 template <ArithmeticT T, RatioT PeriodT>
-constexpr bool IsDurationT<Duration<T, PeriodT>> = true;
+constexpr bool durationType<Duration<T, PeriodT>> = true;
 
 export template <typename T>
-concept DurationT = IsDurationT<T>;
+concept DurationT = durationType<T>;
 
 template <ArithmeticT T, RatioT PeriodT>
 class Duration {
@@ -61,7 +61,7 @@ public:
     constexpr Duration(Duration<U, PeriodU> const& other) noexcept
         requires(FloatingT<T> || (!FloatingT<U> && RatioDivideT<PeriodU, PeriodT>::denom == 1));
 
-    constexpr Value Count() const noexcept;
+    constexpr Value count() const noexcept;
 
     constexpr CommonT<Duration> operator+() const noexcept;
     constexpr CommonT<Duration> operator-() const noexcept;
@@ -76,13 +76,13 @@ public:
     constexpr Duration& operator/=(Value const& value) noexcept;
     constexpr Duration& operator%=(Value const& value) noexcept;
 
-    static constexpr Duration Zero() noexcept;
-    static constexpr Duration Min() noexcept;
-    static constexpr Duration Max() noexcept;
+    static constexpr Duration zero() noexcept;
+    static constexpr Duration min() noexcept;
+    static constexpr Duration max() noexcept;
 };
 
 export template <DurationT U, ArithmeticT T, RatioT PeriodT>
-constexpr U DurationCast(Duration<T, PeriodT> const& from) noexcept
+constexpr U durationCast(Duration<T, PeriodT> const& from) noexcept
 {
     using FromDuration = Duration<T, PeriodT>;
     using ToDuration = U;
@@ -90,16 +90,16 @@ constexpr U DurationCast(Duration<T, PeriodT> const& from) noexcept
 
     constexpr auto period = RatioDivideT<PeriodT, typename U::Period>{};
     if constexpr (period.num == 1 && period.denom == 1) {
-        return ToDuration(static_cast<ToDuration::Value>(from.Count()));
+        return ToDuration(static_cast<ToDuration::Value>(from.count()));
     } else if constexpr (period.num == 1) {
-        ResultT ticks = static_cast<ResultT>(from.Count()) / static_cast<ResultT>(period.denom);
+        ResultT ticks = static_cast<ResultT>(from.count()) / static_cast<ResultT>(period.denom);
         return ToDuration(static_cast<ToDuration::Value>(ticks));
     } else if constexpr (period.denom == 1) {
-        ResultT ticks = static_cast<ResultT>(from.Count()) * static_cast<ResultT>(period.num);
+        ResultT ticks = static_cast<ResultT>(from.count()) * static_cast<ResultT>(period.num);
         return ToDuration(static_cast<ToDuration::Value>(ticks));
     } else {
-        ResultT ticks = static_cast<ResultT>(from.Count()) * static_cast<ResultT>(period.num) /
-                        static_cast<ResultT>(period.denom);
+        ResultT ticks =
+            static_cast<ResultT>(from.count()) * static_cast<ResultT>(period.num) / static_cast<ResultT>(period.denom);
         return ToDuration(static_cast<ToDuration::Value>(ticks));
     }
 }
@@ -116,12 +116,12 @@ template <ArithmeticT T, RatioT PeriodT>
 template <ArithmeticT U, RatioT PeriodU>
 constexpr Duration<T, PeriodT>::Duration(Duration<U, PeriodU> const& other) noexcept
     requires(FloatingT<T> || (!FloatingT<U> && RatioDivideT<PeriodU, PeriodT>::denom == 1))
-    : m_ticks(DurationCast<Duration<T, PeriodT>>(other).Count())
+    : m_ticks(durationCast<Duration<T, PeriodT>>(other).count())
 {
 }
 
 template <ArithmeticT T, RatioT PeriodT>
-constexpr Duration<T, PeriodT>::Value Duration<T, PeriodT>::Count() const noexcept
+constexpr Duration<T, PeriodT>::Value Duration<T, PeriodT>::count() const noexcept
 {
     return m_ticks;
 }
@@ -207,19 +207,19 @@ constexpr Duration<T, PeriodT>& Duration<T, PeriodT>::operator%=(Value const& va
 }
 
 template <ArithmeticT T, RatioT PeriodT>
-constexpr Duration<T, PeriodT> Duration<T, PeriodT>::Zero() noexcept
+constexpr Duration<T, PeriodT> Duration<T, PeriodT>::zero() noexcept
 {
     return Duration(0);
 }
 
 template <ArithmeticT T, RatioT PeriodT>
-constexpr Duration<T, PeriodT> Duration<T, PeriodT>::Min() noexcept
+constexpr Duration<T, PeriodT> Duration<T, PeriodT>::min() noexcept
 {
     return Duration(NumericLimit<T>::min);
 }
 
 template <ArithmeticT T, RatioT PeriodT>
-constexpr Duration<T, PeriodT> Duration<T, PeriodT>::Max() noexcept
+constexpr Duration<T, PeriodT> Duration<T, PeriodT>::max() noexcept
 {
     return Duration(NumericLimit<T>::max);
 }
@@ -229,7 +229,7 @@ constexpr CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>> operator+(Duration
                                                                         Duration<U, PeriodU> const& rhs) noexcept
 {
     using ResultT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return ResultT(DurationCast<ResultT>(lhs).Count() + DurationCast<ResultT>(rhs).Count());
+    return ResultT(durationCast<ResultT>(lhs).count() + durationCast<ResultT>(rhs).count());
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U, RatioT PeriodU>
@@ -237,7 +237,7 @@ constexpr CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>> operator-(Duration
                                                                         Duration<U, PeriodU> const& rhs) noexcept
 {
     using ResultT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return ResultT(DurationCast<ResultT>(lhs).Count() - DurationCast<ResultT>(rhs).Count());
+    return ResultT(durationCast<ResultT>(lhs).count() - durationCast<ResultT>(rhs).count());
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U>
@@ -245,7 +245,7 @@ constexpr Duration<CommonT<T, U>, PeriodT> operator*(Duration<T, PeriodT> const&
 {
     using ValueT = CommonT<T, U>;
     using ResultT = Duration<ValueT, PeriodT>;
-    return ResultT(DurationCast<ResultT>(duration).Count() * static_cast<ValueT>(value));
+    return ResultT(durationCast<ResultT>(duration).count() * static_cast<ValueT>(value));
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U>
@@ -253,7 +253,7 @@ constexpr Duration<CommonT<T, U>, PeriodT> operator*(U value, Duration<T, Period
 {
     using ValueT = CommonT<T, U>;
     using ResultT = Duration<ValueT, PeriodT>;
-    return ResultT(DurationCast<ResultT>(duration).Count() * static_cast<ValueT>(value));
+    return ResultT(durationCast<ResultT>(duration).count() * static_cast<ValueT>(value));
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U>
@@ -261,14 +261,14 @@ constexpr Duration<CommonT<T, U>, PeriodT> operator/(Duration<T, PeriodT> const&
 {
     using ValueT = CommonT<T, U>;
     using ResultT = Duration<ValueT, PeriodT>;
-    return ResultT(DurationCast<ResultT>(duration).Count() / static_cast<ValueT>(value));
+    return ResultT(durationCast<ResultT>(duration).count() / static_cast<ValueT>(value));
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U, RatioT PeriodU>
 constexpr CommonT<T, U> operator/(Duration<T, PeriodT> const& lhs, Duration<U, PeriodU> const& rhs) noexcept
 {
     using CommonDurationT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return DurationCast<CommonDurationT>(lhs).Count() / DurationCast<CommonDurationT>(rhs).Count();
+    return durationCast<CommonDurationT>(lhs).count() / durationCast<CommonDurationT>(rhs).count();
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U, RatioT PeriodU>
@@ -276,7 +276,7 @@ constexpr CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>> operator%(Duration
                                                                         Duration<U, PeriodU> const& rhs) noexcept
 {
     using ResultT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return ResultT(DurationCast<ResultT>(lhs).Count() % DurationCast<ResultT>(rhs).Count());
+    return ResultT(durationCast<ResultT>(lhs).count() % durationCast<ResultT>(rhs).count());
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U>
@@ -284,27 +284,27 @@ constexpr Duration<CommonT<T, U>, PeriodT> operator%(Duration<T, PeriodT> const&
 {
     using ValueT = CommonT<T, U>;
     using ResultT = Duration<ValueT, PeriodT>;
-    return ResultT(DurationCast<ResultT>(duration).Count() % static_cast<ValueT>(value));
+    return ResultT(durationCast<ResultT>(duration).count() % static_cast<ValueT>(value));
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U, RatioT PeriodU>
 constexpr bool operator==(Duration<T, PeriodT> const& lhs, Duration<U, PeriodU> const& rhs) noexcept
 {
     using CommonDurationT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return DurationCast<CommonDurationT>(lhs).Count() == DurationCast<CommonDurationT>(rhs).Count();
+    return durationCast<CommonDurationT>(lhs).count() == durationCast<CommonDurationT>(rhs).count();
 }
 
 export template <ArithmeticT T, RatioT PeriodT, ArithmeticT U, RatioT PeriodU>
 constexpr auto operator<=>(Duration<T, PeriodT> const& lhs, Duration<U, PeriodU> const& rhs) noexcept
 {
     using CommonDurationT = CommonT<Duration<T, PeriodT>, Duration<U, PeriodU>>;
-    return DurationCast<CommonDurationT>(lhs).Count() <=> DurationCast<CommonDurationT>(rhs).Count();
+    return durationCast<CommonDurationT>(lhs).count() <=> durationCast<CommonDurationT>(rhs).count();
 }
 
 export template <DurationT U, ArithmeticT T, RatioT PeriodT>
-constexpr U Floor(Duration<T, PeriodT> const& duration) noexcept
+constexpr U floor(Duration<T, PeriodT> const& duration) noexcept
 {
-    U result = DurationCast<U>(duration);
+    U result = durationCast<U>(duration);
     if (result > duration) {
         result = result - U(1);
     }
@@ -313,9 +313,9 @@ constexpr U Floor(Duration<T, PeriodT> const& duration) noexcept
 }
 
 export template <DurationT U, ArithmeticT T, RatioT PeriodT>
-constexpr U Ceil(Duration<T, PeriodT> const& duration) noexcept
+constexpr U ceil(Duration<T, PeriodT> const& duration) noexcept
 {
-    U result = DurationCast<U>(duration);
+    U result = durationCast<U>(duration);
     if (result < duration) {
         result = result + U(1);
     }
@@ -324,9 +324,9 @@ constexpr U Ceil(Duration<T, PeriodT> const& duration) noexcept
 }
 
 export template <DurationT U, ArithmeticT T, RatioT PeriodT>
-constexpr U Round(Duration<T, PeriodT> const& duration) noexcept
+constexpr U round(Duration<T, PeriodT> const& duration) noexcept
 {
-    U lower = DurationCast<U>(duration);
+    U lower = durationCast<U>(duration);
     if (lower > duration) {
         lower = lower - U(1);
     }
@@ -343,13 +343,13 @@ constexpr U Round(Duration<T, PeriodT> const& duration) noexcept
         return upper;
     }
 
-    return (lower.Count() & 1) ? upper : lower;
+    return (lower.count() & 1) ? upper : lower;
 }
 
 export template <ArithmeticT T, RatioT PeriodT>
-constexpr Duration<T, PeriodT> Abs(Duration<T, PeriodT> const& duration) noexcept
+constexpr Duration<T, PeriodT> abs(Duration<T, PeriodT> const& duration) noexcept
 {
-    return duration >= duration.Zero() ? +duration : -duration;
+    return duration >= duration.zero() ? +duration : -duration;
 }
 
 } // namespace mini

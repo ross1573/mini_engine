@@ -11,11 +11,11 @@ namespace mini {
 export class CORE_API Logger final : public LoggerBase {
 public:
     enum class Level : byte {
-        debug = 0,
-        info = 1,
-        warn = 2,
-        error = 3,
-        fatal = 4,
+        Debug = 0,
+        Info = 1,
+        Warn = 2,
+        Error = 3,
+        Fatal = 4,
     };
 
     struct MessageContext {
@@ -30,22 +30,22 @@ public:
     Logger(StringView category) noexcept;
 
     template <typename... Args>
-    void Log(Level level, MessageContext context, Args&&... args);
+    void log(Level level, MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Debug(MessageContext context, Args&&... args);
+    void debug(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Info(MessageContext context, Args&&... args);
+    void info(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Warn(MessageContext context, Args&&... args);
+    void warn(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Error(MessageContext context, Args&&... args);
+    void error(MessageContext context, Args&&... args);
 
     template <typename... Args>
-    void Fatal(MessageContext context, Args&&... args);
+    void fatal(MessageContext context, Args&&... args);
 };
 
 template <StringLikeT<char> T>
@@ -61,48 +61,48 @@ Logger::Logger(StringView category) noexcept
 }
 
 template <typename... Args>
-inline void Logger::Log(Level level, MessageContext context, Args&&... args)
+inline void Logger::log(Level level, MessageContext context, Args&&... args)
 {
     String log;
     if constexpr (sizeof...(args) == 0) {
-        log.Append(context.message);
+        log.append(context.message);
     } else {
-        FormatTo(log, context.message, ForwardArg<Args>(args)...);
+        formatTo(log, context.message, forwardCast<Args>(args)...);
     }
 
-    LoggerBase::PrintMessage(static_cast<byte>(level), log);
+    LoggerBase::printMessage(static_cast<byte>(level), log);
 }
 
 template <typename... Args>
-inline void Logger::Debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
+inline void Logger::debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
 #if !NODEBUGLOG
-    Log(Level::debug, context, ForwardArg<Args>(args)...);
+    log(Level::Debug, context, forwardCast<Args>(args)...);
 #endif
 }
 
 template <typename... Args>
-inline void Logger::Info(MessageContext context, Args&&... args)
+inline void Logger::info(MessageContext context, Args&&... args)
 {
-    Log(Level::info, context, ForwardArg<Args>(args)...);
+    log(Level::Info, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
-inline void Logger::Warn(MessageContext context, Args&&... args)
+inline void Logger::warn(MessageContext context, Args&&... args)
 {
-    Log(Level::warn, context, ForwardArg<Args>(args)...);
+    log(Level::Warn, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
-inline void Logger::Error(MessageContext context, Args&&... args)
+inline void Logger::error(MessageContext context, Args&&... args)
 {
-    Log(Level::error, context, ForwardArg<Args>(args)...);
+    log(Level::Error, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
-inline void Logger::Fatal(MessageContext context, Args&&... args)
+inline void Logger::fatal(MessageContext context, Args&&... args)
 {
-    Log(Level::fatal, context, ForwardArg<Args>(args)...);
+    log(Level::Fatal, context, forwardCast<Args>(args)...);
 }
 
 } // namespace mini

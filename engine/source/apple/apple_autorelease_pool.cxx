@@ -19,17 +19,15 @@ private:
     SharedPtr<NS::AutoreleasePool> m_autoreleasePool;
 
 public:
-    AutoreleasePool() noexcept
-        : m_autoreleasePool(TransferShared(NS::AutoreleasePool::alloc()))
-    {
-        ENSURE(m_autoreleasePool, "failed to create auto release pool score") {
-            return;
-        }
+    AutoreleasePool() noexcept;
 
-        m_autoreleasePool->init();
-    }
-
-    void Reset() { m_autoreleasePool.Reset(); }
+    void reset() { m_autoreleasePool.reset(); }
 };
+
+AutoreleasePool::AutoreleasePool() noexcept
+    : m_autoreleasePool(transfer(NS::AutoreleasePool::alloc()->init()))
+{
+    m_autoreleasePool->init();
+}
 
 } // namespace mini::apple

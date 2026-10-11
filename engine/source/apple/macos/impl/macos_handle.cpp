@@ -13,17 +13,11 @@ import mini.engine;
 
 namespace mini::macos {
 
-Handle::Handle()
-    : cocoa::Application()
-    , platform::Handle()
-{
-}
-
-void Handle::OnKeyDown(uint32 keyCode)
+void Handle::onKeyDown(uint32 keyCode)
 {
     switch (keyCode) {
-        case 0x0C: Engine::Quit(); break;
-        case 0x35: Engine::Abort("escape"); break;
+        case 0x0C: Engine::quit(); break;
+        case 0x35: Engine::abort("escape"); break;
         default:   break;
     }
 }

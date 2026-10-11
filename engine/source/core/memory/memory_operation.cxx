@@ -9,11 +9,11 @@ import :assert;
 import :cmemory;
 import :utility_operation;
 
-namespace mini::memory {
+namespace mini {
 
 template <typename T>
 concept IndirectAddressableT = requires(T ele) {
-    { ele.Address() } -> PointerT;
+    { ele.address() } -> PointerT;
 };
 
 export template <typename T>
@@ -23,28 +23,52 @@ export template <typename T>
 concept DereferencableT = requires(T ele) { *ele; };
 
 export template <AddressableT T>
-constexpr decltype(auto) ToAddress(T const& ele) noexcept
+constexpr decltype(auto) address(T const& ele) noexcept
 {
     if constexpr (PointerT<T>) {
         return ele;
     } else if constexpr (IndirectAddressableT<T>) {
-        return ele.Address();
+        return ele.address();
     } else {
         UNSUPPORTED("unknown type for address conversion", T);
     }
 }
 
 export template <typename T>
-constexpr decltype(auto) AddressOf(T& ele)
+constexpr decltype(auto) addressof(T& ele)
 {
     return BUILTIN_ADDRESS_OF(ele);
 }
 
 export template <typename T>
-constexpr decltype(auto) AddressOf(T const&& rval) = deleted_function("cannot get address of r-value");
+constexpr decltype(auto) addressof(T const&& rval) = deleted_function("cannot get address of r-value");
+
+export template <PointerT T, PointerT U>
+constexpr bool pointerOverlapping(T ptr, U begin, U end)
+{
+    if consteval {
+        return false;
+    }
+
+    return (begin <= ptr) && (end > ptr);
+}
+
+export template <PointerT T, PointerT U>
+constexpr bool pointerOverlapping(T b1, T e1, U b2, U e2)
+{
+    if consteval {
+        return false;
+    }
+
+    return pointerOverlapping(b1, b2, e2) || pointerOverlapping(e1, b2, e2);
+}
+
+} // namespace mini
+
+namespace mini::memory {
 
 template <typename T, typename U>
-consteval bool IsTriviallyOperatable()
+consteval bool triviallyOperatable()
 {
     if constexpr (PointerT<T> && PointerT<U>) {
         using ValueT = RemoveConstT<RemovePtrT<T>>;
@@ -59,50 +83,30 @@ consteval bool IsTriviallyOperatable()
     return false;
 }
 
-export template <PointerT T, PointerT U>
-constexpr bool IsPtrOverlapping(T ptr, U begin, U end)
-{
-    if consteval {
-        return false;
-    }
-
-    return (begin <= ptr) && (end > ptr);
-}
-
-export template <PointerT T, PointerT U>
-constexpr bool IsPtrOverlapping(T b1, T e1, U b2, U e2)
-{
-    if consteval {
-        return false;
-    }
-
-    return IsPtrOverlapping(b1, b2, e2) || IsPtrOverlapping(e1, b2, e2);
-}
-
 // msvc won't evaluate placement new at compile time if there's no return.
 // expression has to be decorated with [[msvc::constexpr]]
 template <typename T, typename... Args>
-constexpr T* ConstructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+constexpr T* constructAtImpl(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
-    MSVC_CONSTEXPR return ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
+    MSVC_CONSTEXPR return ::new (static_cast<void*>(ptr)) T(forwardCast<Args>(args)...);
 }
 
 export template <NonArrayT T, typename... Args>
-constexpr void ConstructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
+constexpr void constructAt(T* ptr, Args&&... args) noexcept(NoThrowConstructibleFromT<T, Args...>)
 {
 #if MSVC
     if consteval {
-        ConstructAtImpl(ptr, ForwardArg<Args>(args)...);
+        constructAtImpl(ptr, forwardCast<Args>(args)...);
         return;
     }
 #endif
 
     ASSERT(ptr != nullptr, "invalid location for object");
-    ::new (static_cast<void*>(ptr)) T(ForwardArg<Args>(args)...);
+    ::new (static_cast<void*>(ptr)) T(forwardCast<Args>(args)...);
 }
 
 export template <NoThrowDefaultConstructibleT T>
-constexpr void BeginLifetime(T* begin, T* end) noexcept
+constexpr void beginLifetime(T* begin, T* end) noexcept
 {
     ASSERT(begin <= end, "invalid range");
 
@@ -111,22 +115,22 @@ constexpr void BeginLifetime(T* begin, T* end) noexcept
     }
 
     for (; begin != end; ++begin) {
-        ConstructAt(begin);
+        constructAt(begin);
     }
 }
 
 export template <NoThrowDefaultConstructibleT T>
-constexpr void BeginLifetime(T* loc) noexcept
+constexpr void beginLifetime(T* loc) noexcept
 {
     if !consteval {
         return;
     }
 
-    ConstructAt(loc);
+    constructAt(loc);
 }
 
 export template <NonArrayT T>
-constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
+constexpr void destructAt(T* ptr) noexcept(DestructibleT<T>)
 {
     ASSERT(ptr != nullptr, "invalid location for object");
 
@@ -138,78 +142,78 @@ constexpr void DestructAt(T* ptr) noexcept(DestructibleT<T>)
 }
 
 export template <typename T, typename... Args>
-constexpr void ConstructRangeArgs(T begin, T end, Args&&... args)
+constexpr void constructRangeArgs(T begin, T end, Args&&... args)
 {
     for (; begin != end; ++begin) {
-        ConstructAt(ToAddress(begin), ForwardArg<Args>(args)...);
+        constructAt(address(begin), forwardCast<Args>(args)...);
     }
 }
 
 export template <typename T, typename U>
-constexpr void ConstructRange(T dest, U begin, U end)
+constexpr void constructRange(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
+    if constexpr (triviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
-        BeginLifetime(dest, dest + size);
-        MemCopy(dest, begin, size);
+        beginLifetime(dest, dest + size);
+        memcopy(dest, begin, size);
         return;
     }
 
     for (; begin != end; ++begin, ++dest) {
-        ConstructAt(ToAddress(dest), *begin);
+        constructAt(address(dest), *begin);
     }
 }
 
 export template <typename T, typename U>
-constexpr void ConstructBackward(T dest, U begin, U end)
+constexpr void constructBackward(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
+    if constexpr (triviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
-        BeginLifetime(dest - size, dest);
-        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
+        beginLifetime(dest - size, dest);
+        memcopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; end != begin;) {
-        ConstructAt(ToAddress(--dest), *(--end));
+        constructAt(address(--dest), *(--end));
     }
 }
 
 export template <typename T, typename U>
-constexpr void MoveConstructRange(T dest, U begin, U end)
+constexpr void moveconstructRange(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
+    if constexpr (triviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
-        BeginLifetime(dest, dest + size);
-        MemCopy(dest, begin, size);
+        beginLifetime(dest, dest + size);
+        memcopy(dest, begin, size);
         return;
     }
 
     for (; begin != end; ++begin, ++dest) {
-        ConstructAt(ToAddress(dest), MoveArg(*begin));
+        constructAt(address(dest), moveCast(*begin));
     }
 }
 
 export template <typename T, typename U>
-constexpr void MoveConstructBackward(T dest, U begin, U end)
+constexpr void moveconstructBackward(T dest, U begin, U end)
 {
-    if constexpr (IsTriviallyOperatable<T, U>()) {
+    if constexpr (triviallyOperatable<T, U>()) {
         size_t size = static_cast<size_t>(end - begin);
-        BeginLifetime(dest - size, dest);
-        MemCopyBackward(dest, end, static_cast<size_t>(end - begin));
+        beginLifetime(dest - size, dest);
+        memcopyBackward(dest, end, static_cast<size_t>(end - begin));
         return;
     }
 
     for (; end != begin;) {
-        ConstructAt(ToAddress(--dest), MoveArg(*(--end)));
+        constructAt(address(--dest), moveCast(*(--end)));
     }
 }
 
 export template <typename T>
-constexpr void DestructRange(T begin, T end)
+constexpr void destructRange(T begin, T end)
 {
     for (; begin != end; ++begin) {
-        DestructAt(ToAddress(begin));
+        destructAt(address(begin));
     }
 }
 

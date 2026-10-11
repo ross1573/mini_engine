@@ -44,17 +44,17 @@ public:
         requires(not SameAsT<T, U>)
     constexpr BasicStringConvert(BasicStringView<U> src);
 
-    [[nodiscard]] constexpr size_t Size() const noexcept;
-    [[nodiscard]] constexpr ConstPointer Data() const noexcept;
+    [[nodiscard]] constexpr size_t size() const noexcept;
+    [[nodiscard]] constexpr ConstPointer data() const noexcept;
 
-    [[nodiscard]] constexpr BasicString<T, AllocT> ToString() const;
+    [[nodiscard]] constexpr BasicString<T, AllocT> toString() const;
     constexpr operator BasicString<T, AllocT>() const;
     constexpr operator BasicStringView<T>() const noexcept;
 
 // https://stackoverflow.com/questions/78347691/overloading-ref-qualified-member-function-without-ref-qualifier
 // seem like it has been valid recently, and msvc hasn't updated it yet.
 #if !(MSVC)
-    [[nodiscard]] constexpr BasicString<T, AllocT> ToString() && noexcept;
+    [[nodiscard]] constexpr BasicString<T, AllocT> toString() && noexcept;
     constexpr operator BasicString<T, AllocT>() && noexcept;
 #endif
 
@@ -69,52 +69,52 @@ public:
 private:
     template <CharT U>
         requires(not SameAsT<T, U>)
-    constexpr void Convert(BasicStringView<U> const& str);
+    constexpr void convert(BasicStringView<U> const& str);
 };
 
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(U const* src)
-    : m_data{ }
+    : m_data{}
 {
     BasicStringView<U> view = src;
-    Convert(view);
+    convert(view);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(BasicString<U> const& src)
-    : m_data{ }
+    : m_data{}
 {
     BasicStringView<U> view = src;
-    Convert(view);
+    convert(view);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
 constexpr BasicStringConvert<T, AllocT>::BasicStringConvert(BasicStringView<U> src)
-    : m_data{ }
+    : m_data{}
 {
-    Convert(src);
+    convert(src);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-constexpr size_t BasicStringConvert<T, AllocT>::Size() const noexcept
+constexpr size_t BasicStringConvert<T, AllocT>::size() const noexcept
 {
-    return m_data.Size();
+    return m_data.size();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-constexpr BasicStringConvert<T, AllocT>::ConstPointer BasicStringConvert<T, AllocT>::Data() const noexcept
+constexpr BasicStringConvert<T, AllocT>::ConstPointer BasicStringConvert<T, AllocT>::data() const noexcept
 {
-    return m_data.Data();
+    return m_data.data();
 }
 
 template <CharT T, AllocatorT<T> AllocT>
-constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() const
+constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::toString() const
 {
     return m_data;
 }
@@ -133,39 +133,39 @@ constexpr BasicStringConvert<T, AllocT>::operator BasicStringView<T>() const noe
 
 #if !(MSVC)
 template <CharT T, AllocatorT<T> AllocT>
-constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::ToString() && noexcept
+constexpr BasicString<T, AllocT> BasicStringConvert<T, AllocT>::toString() && noexcept
 {
-    return MoveArg(m_data);
+    return moveCast(m_data);
 }
 
 template <CharT T, AllocatorT<T> AllocT>
 constexpr BasicStringConvert<T, AllocT>::operator BasicString<T, AllocT>() && noexcept
 {
-    return MoveArg(m_data);
+    return moveCast(m_data);
 }
 #endif
 
 template <CharT T, AllocatorT<T> AllocT>
 template <CharT U>
     requires(not SameAsT<T, U>)
-constexpr void BasicStringConvert<T, AllocT>::Convert(BasicStringView<U> const& str)
+constexpr void BasicStringConvert<T, AllocT>::convert(BasicStringView<U> const& str)
 {
-    if (str.Size() == 0) {
+    if (str.size() == 0) {
         return;
     }
 
-    U const* begin = str.Data();
-    U const* end = str.Data() + str.Size();
+    U const* begin = str.data();
+    U const* end = str.data() + str.size();
 
     size_t size = static_cast<size_t>(utf::ConvertLength(begin, end, Value(0)));
-    m_data.Resize(size);
-    T* dst = m_data.Data();
+    m_data.resize(size);
+    T* dst = m_data.data();
 
     utf::Convert(begin, end, dst, dst + size);
 }
 
 export template <CharT T>
-constexpr auto format_as(BasicStringConvert<T> const& convert)
+constexpr auto format_as(BasicStringConvert<T> const& convert) // NOLINT
 {
     return static_cast<BasicStringView<T>>(convert);
 }

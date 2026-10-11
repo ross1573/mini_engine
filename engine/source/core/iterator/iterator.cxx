@@ -17,11 +17,11 @@ concept ForwardIteratorT = CopyableT<T> && EqualityComparableT<T> && //
     requires PointerT<typename T::Pointer>;
     requires ReferenceT<typename T::Reference>;
 
-    { iter.Valid() } -> ConvertibleToT<bool>;
-    { iter.ValidWith(other) } -> ConvertibleToT<bool>;
-    { iter.Increment() } -> ConvertibleToT<bool>;
+    { iter.valid() } -> ConvertibleToT<bool>;
+    { iter.validWith(other) } -> ConvertibleToT<bool>;
+    { iter.increment() } -> ConvertibleToT<bool>;
 
-    { iter.Address() } -> SameAsT<typename T::Pointer>;
+    { iter.address() } -> SameAsT<typename T::Pointer>;
     { iter.operator->() } -> SameAsT<typename T::Pointer>;
 
     { *iter } -> SameAsT<typename T::Reference>;
@@ -33,7 +33,7 @@ export template <typename T>
 concept BidrectionalIteratorT = ForwardIteratorT<T> && //
                                 requires(T iter)       //
 {
-    { iter.Decrement() } -> ConvertibleToT<bool>;
+    { iter.decrement() } -> ConvertibleToT<bool>;
 
     { --iter } -> SameAsT<T &>;
     { iter-- } -> SameAsT<T>;
@@ -43,7 +43,7 @@ export template <typename T>
 concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&    //
                                 requires(T iter, T const citer, offset_t offset) //
 {
-    { iter.Advance(offset) } -> ConvertibleToT<bool>;
+    { iter.advance(offset) } -> ConvertibleToT<bool>;
 
     { iter += offset } -> SameAsT<T &>;
     { iter -= offset } -> SameAsT<T &>;
@@ -56,11 +56,11 @@ concept RandomAccessIteratorT = BidrectionalIteratorT<T> && ComparableT<T> &&   
 
 export template <typename T, typename U>
 concept IteratorCopyableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> &&
-                                requires(T iter, U value) { *iter = ForwardArg<typename U::Value>(*value); };
+                                requires(T iter, U value) { *iter = forwardCast<typename U::Value>(*value); };
 
 export template <typename T, typename U>
 concept IteratorMovableFromT = ForwardIteratorT<T> && ForwardIteratorT<U> && //
-                               requires(T iter, U value) { *iter = MoveArg(*value); };
+                               requires(T iter, U value) { *iter = moveCast(*value); };
 
 export template <typename Iter, typename T>
 concept ForwardIteratableByT = ForwardIteratorT<Iter> && ConvertibleToT<typename Iter::Value, T>;
@@ -79,46 +79,47 @@ export template <typename T>
 constexpr T::Iterator begin(T &iter)
     requires ForwardIteratorT<typename T::Iterator>
 {
-    return iter.Begin();
+    return iter.begin();
 }
 
 export template <typename T>
 constexpr T::Iterator end(T &iter)
     requires ForwardIteratorT<typename T::Iterator>
 {
-    return iter.End();
+    return iter.end();
 }
 
 export template <typename T>
 constexpr T::ConstIterator begin(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return iter.Begin();
+    return iter.begin();
 }
 
 export template <typename T>
 constexpr T::ConstIterator end(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return iter.End();
+    return iter.end();
 }
 
 export template <typename T>
 constexpr T::ConstIterator cbegin(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return iter.Begin();
+    return iter.begin();
 }
 
 export template <typename T>
 constexpr T::ConstIterator cend(T const &iter)
     requires ForwardIteratorT<typename T::ConstIterator>
 {
-    return iter.End();
+    return iter.end();
 }
 
 } // namespace mini
 
+// NOLINTBEGIN
 export namespace std {
 
 template <mini::ForwardIteratorT T>
@@ -149,3 +150,4 @@ struct iterator_traits<T> {
 };
 
 } // namespace std
+// NOLINTEND

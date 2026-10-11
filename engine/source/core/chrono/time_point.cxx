@@ -9,13 +9,13 @@ export template <DurationT T = Nanoseconds>
 class TimePoint;
 
 template <typename T>
-constexpr bool IsTimePointT = false;
+constexpr bool timePointType = false;
 
 template <DurationT T>
-constexpr bool IsTimePointT<TimePoint<T>> = true;
+constexpr bool timePointType<TimePoint<T>> = true;
 
 export template <typename T>
-concept TimePointT = IsTimePointT<T>;
+concept TimePointT = timePointType<T>;
 
 template <DurationT T>
 class TimePoint {
@@ -34,13 +34,13 @@ public:
     template <DurationT U>
     constexpr TimePoint(TimePoint<U> const& other) noexcept;
 
-    constexpr Duration SinceEpoch() const noexcept;
+    constexpr Duration sinceEpoch() const noexcept;
 
     constexpr TimePoint& operator+=(Duration const& duration) noexcept;
     constexpr TimePoint& operator-=(Duration const& duration) noexcept;
 
-    static constexpr TimePoint Min() noexcept;
-    static constexpr TimePoint Max() noexcept;
+    static constexpr TimePoint min() noexcept;
+    static constexpr TimePoint max() noexcept;
 };
 
 template <DurationT T>
@@ -58,12 +58,12 @@ constexpr TimePoint<T>::TimePoint(Duration const& duration) noexcept
 template <DurationT T>
 template <DurationT U>
 constexpr TimePoint<T>::TimePoint(TimePoint<U> const& other) noexcept
-    : m_duration(DurationCast<T>(other.m_duration))
+    : m_duration(durationCast<T>(other.m_duration))
 {
 }
 
 template <DurationT T>
-constexpr TimePoint<T>::Duration TimePoint<T>::SinceEpoch() const noexcept
+constexpr TimePoint<T>::Duration TimePoint<T>::sinceEpoch() const noexcept
 {
     return m_duration;
 }
@@ -83,75 +83,75 @@ constexpr TimePoint<T>& TimePoint<T>::operator-=(Duration const& duration) noexc
 }
 
 template <DurationT T>
-constexpr TimePoint<T> TimePoint<T>::Min() noexcept
+constexpr TimePoint<T> TimePoint<T>::min() noexcept
 {
-    return TimePoint<T>(Duration::Min());
+    return TimePoint<T>(Duration::min());
 }
 
 template <DurationT T>
-constexpr TimePoint<T> TimePoint<T>::Max() noexcept
+constexpr TimePoint<T> TimePoint<T>::max() noexcept
 {
-    return TimePoint<T>(Duration::Max());
+    return TimePoint<T>(Duration::max());
 }
 
 export template <DurationT To, DurationT From>
-constexpr TimePoint<To> TimePointCast(TimePoint<From> const& timepoint) noexcept
+constexpr TimePoint<To> timePointCast(TimePoint<From> const& timepoint) noexcept
 {
-    return TimePoint<To>(DurationCast<To>(timepoint.SinceEpoch()));
+    return TimePoint<To>(durationCast<To>(timepoint.sinceEpoch()));
 }
 
 export template <DurationT To, DurationT From>
-constexpr TimePoint<To> Floor(TimePoint<From> const& timepoint) noexcept
+constexpr TimePoint<To> floor(TimePoint<From> const& timepoint) noexcept
 {
-    return TimePoint<To>(Floor<To>(timepoint.SinceEpoch()));
+    return TimePoint<To>(floor<To>(timepoint.sinceEpoch()));
 }
 
 export template <DurationT To, DurationT From>
-constexpr TimePoint<To> Ceil(TimePoint<From> const& timepoint) noexcept
+constexpr TimePoint<To> ceil(TimePoint<From> const& timepoint) noexcept
 {
-    return TimePoint<To>(Ceil<To>(timepoint.SinceEpoch()));
+    return TimePoint<To>(ceil<To>(timepoint.sinceEpoch()));
 }
 
 export template <DurationT To, DurationT From>
-constexpr TimePoint<To> Round(TimePoint<From> const& timepoint) noexcept
+constexpr TimePoint<To> round(TimePoint<From> const& timepoint) noexcept
 {
-    return TimePoint<To>(Round<To>(timepoint.SinceEpoch()));
+    return TimePoint<To>(round<To>(timepoint.sinceEpoch()));
 }
 
 export template <DurationT T, DurationT U>
 constexpr TimePoint<CommonT<T, U>> operator+(TimePoint<T> const& timepoint, U const& duration) noexcept
 {
-    return TimePoint<CommonT<T, U>>(timepoint.SinceEpoch() + duration);
+    return TimePoint<CommonT<T, U>>(timepoint.sinceEpoch() + duration);
 }
 
 export template <DurationT T, DurationT U>
 constexpr TimePoint<CommonT<T, U>> operator+(T const& duration, TimePoint<U> const& timepoint) noexcept
 {
-    return TimePoint<CommonT<T, U>>(duration + timepoint.SinceEpoch());
+    return TimePoint<CommonT<T, U>>(duration + timepoint.sinceEpoch());
 }
 
 export template <DurationT T, DurationT U>
 constexpr TimePoint<CommonT<T, U>> operator-(TimePoint<T> const& timepoint, U const& duration) noexcept
 {
-    return TimePoint<CommonT<T, U>>(timepoint.SinceEpoch() - duration);
+    return TimePoint<CommonT<T, U>>(timepoint.sinceEpoch() - duration);
 }
 
 export template <DurationT T, DurationT U>
 constexpr CommonT<T, U> operator-(TimePoint<T> const& lhs, TimePoint<U> const& rhs) noexcept
 {
-    return lhs.SinceEpoch() - rhs.SinceEpoch();
+    return lhs.sinceEpoch() - rhs.sinceEpoch();
 }
 
 export template <DurationT T, DurationT U>
 constexpr bool operator==(TimePoint<T> const& lhs, TimePoint<U> const& rhs) noexcept
 {
-    return lhs.SinceEpoch() == rhs.SinceEpoch();
+    return lhs.sinceEpoch() == rhs.sinceEpoch();
 }
 
 export template <DurationT T, DurationT U>
 constexpr auto operator<=>(TimePoint<T> const& lhs, TimePoint<U> const& rhs) noexcept
 {
-    return lhs.SinceEpoch() <=> rhs.SinceEpoch();
+    return lhs.sinceEpoch() <=> rhs.sinceEpoch();
 }
 
 } // namespace mini

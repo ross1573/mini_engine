@@ -11,47 +11,47 @@ namespace mini {
 using PlatformMutex = SRWLOCK;
 using PlatformRecursiveMutex = CRITICAL_SECTION;
 
-inline void MutexInitialize(PlatformMutex& mutex)
+inline void mutexInitialize(PlatformMutex& mutex)
 {
     InitializeSRWLock(&mutex);
 }
 
-inline void MutexLock(PlatformMutex& mutex)
+inline void mutexLock(PlatformMutex& mutex)
 {
     AcquireSRWLockExclusive(&mutex);
 }
 
-inline void MutexUnlock(PlatformMutex& mutex)
+inline void mutexUnlock(PlatformMutex& mutex)
 {
     ReleaseSRWLockExclusive(&mutex);
 }
 
-inline bool MutexTryLock(PlatformMutex& mutex)
+inline bool mutexTryLock(PlatformMutex& mutex)
 {
     return TryAcquireSRWLockExclusive(&mutex);
 }
 
-inline void RecursiveMutexInitialize(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexInitialize(PlatformRecursiveMutex& mutex)
 {
     InitializeCriticalSection(&mutex);
 }
 
-inline void RecursiveMutexLock(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexLock(PlatformRecursiveMutex& mutex)
 {
     EnterCriticalSection(&mutex);
 }
 
-inline void RecursiveMutexUnlock(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexUnlock(PlatformRecursiveMutex& mutex)
 {
     LeaveCriticalSection(&mutex);
 }
 
-inline bool RecursiveMutexTryLock(PlatformRecursiveMutex& mutex)
+inline bool recursiveMutexTryLock(PlatformRecursiveMutex& mutex)
 {
     return TryEnterCriticalSection(&mutex);
 }
 
-inline void RecursiveMutexDestroy(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexDestroy(PlatformRecursiveMutex& mutex)
 {
     DeleteCriticalSection(&mutex);
 }

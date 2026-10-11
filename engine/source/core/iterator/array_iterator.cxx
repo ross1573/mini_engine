@@ -29,15 +29,15 @@ public:
     constexpr ArrayIterator(ArrayIterator<U, ArrayU> const& other) noexcept
         requires ConvertibleToT<U*, T*> && SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>;
 
-    [[nodiscard]] constexpr Pointer Address() const noexcept;
-    [[nodiscard]] constexpr bool Valid() const noexcept;
-    [[nodiscard]] constexpr bool ValidWith(ArrayIterator const& other) const noexcept;
+    [[nodiscard]] constexpr Pointer address() const noexcept;
+    [[nodiscard]] constexpr bool valid() const noexcept;
+    [[nodiscard]] constexpr bool validWith(ArrayIterator const& other) const noexcept;
 
-    constexpr bool Reset() noexcept;
-    constexpr bool Finish() noexcept;
-    constexpr bool Increment() noexcept;
-    constexpr bool Decrement() noexcept;
-    constexpr bool Advance(offset_t offset) noexcept;
+    constexpr bool reset() noexcept;
+    constexpr bool finish() noexcept;
+    constexpr bool increment() noexcept;
+    constexpr bool decrement() noexcept;
+    constexpr bool advance(offset_t offset) noexcept;
 
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
@@ -58,7 +58,7 @@ public:
 
 protected:
     constexpr ArrayIterator(Pointer ptr, ArrayT* base) noexcept;
-    constexpr bool CheckIterator(ArrayIterator const& iter) const noexcept;
+    constexpr bool check(ArrayIterator const& iter) const noexcept;
 };
 
 template <typename T, typename ArrayT>
@@ -95,57 +95,56 @@ constexpr ArrayIterator<T, ArrayT>& ArrayIterator<T, ArrayT>::operator=(ArrayIte
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::CheckIterator(ArrayIterator const& iter) const noexcept
+constexpr bool ArrayIterator<T, ArrayT>::check(ArrayIterator const& iter) const noexcept
 {
-    return iter.m_array && iter.m_array->ValidIterator(iter);
+    return iter.m_array && iter.m_array->validIterator(iter);
 }
 
 template <typename T, typename ArrayT>
-constexpr ArrayIterator<T, ArrayT>::Pointer ArrayIterator<T, ArrayT>::Address() const noexcept
+constexpr ArrayIterator<T, ArrayT>::Pointer ArrayIterator<T, ArrayT>::address() const noexcept
 {
     return m_ptr;
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Valid() const noexcept
+constexpr bool ArrayIterator<T, ArrayT>::valid() const noexcept
 {
-    return CheckIterator(*this);
+    return check(*this);
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::ValidWith(ArrayIterator const& other) const noexcept
+constexpr bool ArrayIterator<T, ArrayT>::validWith(ArrayIterator const& other) const noexcept
 {
-    return m_array && m_array->ValidRange(*this, other);
+    return m_array && m_array->validRange(*this, other);
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Reset() noexcept
+constexpr bool ArrayIterator<T, ArrayT>::reset() noexcept
 {
     if (m_array == nullptr) [[unlikely]] {
         return false;
     }
 
-    auto begin = m_array->Begin();
-    m_ptr = begin.m_ptr;
+    m_ptr = m_array->begin().m_ptr;
     return true;
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Finish() noexcept
+constexpr bool ArrayIterator<T, ArrayT>::finish() noexcept
 {
     if (m_array == nullptr) [[unlikely]] {
         return false;
     }
 
-    auto end = m_array->End();
+    auto end = m_array->end();
     m_ptr = end.m_ptr;
     return true;
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Increment() noexcept
+constexpr bool ArrayIterator<T, ArrayT>::increment() noexcept
 {
-    if (!CheckIterator(*this + 1)) [[unlikely]] {
+    if (!check(*this + 1)) [[unlikely]] {
         return false;
     }
 
@@ -154,9 +153,9 @@ constexpr bool ArrayIterator<T, ArrayT>::Increment() noexcept
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Decrement() noexcept
+constexpr bool ArrayIterator<T, ArrayT>::decrement() noexcept
 {
-    if (!CheckIterator(*this - 1)) [[unlikely]] {
+    if (!check(*this - 1)) [[unlikely]] {
         return false;
     }
 
@@ -165,9 +164,9 @@ constexpr bool ArrayIterator<T, ArrayT>::Decrement() noexcept
 }
 
 template <typename T, typename ArrayT>
-constexpr bool ArrayIterator<T, ArrayT>::Advance(offset_t offset) noexcept
+constexpr bool ArrayIterator<T, ArrayT>::advance(offset_t offset) noexcept
 {
-    if (!CheckIterator(*this + offset)) [[unlikely]] {
+    if (!check(*this + offset)) [[unlikely]] {
         return false;
     }
 
@@ -178,21 +177,21 @@ constexpr bool ArrayIterator<T, ArrayT>::Advance(offset_t offset) noexcept
 template <typename T, typename ArrayT>
 constexpr T* ArrayIterator<T, ArrayT>::operator->() const noexcept
 {
-    ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(check(*this), "invalid access");
     return m_ptr;
 }
 
 template <typename T, typename ArrayT>
 constexpr T& ArrayIterator<T, ArrayT>::operator*() const noexcept
 {
-    ASSERT(CheckIterator(*this), "invalid access");
+    ASSERT(check(*this), "invalid access");
     return *m_ptr;
 }
 
 template <typename T, typename ArrayT>
 constexpr T& ArrayIterator<T, ArrayT>::operator[](offset_t const offset) const noexcept
 {
-    ASSERT(CheckIterator(*this + offset), "invalid access");
+    ASSERT(check(*this + offset), "invalid access");
     return *(m_ptr + offset);
 }
 
@@ -266,21 +265,21 @@ export template <typename T, typename U, typename ArrayT, typename ArrayU>
 constexpr offset_t operator-(ArrayIterator<T, ArrayT> const& lhs, ArrayIterator<U, ArrayU> const& rhs) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>>
 {
-    return static_cast<offset_t>(lhs.Address() - rhs.Address());
+    return static_cast<offset_t>(lhs.address() - rhs.address());
 }
 
 export template <typename T, typename U, typename ArrayT, typename ArrayU>
 constexpr bool operator==(ArrayIterator<T, ArrayT> const& lhs, ArrayIterator<U, ArrayU> const& rhs) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>> && EqualityComparableWithT<T*, U*>
 {
-    return lhs.Address() == rhs.Address();
+    return lhs.address() == rhs.address();
 }
 
 export template <typename T, typename U, typename ArrayT, typename ArrayU>
 constexpr auto operator<=>(ArrayIterator<T, ArrayT> const& lhs, ArrayIterator<U, ArrayU> const& rhs) noexcept
     requires SameAsT<DecayT<ArrayT>, DecayT<ArrayU>> && ThreeWayComparableWithT<T*, U*>
 {
-    return lhs.Address() <=> rhs.Address();
+    return lhs.address() <=> rhs.address();
 }
 
 } // namespace mini

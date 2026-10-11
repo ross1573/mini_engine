@@ -5,14 +5,14 @@
 #endif
 
 @implementation CocoaApplicationDelegate {
-    mini::cocoa::Application* m_delegate;
+    mini::cocoa::Application* delegate;
 }
 
-- (instancetype)initWithDelegate:(mini::cocoa::Application*)delegate
+- (instancetype)initWithDelegate:(mini::cocoa::Application*)applicationDelegate
 {
     self = [super init];
     if (self != nullptr) {
-        m_delegate = delegate;
+        delegate = applicationDelegate;
     }
 
     return self;
@@ -20,12 +20,12 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification
 {
-    m_delegate->ApplicationWillFinishLaunching((__bridge NS::Notification*)notification);
+    delegate->applicationWillFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
-    m_delegate->ApplicationDidFinishLaunching((__bridge NS::Notification*)notification);
+    delegate->applicationDidFinishLaunching((__bridge NS::Notification*)notification);
 }
 
 @end
@@ -62,7 +62,7 @@
 
 @end
 
-NSMenuItem* CreateAboutMenu()
+NSMenuItem* createAboutMenu()
 {
     auto const* className = mini::options::name;
 
@@ -76,18 +76,18 @@ NSMenuItem* CreateAboutMenu()
 
     [appMenu addItem:[NSMenuItem separatorItem]];
 
-    [appMenu addItemWithTitle:[@"Hide " stringByAppendingString:classStr] action:@selector(hide:) keyEquivalent:@"h"];
+    [appMenu addItemWithTitle:[@"hide " stringByAppendingString:classStr] action:@selector(hide:) keyEquivalent:@"h"];
 
-    [appMenu addItemWithModifier:@"Hide Others"
+    [appMenu addItemWithModifier:@"hide Others"
                           action:@selector(hideOtherApplications:)
                    keyEquivalent:@"h"
                  keyModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
 
-    [appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+    [appMenu addItemWithTitle:@"show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
 
     [appMenu addItem:[NSMenuItem separatorItem]];
 
-    [appMenu addItemWithTitle:[@"Quit " stringByAppendingString:classStr]
+    [appMenu addItemWithTitle:[@"quit " stringByAppendingString:classStr]
                        action:@selector(terminate:)
                 keyEquivalent:@"q"];
 
@@ -99,16 +99,16 @@ NSMenuItem* CreateAboutMenu()
     return [appMenuItem autorelease];
 }
 
-NSMenuItem* CreateWindowMenu()
+NSMenuItem* createWindowMenu()
 {
     NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
     NSMenuItem* windowMenuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
 
-    [windowMenu addItemWithTitle:NSLocalizedString(@"Minimize", @"")
+    [windowMenu addItemWithTitle:NSLocalizedString(@"minimize", @"")
                           action:@selector(performMiniaturize:)
                    keyEquivalent:@"m"];
 
-    [windowMenu addItemWithTitle:NSLocalizedString(@"Maximize", @"") action:@selector(zoom:) keyEquivalent:@""];
+    [windowMenu addItemWithTitle:NSLocalizedString(@"maximize", @"") action:@selector(zoom:) keyEquivalent:@""];
 
     [windowMenu addItem:[NSMenuItem separatorItem]];
 
@@ -139,8 +139,8 @@ Application::Application()
 
     @autoreleasepool {
         m_application.mainMenu = [[NSMenu alloc] init];
-        [m_application.mainMenu addItem:CreateAboutMenu()];
-        [m_application.mainMenu addItem:CreateWindowMenu()];
+        [m_application.mainMenu addItem:createAboutMenu()];
+        [m_application.mainMenu addItem:createWindowMenu()];
 
         m_application.delegate = [[CocoaApplicationDelegate alloc] initWithDelegate:this];
     }
@@ -155,14 +155,14 @@ Application::~Application() noexcept
 #endif
 }
 
-void Application::Launch()
+void Application::launch()
 {
     if (![[NSRunningApplication currentApplication] isFinishedLaunching]) {
         [m_application finishLaunching];
     }
 }
 
-void Application::PollEvents()
+void Application::pollEvents()
 {
     @autoreleasepool {
         while (true) {
@@ -180,13 +180,13 @@ void Application::PollEvents()
     } // autoreleasepool
 }
 
-void Application::AlertError(char const* msg)
+void Application::alertError(char const* msg)
 {
     @autoreleasepool {
         NSString* errMsg = [NSString stringWithUTF8String:msg];
         NSAlert* alert = [[NSAlert alloc] init];
         [alert addButtonWithTitle:@"OK"];
-        [alert setMessageText:@"Error"];
+        [alert setMessageText:@"error"];
         [alert setInformativeText:errMsg];
         [alert setAlertStyle:NSAlertStyleCritical];
         [alert runModal];

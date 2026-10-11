@@ -104,7 +104,7 @@
 #elif MSVC
 #  define BUILTIN_CLZ(x) _clz(x)
 #else
-#  define BUILTIN_CLZ(x) Clz(x)
+#  define BUILTIN_CLZ(x) clz(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_clzl)
@@ -112,7 +112,7 @@
 #elif MSVC
 #  define BUILTIN_CLZL(x) _clzl(x)
 #else
-#  define BUILTIN_CLZL(x) Clz(x)
+#  define BUILTIN_CLZL(x) clz(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_clzll)
@@ -120,7 +120,7 @@
 #elif MSVC
 #  define BUILTIN_CLZLL(x) _clzll(x)
 #else
-#  define BUILTIN_CLZLL(x) Clz(x)
+#  define BUILTIN_CLZLL(x) clz(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_ctzg)
@@ -135,7 +135,7 @@
 #elif MSVC
 #  define BUILTIN_CTZ(x) _ctz(x)
 #else
-#  define BUILTIN_CTZ(x) Ctz(x)
+#  define BUILTIN_CTZ(x) ctz(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_ctzl)
@@ -143,7 +143,7 @@
 #elif MSVC
 #  define BUILTIN_CTZL(x) _ctzl(x)
 #else
-#  define BUILTIN_CTZL(x) Ctz(x)
+#  define BUILTIN_CTZL(x) ctz(x)
 #endif
 
 #if HAS_BUILTIN(__builtin_ctzll)
@@ -151,7 +151,7 @@
 #elif MSVC
 #  define BUILTIN_CTZLL(x) _ctzll(x)
 #else
-#  define BUILTIN_CTZLL(x) Ctz(x)
+#  define BUILTIN_CTZLL(x) ctz(x)
 #endif
 
 #endif // BUILTIN_BIT_H

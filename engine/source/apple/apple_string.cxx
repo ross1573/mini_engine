@@ -6,15 +6,11 @@ import :shared_ptr;
 
 namespace mini {
 
-export APPLE_API SharedPtr<NS::String> ToNSString(StringView string)
+export APPLE_API SharedPtr<NS::String> toNSString(StringView string)
 {
     NS::String* result = NS::String::alloc();
-    ENSURE(result, "failed to allocate NS::String") {
-        return nullptr;
-    }
-
-    result = result->init(static_cast<void*>(const_cast<char*>(string.Data())),
-                          static_cast<NS::UInteger>(string.Size()),
+    result = result->init(static_cast<void*>(const_cast<char*>(string.data())),
+                          static_cast<NS::UInteger>(string.size()),
                           NS::StringEncoding::UTF8StringEncoding,
                           false);
 
@@ -22,17 +18,17 @@ export APPLE_API SharedPtr<NS::String> ToNSString(StringView string)
         return nullptr;
     }
 
-    return TransferShared(result);
+    return transfer(result);
 }
 
-export APPLE_API String ToString(NS::String* string)
+export APPLE_API String toString(NS::String* string)
 {
     if (string == nullptr || string->length() == 0) {
-        return { };
+        return {};
     }
 
     char const* str = string->utf8String();
-    return { str };
+    return {str};
 }
 
 } // namespace mini

@@ -1,6 +1,8 @@
 ---
 InheritParentConfig: true
 Checks: [  
+  objc-*,
+
   -readability-convert-member-functions-to-static,
   -readability-redundant-declaration,
   -misc-use-internal-linkage,

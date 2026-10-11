@@ -24,15 +24,15 @@ ModuleHandle::~ModuleHandle() noexcept
         try {
             callback();
         } catch (...) {
-            debug::LogEnsure("ModuleHandle::~ModuleHandle()",
+            debug::logEnsure("ModuleHandle::~ModuleHandle()",
                              "exception occured while invoking AtExit callback {} on module {}",
                              reinterpret_cast<void*>(callback),
                              m_libraryName);
         }
     }
 
-    m_interface.Reset();
-    m_libraryName.Clear();
+    m_interface.reset();
+    m_libraryName.clear();
 
     if (m_policy->deleter != nullptr) {
         m_policy->deleter(m_nativeModule);
@@ -41,51 +41,51 @@ ModuleHandle::~ModuleHandle() noexcept
     m_nativeModule = nullptr;
 }
 
-bool ModuleHandle::Valid() const noexcept
+bool ModuleHandle::valid() const noexcept
 {
     return m_policy->validator == nullptr || m_policy->validator(m_nativeModule);
 }
 
-bool ModuleHandle::AtExit(CallbackFunc func) noexcept
+bool ModuleHandle::atExit(CallbackFunc func) noexcept
 {
-    auto iter = Find(m_exitCallback.Begin(), m_exitCallback.End(), func);
-    if (iter.Valid()) {
+    auto iter = find(m_exitCallback.begin(), m_exitCallback.end(), func);
+    if (iter.valid()) {
         return false;
     }
 
-    m_exitCallback.PushBack(func);
+    m_exitCallback.pushBack(func);
     return true;
 }
 
-bool ModuleHandle::RemoveAtExit(CallbackFunc func) noexcept
+bool ModuleHandle::removeAtExit(CallbackFunc func) noexcept
 {
-    auto iter = Find(m_exitCallback.Begin(), m_exitCallback.End(), func);
-    if (!iter.Valid()) {
+    auto iter = find(m_exitCallback.begin(), m_exitCallback.end(), func);
+    if (!iter.valid()) {
         return false;
     }
 
-    m_exitCallback.Remove(iter);
+    m_exitCallback.remove(iter);
     return true;
 }
 
-SharedPtr<ModuleHandle> ModuleHandle::Load(StringView libName)
+SharedPtr<ModuleHandle> ModuleHandle::load(StringView libName)
 {
-    if (libName.Empty()) [[unlikely]] {
-        return { };
+    if (libName.empty()) [[unlikely]] {
+        return {};
     }
 
-    return g_moduleLoader.Load(libName);
+    return moduleLoader.load(libName);
 }
 
 DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     : ModuleHandle(&policy, nullptr, nullptr, name)
 {
-    m_nativeModule = LoadModule(name);
+    m_nativeModule = loadModule(name);
     ENSURE(m_nativeModule, "failed to load module {}", name) {
         return;
     }
 
-    StartFunc startFunc = GetFunction<ModuleInterface*>("__start_module");
+    StartFunc startFunc = function<ModuleInterface*>("__start_module");
     ENSURE(startFunc, "failed to locate start function of module {}", name) {
         return;
     }
@@ -94,13 +94,13 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     try {
         interface = startFunc();
     } catch (...) {
-        debug::LogEnsure("__start_module()",
+        debug::logEnsure("__start_module()",
                          "exception occured while invoking __start_module on module {}",
                          m_libraryName);
     }
 
     ENSURE(interface, "failed to get interface object of module {}", name) {
-        UnloadModule(m_nativeModule);
+        unloadModule(m_nativeModule);
         m_nativeModule = nullptr;
         return;
     }
@@ -108,28 +108,28 @@ DynamicModuleHandle::DynamicModuleHandle(StringView name) noexcept
     m_interface = UniquePtr(interface);
 }
 
-ModuleLoader::LoaderIterator ModuleLoader::FindRegistered(StringView name)
+ModuleLoader::LoaderIterator ModuleLoader::findRegistered(StringView name)
 {
-    return FindIf(m_registered.Begin(), m_registered.End(), [&name](LoaderRef const& ref) noexcept {
+    return findIf(m_registered.begin(), m_registered.end(), [&name](LoaderRef const& ref) noexcept {
         return ref.name == name;
     });
 }
 
-ModuleLoader::ModuleIterator ModuleLoader::FindLoaded(StringView name)
+ModuleLoader::ModuleIterator ModuleLoader::findLoaded(StringView name)
 {
-    return FindIf(m_modules.Begin(), m_modules.End(), [&name](ModuleRef const& ref) noexcept {
+    return findIf(m_modules.begin(), m_modules.end(), [&name](ModuleRef const& ref) noexcept {
         return ref.name == name;
     });
 }
 
-bool ModuleLoader::Register(StringView name, LoaderRef::Loader loader)
+bool ModuleLoader::registerUninitialized(StringView name, LoaderRef::Loader loader)
 {
-    LoaderIterator loaderIter = FindRegistered(name);
-    if (loaderIter.Valid()) {
+    LoaderIterator loaderIter = findRegistered(name);
+    if (loaderIter.valid()) {
         return false;
     }
 
-    m_registered.PushBack(LoaderRef{ .loader = loader, .name = name });
+    m_registered.pushBack(LoaderRef{.loader = loader, .name = name});
     return true;
 }
 
@@ -137,71 +137,71 @@ PendingGuard::PendingGuard(Array<StringView>& pending, StringView target) noexce
     : m_pending(pending)
     , m_target(target)
 {
-    m_pending.PushBack(target);
+    m_pending.pushBack(target);
 }
 
 PendingGuard::~PendingGuard() noexcept
 {
-    Array<StringView>::Iterator pendingIter = Find(m_pending.Begin(), m_pending.End(), m_target);
-    if (pendingIter.Valid()) {
-        m_pending.Remove(pendingIter);
+    Array<StringView>::Iterator pendingIter = find(m_pending.begin(), m_pending.end(), m_target);
+    if (pendingIter.valid()) {
+        m_pending.remove(pendingIter);
     }
 }
 
-SharedPtr<ModuleHandle> ModuleLoader::Load(StringView name)
+SharedPtr<ModuleHandle> ModuleLoader::load(StringView name)
 {
-    ModuleIterator modulefIter = FindLoaded(name);
-    if (modulefIter.Valid()) {
-        if (modulefIter->handle.Valid()) {
-            return StaticCast<ModuleHandle>(modulefIter->handle.Lock());
+    ModuleIterator modulefIter = findLoaded(name);
+    if (modulefIter.valid()) {
+        if (modulefIter->handle.valid()) {
+            return staticCast<ModuleHandle>(modulefIter->handle.lock());
         }
 
-        m_modules.Remove(modulefIter);
+        m_modules.remove(modulefIter);
     }
 
-    if (FindCircularDependency(name)) {
+    if (findCircularDependency(name)) {
         return nullptr;
     }
 
     PendingGuard guard(m_pending, name);
-    SharedPtr<ModuleHandle> handle = LoadHandle(name);
-    if (!handle.Valid()) {
+    SharedPtr<ModuleHandle> handle = loadHandle(name);
+    if (!handle.valid()) {
         return nullptr;
     }
 
-    ModuleInterface* interface = handle->GetInterface();
+    ModuleInterface* interface = handle->interface();
     if (interface == nullptr) {
         return nullptr;
     }
 
-    m_modules.PushBack(ModuleRef{ .handle = handle, .name = name });
+    m_modules.pushBack(ModuleRef{.handle = handle, .name = name});
     return handle;
 }
 
-SharedPtr<ModuleHandle> ModuleLoader::LoadHandle(StringView name)
+SharedPtr<ModuleHandle> ModuleLoader::loadHandle(StringView name)
 {
-    LoaderIterator loaderIter = FindRegistered(name);
-    if (loaderIter.Valid()) {
+    LoaderIterator loaderIter = findRegistered(name);
+    if (loaderIter.valid()) {
         ModuleInterface* interface = loaderIter->loader();
-        SharedPtr<StaticModuleHandle> staticHandle = MakeShared<StaticModuleHandle>(name, interface);
-        return StaticCast<ModuleHandle>(MoveArg(staticHandle));
+        SharedPtr<StaticModuleHandle> staticHandle = makeShared<StaticModuleHandle>(name, interface);
+        return staticCast<ModuleHandle>(moveCast(staticHandle));
     }
 
-    SharedPtr<DynamicModuleHandle> dynHandle = MakeShared<DynamicModuleHandle>(name);
-    if (dynHandle->Valid()) {
-        return StaticCast<ModuleHandle>(MoveArg(dynHandle));
+    SharedPtr<DynamicModuleHandle> dynHandle = makeShared<DynamicModuleHandle>(name);
+    if (dynHandle->valid()) {
+        return staticCast<ModuleHandle>(moveCast(dynHandle));
     }
 
     return nullptr;
 }
 
-bool ModuleLoader::FindCircularDependency(StringView name)
+bool ModuleLoader::findCircularDependency(StringView name)
 {
-    PendingIterator pendingIter = Find(m_pending.Begin(), m_pending.End(), name);
+    PendingIterator pendingIter = find(m_pending.begin(), m_pending.end(), name);
 
-    ENSURE(pendingIter.Valid() == false,
+    ENSURE(pendingIter.valid() == false,
            "circular dependency detected while loading module {}. load order: {}",
-           name,
+           name.data(),
            m_pending) {
         return true;
     }
@@ -209,11 +209,11 @@ bool ModuleLoader::FindCircularDependency(StringView name)
     return false;
 }
 
-size_t ModuleLoader::Count() const noexcept
+size_t ModuleLoader::count() const noexcept
 {
     size_t count = 0;
     for (auto const& mod : m_modules) {
-        if (mod.handle.Valid()) {
+        if (mod.handle.valid()) {
             ++count;
         }
     }

@@ -25,12 +25,12 @@ public:
     Metal4() noexcept;
     ~Metal4() noexcept final;
 
-    graphics::Device* CreateDevice() final { return new metal4::Device(); }
+    graphics::Device* createDevice() final { return new metal4::Device(); }
 
-    apple::Window* GetWindow() noexcept;
-    metal4::Device* GetDevice() noexcept;
-    metal4::SwapChain* GetSwapChain() noexcept;
-    metal4::Renderer* GetRenderer() noexcept;
+    apple::Window* window() noexcept;
+    metal4::Device* device() noexcept;
+    metal4::SwapChain* swapChain() noexcept;
+    metal4::Renderer* renderer() noexcept;
 };
 
 } // namespace mini

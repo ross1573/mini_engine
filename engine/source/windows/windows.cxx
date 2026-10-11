@@ -14,12 +14,12 @@ public:
     Windows() noexcept;
     ~Windows() noexcept final;
 
-    windows::Handle* GetHandle() noexcept;
-    windows::Window* GetWindow() noexcept;
+    windows::Handle* handle() noexcept;
+    windows::Window* window() noexcept;
 
 protected:
-    platform::Handle* CreateHandle() final;
-    platform::Window* CreateWindow() final;
+    platform::Handle* createHandle() final;
+    platform::Window* createWindow() final;
 };
 
 } // namespace mini

@@ -9,7 +9,7 @@ import :type;
 namespace mini::memory {
 
 export template <TrivialT T>
-constexpr void MemCopy(T* dest, T const* src, size_t len) noexcept
+constexpr void memcopy(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMCPY(dest, src, len * sizeof(T));
@@ -22,7 +22,7 @@ constexpr void MemCopy(T* dest, T const* src, size_t len) noexcept
 }
 
 export template <TrivialT T>
-constexpr void MemCopyBackward(T* dest, T const* src, size_t len) noexcept
+constexpr void memcopyBackward(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dest - len, src - len, len * sizeof(T));
@@ -35,7 +35,7 @@ constexpr void MemCopyBackward(T* dest, T const* src, size_t len) noexcept
 }
 
 export template <TrivialT T>
-constexpr void MemMove(T* dest, T const* src, size_t len) noexcept
+constexpr void memmove(T* dest, T const* src, size_t len) noexcept
 {
     if !consteval {
         BUILTIN_MEMMOVE(dest, src, len * sizeof(T));
@@ -43,14 +43,14 @@ constexpr void MemMove(T* dest, T const* src, size_t len) noexcept
     }
 
     if (static_cast<T const*>(dest) < src) {
-        MemCopy(dest, src, len);
+        memcopy(dest, src, len);
     } else {
-        MemCopyBackward(dest + len, src + len, len);
+        memcopyBackward(dest + len, src + len, len);
     }
 }
 
 export template <TrivialT T>
-constexpr int32 MemCompare(T const* x, T const* y, size_t len) noexcept
+constexpr int32 memcomp(T const* x, T const* y, size_t len) noexcept
 {
     if !consteval {
         return BUILTIN_MEMCMP(x, y, len * sizeof(T));

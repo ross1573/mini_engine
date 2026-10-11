@@ -17,26 +17,21 @@ private:
     typedef cocoa::Application Base;
 
 public:
-    Handle();
+    Handle() = default;
     ~Handle() noexcept = default;
 
-    bool Valid() const noexcept final { return Base::Valid(); }
+    void pollEvents() final { Base::pollEvents(); }
+    void alertError(StringView const& msg) final { Base::alertError(msg.data()); }
 
-    void PollEvents() final { Base::PollEvents(); }
-    void AlertError(StringView const& msg) final { Base::AlertError(msg.Data()); }
+    [[nodiscard]] bool valid() const noexcept final { return Base::valid(); }
 
-    NSApplication* GetNSApplication() const noexcept;
+    [[nodiscard]] NSApplication* nsApplication() const noexcept { return m_application; }
 
 protected:
-    void ApplicationWillFinishLaunching(NS::Notification*) final { }
-    void ApplicationDidFinishLaunching(NS::Notification*) final { }
+    void applicationWillFinishLaunching([[maybe_unused]] NS::Notification* notification) final { }
+    void applicationDidFinishLaunching([[maybe_unused]] NS::Notification* notification) final { }
 
-    void OnKeyDown(uint32) final;
+    void onKeyDown(uint32 keyCode) final;
 };
-
-NSApplication* Handle::GetNSApplication() const noexcept
-{
-    return m_application;
-}
 
 } // namespace mini::macos

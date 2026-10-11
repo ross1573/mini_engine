@@ -23,13 +23,13 @@ public:
     constexpr PtrIterator() noexcept;
     explicit constexpr PtrIterator(Pointer ptr) noexcept;
 
-    [[nodiscard]] constexpr Pointer Address() const noexcept;
-    [[nodiscard]] constexpr bool Valid() const noexcept;
-    [[nodiscard]] constexpr bool ValidWith(PtrIterator const& other) const noexcept;
+    [[nodiscard]] constexpr Pointer address() const noexcept;
+    [[nodiscard]] constexpr bool valid() const noexcept;
+    [[nodiscard]] constexpr bool validWith(PtrIterator const& other) const noexcept;
 
-    constexpr bool Increment() noexcept;
-    constexpr bool Decrement() noexcept;
-    constexpr bool Advance(offset_t offset) noexcept;
+    constexpr bool increment() noexcept;
+    constexpr bool decrement() noexcept;
+    constexpr bool advance(offset_t offset) noexcept;
 
     [[nodiscard]] constexpr Pointer operator->() const noexcept;
     [[nodiscard]] constexpr Reference operator*() const noexcept;
@@ -83,39 +83,39 @@ constexpr PtrIterator<T>& PtrIterator<T>::operator=(PtrIterator<U> const& other)
 }
 
 template <PointerT T>
-constexpr PtrIterator<T>::Pointer PtrIterator<T>::Address() const noexcept
+constexpr PtrIterator<T>::Pointer PtrIterator<T>::address() const noexcept
 {
     return m_ptr;
 }
 
 template <PointerT T>
-constexpr bool PtrIterator<T>::Valid() const noexcept
+constexpr bool PtrIterator<T>::valid() const noexcept
 {
     return true;
 }
 
 template <PointerT T>
-constexpr bool PtrIterator<T>::ValidWith([[maybe_unused]] PtrIterator const& other) const noexcept
+constexpr bool PtrIterator<T>::validWith([[maybe_unused]] PtrIterator const& other) const noexcept
 {
     return true;
 }
 
 template <PointerT T>
-constexpr bool PtrIterator<T>::Increment() noexcept
+constexpr bool PtrIterator<T>::increment() noexcept
 {
     ++m_ptr;
     return true;
 }
 
 template <PointerT T>
-constexpr bool PtrIterator<T>::Decrement() noexcept
+constexpr bool PtrIterator<T>::decrement() noexcept
 {
     --m_ptr;
     return true;
 }
 
 template <PointerT T>
-constexpr bool PtrIterator<T>::Advance(offset_t offset) noexcept
+constexpr bool PtrIterator<T>::advance(offset_t offset) noexcept
 {
     m_ptr += offset;
     return true;

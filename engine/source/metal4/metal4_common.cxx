@@ -1,7 +1,7 @@
 module;
 
 #include <Metal/MTLLogState.hpp>
-#include <Metal/MTLPixelFormat.hpp>
+#include <Metal/mtlPixelFormat.hpp>
 #include <cstddef>
 
 export module mini.metal4:common;
@@ -27,7 +27,7 @@ class Device;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::PixelFormat MTLPixelFormat(graphics::PixelFormat pixelFormat) noexcept
+export METAL4_API constexpr MTL::PixelFormat mtlPixelFormat(graphics::PixelFormat pixelFormat) noexcept
 {
     switch (pixelFormat) {
         case graphics::PixelFormat::Null:           return MTL::PixelFormatInvalid;
@@ -80,33 +80,33 @@ export METAL4_API constexpr MTL::PixelFormat MTLPixelFormat(graphics::PixelForma
     return MTL::PixelFormat::PixelFormatInvalid;
 }
 
-export METAL4_API constexpr MTL::LogLevel MTLLogLevel(Logger::Level logLevel) noexcept
+export METAL4_API constexpr MTL::LogLevel mtlLogLevel(Logger::Level logLevel) noexcept
 {
     switch (logLevel) {
-        case Logger::Level::debug: return MTL::LogLevelDebug;
-        case Logger::Level::info:  return MTL::LogLevelInfo;
-        case Logger::Level::warn:  return MTL::LogLevelNotice;
-        case Logger::Level::error: return MTL::LogLevelError;
-        case Logger::Level::fatal: return MTL::LogLevelFault;
+        case Logger::Level::Debug: return MTL::LogLevelDebug;
+        case Logger::Level::Info:  return MTL::LogLevelInfo;
+        case Logger::Level::Warn:  return MTL::LogLevelNotice;
+        case Logger::Level::Error: return MTL::LogLevelError;
+        case Logger::Level::Fatal: return MTL::LogLevelFault;
     }
 
-    ASSERT(logLevel == Logger::Level::warn, "invalid log level {}.", static_cast<byte>(logLevel));
+    ASSERT(logLevel == Logger::Level::Warn, "invalid log level {}.", static_cast<byte>(logLevel));
     return MTL::LogLevelNotice;
 }
 
-export METAL4_API constexpr Logger::Level LogLevel(MTL::LogLevel logLevel) noexcept
+export METAL4_API constexpr Logger::Level logLevel(MTL::LogLevel logLevel) noexcept
 {
     switch (logLevel) {
-        case MTL::LogLevelDebug:     return Logger::Level::debug;
-        case MTL::LogLevelInfo:      return Logger::Level::info;
+        case MTL::LogLevelDebug:     return Logger::Level::Debug;
+        case MTL::LogLevelInfo:      return Logger::Level::Info;
         case MTL::LogLevelUndefined:
-        case MTL::LogLevelNotice:    return Logger::Level::warn;
-        case MTL::LogLevelError:     return Logger::Level::error;
-        case MTL::LogLevelFault:     return Logger::Level::fatal;
+        case MTL::LogLevelNotice:    return Logger::Level::Warn;
+        case MTL::LogLevelError:     return Logger::Level::Error;
+        case MTL::LogLevelFault:     return Logger::Level::Fatal;
     }
 
     ASSERT(logLevel == MTL::LogLevelUndefined, "invalid log level {}.", static_cast<byte>(logLevel));
-    return Logger::Level::warn;
+    return Logger::Level::Warn;
 }
 
 export class METAL4_API LogState {
@@ -124,13 +124,13 @@ public:
     LogState() noexcept = default;
     LogState(PtrView<Device> device, Logger::Level level, LogHandler logHandler, size_t bufferSize = defaultBufferSize);
 
-    [[nodiscard]] bool Valid() const noexcept { return m_logState.Valid(); }
-    [[nodiscard]] Logger::Level LogLevel() const noexcept { return m_logLevel; }
+    [[nodiscard]] bool valid() const noexcept { return m_logState.valid(); }
+    [[nodiscard]] Logger::Level logLevel() const noexcept { return m_logLevel; }
 
-    [[nodiscard]] MTL::LogState* MTLLogState() const noexcept { return m_logState.Get(); }
+    [[nodiscard]] MTL::LogState* mtlLogState() const noexcept { return m_logState.get(); }
 
 private:
-    void HandleLog(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* message);
+    void handleLog(NS::String* subSystem, NS::String* category, MTL::LogLevel logLevel, NS::String* message);
 };
 
 } // namespace mini::metal4

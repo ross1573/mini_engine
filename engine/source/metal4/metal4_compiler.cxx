@@ -29,16 +29,12 @@ private:
     String m_name;
 
 public:
-    explicit Compiler(PtrView<Device> device);
-    Compiler(PtrView<Device> device, StringView name);
+    explicit Compiler(PtrView<Device> device, StringView name = StringView{});
 
-    [[nodiscard]] bool Valid() const noexcept { return m_compiler.Valid(); }
-    [[nodiscard]] String Name() const { return m_name; }
+    [[nodiscard]] bool valid() const noexcept { return m_compiler.valid(); }
+    [[nodiscard]] String name() const { return m_name; }
 
-    [[nodiscard]] MTL4::Compiler* MTLCompiler() const noexcept { return m_compiler.Get(); }
-
-private:
-    void InitWithDescriptor(PtrView<Device> device, SharedPtr<MTL4::CompilerDescriptor> const& desc);
+    [[nodiscard]] MTL4::Compiler* mtlCompiler() const noexcept { return m_compiler.get(); }
 };
 
 } // namespace mini::metal4

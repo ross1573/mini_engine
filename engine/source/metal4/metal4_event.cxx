@@ -34,12 +34,12 @@ protected:
 public:
     explicit Event(PtrView<Device> device);
 
-    void SetName(StringView name) { m_event->setLabel(ToNSString(name).Get()); }
+    void setName(StringView name) { m_event->setLabel(toNSString(name).get()); }
 
-    [[nodiscard]] bool Valid() const noexcept { return m_event.Valid(); }
-    [[nodiscard]] String Name() const { return ToString(m_event->label()); }
+    [[nodiscard]] bool valid() const noexcept { return m_event.valid(); }
+    [[nodiscard]] String name() const { return toString(m_event->label()); }
 
-    [[nodiscard]] MTL::Event* MTLEvent() const noexcept { return m_event.Get(); }
+    [[nodiscard]] MTL::Event* mtlEvent() const noexcept { return m_event.get(); }
 };
 
 export class METAL4_API SharedEvent final : public Event {
@@ -49,17 +49,17 @@ private:
 public:
     explicit SharedEvent(PtrView<Device> device);
 
-    void Wait(uint64 value, Milliseconds timeout = Milliseconds::Max());
-    bool Signal(uint64 value);
+    void wait(uint64 value, Milliseconds timeout = Milliseconds::max());
+    bool signal(uint64 value);
 
-    [[nodiscard]] uint64 SignaledValue();
+    [[nodiscard]] uint64 signaledValue();
 
-    [[nodiscard]] MTL::SharedEvent* MTLSharedEvent() const noexcept;
+    [[nodiscard]] MTL::SharedEvent* mtlSharedEvent() const noexcept;
 };
 
-MTL::SharedEvent* SharedEvent::MTLSharedEvent() const noexcept
+MTL::SharedEvent* SharedEvent::mtlSharedEvent() const noexcept
 {
-    return static_cast<MTL::SharedEvent*>(m_event.Get());
+    return static_cast<MTL::SharedEvent*>(m_event.get());
 }
 
 } // namespace mini::metal4

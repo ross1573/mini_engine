@@ -5,8 +5,8 @@ module;
 // TODO: clang complains about recursion, while others dont
 #if CLANG
 template <typename T>
-concept AlwaysTrue = true;
-#  define REBIND_RESULT_T AlwaysTrue
+concept AlwaysTrueT = true;
+#  define REBIND_RESULT_T AlwaysTrueT
 #else
 #  define REBIND_RESULT_T UnboundAllocatorT
 #endif
@@ -38,8 +38,8 @@ concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, size_t size, T::Po
     requires PointerT<typename T::Pointer>;
     requires PointerT<typename T::ConstPointer>;
 
-    { alloc.Allocate(size) } -> SameAsT<AllocationResult<typename T::Value>>;
-    { alloc.Deallocate(loc, size) };
+    { alloc.allocate(size) } -> SameAsT<AllocationResult<typename T::Value>>;
+    { alloc.deallocate(loc, size) };
 };
 
 export template <typename AllocT, typename T>
@@ -47,8 +47,8 @@ concept AllocatorT = UnboundAllocatorT<AllocT> && SameAsT<typename AllocT::Value
 
 export template <typename AllocT, typename T>
 concept NoThrowAllocatorT =
-    AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> && NoThrowCallableT<decltype(&AllocT::Allocate), size_t> &&
-    NoThrowCallableT<decltype(&AllocT::Deallocate), typename AllocT::Pointer, size_t>;
+    AllocatorT<AllocT, T> && NoThrowCopyableT<AllocT> && NoThrowCallableT<decltype(&AllocT::allocate), size_t> &&
+    NoThrowCallableT<decltype(&AllocT::deallocate), typename AllocT::Pointer, size_t>;
 
 template <typename AllocT, typename T>
 concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
@@ -70,7 +70,7 @@ struct Allocator {
     typedef T* Pointer;
     typedef T const* ConstPointer;
 
-    [[nodiscard]] constexpr AllocationResult<T> Allocate(size_t size) const noexcept
+    [[nodiscard]] constexpr AllocationResult<T> allocate(size_t size) const noexcept
     {
         if consteval {
             Pointer ptr = CONSTEXPR_ALLOC(T, size);
@@ -88,7 +88,7 @@ struct Allocator {
         return {.pointer = nullptr, .capacity = size};
     }
 
-    constexpr void Deallocate(Pointer loc, size_t size) const noexcept
+    constexpr void deallocate(Pointer loc, size_t size) const noexcept
     {
         if consteval {
             if (loc == nullptr) {
@@ -108,21 +108,21 @@ struct Allocator {
 };
 
 export template <typename U, typename T>
-constexpr decltype(auto) RebindAllocator(T const& alloc)
+constexpr decltype(auto) rebind(T const& alloc)
     requires AllocRebindDeclaredT<T, U>
 {
     return alloc.template Rebind<U>();
 }
 
 export template <typename U, typename T>
-constexpr T&& RebindAllocator(T&& alloc)
+constexpr T&& rebind(T&& alloc)
     requires AllocatorT<T, U>
 {
-    return ForwardArg<T>(alloc);
+    return forwardCast<T>(alloc);
 }
 
 export template <typename U, typename T>
-constexpr mini::Allocator<U> RebindAllocator(T const& /*unused*/)
+constexpr mini::Allocator<U> rebind(T const& /*unused*/)
     requires IsDefaultAlloc<T>::value
 {
     return mini::Allocator<U>{};
@@ -141,20 +141,20 @@ public:
     typedef void const* ConstPointer;
 
     template <typename T>
-    AllocationResult<void> Allocate(T&& /*unused*/) const noexcept
+    AllocationResult<void> allocate(T&& /*unused*/) const noexcept
     {
         UNSUPPORTED("dummy allocator should be rebinded");
     }
 
     template <typename T, typename U>
-    void Deallocate(T&& /*unused*/, U&& /*unused*/) const noexcept
+    void deallocate(T&& /*unused*/, U&& /*unused*/) const noexcept
     {
         UNSUPPORTED("dummy allocator should be rebinded");
     }
 };
 
 export template <typename U>
-constexpr Allocator<U> RebindAllocator(UnboundAllocator /*unused*/)
+constexpr Allocator<U> rebind(UnboundAllocator /*unused*/)
 {
     return mini::Allocator<U>{};
 }
@@ -166,7 +166,7 @@ export constexpr bool operator==(UnboundAllocator const& /*unused*/, UnboundAllo
 
 template <typename AllocT, typename U>
 concept AllocRebindOverloadedT = requires(AllocT alloc) {
-    { RebindAllocator<U>(alloc) } -> AllocatorDecayT<U>;
+    { rebind<U>(alloc) } -> AllocatorDecayT<U>;
 };
 
 export template <typename AllocT, typename U>

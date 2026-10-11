@@ -70,7 +70,7 @@ namespace mini {
 
 export class CORE_API Core final : public ModuleInterface {
 public:
-    [[nodiscard]] size_t ModuleCount() const noexcept { return g_moduleLoader.Count(); } // NOLINT
+    [[nodiscard]] size_t moduleCount() const noexcept { return moduleLoader.count(); } // NOLINT
 };
 
 } // namespace mini

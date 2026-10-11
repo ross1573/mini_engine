@@ -12,32 +12,32 @@ namespace mini {
 
 using NativeModuleHandle = void*;
 
-NativeModuleHandle LoadModule(StringView name) noexcept
+NativeModuleHandle loadModule(StringView name) noexcept
 {
     StringView prefix = MODULE_OUTPUT_PREFIX;
     StringView suffix = MODULE_OUTPUT_SUFFIX;
 
-    String modulePath(prefix.Size() + name.Size() + suffix.Size());
-    modulePath.Append(prefix);
-    modulePath.Append(name);
-    modulePath.Append(suffix);
+    String modulePath(prefix.size() + name.size() + suffix.size());
+    modulePath.append(prefix);
+    modulePath.append(name);
+    modulePath.append(suffix);
 
-    return dlopen(modulePath.Data(), RTLD_NOW | RTLD_LOCAL);
+    return dlopen(modulePath.data(), RTLD_NOW | RTLD_LOCAL);
 }
 
-NativeModuleHandle LoadMainProgram() noexcept
+NativeModuleHandle loadMainProgram() noexcept
 {
     return dlopen(nullptr, RTLD_NOW | RTLD_LOCAL);
 }
 
-void UnloadModule(NativeModuleHandle handle) noexcept
+void unloadModule(NativeModuleHandle handle) noexcept
 {
     dlclose(handle);
 }
 
-void* LoadFunction(NativeModuleHandle handle, StringView name) noexcept
+void* loadFunction(NativeModuleHandle handle, StringView name) noexcept
 {
-    return dlsym(handle, name.Data());
+    return dlsym(handle, name.data());
 }
 
 } // namespace mini

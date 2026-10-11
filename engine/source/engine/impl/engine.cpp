@@ -17,23 +17,23 @@ Engine::Engine()
     , m_platform("mini.platform")
     , m_graphics("mini.graphics")
 {
-    ASSERT(g_engine == nullptr, "another instance of engine is created");
-    g_engine = this;
+    ASSERT(instance == nullptr, "another instance of engine is created");
+    instance = this;
 }
 
 Engine::~Engine() noexcept
 {
     ASSERT(m_running == false, "engine is still running");
-    g_engine = nullptr;
+    instance = nullptr;
 }
 
-void Engine::Launch()
+void Engine::launch()
 {
     ENSURE(m_running == false, "engine is already running") return;
-    ENSURE(m_graphics->LoadModule(options::graphicsModule)) return;
+    ENSURE(m_graphics->loadModule(options::graphicsModule)) return;
 
-    m_platform->GetWindow()->Show();
-    m_platform->PollEvents();
+    m_platform->window()->show();
+    m_platform->pollEvents();
 
     Clock::TimePoint frameStart;
     Clock::TimePoint frameEnd;
@@ -41,20 +41,20 @@ void Engine::Launch()
     uint64 lastFrameCount = 0;
 
     for (m_running = true; m_running; ++m_frameCount) {
-        frameStart = Clock::Now();
+        frameStart = Clock::now();
 
-        m_graphics->RenderFrame();
-        m_platform->PollEvents();
+        m_graphics->renderFrame();
+        m_platform->pollEvents();
 
-        frameEnd = Clock::Now();
+        frameEnd = Clock::now();
         duration += frameEnd - frameStart;
 
-        Milliseconds milliseconds = DurationCast<Milliseconds>(duration);
-        if (milliseconds.Count() >= 1000) {
+        Milliseconds milliseconds = durationCast<Milliseconds>(duration);
+        if (milliseconds.count() >= 1000) {
             uint64 count = m_frameCount - lastFrameCount;
-            float64 fmilli = DurationCast<FloatMilliseconds>(duration).Count();
+            float64 fmilli = durationCast<FloatMilliseconds>(duration).count();
             float64 fps = static_cast<float64>(count) / fmilli * 1000.0;
-            engine::LogInfo("fps: {:.2f}", fps);
+            engine::logInfo("fps: {:.2f}", fps);
 
             lastFrameCount = m_frameCount;
             duration = Nanoseconds(0);
@@ -62,37 +62,37 @@ void Engine::Launch()
     }
 }
 
-void Engine::Shutdown()
+void Engine::shutdown()
 {
     m_running = false;
 }
 
-void Engine::Quit()
+void Engine::quit()
 {
-    if (g_engine != nullptr) {
-        g_engine->Shutdown();
+    if (instance != nullptr) {
+        instance->shutdown();
     }
 }
 
-void Engine::Abort(String const& msg)
+void Engine::abort(String const& msg)
 {
-    if (g_engine == nullptr) {
+    if (instance == nullptr) {
         std::exit(-1);
         return;
     }
 
-    Platform::AlertError(msg);
-    g_engine->m_running = false;
+    Platform::alertError(msg);
+    instance->m_running = false;
 }
 
-bool Engine::Running() noexcept
+bool Engine::running() noexcept
 {
-    return g_engine != nullptr && g_engine->m_running;
+    return instance != nullptr && instance->m_running;
 }
 
-uint64 Engine::FrameCount() noexcept
+uint64 Engine::frameCount() noexcept
 {
-    return g_engine == nullptr ? 0 : g_engine->m_frameCount;
+    return instance == nullptr ? 0 : instance->m_frameCount;
 }
 
 } // namespace mini

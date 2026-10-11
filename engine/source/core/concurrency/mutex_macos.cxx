@@ -21,30 +21,30 @@ namespace mini {
 using PlatformMutex = os_unfair_lock;
 using PlatformRecursiveMutex = pthread_mutex_t;
 
-inline void MutexInitialize(PlatformMutex& mutex)
+inline void mutexInitialize(PlatformMutex& mutex)
 {
     // this macro just zero initialize the mutex value
     mutex = OS_UNFAIR_LOCK_INIT;
 }
 
-inline void MutexLock(PlatformMutex& mutex)
+inline void mutexLock(PlatformMutex& mutex)
 {
     DEBUG_UNFAIR_LOCK_NOT_OWNER(&mutex);
     os_unfair_lock_lock(&mutex);
 }
 
-inline void MutexUnlock(PlatformMutex& mutex)
+inline void mutexUnlock(PlatformMutex& mutex)
 {
     DEBUG_UNFAIR_LOCK_OWNER(&mutex);
     os_unfair_lock_unlock(&mutex);
 }
 
-inline bool MutexTryLock(PlatformMutex& mutex)
+inline bool mutexTryLock(PlatformMutex& mutex)
 {
     return os_unfair_lock_trylock(&mutex);
 }
 
-inline void RecursiveMutexInitialize(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexInitialize(PlatformRecursiveMutex& mutex)
 {
     pthread_mutexattr_t attr;
     int32 error = pthread_mutexattr_init(&attr);
@@ -76,24 +76,24 @@ init_error:
     ASSERT(error, "failed to initialize mutex. error: {}", error);
 }
 
-inline void RecursiveMutexLock(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexLock(PlatformRecursiveMutex& mutex)
 {
     [[maybe_unused]] int32 error = pthread_mutex_lock(&mutex);
     ASSERT(error == 0, "failed to lock pthread_mutex. error: {}", error);
 }
 
-inline void RecursiveMutexUnlock(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexUnlock(PlatformRecursiveMutex& mutex)
 {
     [[maybe_unused]] int32 error = pthread_mutex_unlock(&mutex);
     ASSERT(error == 0, "failed to unlock pthread_mutex. error: {}", error);
 }
 
-inline bool RecursiveMutexTryLock(PlatformRecursiveMutex& mutex)
+inline bool recursiveMutexTryLock(PlatformRecursiveMutex& mutex)
 {
     return pthread_mutex_trylock(&mutex) == 0;
 }
 
-inline void RecursiveMutexDestroy(PlatformRecursiveMutex& mutex)
+inline void recursiveMutexDestroy(PlatformRecursiveMutex& mutex)
 {
     [[maybe_unused]] int32 error = pthread_mutex_destroy(&mutex);
     ASSERT(error == 0, "failed to destroy pthread_mutex. error: {}", error);

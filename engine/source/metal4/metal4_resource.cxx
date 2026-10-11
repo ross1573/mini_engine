@@ -44,17 +44,17 @@ public:
     Resource() noexcept = default;
     Resource(PtrView<MTL::Resource> resource) noexcept;
 
-    void SetName(StringView name) { m_resource->setLabel(ToNSString(name).Get()); }
+    void setName(StringView name) { m_resource->setLabel(toNSString(name).get()); }
 
-    [[nodiscard]] bool Valid() const noexcept { return m_resource.Valid(); }
-    [[nodiscard]] size_t Capacity() const { return static_cast<size_t>(m_resource->allocatedSize()); }
-    [[nodiscard]] String Name() const { return ToString(m_resource->label()); }
+    [[nodiscard]] bool valid() const noexcept { return m_resource.valid(); }
+    [[nodiscard]] size_t capacity() const { return static_cast<size_t>(m_resource->allocatedSize()); }
+    [[nodiscard]] String name() const { return toString(m_resource->label()); }
 
-    [[nodiscard]] MTL::Resource* MTLResource() const noexcept { return m_resource.Get(); }
+    [[nodiscard]] MTL::Resource* mtlResource() const noexcept { return m_resource.get(); }
 };
 
 Resource::Resource(PtrView<MTL::Resource> resource) noexcept
-    : m_resource(TransferShared(resource.Get()))
+    : m_resource(transfer(resource.get()))
 {
 }
 

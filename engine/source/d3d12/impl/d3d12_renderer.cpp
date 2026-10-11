@@ -18,7 +18,7 @@ Renderer::Renderer(ID3D12Device* device)
 {
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_commandQueue = MakeUnique<CommandQueue>(device, CommandType::Direct);
+    m_commandQueue = makeUnique<CommandQueue>(device, CommandType::Direct);
 
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_commandAllocator)));
     VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList)));
@@ -28,20 +28,20 @@ Renderer::Renderer(ID3D12Device* device)
 
 Renderer::~Renderer()
 {
-    WaitForIdle();
+    waitIdle();
 }
 
-void Renderer::Prepare()
+void Renderer::prepare()
 {
 }
 
-void Renderer::Render()
+void Renderer::render()
 {
     m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());
-    m_currentBuffer = interface->GetSwapChain()->GetCurrentBuffer();
+    m_currentBuffer = interface->swapChain()->GetCurrentBuffer();
 
-    VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
-    VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
+    VERIFY(m_commandAllocator->reset(), "failed to reset command allocator");
+    VERIFY(m_commandList->reset(m_commandAllocator, nullptr), "failed to reset command list");
 
     // begin
     {
@@ -59,7 +59,7 @@ void Renderer::Render()
         D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_currentBuffer->descriptor.offset;
 
         m_commandList->ResourceBarrier(1, &barrier);
-        m_commandList->ClearRenderTargetView(cpuOffset, Color::Clear().data, 0, nullptr);
+        m_commandList->ClearRenderTargetView(cpuOffset, Color::clear().data, 0, nullptr);
     }
 
     // end
@@ -100,9 +100,9 @@ void Renderer::SetScissorRect(RectInt const& rect)
     m_commandList->RSSetScissorRects(1, reinterpret_cast<D3D12_RECT const*>(&rect));
 }
 
-void Renderer::WaitForIdle()
+void Renderer::waitIdle()
 {
-    m_commandQueue->WaitForIdle();
+    m_commandQueue->waitIdle();
 }
 
 } // namespace mini::d3d12

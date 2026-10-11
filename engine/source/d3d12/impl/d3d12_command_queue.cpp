@@ -18,9 +18,9 @@ CommandQueue::CommandQueue(ID3D12Device* device, CommandType queueType)
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
     switch (m_queueType) {
         case CommandType::Direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
-        case CommandType::Copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
+        case CommandType::copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
         case CommandType::Compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
-        default: VERIFY(false, "unknown command queue type");
+        default: VERIFY(false, "unknown command queue type")           ;
     }
 
     m_queueDesc.Type = type;
@@ -37,7 +37,7 @@ CommandQueue::CommandQueue(ID3D12Device* device, CommandType queueType)
 
 CommandQueue::~CommandQueue()
 {
-    m_fence.Reset();
+    m_fence.reset();
 
     if (m_fenceHandle) {
         CloseHandle(m_fenceHandle);
@@ -45,9 +45,9 @@ CommandQueue::~CommandQueue()
     }
 }
 
-void CommandQueue::Wait(CommandQueue* commandQueue)
+void CommandQueue::wait(CommandQueue* commandQueue)
 {
-    m_commandQueue->Wait(commandQueue->m_fence, commandQueue->m_fenceValue);
+    m_commandQueue->wait(commandQueue->m_fence, commandQueue->m_fenceValue);
 }
 
 void CommandQueue::WaitForFence(uint64 fenceValue)
@@ -63,10 +63,10 @@ void CommandQueue::WaitForFence(uint64 fenceValue)
     }
 }
 
-void CommandQueue::WaitForIdle()
+void CommandQueue::waitIdle()
 {
     m_fenceValue++;
-    m_commandQueue->Signal(m_fence, m_fenceValue);
+    m_commandQueue->signal(m_fence, m_fenceValue);
 
     WaitForFence(m_fenceValue);
 }
@@ -75,7 +75,7 @@ uint64 CommandQueue::ExecuteCommandList(ID3D12CommandList* commandList)
 {
     m_fenceValue++;
     m_commandQueue->ExecuteCommandLists(1, &commandList);
-    m_commandQueue->Signal(m_fence, m_fenceValue);
+    m_commandQueue->signal(m_fence, m_fenceValue);
 
     return m_fenceValue;
 }

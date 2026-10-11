@@ -157,7 +157,7 @@ namespace mini {
 
 export template <typename T>
 concept ValidatableT = requires(T ele) {
-    { ele.Valid() } -> SameAsT<bool>;
+    { ele.valid() } -> SameAsT<bool>;
 };
 
 export template <typename T>

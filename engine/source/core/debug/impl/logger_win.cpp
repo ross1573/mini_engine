@@ -11,14 +11,14 @@ import :logger_platform;
 
 namespace mini::debug {
 
-void LogAssert(AssertFormatResult formatResult) noexcept
+void logAssert(AssertFormatResult formatResult) noexcept
 {
     HWND handle = GetActiveWindow();
     MessageBoxA(handle, formatResult.message, nullptr, MB_ICONERROR | MB_OK);
     OutputDebugStringA(formatResult.message);
 }
 
-void LogEnsure(AssertFormatResult formatResult) noexcept
+void logEnsure(AssertFormatResult formatResult) noexcept
 {
     OutputDebugStringA(formatResult.message);
 }
@@ -32,22 +32,22 @@ LoggerBase::LoggerBase(StringView category) noexcept
 {
 }
 
-void LoggerBase::PrintMessage(byte, StringView msg) noexcept
+void LoggerBase::printMessage(byte, StringView msg) noexcept
 {
-    char buffer[1024]{ 0 };
+    char buffer[1024]{0};
     char *ptr = buffer;
 
-    ENSURE(msg.Size() + m_category.Size() + 4 < 1024) {
+    ENSURE(msg.size() + m_category.size() + 4 < 1024) {
         return;
     }
 
     *(ptr++) = '[';
-    memory::MemCopy(ptr, m_category.Data(), m_category.Size());
-    ptr += m_category.Size();
+    memory::memcopy(ptr, m_category.data(), m_category.size());
+    ptr += m_category.size();
     *(ptr++) = ']';
     *(ptr++) = ' ';
-    memory::MemCopy(ptr, msg.Data(), msg.Size());
-    ptr += msg.Size();
+    memory::memcopy(ptr, msg.data(), msg.size());
+    ptr += msg.size();
     *(ptr++) = '\n';
     *(ptr++) = '\0';
 

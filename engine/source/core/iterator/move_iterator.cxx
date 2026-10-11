@@ -23,16 +23,16 @@ public:
     constexpr MoveIterator() noexcept = default;
     explicit constexpr MoveIterator(T iter);
 
-    [[nodiscard]] constexpr T const& Base() const& noexcept;
-    [[nodiscard]] constexpr T Base() && noexcept;
-    [[nodiscard]] constexpr Pointer Address() const noexcept;
-    [[nodiscard]] constexpr bool Valid() const;
-    [[nodiscard]] constexpr bool ValidWith(MoveIterator const& other) const;
+    [[nodiscard]] constexpr T const& base() const& noexcept;
+    [[nodiscard]] constexpr T base() && noexcept;
+    [[nodiscard]] constexpr Pointer address() const noexcept;
+    [[nodiscard]] constexpr bool valid() const;
+    [[nodiscard]] constexpr bool validWith(MoveIterator const& other) const;
 
-    constexpr bool Increment();
-    constexpr bool Decrement()
+    constexpr bool increment();
+    constexpr bool decrement()
         requires BidrectionalIteratorT<T>;
-    constexpr bool Advance(offset_t offset)
+    constexpr bool advance(offset_t offset)
         requires RandomAccessIteratorT<T>;
 
     [[nodiscard]] constexpr Pointer operator->() const;
@@ -88,53 +88,53 @@ constexpr MoveIterator<T>& MoveIterator<T>::operator=(MoveIterator<U> const& oth
 }
 
 template <ForwardIteratorT T>
-constexpr T const& MoveIterator<T>::Base() const& noexcept
+constexpr T const& MoveIterator<T>::base() const& noexcept
 {
     return m_iter;
 }
 
 template <ForwardIteratorT T>
-constexpr T MoveIterator<T>::Base() && noexcept
+constexpr T MoveIterator<T>::base() && noexcept
 {
-    return MoveArg(m_iter);
+    return moveCast(m_iter);
 }
 
 template <ForwardIteratorT T>
-constexpr MoveIterator<T>::Pointer MoveIterator<T>::Address() const noexcept
+constexpr MoveIterator<T>::Pointer MoveIterator<T>::address() const noexcept
 {
-    return m_iter.Address();
+    return m_iter.address();
 }
 
 template <ForwardIteratorT T>
-constexpr bool MoveIterator<T>::Valid() const
+constexpr bool MoveIterator<T>::valid() const
 {
-    return m_iter.Valid();
+    return m_iter.valid();
 }
 
 template <ForwardIteratorT T>
-constexpr bool MoveIterator<T>::ValidWith(MoveIterator const& other) const
+constexpr bool MoveIterator<T>::validWith(MoveIterator const& other) const
 {
-    return m_iter.ValidWith(other.Base());
+    return m_iter.validWith(other.base());
 }
 
 template <ForwardIteratorT T>
-constexpr bool MoveIterator<T>::Increment()
+constexpr bool MoveIterator<T>::increment()
 {
-    return m_iter.Increment();
+    return m_iter.increment();
 }
 
 template <ForwardIteratorT T>
-constexpr bool MoveIterator<T>::Decrement()
+constexpr bool MoveIterator<T>::decrement()
     requires BidrectionalIteratorT<T>
 {
-    return m_iter.Decrement();
+    return m_iter.decrement();
 }
 
 template <ForwardIteratorT T>
-constexpr bool MoveIterator<T>::Advance(offset_t offset)
+constexpr bool MoveIterator<T>::advance(offset_t offset)
     requires RandomAccessIteratorT<T>
 {
-    return m_iter.Advance(offset);
+    return m_iter.advance(offset);
 }
 
 template <ForwardIteratorT T>
@@ -231,44 +231,44 @@ constexpr MoveIterator<T> operator+(offset_t offset, MoveIterator<T> iter)
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr offset_t operator-(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() - rhs.Base();
+    return lhs.base() - rhs.base();
 }
 
 export template <ForwardIteratorT T, ForwardIteratorT U>
 constexpr bool operator==(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() == rhs.Base();
+    return lhs.base() == rhs.base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr bool operator<(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() < rhs.Base();
+    return lhs.base() < rhs.base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr bool operator>(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() > rhs.Base();
+    return lhs.base() > rhs.base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr bool operator<=(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() <= rhs.Base();
+    return lhs.base() <= rhs.base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr bool operator>=(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
 {
-    return lhs.Base() >= rhs.Base();
+    return lhs.base() >= rhs.base();
 }
 
 export template <RandomAccessIteratorT T, RandomAccessIteratorT U>
 constexpr auto operator<=>(MoveIterator<T> const& lhs, MoveIterator<U> const& rhs)
     requires ThreeWayComparableWithT<T, U>
 {
-    return lhs.Base() <=> rhs.Base();
+    return lhs.base() <=> rhs.base();
 }
 
 } // namespace mini

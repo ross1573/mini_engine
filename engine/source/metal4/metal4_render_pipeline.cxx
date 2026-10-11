@@ -30,7 +30,7 @@ class Compiler;
 
 namespace mini::metal4 {
 
-export METAL4_API SharedPtr<MTL4::RenderPipelineDescriptor> MTLRenderPipelineDescriptor(
+export METAL4_API SharedPtr<MTL4::RenderPipelineDescriptor> mtlRenderPipelineDescriptor(
     graphics::RenderPipelineDescriptor const& descriptor);
 
 export class METAL4_API RenderPipelineState : public graphics::RenderPipelineState {
@@ -40,15 +40,15 @@ private:
 public:
     RenderPipelineState(PtrView<Compiler> compiler, graphics::RenderPipelineDescriptor const& descriptor);
 
-    [[nodiscard]] bool Valid() const noexcept { return m_renderPipelineState.Valid(); }
-    [[nodiscard]] String Name() const { return ToString(m_renderPipelineState->label()); }
+    [[nodiscard]] bool valid() const noexcept { return m_renderPipelineState.valid(); }
+    [[nodiscard]] String name() const { return toString(m_renderPipelineState->label()); }
 
-    [[nodiscard]] MTL::RenderPipelineState* MTLRenderPipelineState() const noexcept;
+    [[nodiscard]] MTL::RenderPipelineState* mtlRenderPipelineState() const noexcept;
 };
 
-inline MTL::RenderPipelineState* RenderPipelineState::MTLRenderPipelineState() const noexcept
+inline MTL::RenderPipelineState* RenderPipelineState::mtlRenderPipelineState() const noexcept
 {
-    return m_renderPipelineState.Get();
+    return m_renderPipelineState.get();
 }
 
 } // namespace mini::metal4

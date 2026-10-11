@@ -4,8 +4,13 @@
 
 import mini.test;
 
-using namespace mini;
-using namespace mini::test;
+using mini::BasicString;
+using mini::BasicStringView;
+
+using mini::char16;
+using mini::char32;
+using mini::char8;
+using mini::wchar;
 
 [[maybe_unused]] constexpr void StringViewConstraints()
 {
@@ -17,7 +22,7 @@ using namespace mini::test;
 }
 
 template <typename T, typename CStr>
-constexpr int TestCtor()
+constexpr int testCtor()
 {
     TEST_ENSURE(BasicStringView<T>{} == CStr::e);
 
@@ -39,20 +44,20 @@ constexpr int TestCopy()
 {
     BasicStringView<T> svs = CStr::s;
     BasicString<T> ss{};
-    ss.Resize(svs.Size());
+    ss.resize(svs.size());
 
-    svs.Copy(ss.Data(), 0, svs.Size());
+    svs.copy(ss.data(), 0, svs.size());
     TEST_ENSURE(svs == ss);
 
-    svs.Copy(ss.Data(), svs.Begin(), svs.End());
+    svs.copy(ss.data(), svs.begin(), svs.end());
     TEST_ENSURE(svs == ss);
 
-    svs.Copy(ss.Data(), 5, svs.Size() - 5);
-    ss.Resize(svs.Size() - 5);
-    TEST_ENSURE(svs.SubView(5, svs.Size() - 5) == ss);
+    svs.copy(ss.data(), 5, svs.size() - 5);
+    ss.resize(svs.size() - 5);
+    TEST_ENSURE(svs.subView(5, svs.size() - 5) == ss);
 
-    svs.Copy(ss.Data(), svs.Begin() + 5, svs.End());
-    TEST_ENSURE(svs.SubBack(svs.Size() - 5) == ss);
+    svs.copy(ss.data(), svs.begin() + 5, svs.end());
+    TEST_ENSURE(svs.subBack(svs.size() - 5) == ss);
 
     return 0;
 }
@@ -62,17 +67,17 @@ constexpr int TestSubString()
 {
     BasicStringView<T> sv = CStr::l;
 
-    BasicStringView<T> sv1 = sv.SubFront(30);
+    BasicStringView<T> sv1 = sv.subFront(30);
     TEST_ENSURE(sv1 == CStr::l_30);
 
-    BasicStringView<T> sv2 = sv.SubBack(10);
-    BasicString<T> s2(CStr::l + sv.Size() - 10);
+    BasicStringView<T> sv2 = sv.subBack(10);
+    BasicString<T> s2(CStr::l + sv.size() - 10);
     TEST_ENSURE(sv2 == s2);
 
-    BasicStringView<T> sv3 = sv.SubView(0, 30);
+    BasicStringView<T> sv3 = sv.subView(0, 30);
     TEST_ENSURE(sv3 == CStr::l_30);
 
-    BasicStringView<T> sv4 = sv.SubView(sv.Begin() + 10, sv.End());
+    BasicStringView<T> sv4 = sv.subView(sv.begin() + 10, sv.end());
     BasicString<T> s4(CStr::l + 10);
     TEST_ENSURE(sv4 == s4);
 
@@ -80,32 +85,32 @@ constexpr int TestSubString()
 }
 
 template <typename T, typename CStr>
-constexpr int TestRemove()
+constexpr int testRemove()
 {
     BasicStringView<T> sv = CStr::l;
     BasicString<T> s = CStr::l;
 
-    sv.PopFront();
-    s.RemoveRange(0, 1);
+    sv.popFront();
+    s.removeRange(0, 1);
     TEST_ENSURE(sv == s);
 
-    sv.PopFront(5);
-    s.RemoveRange(0, 5);
+    sv.popFront(5);
+    s.removeRange(0, 5);
     TEST_ENSURE(sv == s);
 
-    sv.PopBack();
-    s.PopBack();
+    sv.popBack();
+    s.popBack();
     TEST_ENSURE(sv == s);
 
-    sv.PopBack(5);
-    s.PopBack(5);
+    sv.popBack(5);
+    s.popBack(5);
     TEST_ENSURE(sv == s);
 
     return 0;
 }
 
 template <typename T, typename CStr>
-constexpr int TestOperator()
+constexpr int testOperator()
 {
     BasicStringView<T> view;
 
@@ -114,18 +119,18 @@ constexpr int TestOperator()
     TEST_ENSURE((view == CStr::e && CStr::e == view));
 
     view = CStr::s_10;
-    TEST_ENSURE(view[9] == view.Last());
+    TEST_ENSURE(view[9] == view.last());
 
     return 0;
 }
 
 int main()
 {
-    TEST_STRING(TestCtor, char);
-    TEST_STRING(TestCtor, wchar);
-    TEST_STRING(TestCtor, char8);
-    TEST_STRING(TestCtor, char16);
-    TEST_STRING(TestCtor, char32);
+    TEST_STRING(testCtor, char);
+    TEST_STRING(testCtor, wchar);
+    TEST_STRING(testCtor, char8);
+    TEST_STRING(testCtor, char16);
+    TEST_STRING(testCtor, char32);
 
     TEST_STRING(TestCopy, char);
     TEST_STRING(TestCopy, wchar);
@@ -139,17 +144,17 @@ int main()
     TEST_STRING(TestSubString, char16);
     TEST_STRING(TestSubString, char32);
 
-    TEST_STRING(TestRemove, char);
-    TEST_STRING(TestRemove, wchar);
-    TEST_STRING(TestRemove, char8);
-    TEST_STRING(TestRemove, char16);
-    TEST_STRING(TestRemove, char32);
+    TEST_STRING(testRemove, char);
+    TEST_STRING(testRemove, wchar);
+    TEST_STRING(testRemove, char8);
+    TEST_STRING(testRemove, char16);
+    TEST_STRING(testRemove, char32);
 
-    TEST_STRING(TestOperator, char);
-    TEST_STRING(TestOperator, wchar);
-    TEST_STRING(TestOperator, char8);
-    TEST_STRING(TestOperator, char16);
-    TEST_STRING(TestOperator, char32);
+    TEST_STRING(testOperator, char);
+    TEST_STRING(testOperator, wchar);
+    TEST_STRING(testOperator, char8);
+    TEST_STRING(testOperator, char16);
+    TEST_STRING(testOperator, char32);
 
     return 0;
 }

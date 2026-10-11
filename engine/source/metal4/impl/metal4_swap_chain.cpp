@@ -5,57 +5,57 @@ import :swap_chain;
 namespace mini::metal4 {
 
 SwapChain::SwapChain(PtrView<Device> device)
-    : m_layer(TransferShared(CA::MetalLayer::layer()))
+    : m_layer(transfer(CA::MetalLayer::layer()))
 {
     ASSERT(m_layer, "failed to retrieve MetalLayer object");
     ASSERT(options::bufferCount > 0 && options::bufferCount < 4, "invalid frame buffer count");
 
-    m_layer->setDevice(device->MTLDevice());
+    m_layer->setDevice(device->mtlDevice());
     m_layer->setFramebufferOnly(true);
-    m_layer->setDisplaySyncEnabled(options::vsync > 0);
-    m_layer->setMaximumDrawableCount(Max(options::bufferCount, byte{2}));
+    m_layer->setDisplaySyncEnabled(options::vsyncRate > 0);
+    m_layer->setMaximumDrawableCount(max(options::bufferCount, byte{2}));
 
-    interface->GetWindow()->SetMetalLayer(m_layer.Get());
+    interface->window()->setMetalLayer(m_layer.get());
 }
 
-void SwapChain::Present()
+void SwapChain::present()
 {
-    m_drawable.Present();
-    m_drawable.Reset();
+    m_drawable.present();
+    m_drawable.reset();
 }
 
-void SwapChain::ResizeBackBuffer([[maybe_unused]] uint32 width,
-                                 [[maybe_unused]] uint32 height,
-                                 [[maybe_unused]] bool fullscreen)
-{
-}
-
-void SwapChain::SetBackBufferCount([[maybe_unused]] uint8 count)
+void SwapChain::resizeFrameBuffer([[maybe_unused]] uint32 width,
+                                  [[maybe_unused]] uint32 height,
+                                  [[maybe_unused]] bool fullscreen)
 {
 }
 
-void SwapChain::SetVSync([[maybe_unused]] uint8 vsync)
+void SwapChain::resizeBufferCount([[maybe_unused]] uint8 count)
 {
 }
 
-void SwapChain::SetFullScreen(bool fullscreen)
+void SwapChain::setVSync([[maybe_unused]] uint8 setVSync)
 {
-    interface->GetWindow()->SetFullScreen(fullscreen);
 }
 
-bool SwapChain::GetFullScreen() const
+void SwapChain::setFullScreen(bool fullscreen)
 {
-    return interface->GetWindow()->IsFullScreen();
+    interface->window()->setFullScreen(fullscreen);
 }
 
-Drawable* SwapChain::Drawable()
+bool SwapChain::fullScreen() const
 {
-    if (!m_drawable.Valid()) {
-        m_drawable.Reset(m_layer->nextDrawable());
+    return interface->window()->fullScreen();
+}
+
+Drawable* SwapChain::drawable()
+{
+    if (!m_drawable.valid()) {
+        m_drawable.reset(m_layer->nextDrawable());
         ASSERT(m_drawable, "failed to retrieve next drawable");
     }
 
-    return memory::AddressOf(m_drawable);
+    return addressof(m_drawable);
 }
 
 } // namespace mini::metal4

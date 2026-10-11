@@ -21,10 +21,10 @@ public:
 
     graphics::Device* CreateDevice() final;
 
-    windows::Window* GetWindow() noexcept;
-    d3d12::Device* GetDevice() noexcept;
-    d3d12::SwapChain* GetSwapChain() noexcept;
-    d3d12::Renderer* GetRenderer() noexcept;
+    windows::Window* window() noexcept;
+    d3d12::Device* device() noexcept;
+    d3d12::SwapChain* swapChain() noexcept;
+    d3d12::Renderer* renderer() noexcept;
 };
 
 } // namespace mini

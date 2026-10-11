@@ -6,7 +6,7 @@ import :numeric;
 namespace mini {
 
 template <IntegralT T>
-constexpr bool AddOverflow(T const x, T const y, T* result)
+constexpr bool addOverflow(T const x, T const y, T* result)
 {
     if constexpr (UnsignedT<T>) {
         *result = static_cast<T>(x + y);
@@ -31,7 +31,7 @@ constexpr bool AddOverflow(T const x, T const y, T* result)
 }
 
 template <IntegralT T>
-constexpr bool SubOverflow(T const x, T const y, T* result)
+constexpr bool subOverflow(T const x, T const y, T* result)
 {
     if constexpr (UnsignedT<T>) {
         return x < y;
@@ -55,7 +55,7 @@ constexpr bool SubOverflow(T const x, T const y, T* result)
 }
 
 template <IntegralT T>
-constexpr bool MulOverflow(T const x, T const y, T* result)
+constexpr bool mulOverflow(T const x, T const y, T* result)
 {
     if constexpr (UnsignedT<T>) {
         *result = static_cast<T>(x * y);

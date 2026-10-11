@@ -12,15 +12,15 @@ RenderCommandEncoder::RenderCommandEncoder(PtrView<MTL4::RenderCommandEncoder> r
 
 RenderCommandEncoder::~RenderCommandEncoder() noexcept
 {
-    Reset();
+    reset();
 }
 
-bool RenderCommandEncoder::Valid() const noexcept
+bool RenderCommandEncoder::valid() const noexcept
 {
     return m_renderCommandEncoder != nullptr;
 }
 
-void RenderCommandEncoder::Reset()
+void RenderCommandEncoder::reset()
 {
     if (m_renderCommandEncoder != nullptr) [[likely]] {
         m_renderCommandEncoder->endEncoding();
@@ -28,27 +28,27 @@ void RenderCommandEncoder::Reset()
     }
 }
 
-void RenderCommandEncoder::DrawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
+void RenderCommandEncoder::drawPrimitives(graphics::PrimitiveType primitiveType, uint64 vertexStart, uint64 vertexCount)
 {
-    ASSERT(Valid());
+    ASSERT(valid());
 
-    MTL::PrimitiveType mtlPrimitive = MTLPrimitiveType(primitiveType);
+    MTL::PrimitiveType mtlPrimitive = mtlPrimitiveType(primitiveType);
 
     m_renderCommandEncoder->drawPrimitives(mtlPrimitive, vertexStart, vertexCount);
 }
 
-void RenderCommandEncoder::SetPipelineState(PtrView<graphics::RenderPipelineState> state)
+void RenderCommandEncoder::setPipelineState(PtrView<graphics::RenderPipelineState> state)
 {
-    ASSERT(Valid());
+    ASSERT(valid());
     ASSERT(state);
 
-    PtrView<RenderPipelineState> pipelineState = StaticCast<RenderPipelineState>(state);
-    m_renderCommandEncoder->setRenderPipelineState(pipelineState->MTLRenderPipelineState());
+    PtrView<RenderPipelineState> pipelineState = staticCast<RenderPipelineState>(state);
+    m_renderCommandEncoder->setRenderPipelineState(pipelineState->mtlRenderPipelineState());
 }
 
-void RenderCommandEncoder::SetViewport(Rect const& rect, float32 near, float32 far) noexcept
+void RenderCommandEncoder::setViewport(Rect const& rect, float32 near, float32 far) noexcept
 {
-    ASSERT(Valid());
+    ASSERT(valid());
 
     MTL::Viewport viewport = {
         .originX = static_cast<double>(rect.x),
@@ -62,18 +62,18 @@ void RenderCommandEncoder::SetViewport(Rect const& rect, float32 near, float32 f
     m_renderCommandEncoder->setViewport(viewport);
 }
 
-void RenderCommandEncoder::SetScissorRect(RectInt const& rect) noexcept
+void RenderCommandEncoder::setScissorRect(RectInt const& rect) noexcept
 {
-    ASSERT(Valid());
+    ASSERT(valid());
 
-    MTL::ScissorRect ScissorRect = {
+    MTL::ScissorRect scissorRect = {
         .x = static_cast<NS::UInteger>(rect.x),
         .y = static_cast<NS::UInteger>(rect.y),
         .width = static_cast<NS::UInteger>(rect.width),
         .height = static_cast<NS::UInteger>(rect.height),
     };
 
-    m_renderCommandEncoder->setScissorRect(ScissorRect);
+    m_renderCommandEncoder->setScissorRect(scissorRect);
 }
 
 } // namespace mini::metal4

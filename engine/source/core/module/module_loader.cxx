@@ -45,20 +45,20 @@ private:
     Array<StringView> m_pending;
 
 public:
-    LoaderIterator FindRegistered(StringView);
-    ModuleIterator FindLoaded(StringView);
+    LoaderIterator findRegistered(StringView name);
+    ModuleIterator findLoaded(StringView name);
 
-    bool Register(StringView, LoaderRef::Loader);
-    SharedPtr<ModuleHandle> Load(StringView);
+    bool registerUninitialized(StringView name, LoaderRef::Loader loader);
+    SharedPtr<ModuleHandle> load(StringView name);
 
-    [[nodiscard]] size_t Count() const noexcept;
+    [[nodiscard]] size_t count() const noexcept;
 
 private:
-    SharedPtr<ModuleHandle> LoadHandle(StringView);
+    SharedPtr<ModuleHandle> loadHandle(StringView name);
 
-    bool FindCircularDependency(StringView);
+    bool findCircularDependency(StringView name);
 };
 
-CORE_API ModuleLoader g_moduleLoader = ModuleLoader();
+CORE_API ModuleLoader moduleLoader = ModuleLoader();
 
 } // namespace mini

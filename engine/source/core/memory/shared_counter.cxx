@@ -18,16 +18,16 @@ public:
     constexpr SharedCounter(size_t count, size_t weakCount) noexcept;
     constexpr virtual ~SharedCounter() = default;
 
-    [[nodiscard]] constexpr size_t Count() const noexcept;
-    [[nodiscard]] constexpr size_t WeakCount() const noexcept;
+    [[nodiscard]] constexpr size_t count() const noexcept;
+    [[nodiscard]] constexpr size_t weakCount() const noexcept;
 
-    constexpr void Retain(size_t count = 1) noexcept;
-    constexpr void RetainWeak(size_t count = 1) noexcept;
+    constexpr void retain(size_t count = 1) noexcept;
+    constexpr void retainWeak(size_t count = 1) noexcept;
 
-    constexpr void Release(size_t count = 1) noexcept;
-    constexpr void ReleaseWeak(size_t count = 1) noexcept;
+    constexpr void release(size_t count = 1) noexcept;
+    constexpr void releaseWeak(size_t count = 1) noexcept;
 
-    [[nodiscard]] constexpr SharedCounter* Lock() noexcept;
+    [[nodiscard]] constexpr SharedCounter* lock() noexcept;
 
 public:
     SharedCounter(SharedCounter const&) = delete;
@@ -37,8 +37,8 @@ public:
     SharedCounter& operator=(SharedCounter&&) = delete;
 
 protected:
-    virtual void DeletePtr() noexcept = 0;
-    virtual void DeleteSharedBlock() noexcept = 0;
+    virtual void deletePointer() noexcept = 0;
+    virtual void deleteSharedBlock() noexcept = 0;
 };
 
 constexpr SharedCounter::SharedCounter(size_t count) noexcept
@@ -53,7 +53,7 @@ constexpr SharedCounter::SharedCounter(size_t count, size_t weakCount) noexcept
 {
 }
 
-constexpr size_t SharedCounter::Count() const noexcept
+constexpr size_t SharedCounter::count() const noexcept
 {
     if consteval {
         return static_cast<size_t>(m_count);
@@ -64,7 +64,7 @@ constexpr size_t SharedCounter::Count() const noexcept
     return static_cast<size_t>(result);
 }
 
-constexpr size_t SharedCounter::WeakCount() const noexcept
+constexpr size_t SharedCounter::weakCount() const noexcept
 {
     if consteval {
         return static_cast<size_t>(m_weak);
@@ -75,7 +75,7 @@ constexpr size_t SharedCounter::WeakCount() const noexcept
     return static_cast<size_t>(result);
 }
 
-constexpr void SharedCounter::Retain(size_t count) noexcept
+constexpr void SharedCounter::retain(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -89,7 +89,7 @@ constexpr void SharedCounter::Retain(size_t count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-constexpr void SharedCounter::RetainWeak(size_t count) noexcept
+constexpr void SharedCounter::retainWeak(size_t count) noexcept
 {
     CounterValue add = static_cast<CounterValue>(count);
 
@@ -101,7 +101,7 @@ constexpr void SharedCounter::RetainWeak(size_t count) noexcept
     __atomic_fetch_add(&m_weak, add, __ATOMIC_RELAXED);
 }
 
-constexpr void SharedCounter::Release(size_t count) noexcept
+constexpr void SharedCounter::release(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -110,25 +110,25 @@ constexpr void SharedCounter::Release(size_t count) noexcept
 
         m_count -= sub;
         if (m_count == 0) {
-            DeletePtr();
+            deletePointer();
         }
 
-        ReleaseWeak(count);
+        releaseWeak(count);
         return;
     }
 
     CounterValue last = __atomic_fetch_sub(&m_count, sub, __ATOMIC_RELEASE);
     if (last == sub) {
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
-        DeletePtr();
+        deletePointer();
     } else {
         ASSERT(last > sub, "strong ref count is below zero");
     }
 
-    ReleaseWeak(count);
+    releaseWeak(count);
 }
 
-constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
+constexpr void SharedCounter::releaseWeak(size_t count) noexcept
 {
     CounterValue sub = static_cast<CounterValue>(count);
 
@@ -137,7 +137,7 @@ constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
 
         m_weak -= sub;
         if (m_weak == 0) {
-            DeleteSharedBlock();
+            deleteSharedBlock();
         }
 
         return;
@@ -146,13 +146,13 @@ constexpr void SharedCounter::ReleaseWeak(size_t count) noexcept
     CounterValue last = __atomic_fetch_sub(&m_weak, sub, __ATOMIC_RELEASE);
     if (last == sub) {
         __atomic_thread_fence(__ATOMIC_ACQUIRE);
-        DeleteSharedBlock();
+        deleteSharedBlock();
     } else {
         ASSERT(last > sub, "weak ref count is below zero");
     }
 }
 
-constexpr SharedCounter* SharedCounter::Lock() noexcept
+constexpr SharedCounter* SharedCounter::lock() noexcept
 {
     if consteval {
         if (m_count == 0) {

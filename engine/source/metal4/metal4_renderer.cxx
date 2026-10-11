@@ -45,11 +45,11 @@ private:
 public:
     Renderer(PtrView<Device> device);
 
-    void Prepare() final;
-    void Render() final;
-    void WaitForIdle() final;
+    void prepare() final;
+    void render() final;
+    void waitIdle() final;
 
-    static void HandleRenderError(PtrView<NS::Error> error);
+    static void handleRenderError(PtrView<NS::Error> error);
 };
 
 } // namespace mini::metal4

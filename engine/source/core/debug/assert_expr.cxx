@@ -6,22 +6,22 @@ import :numeric;
 namespace mini::debug {
 
 export template <typename T>
-constexpr bool Evaluate(T const&) = deleted_function("unable to evaluate expression");
+constexpr bool evaluate(T const&) = deleted_function("unable to evaluate expression");
 
 export template <ValidatableT T>
-constexpr bool Evaluate(T const& arg) noexcept
+constexpr bool evaluate(T const& arg) noexcept
 {
-    return arg.Valid();
+    return arg.valid();
 }
 
 export template <ValidatableT T>
-constexpr bool Evaluate(T* arg) noexcept
+constexpr bool evaluate(T* arg) noexcept
 {
-    return arg != nullptr && arg->Valid();
+    return arg != nullptr && arg->valid();
 }
 
 export template <ExplicitlyConvertibleToT<bool> T>
-constexpr bool Evaluate(T const& arg) noexcept
+constexpr bool evaluate(T const& arg) noexcept
     requires(!ValidatableT<T>)
 {
     return static_cast<bool>(arg);

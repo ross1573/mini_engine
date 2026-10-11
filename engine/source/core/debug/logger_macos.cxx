@@ -21,10 +21,10 @@ protected:
     LoggerBase(StringView) noexcept;
     ~LoggerBase() noexcept;
 
-    void PrintMessage(byte, StringView) noexcept;
+    void printMessage(byte, StringView) noexcept;
 
 private:
-    static LogLevel GetLogType(byte) noexcept;
+    static LogLevel logType(byte) noexcept;
 };
 
 } // namespace mini

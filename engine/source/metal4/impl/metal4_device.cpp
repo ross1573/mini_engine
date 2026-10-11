@@ -7,16 +7,16 @@ import :buffer;
 namespace mini::metal4 {
 
 Device::Device()
-    : m_device(TransferShared(CreateSystemDefaultDevice()))
+    : m_device(transfer(createSystemDefaultDevice()))
 {
 }
 
-graphics::SwapChain* Device::CreateSwapChain()
+graphics::SwapChain* Device::createSwapChain()
 {
     return new SwapChain(this);
 }
 
-graphics::Renderer* Device::CreateRenderer()
+graphics::Renderer* Device::createRenderer()
 {
     return new Renderer(this);
 }

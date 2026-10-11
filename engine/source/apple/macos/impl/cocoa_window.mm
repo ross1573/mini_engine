@@ -20,14 +20,14 @@
 @end
 
 @implementation CocoaWindowDelegate {
-    mini::cocoa::Window* m_delegate;
+    mini::cocoa::Window* delegate;
 }
 
-- (instancetype)initWithDelegate:(mini::cocoa::Window*)delegate
+- (instancetype)initWithDelegate:(mini::cocoa::Window*)windowDelegate
 {
     self = [super init];
     if (self != nullptr) {
-        m_delegate = delegate;
+        delegate = windowDelegate;
     }
 
     return self;
@@ -35,12 +35,12 @@
 
 - (BOOL)windowShouldClose:(NSWindow*)window
 {
-    return m_delegate->ShouldClose();
+    return delegate->shouldClose();
 }
 
 - (void)windowWillClose:(NSNotification*)notification
 {
-    m_delegate->WillClose();
+    delegate->willClose();
 }
 
 - (NSSize)windowWillResize:(NSWindow*)sender toSize:(NSSize)frameSize
@@ -86,7 +86,7 @@ Window::Window(mini::cocoa::Application* application)
 
     [m_window makeFirstResponder:m_view];
     [windowDelegate release];
-    SetFullScreen(fullScreen);
+    setFullScreen(fullScreen);
 }
 
 Window::~Window()
@@ -95,55 +95,55 @@ Window::~Window()
     m_view = nullptr;
 }
 
-void Window::Minimize()
+void Window::minimize()
 {
-    if (IsMinimized()) {
+    if (minimized()) {
         [m_window deminiaturize:nil];
     } else {
         [m_window performMiniaturize:nil];
     }
 }
 
-void Window::Maximize()
+void Window::maximize()
 {
     [m_window zoom:nil];
 }
 
-void Window::Show()
+void Window::show()
 {
     [m_window makeKeyAndOrderFront:nil];
 }
 
-void Window::Hide()
+void Window::hide()
 {
     [m_window orderOut:nil];
 }
 
-bool Window::IsMinimized() const
+bool Window::minimized() const
 {
     return m_window.miniaturized;
 }
 
-bool Window::IsMaximized() const
+bool Window::maximized() const
 {
     return m_window.zoomed;
 }
 
-bool Window::IsFullScreen() const
+bool Window::fullScreen() const
 {
     return (m_window.styleMask & NSWindowStyleMaskFullScreen) != 0u;
 }
 
-void Window::SetFullScreen(bool active)
+void Window::setFullScreen(bool active)
 {
-    if (IsFullScreen() == active) {
+    if (fullScreen() == active) {
         return;
     }
 
     [m_window toggleFullScreen:m_window];
 }
 
-void Window::SetMetalLayer(CA::MetalLayer* layer)
+void Window::setMetalLayer(CA::MetalLayer* layer)
 {
     m_view.wantsLayer = YES;
     m_view.layer = (__bridge CAMetalLayer*)layer;

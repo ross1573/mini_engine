@@ -1,10 +1,12 @@
 ---
 InheritParentConfig: true
-Checks: [  
+Checks: [
+  libcpp-robust-against-adl,
+
   -bugprone-reserved-identifier,
-  -bugprone-unhandled-self-assignment,
   -portability-no-assembler,
   -readability-redundant-qualified-alias,
   -readability-avoid-nested-conditional-operator,
   -misc-unconventional-assign-operator,
+  -misc-use-internal-linkage,
 ]

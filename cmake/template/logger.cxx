@@ -10,39 +10,39 @@ using Level = ::mini::Logger::Level;
 using MessageContext = ::mini::Logger::MessageContext;
 
 export template <typename... Args>
-inline void Log(Level level, MessageContext context, Args&&... args)
+inline void log(Level level, MessageContext context, Args&&... args)
 {
-    logger.Log(level, context, ForwardArg<Args>(args)...);
+    logger.log(level, context, forwardCast<Args>(args)...);
 }
 
 export template <typename... Args>
-inline void LogDebug(MessageContext context, Args&&... args)
+inline void logDebug(MessageContext context, Args&&... args)
 {
-    logger.Debug(context, ForwardArg<Args>(args)...);
+    logger.debug(context, forwardCast<Args>(args)...);
 }
 
 export template <typename... Args>
-inline void LogInfo(MessageContext context, Args&&... args)
+inline void logInfo(MessageContext context, Args&&... args)
 {
-    logger.Info(context, ForwardArg<Args>(args)...);
+    logger.info(context, forwardCast<Args>(args)...);
 }
 
 export template <typename... Args>
-inline void LogWarning(MessageContext context, Args&&... args)
+inline void logWarning(MessageContext context, Args&&... args)
 {
-    logger.Warn(context, ForwardArg<Args>(args)...);
+    logger.warn(context, forwardCast<Args>(args)...);
 }
 
 export template <typename... Args>
-inline void LogError(MessageContext context, Args&&... args)
+inline void logError(MessageContext context, Args&&... args)
 {
-    logger.Error(context, ForwardArg<Args>(args)...);
+    logger.error(context, forwardCast<Args>(args)...);
 }
 
 export template <typename... Args>
-inline void LogFatal(MessageContext context, Args&&... args)
+inline void logFatal(MessageContext context, Args&&... args)
 {
-    logger.Fatal(context, ForwardArg<Args>(args)...);
+    logger.fatal(context, forwardCast<Args>(args)...);
 }
 
 } // namespace @prefix@::@api@

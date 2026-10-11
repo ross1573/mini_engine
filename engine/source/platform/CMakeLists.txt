@@ -20,8 +20,8 @@ PUBLIC
     FILES
         platform.cxx
         platform_interface.cxx
-        handle.cxx
-        window.cxx
+        platform_handle.cxx
+        platform_window.cxx
 
 PRIVATE
     impl/platform.cpp

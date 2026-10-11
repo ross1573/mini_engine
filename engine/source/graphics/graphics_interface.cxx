@@ -23,7 +23,7 @@ protected:
     Graphics* m_graphics;
 
 public:
-    virtual Device* CreateDevice() = 0;
+    [[nodiscard]] virtual Device* createDevice() = 0;
 
 protected:
     Interface() noexcept { m_graphics = interface; }
