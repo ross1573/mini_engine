@@ -16,7 +16,13 @@ OPTION_API extern bool fullscreen;
 OPTION_API extern bool resizableWindow;
 OPTION_API extern unsigned char vsyncRate;
 OPTION_API extern unsigned char bufferCount;
+
+// https://github.com/llvm/llvm-project/issues/173997
+#if PLATFORM_WINDOWS
+constexpr char const* graphicsModule = "mini.d3d12";
+#else
 OPTION_API extern char const* graphicsModule;
+#endif
 
 OPTION_API extern bool debugLayer;
 OPTION_API extern bool gpuValidation;

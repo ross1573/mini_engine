@@ -1,3 +1,5 @@
+#include <windows.h>
+
 #if DEBUG
 #  include <crtdbg.h>
 #endif
@@ -5,7 +7,7 @@
 import mini.core;
 import mini.launcher;
 
-extern "C" int __stdcall wWinMain(void*, void*, wchar_t*, int)
+extern "C" int __stdcall wWinMain(HINSTANCE /*unused*/, HINSTANCE /*unused*/, wchar_t* /*unused*/, int /*unused*/)
 {
 #if DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

@@ -43,6 +43,41 @@
             "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
         },
         {
+            "name": "windows-clang-test",
+            "inherits": [ "settings", "test", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
+            "name": "windows-clang-bench",
+            "inherits": [ "settings", "bench", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+        },
+        {
+            "name": "windows-clang-debug",
+            "inherits": [ "settings", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
+            "name": "windows-clang-develop",
+            "inherits": [ "settings", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Develop" }
+        },
+        {
+            "name": "windows-clang-release",
+            "inherits": [ "settings", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+        },
+        {
+            "name": "windows-clang-mono-debug",
+            "inherits": [ "settings", "mono", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+        },
+        {
+            "name": "windows-clang-mono-release",
+            "inherits": [ "settings", "mono", "windows-clang" ],
+            "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+        },
+        {
             "name": "windows-vs-test",
             "inherits": [ "settings", "test", "windows-vs" ]
         },

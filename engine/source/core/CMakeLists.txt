@@ -150,9 +150,9 @@ target_sources(mini.core
 PUBLIC
     FILE_SET concurrency TYPE CXX_MODULES
     FILES
-        $<$<PLATFORM_ID:Windows>:concurrency/atomic_platform_win.cxx>
+        $<$<CXX_COMPILER_ID:Clang>:concurrency/atomic_platform_clang.cxx>
+        $<$<CXX_COMPILER_ID:MSVC>:concurrency/atomic_platform_msvc.cxx>
         $<$<PLATFORM_ID:Windows>:concurrency/atomic_wait_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:concurrency/atomic_platform_macos.cxx>
         $<$<PLATFORM_ID:Darwin>:concurrency/atomic_wait_macos.cxx>
         concurrency/atomic_base.cxx
         concurrency/atomic_wait.cxx

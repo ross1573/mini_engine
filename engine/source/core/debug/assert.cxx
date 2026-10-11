@@ -9,6 +9,7 @@ import :source_location;
 
 namespace mini::debug {
 
+ASSERT_API constexpr char const* assertExprCategory = "expression";
 [[no_inline]] ASSERT_API void logAssert(AssertFormatResult formatResult) noexcept;
 [[no_inline]] ASSERT_API void logEnsure(AssertFormatResult formatResult) noexcept;
 

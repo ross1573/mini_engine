@@ -72,6 +72,7 @@ macro (_clang_compile_options)
 
     if (WIN32)
         add_compile_options(
+            -Wno-microsoft-cast
             -Wno-language-extension-token # use in __uuidof and __declspec
             -Wno-cast-function-type-mismatch # reinterept_cast of dll exported function
         )

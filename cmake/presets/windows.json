@@ -11,7 +11,7 @@
             },
             "inherits": [ "default" ],
             "generator": "Visual Studio 18 2026",
-            "binaryDir": "${sourceDir}/build/",
+            "binaryDir": "${sourceDir}/out/",
             "toolset": {
                 "value": "v145,version=14.51",
                 "strategy": "external"
@@ -21,6 +21,29 @@
                 "VC_VERSION_MIN": "1951",
                 "VC_VERSION_MAX": "1959"
             }
+        },
+        {
+            "name": "windows-clang",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "inherits": [ "default" ],
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_CXX_STANDARD": "26",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CLANG_VERSION_MIN": "23.1.0",
+                "CLANG_VERSION_MAX": "23.1.99"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-clang",
+            "configurePreset": "windows-clang"
         }
     ]
 }

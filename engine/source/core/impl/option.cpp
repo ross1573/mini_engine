@@ -19,7 +19,6 @@ OPTION_API unsigned char vsyncRate = 0;
 OPTION_API unsigned char bufferCount = 3;
 
 #if PLATFORM_WINDOWS
-OPTION_API char const* graphicsModule = "mini.d3d12";
 #elif PLATFORM_MACOS
 OPTION_API char const* graphicsModule = "mini.metal4";
 #else

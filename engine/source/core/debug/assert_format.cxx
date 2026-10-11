@@ -74,7 +74,6 @@ public:
 };
 
 constexpr size_t assertFormatMaxLength = 1024;
-ASSERT_API char const* assertExprCategory = "expression";
 
 extern "C++" { // format function which can be used on other modules
 ASSERT_API size_t formatHex(char* dest, char const* destEnd, uint64 src) noexcept;
