@@ -18,7 +18,7 @@ Renderer::Renderer(ID3D12Device* device)
 {
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    m_commandQueue = makeUnique<CommandQueue>(device, CommandType::Direct);
+    m_commandQueue = makeUnique<CommandQueue>(device, CommandType::direct);
 
     VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_commandAllocator)));
     VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList)));

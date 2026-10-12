@@ -5,9 +5,9 @@ import mini.core;
 namespace mini::graphics {
 
 export enum class PrimitiveType : byte {
-    Point = 0,
-    Line = 1,
-    Triangle = 2,
+    point = 0,
+    line = 1,
+    triangle = 2,
 };
 
 export struct GRAPHICS_API ScissorRect {

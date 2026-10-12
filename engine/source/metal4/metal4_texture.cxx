@@ -36,44 +36,44 @@ namespace mini::metal4 {
 export METAL4_API constexpr MTL::TextureType mtlTextureType(graphics::TextureType type) noexcept
 {
     switch (type) {
-        case graphics::TextureType::Texture1D:        return MTL::TextureType1D;
-        case graphics::TextureType::Texture1DArray:   return MTL::TextureType1DArray;
-        case graphics::TextureType::Texture2D:        return MTL::TextureType2D;
-        case graphics::TextureType::Textrue2DArray:   return MTL::TextureType2DArray;
-        case graphics::TextureType::Texture3D:        return MTL::TextureType3D;
-        case graphics::TextureType::TextureCube:      return MTL::TextureTypeCube;
-        case graphics::TextureType::TextureCubeArray: return MTL::TextureTypeCubeArray;
+        case graphics::TextureType::texture1d:        return MTL::TextureType1D;
+        case graphics::TextureType::texture1dArray:   return MTL::TextureType1DArray;
+        case graphics::TextureType::texture2d:        return MTL::TextureType2D;
+        case graphics::TextureType::textrue2dArray:   return MTL::TextureType2DArray;
+        case graphics::TextureType::texture3d:        return MTL::TextureType3D;
+        case graphics::TextureType::textureCube:      return MTL::TextureTypeCube;
+        case graphics::TextureType::textureCubeArray: return MTL::TextureTypeCubeArray;
     }
 
-    ASSERT(type == graphics::TextureType::Texture2D, "invalid texture type {}.", static_cast<byte>(type));
+    ASSERT(type == graphics::TextureType::texture2d, "invalid texture type {}.", static_cast<byte>(type));
     return MTL::TextureType2D;
 }
 
 export METAL4_API constexpr MTL::TextureUsage mtlTextureUsage(graphics::TextureUsage usage) noexcept
 {
     switch (usage) {
-        case graphics::TextureUsage::Undefined:    return MTL::TextureUsageUnknown;
-        case graphics::TextureUsage::ShaderRead:   return MTL::TextureUsageShaderRead;
-        case graphics::TextureUsage::ShaderWrite:  return MTL::TextureUsageShaderWrite;
-        case graphics::TextureUsage::RenderTarget: return MTL::TextureUsageRenderTarget;
+        case graphics::TextureUsage::undefined:    return MTL::TextureUsageUnknown;
+        case graphics::TextureUsage::shaderRead:   return MTL::TextureUsageShaderRead;
+        case graphics::TextureUsage::shaderWrite:  return MTL::TextureUsageShaderWrite;
+        case graphics::TextureUsage::renderTarget: return MTL::TextureUsageRenderTarget;
     }
 
-    ASSERT(usage == graphics::TextureUsage::Undefined, "invalid texture usage {}.", static_cast<byte>(usage));
+    ASSERT(usage == graphics::TextureUsage::undefined, "invalid texture usage {}.", static_cast<byte>(usage));
     return MTL::TextureUsageUnknown;
 }
 
 export METAL4_API constexpr MTL::TextureSwizzle mtlTextureSwizzle(graphics::TextureSwizzle::Channel channel) noexcept
 {
     switch (channel) {
-        case graphics::TextureSwizzle::Channel::Zero:  return MTL::TextureSwizzleZero;
-        case graphics::TextureSwizzle::Channel::One:   return MTL::TextureSwizzleOne;
-        case graphics::TextureSwizzle::Channel::Red:   return MTL::TextureSwizzleRed;
-        case graphics::TextureSwizzle::Channel::Green: return MTL::TextureSwizzleGreen;
-        case graphics::TextureSwizzle::Channel::Blue:  return MTL::TextureSwizzleBlue;
-        case graphics::TextureSwizzle::Channel::Alpha: return MTL::TextureSwizzleAlpha;
+        case graphics::TextureSwizzle::Channel::zero:  return MTL::TextureSwizzleZero;
+        case graphics::TextureSwizzle::Channel::one:   return MTL::TextureSwizzleOne;
+        case graphics::TextureSwizzle::Channel::red:   return MTL::TextureSwizzleRed;
+        case graphics::TextureSwizzle::Channel::green: return MTL::TextureSwizzleGreen;
+        case graphics::TextureSwizzle::Channel::blue:  return MTL::TextureSwizzleBlue;
+        case graphics::TextureSwizzle::Channel::alpha: return MTL::TextureSwizzleAlpha;
     }
 
-    ASSERT(channel == graphics::TextureSwizzle::Channel::Zero,
+    ASSERT(channel == graphics::TextureSwizzle::Channel::zero,
            "invalid texture swizzel channel {}.",
            static_cast<byte>(channel));
     return MTL::TextureSwizzleZero;
@@ -86,26 +86,26 @@ export METAL4_API constexpr MTL::ResourceOptions mtlTextureResourceOptions(
     MTL::ResourceOptions options{0};
 
     switch (cacheMode) {
-        case graphics::TextureCacheMode::WriteCombined: options |= MTL::ResourceCPUCacheModeWriteCombined; break;
-        case graphics::TextureCacheMode::Default:       break;
+        case graphics::TextureCacheMode::writeCombined: options |= MTL::ResourceCPUCacheModeWriteCombined; break;
+        case graphics::TextureCacheMode::defaultCache:  break;
         default:
-            ASSERT(cacheMode == graphics::TextureCacheMode::Default,
+            ASSERT(cacheMode == graphics::TextureCacheMode::defaultCache,
                    "invalid resource cache mode {}.",
                    static_cast<byte>(cacheMode));
             break;
     }
 
     switch (storageMode) {
-        case graphics::TextureStorageMode::Shared:
+        case graphics::TextureStorageMode::sharedStorage:
             if constexpr (ARCH_ARM64) {
                 options |= MTL::ResourceStorageModeShared;
             } else {
                 options |= MTL::ResourceStorageModeManaged;
             }
-        case graphics::TextureStorageMode::Private:   options |= MTL::ResourceStorageModePrivate; break;
-        case graphics::TextureStorageMode::Transient: options |= MTL::ResourceStorageModeMemoryless; break;
+        case graphics::TextureStorageMode::privateStorage: options |= MTL::ResourceStorageModePrivate; break;
+        case graphics::TextureStorageMode::transient:      options |= MTL::ResourceStorageModeMemoryless; break;
         default:
-            ASSERT(storageMode == graphics::TextureStorageMode::Shared,
+            ASSERT(storageMode == graphics::TextureStorageMode::sharedStorage,
                    "invalid resource storage mode {}.",
                    static_cast<byte>(storageMode));
             break;

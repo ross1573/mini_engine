@@ -26,7 +26,7 @@ public:
     graphics::SwapChain* createSwapChain() final;
     graphics::Renderer* createRenderer() final;
 
-    graphics::Api api() const final { return graphics::Api::D3D12; }
+    graphics::Api api() const final { return graphics::Api::d3d12; }
     IDXGIFactory4* GetDXGIFactory() const { return m_factory; }
     IDXGIAdapter* GetDXGIAdapter() const { return m_adapter; }
     ID3D12Device* GetD3D12Device() const { return m_device; }

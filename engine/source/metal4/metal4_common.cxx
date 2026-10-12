@@ -30,8 +30,8 @@ namespace mini::metal4 {
 export METAL4_API constexpr MTL::PixelFormat mtlPixelFormat(graphics::PixelFormat pixelFormat) noexcept
 {
     switch (pixelFormat) {
-        case graphics::PixelFormat::Null:           return MTL::PixelFormatInvalid;
-        case graphics::PixelFormat::Unspecialized:  return MTL::PixelFormatUnspecialized;
+        case graphics::PixelFormat::none:           return MTL::PixelFormatInvalid;
+        case graphics::PixelFormat::unspecialized:  return MTL::PixelFormatUnspecialized;
         case graphics::PixelFormat::A8unorm:        return MTL::PixelFormatA8Unorm;
         case graphics::PixelFormat::R8unorm:        return MTL::PixelFormatR8Unorm;
         case graphics::PixelFormat::R8unormSRGB:    return MTL::PixelFormatR8Unorm_sRGB;
@@ -76,37 +76,37 @@ export METAL4_API constexpr MTL::PixelFormat mtlPixelFormat(graphics::PixelForma
         case graphics::PixelFormat::RGBA32float:    return MTL::PixelFormatRGBA32Float;
     };
 
-    ASSERT(pixelFormat == graphics::PixelFormat::Null, "invalid pixel format {}.", static_cast<byte>(pixelFormat));
+    ASSERT(pixelFormat == graphics::PixelFormat::none, "invalid pixel format {}.", static_cast<byte>(pixelFormat));
     return MTL::PixelFormat::PixelFormatInvalid;
 }
 
 export METAL4_API constexpr MTL::LogLevel mtlLogLevel(Logger::Level logLevel) noexcept
 {
     switch (logLevel) {
-        case Logger::Level::Debug: return MTL::LogLevelDebug;
-        case Logger::Level::Info:  return MTL::LogLevelInfo;
-        case Logger::Level::Warn:  return MTL::LogLevelNotice;
-        case Logger::Level::Error: return MTL::LogLevelError;
-        case Logger::Level::Fatal: return MTL::LogLevelFault;
+        case Logger::Level::debug: return MTL::LogLevelDebug;
+        case Logger::Level::info:  return MTL::LogLevelInfo;
+        case Logger::Level::warn:  return MTL::LogLevelNotice;
+        case Logger::Level::error: return MTL::LogLevelError;
+        case Logger::Level::fatal: return MTL::LogLevelFault;
     }
 
-    ASSERT(logLevel == Logger::Level::Warn, "invalid log level {}.", static_cast<byte>(logLevel));
+    ASSERT(logLevel == Logger::Level::warn, "invalid log level {}.", static_cast<byte>(logLevel));
     return MTL::LogLevelNotice;
 }
 
 export METAL4_API constexpr Logger::Level logLevel(MTL::LogLevel logLevel) noexcept
 {
     switch (logLevel) {
-        case MTL::LogLevelDebug:     return Logger::Level::Debug;
-        case MTL::LogLevelInfo:      return Logger::Level::Info;
+        case MTL::LogLevelDebug:     return Logger::Level::debug;
+        case MTL::LogLevelInfo:      return Logger::Level::info;
         case MTL::LogLevelUndefined:
-        case MTL::LogLevelNotice:    return Logger::Level::Warn;
-        case MTL::LogLevelError:     return Logger::Level::Error;
-        case MTL::LogLevelFault:     return Logger::Level::Fatal;
+        case MTL::LogLevelNotice:    return Logger::Level::warn;
+        case MTL::LogLevelError:     return Logger::Level::error;
+        case MTL::LogLevelFault:     return Logger::Level::fatal;
     }
 
     ASSERT(logLevel == MTL::LogLevelUndefined, "invalid log level {}.", static_cast<byte>(logLevel));
-    return Logger::Level::Warn;
+    return Logger::Level::warn;
 }
 
 export class METAL4_API LogState {

@@ -7,23 +7,23 @@ namespace mini {
 
 // NOLINTNEXTLINE: gcc and clang builtin parameter is int
 export enum class MemoryOrder : int {
-    Relaxed = __ATOMIC_RELAXED,
-    Consume = __ATOMIC_CONSUME,
-    Acquire = __ATOMIC_ACQUIRE,
-    Release = __ATOMIC_RELEASE,
-    AcquireRelease = __ATOMIC_ACQ_REL,
-    Sequential = __ATOMIC_SEQ_CST,
+    relaxed = __ATOMIC_RELAXED,
+    consume = __ATOMIC_CONSUME,
+    acquire = __ATOMIC_ACQUIRE,
+    release = __ATOMIC_RELEASE,
+    acquireRelease = __ATOMIC_ACQ_REL,
+    sequential = __ATOMIC_SEQ_CST,
 };
 
 constexpr int32 failureOrder(MemoryOrder order)
 {
     switch (order) {
-        case MemoryOrder::Relaxed:
-        case MemoryOrder::Release:        return __ATOMIC_RELAXED;
-        case MemoryOrder::Consume:        return __ATOMIC_CONSUME;
-        case MemoryOrder::Acquire:
-        case MemoryOrder::AcquireRelease: return __ATOMIC_ACQUIRE;
-        case MemoryOrder::Sequential:
+        case MemoryOrder::relaxed:
+        case MemoryOrder::release:        return __ATOMIC_RELAXED;
+        case MemoryOrder::consume:        return __ATOMIC_CONSUME;
+        case MemoryOrder::acquire:
+        case MemoryOrder::acquireRelease: return __ATOMIC_ACQUIRE;
+        case MemoryOrder::sequential:
         default:                          return __ATOMIC_SEQ_CST;
     }
 }

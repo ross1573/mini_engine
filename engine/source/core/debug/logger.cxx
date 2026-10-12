@@ -11,11 +11,11 @@ namespace mini {
 export class CORE_API Logger final : public LoggerBase {
 public:
     enum class Level : byte {
-        Debug = 0,
-        Info = 1,
-        Warn = 2,
-        Error = 3,
-        Fatal = 4,
+        debug = 0,
+        info = 1,
+        warn = 2,
+        error = 3,
+        fatal = 4,
     };
 
     struct MessageContext {
@@ -77,32 +77,32 @@ template <typename... Args>
 inline void Logger::debug([[maybe_unused]] MessageContext context, [[maybe_unused]] Args&&... args)
 {
 #if !NODEBUGLOG
-    log(Level::Debug, context, forwardCast<Args>(args)...);
+    log(Level::debug, context, forwardCast<Args>(args)...);
 #endif
 }
 
 template <typename... Args>
 inline void Logger::info(MessageContext context, Args&&... args)
 {
-    log(Level::Info, context, forwardCast<Args>(args)...);
+    log(Level::info, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::warn(MessageContext context, Args&&... args)
 {
-    log(Level::Warn, context, forwardCast<Args>(args)...);
+    log(Level::warn, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::error(MessageContext context, Args&&... args)
 {
-    log(Level::Error, context, forwardCast<Args>(args)...);
+    log(Level::error, context, forwardCast<Args>(args)...);
 }
 
 template <typename... Args>
 inline void Logger::fatal(MessageContext context, Args&&... args)
 {
-    log(Level::Fatal, context, forwardCast<Args>(args)...);
+    log(Level::fatal, context, forwardCast<Args>(args)...);
 }
 
 } // namespace mini

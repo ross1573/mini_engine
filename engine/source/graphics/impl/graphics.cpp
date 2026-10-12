@@ -18,7 +18,7 @@ Graphics::~Graphics() noexcept
     m_swapChain.reset();
     m_device.reset();
 
-    m_currentAPI = Api::Null;
+    m_currentAPI = Api::none;
     graphics::interface = nullptr;
 }
 

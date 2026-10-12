@@ -27,7 +27,7 @@ public:
     [[nodiscard]] graphics::SwapChain* createSwapChain() final;
     [[nodiscard]] graphics::Renderer* createRenderer() final;
 
-    [[nodiscard]] graphics::Api api() const noexcept final { return graphics::Api::Metal4; }
+    [[nodiscard]] graphics::Api api() const noexcept final { return graphics::Api::metal4; }
     [[nodiscard]] MTL::Device* mtlDevice() const noexcept { return m_device.get(); }
 };
 

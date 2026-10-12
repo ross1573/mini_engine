@@ -523,25 +523,25 @@ constexpr bool Atomic<T>::alwaysLockFree() noexcept
 template <TrivialT T>
 inline Atomic<T>::operator Value() const noexcept
 {
-    return load(MemoryOrder::Sequential);
+    return load(MemoryOrder::sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::operator Value() const volatile noexcept
 {
-    return load(MemoryOrder::Sequential);
+    return load(MemoryOrder::sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) noexcept
 {
-    return store(val, MemoryOrder::Sequential);
+    return store(val, MemoryOrder::sequential);
 }
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) volatile noexcept
 {
-    return store(val, MemoryOrder::Sequential);
+    return store(val, MemoryOrder::sequential);
 }
 
 template <TrivialT T>

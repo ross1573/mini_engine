@@ -61,8 +61,8 @@ void Renderer::render()
 
     graphics::RenderScopeTargetAttachment targetAttachment{
         frameTexture,
-        graphics::LoadAction::Clear,
-        graphics::StoreAction::Store,
+        graphics::LoadAction::clear,
+        graphics::StoreAction::store,
         Color::clear(),
     };
 
@@ -75,7 +75,7 @@ void Renderer::render()
         UniquePtr<RenderCommandEncoder> renderEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
 
         renderEncoder->setPipelineState(m_renderPipelineState);
-        renderEncoder->drawPrimitives(graphics::PrimitiveType::Triangle, 0, 3);
+        renderEncoder->drawPrimitives(graphics::PrimitiveType::triangle, 0, 3);
     }
 
     size_t frameValue = m_commandBufferAllocator->commit(moveCast(commandBuffer));

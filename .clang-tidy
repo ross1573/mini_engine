@@ -56,7 +56,7 @@ CheckOptions:
   - key: readability-identifier-naming.EnumCase
     value: CamelCase
   - key: readability-identifier-naming.EnumConstantCase
-    value: CamelCase
+    value: camelBack
   - key: readability-identifier-naming.UnionCase
     value: CamelCase
   - key: readability-identifier-naming.TemplateParameterCase
@@ -75,6 +75,8 @@ CheckOptions:
     value: NS|CA|MTL
   - key: readability-identifier-naming.TypeAliasIgnoredRegexp
     value: 'byte|wchar|^char|^int|^uint|^float|_t$'
+  - key: readability-identifier-naming.EnumConstantIgnoredRegexp
+    value: ^[R|G|B|A].*[int|float|norm].*
   - key: readability-identifier-naming.TemplateParameterSuffix
     value: T
   - key: readability-identifier-naming.TemplateParameterIgnoredRegexp

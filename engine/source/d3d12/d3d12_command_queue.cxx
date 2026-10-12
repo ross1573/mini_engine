@@ -7,11 +7,11 @@ import mini.windows;
 namespace mini::d3d12 {
 
 export enum class CommandType : int8 {
-    None = -1,
+    none = -1,
 
-    Direct,
-    Compute,
-    Copy,
+    direct,
+    compute,
+    copy,
 };
 
 export class CommandQueue {

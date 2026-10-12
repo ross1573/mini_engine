@@ -46,11 +46,11 @@ void AtomicLoad(benchmark::State& state)
     Atomic<T> a(1);
     mini::int32 sum = 0;
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::Relaxed) < 0) { }
+        while (a.load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
-        sum += static_cast<mini::int32>(a.load(MemoryOrder::Acquire));
+        sum += static_cast<mini::int32>(a.load(MemoryOrder::acquire));
     }
 
     t.join();
@@ -87,14 +87,14 @@ template <typename T>
 void AtomicStore(benchmark::State& state)
 {
     Atomic<T> a(1);
-    std::thread t([&a]() { a.exchange(-1, MemoryOrder::Relaxed); });
+    std::thread t([&a]() { a.exchange(-1, MemoryOrder::relaxed); });
 
     for (auto _ : state) {
-        a.store(1, MemoryOrder::Release);
+        a.store(1, MemoryOrder::release);
     }
 
     t.join();
-    benchmark::DoNotOptimize(a.load(MemoryOrder::Sequential));
+    benchmark::DoNotOptimize(a.load(MemoryOrder::sequential));
 }
 
 template <typename T>
@@ -125,12 +125,12 @@ void AtomicCompareExchange(benchmark::State& state)
 {
     Atomic<T> a(1);
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::Relaxed) < 0) { }
+        while (a.load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
         T value = 1;
-        a.compareExchangeStrong(value, 1, MemoryOrder::AcquireRelease);
+        a.compareExchangeStrong(value, 1, MemoryOrder::acquireRelease);
     }
 
     t.join();
@@ -164,11 +164,11 @@ void AtomicFalseWait(benchmark::State& state)
 {
     Atomic<mini::int32> a(1);
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::Relaxed) < 0) { }
+        while (a.load(MemoryOrder::relaxed) < 0) { }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::Sequential);
+        a.wait(0, MemoryOrder::sequential);
         benchmark::DoNotOptimize(a);
     }
 
@@ -201,20 +201,20 @@ void AtomicWait(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<mini::int32>(value) >= 0) {
-            if (a.compareExchangeWeak(value, 1, MemoryOrder::Acquire)) {
+            if (a.compareExchangeWeak(value, 1, MemoryOrder::acquire)) {
                 a.notify();
             }
 
-            value = a.load(MemoryOrder::Acquire);
+            value = a.load(MemoryOrder::acquire);
         }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::Acquire);
-        a.store(0, MemoryOrder::Release);
+        a.wait(0, MemoryOrder::acquire);
+        a.store(0, MemoryOrder::release);
     }
 
-    a.store(-2, MemoryOrder::Sequential);
+    a.store(-2, MemoryOrder::sequential);
     t.join();
 }
 
@@ -258,22 +258,22 @@ void AtomicWaitNotify(benchmark::State& state)
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<mini::int32>(value) >= 0) {
-            if (a.compareExchangeWeak(value, 1, MemoryOrder::Acquire)) {
+            if (a.compareExchangeWeak(value, 1, MemoryOrder::acquire)) {
                 a.notify();
             }
 
-            a.wait(1, MemoryOrder::Acquire);
-            value = a.load(MemoryOrder::Acquire);
+            a.wait(1, MemoryOrder::acquire);
+            value = a.load(MemoryOrder::acquire);
         }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::Acquire);
-        a.store(0, MemoryOrder::Release);
+        a.wait(0, MemoryOrder::acquire);
+        a.store(0, MemoryOrder::release);
         a.notify();
     }
 
-    a.store(-2, MemoryOrder::Sequential);
+    a.store(-2, MemoryOrder::sequential);
     a.notify();
     t.join();
 }
@@ -321,12 +321,12 @@ void AtomicSpinLock(benchmark::State& state)
     mini::Array<std::thread> threads(ThreadN);
 
     auto spinLock = [&atomic, &lock]() -> mini::int32 {
-        while (lock.exchange(1, MemoryOrder::Acquire) == 1) {
-            lock.wait(1, MemoryOrder::Relaxed);
+        while (lock.exchange(1, MemoryOrder::acquire) == 1) {
+            lock.wait(1, MemoryOrder::relaxed);
         }
 
-        mini::int32 value = atomic.load(MemoryOrder::Relaxed);
-        lock.store(0, MemoryOrder::Release);
+        mini::int32 value = atomic.load(MemoryOrder::relaxed);
+        lock.store(0, MemoryOrder::release);
         lock.notify();
 
         return value;
@@ -342,7 +342,7 @@ void AtomicSpinLock(benchmark::State& state)
         spinLock();
     }
 
-    atomic.store(-1, MemoryOrder::Sequential);
+    atomic.store(-1, MemoryOrder::sequential);
 
     for (auto& t : threads) {
         t.join();

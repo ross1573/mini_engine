@@ -6,20 +6,20 @@ import :resource;
 namespace mini::graphics {
 
 export enum class BufferCacheMode : byte {
-    Default = 0,
-    WriteCombined,
+    defaultCache = 0,
+    writeCombined,
 };
 
 export enum class BufferStorageMode : byte {
-    Private = 0,
-    Shared,
+    privateStorage = 0,
+    sharedStorage,
 };
 
 export struct GRAPHICS_API BufferDescriptor {
 public:
     size_t length = 0;
-    BufferCacheMode cacheMode = BufferCacheMode::Default;
-    BufferStorageMode storageMode = BufferStorageMode::Private;
+    BufferCacheMode cacheMode = BufferCacheMode::defaultCache;
+    BufferStorageMode storageMode = BufferStorageMode::privateStorage;
 
 public:
     constexpr BufferDescriptor() noexcept = default;

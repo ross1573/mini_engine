@@ -11,14 +11,14 @@ class Texture;
 namespace mini::graphics {
 
 export enum class LoadAction : byte {
-    Undefined = 0,
-    Load,
-    Clear,
+    undefined = 0,
+    load,
+    clear,
 };
 
 export enum class StoreAction : byte {
-    Undefined = 0,
-    Store,
+    undefined = 0,
+    store,
 };
 
 export struct GRAPHICS_API RenderScopeAttachment {
@@ -30,8 +30,8 @@ public:
 public:
     RenderScopeAttachment()
         : texture(nullptr)
-        , loadAction(LoadAction::Undefined)
-        , storeAction(StoreAction::Undefined)
+        , loadAction(LoadAction::undefined)
+        , storeAction(StoreAction::undefined)
     {
     }
 
@@ -51,7 +51,7 @@ public:
     RenderScopeTargetAttachment() noexcept = default;
 
     RenderScopeTargetAttachment(PtrView<Texture> texture) noexcept
-        : RenderScopeAttachment(texture, LoadAction::Undefined, StoreAction::Store)
+        : RenderScopeAttachment(texture, LoadAction::undefined, StoreAction::store)
     {
     }
 
@@ -78,7 +78,7 @@ public:
     RenderScopeDepthAttachment() noexcept = default;
 
     RenderScopeDepthAttachment(PtrView<Texture> texture) noexcept
-        : RenderScopeAttachment(texture, LoadAction::Clear, StoreAction::Undefined)
+        : RenderScopeAttachment(texture, LoadAction::clear, StoreAction::undefined)
     {
     }
 
@@ -105,7 +105,7 @@ public:
     RenderScopeStencilAttachment() noexcept = default;
 
     RenderScopeStencilAttachment(PtrView<Texture> texture) noexcept
-        : RenderScopeAttachment(texture, LoadAction::Clear, StoreAction::Undefined)
+        : RenderScopeAttachment(texture, LoadAction::clear, StoreAction::undefined)
     {
     }
 

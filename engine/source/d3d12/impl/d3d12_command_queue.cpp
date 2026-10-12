@@ -17,10 +17,10 @@ CommandQueue::CommandQueue(ID3D12Device* device, CommandType queueType)
 
     D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
     switch (m_queueType) {
-        case CommandType::Direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
-        case CommandType::Copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
-        case CommandType::Compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
-        default: VERIFY(false, "unknown command queue type");
+        case CommandType::direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
+        case CommandType::copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
+        case CommandType::compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
+        default: VERIFY(false, "unknown command queue type")           ;
     }
 
     m_queueDesc.Type = type;

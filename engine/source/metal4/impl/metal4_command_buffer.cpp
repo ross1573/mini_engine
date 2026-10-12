@@ -49,7 +49,7 @@ void CommandBufferOption::handleLog(StringView subSystem, StringView category, L
         subSystem,
         message);
 
-    ENSURE(level < Logger::Level::Warn) { }
+    ENSURE(level < Logger::Level::warn) { }
 }
 
 CommandBuffer::CommandBuffer(PtrView<Device> device, PtrView<CommandBufferOption> option)
@@ -116,7 +116,7 @@ CommandBufferAllocator::CommandBufferAllocator(PtrView<Device> device,
     ASSERT(m_commandQueue);
 
     if (options::gpuValidation) {
-        Logger::Level level = RELEASE ? Logger::Level::Warn : Logger::Level::Debug;
+        Logger::Level level = RELEASE ? Logger::Level::warn : Logger::Level::debug;
         m_commandBufferOption = CommandBufferOption(device, level);
     }
 

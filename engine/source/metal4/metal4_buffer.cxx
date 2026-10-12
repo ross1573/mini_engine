@@ -29,25 +29,25 @@ export METAL4_API constexpr MTL::ResourceOptions mtlBufferResourceOptions(
     MTL::ResourceOptions options{0};
 
     switch (cacheMode) {
-        case graphics::BufferCacheMode::WriteCombined: options |= MTL::ResourceCPUCacheModeWriteCombined; break;
-        case graphics::BufferCacheMode::Default:       break;
+        case graphics::BufferCacheMode::writeCombined: options |= MTL::ResourceCPUCacheModeWriteCombined; break;
+        case graphics::BufferCacheMode::defaultCache:  break;
         default:
-            ASSERT(cacheMode == graphics::BufferCacheMode::Default,
+            ASSERT(cacheMode == graphics::BufferCacheMode::defaultCache,
                    "invalid resource cache mode {}.",
                    static_cast<byte>(cacheMode));
             break;
     }
 
     switch (storageMode) {
-        case graphics::BufferStorageMode::Shared:
+        case graphics::BufferStorageMode::sharedStorage:
             if constexpr (ARCH_ARM64) {
                 options |= MTL::ResourceStorageModeShared;
             } else {
                 options |= MTL::ResourceStorageModeManaged;
             }
-        case graphics::BufferStorageMode::Private: options |= MTL::ResourceStorageModePrivate; break;
+        case graphics::BufferStorageMode::privateStorage: options |= MTL::ResourceStorageModePrivate; break;
         default:
-            ASSERT(storageMode == graphics::BufferStorageMode::Shared,
+            ASSERT(storageMode == graphics::BufferStorageMode::sharedStorage,
                    "invalid resource storage mode {}.",
                    static_cast<byte>(storageMode));
             break;

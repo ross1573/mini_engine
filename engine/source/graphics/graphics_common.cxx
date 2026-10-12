@@ -9,16 +9,16 @@ import mini.core;
 namespace mini::graphics {
 
 export enum class Api : byte {
-    Null = 0,
+    none = 0,
 
-    D3D12,
-    Metal4,
-    Vulkan,
+    d3d12,
+    metal4,
+    vulkan,
 };
 
 export enum class PixelFormat : byte {
-    Null = 0,
-    Unspecialized,
+    none = 0,
+    unspecialized,
     A8unorm,
     R8unorm,
     R8unormSRGB,
@@ -74,18 +74,18 @@ export GRAPHICS_API Api parseApi(String const& str)
     char const* src = str.data();
 
     if (std::regex_match(src, d3d12_regex)) {
-        return Api::D3D12;
+        return Api::d3d12;
     }
 
     if (std::regex_match(src, metal4_regex)) {
-        return Api::Metal4;
+        return Api::metal4;
     }
 
     if (std::regex_match(src, vulkan_regex)) {
-        return Api::Vulkan;
+        return Api::vulkan;
     }
 
-    return Api::Null;
+    return Api::none;
 }
 
 } // namespace mini::graphics
@@ -98,9 +98,9 @@ struct formatter<mini::graphics::Api> : formatter<string_view> {
     {
         string_view sv;
         switch (api) {
-            case mini::graphics::Api::D3D12:  sv = string_view{"d3d12"}; break;
-            case mini::graphics::Api::Metal4: sv = string_view{"metal4"}; break;
-            case mini::graphics::Api::Vulkan: sv = string_view{"vulkan"}; break;
+            case mini::graphics::Api::d3d12:  sv = string_view{"d3d12"}; break;
+            case mini::graphics::Api::metal4: sv = string_view{"metal4"}; break;
+            case mini::graphics::Api::vulkan: sv = string_view{"vulkan"}; break;
 
             default: sv = string_view("null"); break;
         }

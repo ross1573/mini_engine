@@ -7,42 +7,42 @@ import :resource;
 namespace mini::graphics {
 
 export enum class TextureType : byte {
-    Texture1D = 0,
-    Texture1DArray,
-    Texture2D,
-    Textrue2DArray,
-    Texture3D,
-    TextureCube,
-    TextureCubeArray,
+    texture1d = 0,
+    texture1dArray,
+    texture2d,
+    textrue2dArray,
+    texture3d,
+    textureCube,
+    textureCubeArray,
 };
 
 export enum class TextureUsage : byte {
-    Undefined = 0,
-    ShaderRead = 1 << 0,
-    ShaderWrite = 1 << 1,
-    RenderTarget = 1 << 2,
+    undefined = 0,
+    shaderRead = 1 << 0,
+    shaderWrite = 1 << 1,
+    renderTarget = 1 << 2,
 };
 
 export enum class TextureCacheMode : byte {
-    Default = 0,
-    WriteCombined,
+    defaultCache = 0,
+    writeCombined,
 };
 
 export enum class TextureStorageMode : byte {
-    Private = 0,
-    Shared,
-    Transient,
+    privateStorage = 0,
+    sharedStorage,
+    transient,
 };
 
 export struct GRAPHICS_API TextureSwizzle {
 public:
     enum class Channel : byte {
-        Zero = 0,
-        One,
-        Red,
-        Green,
-        Blue,
-        Alpha,
+        zero = 0,
+        one,
+        red,
+        green,
+        blue,
+        alpha,
     };
 
     Channel red;
@@ -52,10 +52,10 @@ public:
 
 public:
     constexpr TextureSwizzle() noexcept
-        : red(Channel::Red)
-        , green(Channel::Green)
-        , blue(Channel::Blue)
-        , alpha(Channel::Alpha)
+        : red(Channel::red)
+        , green(Channel::green)
+        , blue(Channel::blue)
+        , alpha(Channel::alpha)
     {
     }
 
@@ -76,10 +76,10 @@ public:
     size_t mipmapLevel = 1;
 
     PixelFormat pixelFormat = PixelFormat::RGBA8unorm;
-    TextureType type = TextureType::Texture2D;
-    TextureUsage usage = TextureUsage::ShaderRead;
-    TextureCacheMode cacheMode = TextureCacheMode::Default;
-    TextureStorageMode storageMode = TextureStorageMode::Private;
+    TextureType type = TextureType::texture2d;
+    TextureUsage usage = TextureUsage::shaderRead;
+    TextureCacheMode cacheMode = TextureCacheMode::defaultCache;
+    TextureStorageMode storageMode = TextureStorageMode::privateStorage;
     TextureSwizzle swizzle;
 
 public:

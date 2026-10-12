@@ -45,23 +45,23 @@ export METAL4_API constexpr MTL::ClearColor mtlClearColor(Color color) noexcept
 export METAL4_API constexpr MTL::LoadAction mtlLoadAction(graphics::LoadAction loadAction) noexcept
 {
     switch (loadAction) {
-        case graphics::LoadAction::Undefined: return MTL::LoadActionDontCare;
-        case graphics::LoadAction::Load:      return MTL::LoadActionLoad;
-        case graphics::LoadAction::Clear:     return MTL::LoadActionClear;
+        case graphics::LoadAction::undefined: return MTL::LoadActionDontCare;
+        case graphics::LoadAction::load:      return MTL::LoadActionLoad;
+        case graphics::LoadAction::clear:     return MTL::LoadActionClear;
     }
 
-    ASSERT(loadAction == graphics::LoadAction::Undefined, "invalid load action {}.", static_cast<byte>(loadAction));
+    ASSERT(loadAction == graphics::LoadAction::undefined, "invalid load action {}.", static_cast<byte>(loadAction));
     return MTL::LoadActionDontCare;
 }
 
 export METAL4_API constexpr MTL::StoreAction mtlStoreAction(graphics::StoreAction storeAction) noexcept
 {
     switch (storeAction) {
-        case graphics::StoreAction::Undefined: return MTL::StoreActionDontCare;
-        case graphics::StoreAction::Store:     return MTL::StoreActionStore;
+        case graphics::StoreAction::undefined: return MTL::StoreActionDontCare;
+        case graphics::StoreAction::store:     return MTL::StoreActionStore;
     }
 
-    ASSERT(storeAction == graphics::StoreAction::Undefined, "invalid store action {}.", static_cast<byte>(storeAction));
+    ASSERT(storeAction == graphics::StoreAction::undefined, "invalid store action {}.", static_cast<byte>(storeAction));
     return MTL::StoreActionDontCare;
 }
 

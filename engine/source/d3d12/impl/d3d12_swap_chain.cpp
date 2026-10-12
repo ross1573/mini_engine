@@ -49,7 +49,7 @@ SwapChain::SwapChain()
 
     m_rTVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     m_rTVDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-    m_rTVDesc.Texture2D.MipSlice = 0;
+    m_rTVDesc.texture2d.MipSlice = 0;
 
     m_sampleDesc.Count = 1;
     m_sampleDesc.Quality = 0;

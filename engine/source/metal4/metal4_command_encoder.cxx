@@ -33,12 +33,12 @@ namespace mini::metal4 {
 export METAL4_API constexpr MTL::PrimitiveType mtlPrimitiveType(graphics::PrimitiveType primitiveType) noexcept
 {
     switch (primitiveType) {
-        case graphics::PrimitiveType::Point:    return MTL::PrimitiveType::PrimitiveTypePoint;
-        case graphics::PrimitiveType::Line:     return MTL::PrimitiveType::PrimitiveTypeLine;
-        case graphics::PrimitiveType::Triangle: return MTL::PrimitiveType::PrimitiveTypeTriangle;
+        case graphics::PrimitiveType::point:    return MTL::PrimitiveType::PrimitiveTypePoint;
+        case graphics::PrimitiveType::line:     return MTL::PrimitiveType::PrimitiveTypeLine;
+        case graphics::PrimitiveType::triangle: return MTL::PrimitiveType::PrimitiveTypeTriangle;
     }
 
-    ASSERT(primitiveType == graphics::PrimitiveType::Triangle,
+    ASSERT(primitiveType == graphics::PrimitiveType::triangle,
            "invalid primitive type {}.",
            static_cast<byte>(primitiveType));
 
