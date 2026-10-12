@@ -28,7 +28,7 @@ public:
     mini::int32 v[5];
 
     NonAtomic() noexcept = default;
-    NonAtomic(mini::int32 num) noexcept { memory::FillRange(&v[0], &v[5], num); }
+    NonAtomic(mini::int32 num) noexcept { mini::memory::fillRange(&v[0], &v[5], num); }
     operator mini::int32() const noexcept { return v[0]; }
 };
 
@@ -40,17 +40,17 @@ void NoOp(benchmark::State& state)
 BENCHMARK(NoOp);
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicLoad(benchmark::State& state)
 {
     Atomic<T> a(1);
     mini::int32 sum = 0;
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::relaxed) < 0) { }
+        while (a.load(MemoryOrder::Relaxed) < 0) { }
     });
 
     for (auto _ : state) {
-        sum += static_cast<mini::int32>(a.load(MemoryOrder::acquire));
+        sum += static_cast<mini::int32>(a.load(MemoryOrder::Acquire));
     }
 
     t.join();
@@ -58,7 +58,7 @@ void AtomicLoad(benchmark::State& state)
 }
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicLoad_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
@@ -83,22 +83,22 @@ BENCHMARK_TEMPLATE(AtomicLoad, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicLoad_std, NonAtomic);
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicStore(benchmark::State& state)
 {
     Atomic<T> a(1);
-    std::thread t([&a]() { a.exchange(-1, MemoryOrder::relaxed); });
+    std::thread t([&a]() { a.exchange(-1, MemoryOrder::Relaxed); });
 
     for (auto _ : state) {
-        a.store(1, MemoryOrder::release);
+        a.store(1, MemoryOrder::Release);
     }
 
     t.join();
-    benchmark::DoNotOptimize(a.load(MemoryOrder::sequential));
+    benchmark::DoNotOptimize(a.load(MemoryOrder::Sequential));
 }
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicStore_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
@@ -120,24 +120,24 @@ BENCHMARK_TEMPLATE(AtomicStore, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicStore_std, NonAtomic);
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicCompareExchange(benchmark::State& state)
 {
     Atomic<T> a(1);
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::relaxed) < 0) { }
+        while (a.load(MemoryOrder::Relaxed) < 0) { }
     });
 
     for (auto _ : state) {
         T value = 1;
-        a.compareExchangeStrong(value, 1, MemoryOrder::acquireRelease);
+        a.compareExchangeStrong(value, 1, MemoryOrder::AcquireRelease);
     }
 
     t.join();
 }
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicCompareExchange_std(benchmark::State& state)
 {
     std::atomic<T> a(1);
@@ -164,11 +164,11 @@ void AtomicFalseWait(benchmark::State& state)
 {
     Atomic<mini::int32> a(1);
     std::thread t([&a]() {
-        while (a.load(MemoryOrder::relaxed) < 0) { }
+        while (a.load(MemoryOrder::Relaxed) < 0) { }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::sequential);
+        a.wait(0, MemoryOrder::Sequential);
         benchmark::DoNotOptimize(a);
     }
 
@@ -194,32 +194,32 @@ BENCHMARK(AtomicFalseWait);
 BENCHMARK(AtomicFalseWait_std);
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicWait(benchmark::State& state)
 {
     Atomic<T> a(0);
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<mini::int32>(value) >= 0) {
-            if (a.compareExchangeWeak(value, 1, MemoryOrder::acquire)) {
+            if (a.compareExchangeWeak(value, 1, MemoryOrder::Acquire)) {
                 a.notify();
             }
 
-            value = a.load(MemoryOrder::acquire);
+            value = a.load(MemoryOrder::Acquire);
         }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::acquire);
-        a.store(0, MemoryOrder::release);
+        a.wait(0, MemoryOrder::Acquire);
+        a.store(0, MemoryOrder::Release);
     }
 
-    a.store(-2, MemoryOrder::sequential);
+    a.store(-2, MemoryOrder::Sequential);
     t.join();
 }
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicWait_std(benchmark::State& state)
 {
     std::atomic<T> a(0);
@@ -251,35 +251,35 @@ BENCHMARK_TEMPLATE(AtomicWait, NonAtomic);
 BENCHMARK_TEMPLATE(AtomicWait_std, NonAtomic);
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicWaitNotify(benchmark::State& state)
 {
     Atomic<T> a(0);
     std::thread t([&a]() {
         T value = 1;
         while (static_cast<mini::int32>(value) >= 0) {
-            if (a.compareExchangeWeak(value, 1, MemoryOrder::acquire)) {
+            if (a.compareExchangeWeak(value, 1, MemoryOrder::Acquire)) {
                 a.notify();
             }
 
-            a.wait(1, MemoryOrder::acquire);
-            value = a.load(MemoryOrder::acquire);
+            a.wait(1, MemoryOrder::Acquire);
+            value = a.load(MemoryOrder::Acquire);
         }
     });
 
     for (auto _ : state) {
-        a.wait(0, MemoryOrder::acquire);
-        a.store(0, MemoryOrder::release);
+        a.wait(0, MemoryOrder::Acquire);
+        a.store(0, MemoryOrder::Release);
         a.notify();
     }
 
-    a.store(-2, MemoryOrder::sequential);
+    a.store(-2, MemoryOrder::Sequential);
     a.notify();
     t.join();
 }
 
 template <typename T>
-    requires ConstructibleFromT<T, mini::int32> && ConvertibleToT<T, mini::int32>
+    requires mini::ConstructibleFromT<T, mini::int32> && mini::ConvertibleToT<T, mini::int32>
 void AtomicWaitNotify_std(benchmark::State& state)
 {
     std::atomic<T> a(0);
@@ -318,15 +318,15 @@ void AtomicSpinLock(benchmark::State& state)
 {
     Atomic<mini::int32> atomic(1);
     Atomic<mini::int32> lock(0);
-    Array<std::thread> threads(ThreadN);
+    mini::Array<std::thread> threads(ThreadN);
 
     auto spinLock = [&atomic, &lock]() -> mini::int32 {
-        while (lock.exchange(1, MemoryOrder::acquire) == 1) {
-            lock.wait(1, MemoryOrder::relaxed);
+        while (lock.exchange(1, MemoryOrder::Acquire) == 1) {
+            lock.wait(1, MemoryOrder::Relaxed);
         }
 
-        mini::int32 value = atomic.load(MemoryOrder::relaxed);
-        lock.store(0, MemoryOrder::release);
+        mini::int32 value = atomic.load(MemoryOrder::Relaxed);
+        lock.store(0, MemoryOrder::Release);
         lock.notify();
 
         return value;
@@ -342,7 +342,7 @@ void AtomicSpinLock(benchmark::State& state)
         spinLock();
     }
 
-    atomic.store(-1, MemoryOrder::sequential);
+    atomic.store(-1, MemoryOrder::Sequential);
 
     for (auto& t : threads) {
         t.join();
@@ -354,7 +354,7 @@ void AtomicSpinLock_std(benchmark::State& state)
 {
     std::atomic<mini::int32> atomic(1);
     std::atomic<mini::int32> lock(0);
-    Array<std::thread> threads(ThreadN);
+    mini::Array<std::thread> threads(ThreadN);
 
     auto spinLock = [&atomic, &lock]() -> mini::int32 {
         while (lock.exchange(1, std::memory_order::acquire) == 1) {

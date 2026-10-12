@@ -224,9 +224,9 @@ void AssignMove_std(benchmark::State& state)
     std::string str(longStr);
     for (auto _ : state) {
         std::string str2;
-        str2 = moveCast(str);
+        str2 = std::move(str);
         benchmark::DoNotOptimize(str2);
-        str = moveCast(str2);
+        str = std::move(str2);
     }
 }
 
