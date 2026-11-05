@@ -2,53 +2,6 @@ macro (module_global_definitions)
      list(APPEND MODULE_GLOBAL_DEFINITIONS ${ARGV} "\n")
 endmacro()
 
-if (WIN32)
-    if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
-        set(arch "arm64")
-        set(ARM64 1)
-    elseif (BUILD_TARGET_ARCH MATCHES "[Aa][Mm][Dd]64|[Ii][Aa]64")
-        set(arch "x86_64")
-        set(X86 1)
-        set(X86_64 1)
-    elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86")
-        set(arch "x86_32")
-        set(X86 1)
-        set(X86_32 1)
-    else()
-        message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
-    endif()
-elseif (APPLE)
-    if (BUILD_TARGET_ARCH MATCHES "[Aa][Rr][Mm]64")
-        set(arch "arm64")
-        set(ARM64 1)
-    elseif (BUILD_TARGET_ARCH MATCHES "[Xx]86_64")
-        set(arch "x86_64")
-        set(X86 1)
-        set(X86_64 1)
-    else()
-        message(FATAL_ERROR "unsupproted arch: " ${BUILD_TARGET_ARCH})
-    endif()
-endif()
-
-# define compiler specific compile definitions
-# compiler generator expression aren't supported on file generate, 
-# so they have to be handled manually
-if (CMAKE_CXX_COMPILER_ID MATCHES AppleClang)
-    set(compiler "apple_clang")
-    set(APPLE_CLANG 1)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
-    set(compiler "clang")
-    set(CLANG 1)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES GNUC)
-    set(compiler "gnuc")
-    set(GNUC 1)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
-    set(compiler "msvc")
-    set(MSVC 1)
-else()
-    message(FATAL_ERROR "unsupproted compiler: " ${CMAKE_CXX_COMPILER_ID})
-endif()
-
 if (NOASSERT)
     set(assert 0)
 elseif (ASSERT_LEVEL STREQUAL "Debug")
@@ -77,9 +30,9 @@ module_global_definitions(
     ENGINE_PROJECT_NAME="${ENGINE_PROJECT_NAME}"
     ENGINE_PROJECT_AUTHOR="${ENGINE_PROJECT_AUTHOR}"
     ENGINE_PROJECT_VERSION="${ENGINE_PROJECT_VERSION}"
-    ENGINE_BUILD_ARCH="${arch}"
+    ENGINE_BUILD_ARCH="${ENGINE_TARGET_ARCH}"
     ENGINE_BUILD_CONFIG="$<STRING:TOLOWER,$<CONFIG>>"
-    ENGINE_BUILD_COMPILER="${compiler}:${CMAKE_CXX_COMPILER_VERSION}"
+    ENGINE_BUILD_COMPILER="${ENGINE_COMPILER}:${CMAKE_CXX_COMPILER_VERSION}"
 )
 
 module_global_definitions(
@@ -92,23 +45,18 @@ module_global_definitions(
 
 # handle compiler specific definition here
 module_global_definitions(
-    CLANG=$<IF:$<BOOL:${CLANG}>,true,false>
-    GNUC=$<IF:$<BOOL:${GNUC}>,true,false>
-    MSVC=$<IF:$<BOOL:${MSVC}>,true,false>
-    APPLE_CLANG=$<IF:$<BOOL:${APPLE_CLANG}>,true,false>
+    CLANG=$<IF:${CLANG},true,false>
+    MSVC=$<IF:${MSVC},true,false>
 )
 
 module_global_definitions(
-    PLATFORM_WINDOWS=$<IF:$<PLATFORM_ID:Windows>,true,false>
-    PLATFORM_MACOS=$<IF:$<PLATFORM_ID:Darwin>,true,false>
-    PLATFORM_LINUX=$<IF:$<PLATFORM_ID:Linux>,true,false>
+    PLATFORM_WINDOWS=$<IF:${WINDOWS},true,false>
+    PLATFORM_MACOS=$<IF:${MACOS},true,false>
 )
 
 module_global_definitions(
-    ARCH_ARM64=$<IF:$<BOOL:${ARM64}>,true,false>
-    ARCH_X86=$<IF:$<BOOL:${X86}>,true,false>
-    ARCH_X86_64=$<IF:$<BOOL:${X86_64}>,true,false>
-    ARCH_X86_32=$<IF:$<BOOL:${X86_32}>,true,false>
+    ARCH_ARM64=$<IF:${ARM64},true,false>
+    ARCH_X86_64=$<IF:${X86_64},true,false>
 )
 
 if (MSVC)

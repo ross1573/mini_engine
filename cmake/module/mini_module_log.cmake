@@ -15,7 +15,6 @@ function (generate_module_log target)
         message(FATAL_ERROR "cannot generate module logger of target type ${target_type}")
     endif()
 
-    snake_to_camel_case(${api})
     set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.generated")
     set(file_name "${target}.log.generated.cxx")
 

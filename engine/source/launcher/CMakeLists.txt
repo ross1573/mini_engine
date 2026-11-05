@@ -2,9 +2,9 @@ include(module/mini_module_define)
 include(module/mini_module_static)
 include(module/mini_module_bundle)
 
-if (WIN32)
+if (WINDOWS)
     add_executable(mini.launcher WIN32 windows/win_main.cpp)
-elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+elseif (MACOS)
     enable_language(OBJCXX)
 
     add_executable(mini.launcher MACOSX_BUNDLE 
@@ -13,8 +13,6 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     )
 
     target_link_libraries(mini.launcher PRIVATE "-framework AppKit")
-else()
-    message(FATAL_ERROR "unable to build on unknown platform: " ${CMAKE_SYSTEM_NAME})
 endif()
 
 target_sources(mini.launcher

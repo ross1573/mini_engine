@@ -62,7 +62,7 @@ target_sources(mini.core
 PUBLIC
     FILE_SET bit TYPE CXX_MODULES
     FILES
-        $<$<CXX_COMPILER_ID:MSVC>:bit/bit_win.cxx>
+        $<${MSVC}:bit/bit_win.cxx>
         bit/bit_base.cxx
         bit/bit_operation.cxx
 
@@ -131,8 +131,8 @@ target_sources(mini.core
 PUBLIC
     FILE_SET debug TYPE CXX_MODULES
     FILES
-        $<$<PLATFORM_ID:Windows>:debug/logger_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:debug/logger_macos.cxx>
+        $<${WINDOWS}:debug/logger_win.cxx>
+        $<${MACOS}:debug/logger_macos.cxx>
         debug/logger.cxx
 
         debug/assert_expr.cxx
@@ -140,8 +140,8 @@ PUBLIC
         debug/assert.cxx
 
 PRIVATE
-    $<$<PLATFORM_ID:Windows>:debug/impl/logger_win.cpp>
-    $<$<PLATFORM_ID:Darwin>:debug/impl/logger_macos.cpp>
+    $<${WINDOWS}:debug/impl/logger_win.cpp>
+    $<${MACOS}:debug/impl/logger_macos.cpp>
     debug/impl/assert_format.cpp
     include/debug/assert.h
 )
@@ -150,28 +150,28 @@ target_sources(mini.core
 PUBLIC
     FILE_SET concurrency TYPE CXX_MODULES
     FILES
-        $<$<CXX_COMPILER_ID:Clang>:concurrency/atomic_platform_clang.cxx>
-        $<$<CXX_COMPILER_ID:MSVC>:concurrency/atomic_platform_msvc.cxx>
-        $<$<PLATFORM_ID:Windows>:concurrency/atomic_wait_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:concurrency/atomic_wait_macos.cxx>
+        $<${CLANG}:concurrency/atomic_platform_clang.cxx>
+        $<${MSVC}:concurrency/atomic_platform_msvc.cxx>
+        $<${WINDOWS}:concurrency/atomic_wait_win.cxx>
+        $<${MACOS}:concurrency/atomic_wait_macos.cxx>
         concurrency/atomic_base.cxx
         concurrency/atomic_wait.cxx
         concurrency/atomic.cxx
 
-        $<$<PLATFORM_ID:Windows>:concurrency/mutex_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:concurrency/mutex_macos.cxx>
+        $<${WINDOWS}:concurrency/mutex_win.cxx>
+        $<${MACOS}:concurrency/mutex_macos.cxx>
         concurrency/mutex.cxx
 
 PRIVATE
-    $<$<PLATFORM_ID:Windows>:concurrency/impl/atomic_win.cpp>
+    $<${WINDOWS}:concurrency/impl/atomic_win.cpp>
 )
 
 target_sources(mini.core
 PUBLIC
     FILE_SET module TYPE CXX_MODULES
     FILES
-        $<$<PLATFORM_ID:Windows>:module/module_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:module/module_macos.cxx>
+        $<${WINDOWS}:module/module_win.cxx>
+        $<${MACOS}:module/module_macos.cxx>
         module/module_system.cxx
         module/module_loader.cxx
         module/module_initializer.cxx
@@ -194,8 +194,8 @@ PUBLIC
     FILES
         chrono/duration.cxx
         chrono/time_point.cxx
-        $<$<PLATFORM_ID:Windows>:chrono/clock_win.cxx>
-        $<$<PLATFORM_ID:Darwin>:chrono/clock_macos.cxx>
+        $<${WINDOWS}:chrono/clock_win.cxx>
+        $<${MACOS}:chrono/clock_macos.cxx>
         chrono/clock.cxx
 )
 
@@ -208,7 +208,7 @@ PUBLIC
 PRIVATE
     include/config.h
     include/option.h
-    $<$<PLATFORM_ID:Windows>:impl/win_include.h>
+    $<${WINDOWS}:impl/win_include.h>
     impl/core.cpp
     impl/option.cpp
 )
@@ -231,7 +231,7 @@ PUBLIC
     fmt::fmt-module
 )
 
-if (WIN32)
+if (WINDOWS)
     target_link_libraries(mini.core PRIVATE synchronization.lib)
 endif()
 if (MSVC)

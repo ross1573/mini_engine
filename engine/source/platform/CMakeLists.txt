@@ -2,12 +2,10 @@ add_module(mini.platform
     INTERFACE mini::Platform
 )
 
-if (WIN32)
+if (WINDOWS)
     set(native_module "mini.windows")
-elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+elseif (macOS)
     set(native_module "mini.macos")
-else()
-    message(FATAL_ERROR "unknown platform: " ${CMAKE_SYSTEM_NAME})
 endif()
 
 module_compile_definitions(mini.platform

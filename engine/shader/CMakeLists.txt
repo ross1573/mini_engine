@@ -1,3 +1,3 @@
-if (APPLE)
+if (MACOS)
     add_subdirectory(metal)
 endif()

@@ -70,7 +70,7 @@ macro (_clang_compile_options)
         -Wno-c2y-extensions
     )
 
-    if (WIN32)
+    if (WINDOWS)
         add_compile_options(
             -Wno-microsoft-cast
             -Wno-language-extension-token # use in __uuidof and __declspec
@@ -89,24 +89,27 @@ macro (_clang_link_options)
     add_link_options(
         $<$<CONFIG:Debug>:-fsanitize=address>
     )
+
+    if (WINDOWS)
+        add_link_options(
+            -mwindows
+            -municode
+        )
+    endif()
 endmacro()
 
 macro (mini_compile_options)
-    if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    if (MSVC)
         _msvc_compile_options()
-    elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    elseif (CLANG)
         _clang_compile_options()
-    else()
-        message(FATAL_ERROR "unsupported compiler: " ${CMAKE_CXX_COMPILER_ID})
     endif()
 endmacro()
 
 macro (mini_link_options)
-    if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    if (MSVC)
         _msvc_link_options()
-    elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    elseif (CLANG)
         _clang_link_options()
-    else()
-        message(FATAL_ERROR "unsupported compiler: " ${CMAKE_CXX_COMPILER_ID})
     endif()
 endmacro()

@@ -32,8 +32,8 @@ function (no_arg_benchmark name)
     set(OPT_RESULT_PATH ${output_dir}/${target}.yaml)
     target_compile_options(benchmark.${name}
     PRIVATE
-        $<$<CXX_COMPILER_ID:Clang>:-fsave-optimization-record> 
-        $<$<CXX_COMPILER_ID:Clang>:-foptimization-record-file=${OPT_RESULT_PATH}>
+        $<${Clang}:-fsave-optimization-record> 
+        $<${Clang}:-foptimization-record-file=${OPT_RESULT_PATH}>
     )
 
     build_source_tree(${target})
