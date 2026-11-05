@@ -9,7 +9,7 @@ import :type;
 import :memory_operation;
 import :bit_base;
 
-#if PLATFORM_WINDOWS
+#if MSVC
 import :bit_platform;
 #endif
 

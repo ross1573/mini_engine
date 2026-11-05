@@ -96,6 +96,13 @@ function (add_module name)
         )
     endif()
 
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
+        string(LENGTH ${prefix} prefix_length)
+        string(LENGTH ${api} api_length)
+        set(module_initializer_symbol "_ZGIW${prefix_length}${prefix}W${api_length}${api}")
+        target_link_options(${name} PRIVATE "LINKER:-Xlink=-export:${module_initializer_symbol}")
+    endif()
+
     if (type STREQUAL "SHARED")
         bundle_module(${name})
     endif()

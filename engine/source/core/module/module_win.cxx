@@ -37,7 +37,7 @@ void unloadModule(NativeModuleHandle handle) noexcept
 
 void* loadFunction(NativeModuleHandle handle, StringView name) noexcept
 {
-    return GetProcAddress(handle, name.data());
+    return reinterpret_cast<void*>(GetProcAddress(handle, name.data()));
 }
 
 } // namespace mini

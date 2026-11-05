@@ -5,6 +5,7 @@ opt/
 build/
 intermediate/
 .cache/
+.gitconfig
 
 # cmake
 CMakeLists.txt.user
