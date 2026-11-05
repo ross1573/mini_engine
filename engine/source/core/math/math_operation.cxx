@@ -12,48 +12,56 @@ import :math_base;
 
 namespace mini {
 
-export template <IntegralT T>
-[[nodiscard]] constexpr T min(T x, T y)
+export template <IntegralT T, IntegralT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT min(T x, U y)
 {
-    return x < y ? x : y;
+    ResultT a = static_cast<ResultT>(x);
+    ResultT b = static_cast<ResultT>(y);
+    return a < b ? a : b;
 }
 
-export template <FloatingT T>
-[[nodiscard]] constexpr T min(T x, T y)
+export template <FloatingT T, FloatingT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT min(T x, U y)
 {
     if !consteval {
-        if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
-            return static_cast<T>(BUILTIN_FMINF(static_cast<float>(x), static_cast<float>(y)));
-        } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
-            return static_cast<T>(BUILTIN_FMIN(static_cast<double>(x), static_cast<double>(y)));
-        } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
-            return static_cast<T>(BUILTIN_FMINL(static_cast<long double>(x), static_cast<long double>(y)));
+        if constexpr (sizeof(ResultT) <= sizeof(float) && ConvertibleWithT<ResultT, float>) {
+            return static_cast<ResultT>(BUILTIN_FMINF(static_cast<float>(x), static_cast<float>(y)));
+        } else if constexpr (sizeof(ResultT) <= sizeof(double) && ConvertibleWithT<ResultT, double>) {
+            return static_cast<ResultT>(BUILTIN_FMIN(static_cast<double>(x), static_cast<double>(y)));
+        } else if constexpr (sizeof(ResultT) <= sizeof(long double) && ConvertibleWithT<ResultT, long double>) {
+            return static_cast<ResultT>(BUILTIN_FMINL(static_cast<long double>(x), static_cast<long double>(y)));
         }
     }
 
-    return x < y ? x : y;
+    ResultT a = static_cast<ResultT>(x);
+    ResultT b = static_cast<ResultT>(y);
+    return a < b ? a : b;
 }
 
-export template <IntegralT T>
-[[nodiscard]] constexpr T max(T x, T y)
+export template <IntegralT T, IntegralT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT max(T x, U y)
 {
-    return x > y ? x : y;
+    ResultT a = static_cast<ResultT>(x);
+    ResultT b = static_cast<ResultT>(y);
+    return a > b ? a : b;
 }
 
-export template <FloatingT T>
-[[nodiscard]] constexpr T max(T x, T y)
+export template <FloatingT T, FloatingT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT max(T x, U y)
 {
     if !consteval {
-        if constexpr (sizeof(T) <= sizeof(float) && ConvertibleWithT<T, float>) {
-            return static_cast<T>(BUILTIN_FMAXF(static_cast<float>(x), static_cast<float>(y)));
-        } else if constexpr (sizeof(T) <= sizeof(double) && ConvertibleWithT<T, double>) {
-            return static_cast<T>(BUILTIN_FMAX(static_cast<double>(x), static_cast<double>(y)));
-        } else if constexpr (sizeof(T) <= sizeof(long double) && ConvertibleWithT<T, long double>) {
-            return static_cast<T>(BUILTIN_FMAXL(static_cast<long double>(x), static_cast<long double>(y)));
+        if constexpr (sizeof(ResultT) <= sizeof(float) && ConvertibleWithT<ResultT, float>) {
+            return static_cast<ResultT>(BUILTIN_FMAXF(static_cast<float>(x), static_cast<float>(y)));
+        } else if constexpr (sizeof(ResultT) <= sizeof(double) && ConvertibleWithT<ResultT, double>) {
+            return static_cast<ResultT>(BUILTIN_FMAX(static_cast<double>(x), static_cast<double>(y)));
+        } else if constexpr (sizeof(ResultT) <= sizeof(long double) && ConvertibleWithT<ResultT, long double>) {
+            return static_cast<ResultT>(BUILTIN_FMAXL(static_cast<long double>(x), static_cast<long double>(y)));
         }
     }
 
-    return x > y ? x : y;
+    ResultT a = static_cast<ResultT>(x);
+    ResultT b = static_cast<ResultT>(y);
+    return a > b ? a : b;
 }
 
 export template <IntegralT T>
@@ -159,10 +167,9 @@ export template <IntegralT T>
     return static_cast<float>(BUILTIN_SQRT(static_cast<double>(num)));
 }
 
-export template <IntegralT T, IntegralT U>
-[[nodiscard]] constexpr CommonT<T, U> gcd(T x, U y)
+export template <IntegralT T, IntegralT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT gcd(T x, U y)
 {
-    using ResultT = CommonT<T, U>;
     using UnsignedResultT = UnsignedOfT<ResultT>;
 
     UnsignedResultT ux = static_cast<UnsignedResultT>(abs(x));
@@ -200,11 +207,9 @@ export template <IntegralT T, IntegralT U>
     return static_cast<ResultT>(ux << shift);
 }
 
-export template <IntegralT T, IntegralT U>
-[[nodiscard]] constexpr CommonT<T, U> lcm(T x, U y)
+export template <IntegralT T, IntegralT U, typename ResultT = CommonT<T, U>>
+[[nodiscard]] constexpr ResultT lcm(T x, U y)
 {
-    using ResultT = CommonT<T, U>;
-
     if (x == 0 || y == 0) {
         return 0;
     }
