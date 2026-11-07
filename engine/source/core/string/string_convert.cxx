@@ -11,7 +11,7 @@ template <CharT From, CharT To, AllocatorT<To> AllocT>
 constexpr BasicString<To, AllocT> convertImpl(BasicStringView<From> from)
 {
     if (from.size() == 0) {
-        return String{};
+        return BasicString<To, AllocT>{};
     }
 
     From const* begin = from.data();

@@ -12,8 +12,6 @@ import convert_utf;
     TEST_ENSURE(testStringConvert(from, to));
 
 using mini::BasicString;
-using mini::BasicStringConvert;
-using mini::BasicStringView;
 
 using mini::char16;
 using mini::char32;
@@ -46,13 +44,13 @@ constexpr bool testConvertUTF(T const* from, U const* to)
 template <typename T, typename U>
 constexpr bool testStringConvert(T const* from, U const* to)
 {
-    BasicString<U> c = BasicStringConvert<U>(BasicString<T>(from)).toString();
+    BasicString<U> c = mini::convert<U>(from);
     if (c != to) {
         return false;
     }
 
-    BasicStringConvert<U> convert(from);
-    return static_cast<BasicStringView<U>>(convert) == to;
+    BasicString<T> r = mini::convert<T>(c);
+    return r == from;
 }
 
 int main()
