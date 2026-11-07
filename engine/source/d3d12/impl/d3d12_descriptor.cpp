@@ -15,7 +15,11 @@ DescriptorHeap::DescriptorHeap(SharedPtr<ID3D12DescriptorHeap>&& heap, uint32 in
     ASSERT(m_heap, "invalid heap with nullptr");
     ASSERT(m_incrementSize > 0, "invalid heap incremetal size {}", m_incrementSize);
 
+#if MINGW_ABI
+    ignore = m_heap->GetCPUDescriptorHandleForHeapStart(&m_cpuHeapStart);
+#else
     m_cpuHeapStart = m_heap->GetCPUDescriptorHandleForHeapStart();
+#endif
 }
 
 bool DescriptorHeap::allocate(CPUOffsetT& offset)
@@ -87,7 +91,7 @@ void DescriptorAllocator::deallocate(Descriptor desc)
 bool DescriptorAllocator::AllocateHeap()
 {
     SharedPtr<ID3D12DescriptorHeap> heap;
-    ENSURE(m_device->CreateDescriptorHeap(&m_heapDesc, IID_PPV_ARGS(&heap))) {
+    ENSURE(m_device->CreateDescriptorHeap(&m_heapDesc, COM_ARG(ID3D12DescriptorHeap, &heap))) {
         return false;
     }
 

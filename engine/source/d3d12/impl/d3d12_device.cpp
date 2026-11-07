@@ -23,7 +23,7 @@ Device::Device()
     SharedPtr<IDXGIAdapter> adapter;
     SharedPtr<ID3D12Device> device;
 
-    VERIFY(CreateDXGIFactory2(debugFlag, IID_PPV_ARGS(&factory)));
+    VERIFY(CreateDXGIFactory2(debugFlag, COM_ARG(IDXGIFactory4, &factory)));
 
     if (debugFlag) {
         EnableDebugLayer();
@@ -97,7 +97,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minFeatureLevel,
                 break;
             }
 
-            if (FAILED(D3D12CreateDevice(adapter, supportedFeatureLevel, IID_PPV_ARGS(&device))) ||
+            if (FAILED(D3D12CreateDevice(adapter, supportedFeatureLevel, COM_ARG(ID3D12Device, &device))) ||
                 FAILED(adapter->GetDesc(&adapterDesc))) {
                 continue;
             }
@@ -153,7 +153,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minFeatureLevel,
     DXGI_ADAPTER_DESC adapterDesc{};
     adapter->GetDesc(&adapterDesc);
 
-    const auto desc = StringConvert(adapterDesc.Description);
+    const auto desc = convert<char>(adapterDesc.Description);
     const auto gpumem = adapterDesc.DedicatedVideoMemory;
     const auto sysmem = adapterDesc.DedicatedSystemMemory + adapterDesc.SharedSystemMemory;
 
@@ -167,7 +167,7 @@ void Device::CreateDevice(D3D_FEATURE_LEVEL minFeatureLevel,
 void Device::EnableDebugLayer()
 {
     SharedPtr<ID3D12Debug> debugCtrl = nullptr;
-    ENSURE(D3D12GetDebugInterface(IID_PPV_ARGS(&debugCtrl)), "failed to enable debug layer.") {
+    ENSURE(D3D12GetDebugInterface(COM_ARG(ID3D12Debug, &debugCtrl)), "failed to enable debug layer.") {
         return;
     }
 

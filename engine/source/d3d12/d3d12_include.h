@@ -45,6 +45,13 @@
 #undef NOUSER
 #undef NOMSG
 
+// TODO: better way to determine mingw environment
+#ifndef _MSC_VER
+#  define MINGW_ABI true
+#else
+#  define MINGW_ABI false
+#endif
+
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <windows.h>
@@ -54,5 +61,21 @@
 #endif
 
 #undef interface
+
+#define COM_ARG(type, arg) IID_##type, reinterpret_cast<void**>(arg)
+
+#if MINGW_ABI
+template <>
+constexpr const GUID& __mingw_uuidof<ID3D12Debug5>()
+{
+    return IID_ID3D12Debug5;
+}
+
+template <>
+constexpr const GUID& __mingw_uuidof<ID3D12InfoQueue>()
+{
+    return IID_ID3D12InfoQueue;
+}
+#endif
 
 #endif // D3D12_INCLUDE_H

@@ -26,8 +26,8 @@ CommandQueue::CommandQueue(ID3D12Device* device, CommandType queueType)
     m_queueDesc.Type = type;
     m_queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-    VERIFY(device->CreateCommandQueue(&m_queueDesc, IID_PPV_ARGS(&m_commandQueue)));
-    VERIFY(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+    VERIFY(device->CreateCommandQueue(&m_queueDesc, COM_ARG(ID3D12CommandQueue, &m_commandQueue)));
+    VERIFY(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, COM_ARG(ID3D12Fence, &m_fence)));
 
     m_fenceValue = 0;
     m_lastCompeletedFence = 0;

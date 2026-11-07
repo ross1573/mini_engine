@@ -19,7 +19,7 @@ D3D12::~D3D12() noexcept
 {
 #if DEBUG
     SharedPtr<IDXGIDebug1> debug;
-    ENSURE(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug))) {
+    ENSURE(DXGIGetDebugInterface1(0, COM_ARG(IDXGIDebug1, &debug))) {
         debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
     }
 #endif

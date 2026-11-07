@@ -20,8 +20,12 @@ Renderer::Renderer(ID3D12Device* device)
 
     m_commandQueue = makeUnique<CommandQueue>(device, CommandType::direct);
 
-    VERIFY(device->CreateCommandAllocator(type, IID_PPV_ARGS(&m_commandAllocator)));
-    VERIFY(device->CreateCommandList(0, type, m_commandAllocator, nullptr, IID_PPV_ARGS(&m_commandList)));
+    VERIFY(device->CreateCommandAllocator(type, COM_ARG(ID3D12CommandAllocator, &m_commandAllocator)));
+    VERIFY(device->CreateCommandList(0,
+                                     type,
+                                     m_commandAllocator,
+                                     nullptr,
+                                     COM_ARG(ID3D12GraphicsCommandList4, &m_commandList)));
 
     m_commandList->Close();
 }
