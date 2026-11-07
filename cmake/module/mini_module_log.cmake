@@ -1,3 +1,4 @@
+include_guard()
 include(module/mini_module_api)
 
 function (generate_module_log target)

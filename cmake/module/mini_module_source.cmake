@@ -1,3 +1,4 @@
+include_guard()
 include (mini_util)
 
 function (build_source_tree target)

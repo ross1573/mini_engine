@@ -1,3 +1,5 @@
+include_guard()
+
 macro (include_static name)
     set(prev_build_type ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS FALSE)

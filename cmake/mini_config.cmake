@@ -1,3 +1,5 @@
+include_guard()
+
 set(MSVC 0)
 set(CLANG 0)
 

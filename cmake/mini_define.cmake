@@ -1,3 +1,5 @@
+include_guard()
+
 macro (module_global_definitions)
      list(APPEND MODULE_GLOBAL_DEFINITIONS ${ARGV} "\n")
 endmacro()

@@ -1,3 +1,5 @@
+include_guard()
+
 macro (_msvc_compile_options)
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
     set(CMAKE_CXX_FLAGS_DEVELOP "/Zi /O1 /Ob1")

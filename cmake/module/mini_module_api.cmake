@@ -1,3 +1,4 @@
+include_guard()
 include(GenerateExportHeader)
 
 function (generate_api_name target)

@@ -1,4 +1,5 @@
-include(${ENGINE_EXTERNAL_DIR}/d3d12/d3d12.cmake)
+include(external/NuGet)
+include(mini_util)
 
 add_module(mini.d3d12
     INTERFACE mini::D3D12
@@ -45,4 +46,29 @@ PRIVATE
     d3d12_include.h
 )
 
-copy_d3d12(mini.d3d12)
+add_nuget_package(D3D12
+    PACKAGE Microsoft.Direct3D.D3D12
+    VERSION 1.620.1
+)
+
+if (ARM64)
+    set(D3D12_ARCH_DIR "arm64")
+elseif (X86_64)
+    set(D3D12_ARCH_DIR "x64")
+endif()
+
+target_include_directories(mini.d3d12 SYSTEM BEFORE
+PRIVATE
+    "${D3D12_DIR}/native/include"
+)
+
+get_output_directory(output_dir RUNTIME)
+add_custom_command(TARGET mini.d3d12 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${D3D12_DIR}/native/bin/${D3D12_ARCH_DIR}/D3D12Core.dll"
+        "$<$<CONFIG:Debug>:${D3D12_DIR}/native/bin/${D3D12_ARCH_DIR}/D3D12Core.pdb>"
+        "$<$<CONFIG:Debug>:${D3D12_DIR}/native/bin/${D3D12_ARCH_DIR}/d3d12SDKLayers.dll>"
+        "$<$<CONFIG:Debug>:${D3D12_DIR}/native/bin/${D3D12_ARCH_DIR}/d3d12SDKLayers.pdb>"
+        "${output_dir}"
+    COMMAND_EXPAND_LISTS
+)

@@ -1,3 +1,4 @@
+include_guard()
 include (FetchContent)
 
 set(FMT_DOC OFF)

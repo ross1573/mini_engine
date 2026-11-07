@@ -1,3 +1,4 @@
+include_guard()
 include(mini_util)
 
 function (_macos_bundle_module target)
