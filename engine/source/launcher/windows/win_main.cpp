@@ -7,7 +7,7 @@
 import mini.core;
 import mini.launcher;
 
-extern "C" int __stdcall wWinMain(HINSTANCE /*unused*/, HINSTANCE /*unused*/, wchar_t* /*unused*/, int /*unused*/)
+extern "C" int __stdcall WinMain(HINSTANCE /*unused*/, HINSTANCE /*unused*/, char* /*unused*/, int /*unused*/)
 {
 #if DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

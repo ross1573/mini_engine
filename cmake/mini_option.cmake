@@ -88,14 +88,9 @@ macro (_msvc_link_options)
 endmacro()
 
 macro (_clang_link_options)
-    add_link_options(
-        $<$<CONFIG:Debug>:-fsanitize=address>
-    )
-
-    if (WINDOWS)
+    if (NOT MINGW)
         add_link_options(
-            -mwindows
-            -municode
+            $<$<CONFIG:Debug>:-fsanitize=address>
         )
     endif()
 endmacro()
