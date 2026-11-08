@@ -81,6 +81,10 @@ void CommandBuffer::begin(UniquePtr<CommandAllocator> allocator)
 
 [[nodiscard]] UniquePtr<CommandAllocator> CommandBuffer::end()
 {
+    ENSURE(active(), "trying to end command list which hasn't been started") {
+        return nullptr;
+    }
+
     m_commandBuffer->endCommandBuffer();
     return moveCast(m_commandAllocator);
 }
@@ -99,10 +103,10 @@ UniquePtr<RenderCommandEncoder> CommandBuffer::renderCommandEncoder(
     return makeUnique<RenderCommandEncoder>(mtlRenderCommandEncoder);
 }
 
-CommandBufferAllocator::CommandBufferAllocator(PtrView<Device> device,
-                                               PtrView<CommandQueue> commandQueue,
-                                               size_t commandBufferCapacity,
-                                               size_t commandAllocatorCapacity)
+CommandBufferPool::CommandBufferPool(PtrView<Device> device,
+                                     PtrView<CommandQueue> commandQueue,
+                                     size_t commandBufferCapacity,
+                                     size_t commandAllocatorCapacity)
     : m_device(device)
     , m_commandQueue(commandQueue)
     , m_sharedEvent(device)
@@ -124,7 +128,7 @@ CommandBufferAllocator::CommandBufferAllocator(PtrView<Device> device,
     allocateCommandAllocator(commandAllocatorCapacity);
 }
 
-void CommandBufferAllocator::allocateCommandBuffer(size_t size)
+void CommandBufferPool::allocateCommandBuffer(size_t size)
 {
     CommandBufferOption* commandBufferOption =
         m_commandBufferOption.valid() ? addressof(m_commandBufferOption) : nullptr;
@@ -135,7 +139,7 @@ void CommandBufferAllocator::allocateCommandBuffer(size_t size)
     }
 }
 
-void CommandBufferAllocator::allocateCommandAllocator(size_t size)
+void CommandBufferPool::allocateCommandAllocator(size_t size)
 {
     m_commandAllocatorPool.reserve(m_commandAllocatorPool.size() + size);
     for (size_t i = 0; i < size; ++i) {
@@ -143,7 +147,7 @@ void CommandBufferAllocator::allocateCommandAllocator(size_t size)
     }
 }
 
-UniquePtr<CommandBuffer> CommandBufferAllocator::allocate()
+UniquePtr<CommandBuffer> CommandBufferPool::allocate()
 {
     if (m_commandBufferPool.empty()) {
         allocateCommandBuffer(1);
@@ -160,7 +164,7 @@ UniquePtr<CommandBuffer> CommandBufferAllocator::allocate()
     return moveCast(commandBuffer);
 }
 
-void CommandBufferAllocator::allocate(size_t size, Array<UniquePtr<CommandBuffer>>& commandBufferArray)
+void CommandBufferPool::allocate(size_t size, Array<UniquePtr<CommandBuffer>>& commandBufferArray)
 {
     offset_t commandBufferAllocateSize = static_cast<offset_t>(size - m_commandBufferPool.size());
     if (commandBufferAllocateSize > 0) {
@@ -180,7 +184,7 @@ void CommandBufferAllocator::allocate(size_t size, Array<UniquePtr<CommandBuffer
     }
 }
 
-void CommandBufferAllocator::wait(uint64 commitValue)
+void CommandBufferPool::wait(uint64 commitValue)
 {
     m_sharedEvent.wait(commitValue);
 
@@ -197,7 +201,7 @@ void CommandBufferAllocator::wait(uint64 commitValue)
     }
 }
 
-uint64 CommandBufferAllocator::commit(UniquePtr<CommandBuffer> commandBuffer)
+uint64 CommandBufferPool::commit(UniquePtr<CommandBuffer> commandBuffer)
 {
     ENSURE(commandBuffer, "commit attempt on invalid command buffer") {
         return m_commitValue;
@@ -215,7 +219,7 @@ uint64 CommandBufferAllocator::commit(UniquePtr<CommandBuffer> commandBuffer)
     return m_commitValue;
 }
 
-uint64 CommandBufferAllocator::commit(Array<UniquePtr<CommandBuffer>>& commandBufferArray)
+uint64 CommandBufferPool::commit(Array<UniquePtr<CommandBuffer>>& commandBufferArray)
 {
     size_t commitValue = m_commitValue + 1;
     m_commitBuffer.reserve(commandBufferArray.size());

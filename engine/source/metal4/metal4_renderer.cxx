@@ -13,7 +13,7 @@ namespace mini::metal4 {
 
 class Device;
 class CommandQueue;
-class CommandBufferAllocator;
+class CommandBufferPool;
 class Compiler;
 class ShaderLibrary;
 class ShaderFunction;
@@ -31,7 +31,7 @@ private:
     Device* m_device;
 
     UniquePtr<CommandQueue> m_commandQueue;
-    UniquePtr<CommandBufferAllocator> m_commandBufferAllocator;
+    UniquePtr<CommandBufferPool> m_commandBufferPool;
 
     UniquePtr<Compiler> m_compiler;
     UniquePtr<ShaderLibrary> m_library;

@@ -100,7 +100,7 @@ MTL4::CommandBufferOptions* CommandBuffer::mtlCommandBufferOption() const noexce
     return m_commandBufferOption->mtlCommandBufferOption();
 }
 
-export class METAL4_API CommandBufferAllocator {
+export class METAL4_API CommandBufferPool {
 private:
     struct PendingContext {
         UniquePtr<CommandAllocator> commandAllocator;
@@ -120,10 +120,10 @@ private:
     Array<CommandBuffer const*> m_commitBuffer;
 
 public:
-    CommandBufferAllocator(PtrView<Device> device,
-                           PtrView<CommandQueue> commandQueue,
-                           size_t commandBufferCapacity,
-                           size_t commandAllocatorCapacity);
+    CommandBufferPool(PtrView<Device> device,
+                      PtrView<CommandQueue> commandQueue,
+                      size_t commandBufferCapacity,
+                      size_t commandAllocatorCapacity);
 
     [[nodiscard]] UniquePtr<CommandBuffer> allocate();
     void allocate(size_t size, Array<UniquePtr<CommandBuffer>>& commandBufferArray);

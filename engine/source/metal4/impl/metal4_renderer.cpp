@@ -17,8 +17,7 @@ Renderer::Renderer(PtrView<Device> device)
     ASSERT(device);
 
     m_commandQueue = makeUnique<CommandQueue>(device);
-    m_commandBufferAllocator =
-        makeUnique<CommandBufferAllocator>(device, m_commandQueue, size_t{1}, options::bufferCount);
+    m_commandBufferPool = makeUnique<CommandBufferPool>(device, m_commandQueue, size_t{1}, options::bufferCount);
 
     m_compiler = makeUnique<Compiler>(device);
     m_library = makeUnique<ShaderLibrary>(device, "mini.metal.shader");
@@ -52,12 +51,12 @@ void Renderer::render()
     [[maybe_unsed]] apple::AutoreleasePool autoreleaesPool;
 
     m_frameValue = m_frameQueue.popFirst();
-    m_commandBufferAllocator->wait(m_frameValue);
+    m_commandBufferPool->wait(m_frameValue);
 
     SwapChain* swapChain = interface->swapChain();
     Drawable* drawable = swapChain->drawable();
     UniquePtr<Texture> frameTexture = drawable->frameTexture();
-    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferAllocator->allocate();
+    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferPool->allocate();
 
     graphics::RenderScopeTargetAttachment targetAttachment{
         frameTexture,
@@ -78,7 +77,7 @@ void Renderer::render()
         renderEncoder->drawPrimitives(graphics::PrimitiveType::triangle, 0, 3);
     }
 
-    size_t frameValue = m_commandBufferAllocator->commit(moveCast(commandBuffer));
+    size_t frameValue = m_commandBufferPool->commit(moveCast(commandBuffer));
     m_frameQueue.pushBack(frameValue);
 }
 
@@ -99,8 +98,8 @@ void Renderer::handleRenderError(PtrView<NS::Error> error)
     ENSURE(error == nullptr,
            error,
            "failed on event value {}. (signaled: {}, presented: {})",
-           renderer->m_commandBufferAllocator->committedValue(),
-           renderer->m_commandBufferAllocator->signaledValue(),
+           renderer->m_commandBufferPool->committedValue(),
+           renderer->m_commandBufferPool->signaledValue(),
            renderer->m_frameValue) { }
 }
 
