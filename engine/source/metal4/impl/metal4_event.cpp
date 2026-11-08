@@ -33,12 +33,11 @@ void SharedEvent::wait(uint64 value, Milliseconds timeout)
         return;
     }
 
-    m_signaledValue = mtlSharedEvent()->signaledValue();
-    if (m_signaledValue >= value) {
+    if (signaledValue() >= value) {
         return;
     }
 
-    size_t tick = static_cast<size_t>(timeout.count());
+    size_t tick = static_cast<size_t>(max(timeout.count(), 0));
     mtlSharedEvent()->waitUntilSignaledValue(value, tick);
 }
 
