@@ -27,7 +27,8 @@ Buffer::Buffer(PtrView<Device> device, graphics::BufferDescriptor const& descrip
     m_resource = transfer(resource);
 }
 
-SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescriptor const& descriptor)
+SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::Texture2DDescriptor const& descriptor,
+                                                       graphics::TextureStorage storage)
 {
     SharedPtr<MTL::TextureDescriptor> desc = transfer(MTL::TextureDescriptor::alloc());
     ENSURE(desc, "failed to allocate MTL::TextureDescriptor") {
@@ -37,14 +38,12 @@ SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescript
     desc->init();
     desc->setWidth(descriptor.width);
     desc->setHeight(descriptor.height);
-    desc->setDepth(descriptor.depth);
-    desc->setMipmapLevelCount(descriptor.mipmapLevel);
+    desc->setMipmapLevelCount(descriptor.mipmap);
     desc->setSampleCount(1);
     desc->setPixelFormat(mtlPixelFormat(descriptor.pixelFormat));
-    desc->setTextureType(mtlTextureType(descriptor.type));
+    desc->setTextureType(MTL::TextureType2D);
     desc->setUsage(mtlTextureUsage(descriptor.usage));
-    desc->setSwizzle(mtlTextureSwizzleChannels(descriptor.swizzle));
-    desc->setResourceOptions(mtlTextureResourceOptions(descriptor.cacheMode, descriptor.storageMode));
+    desc->setResourceOptions(mtlTextureResourceOptions(storage));
     return desc;
 }
 
@@ -55,11 +54,13 @@ Texture::Texture(PtrView<MTL::Texture> texture) noexcept
     m_resource = SharedPtr<MTL::Texture>(texture.get());
 }
 
-Texture::Texture(PtrView<Device> device, graphics::TextureDescriptor const& descriptor)
+Texture2D::Texture2D(PtrView<Device> device,
+                     graphics::Texture2DDescriptor const& descriptor,
+                     graphics::TextureStorage storage)
 {
     ASSERT(device);
 
-    SharedPtr<MTL::TextureDescriptor> desc = mtlTextureDescriptor(descriptor);
+    SharedPtr<MTL::TextureDescriptor> desc = mtlTextureDescriptor(descriptor, storage);
     MTL::Resource* resource = device->mtlDevice()->newTexture(desc.get());
     ENSURE(resource, "failed to allocate texture") {
         return;

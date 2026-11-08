@@ -4,7 +4,7 @@ add_module(mini.platform
 
 if (WINDOWS)
     set(native_module "mini.windows")
-elseif (macOS)
+elseif (MACOS)
     set(native_module "mini.macos")
 endif()
 
