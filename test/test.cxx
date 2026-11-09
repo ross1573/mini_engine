@@ -6,6 +6,7 @@ export import :log;
 using namespace mini;
 
 // clang-format off
+// NOLINTBEGIN
 
 export {
 
@@ -116,10 +117,10 @@ struct TEST_API TestAlloc {
     DebugObject debugObject;
 
     template <typename U>
-    constexpr DebugAlloc<U> Rebind() const noexcept { return DebugAlloc<U>{}; }
+    constexpr DebugAlloc<U> rebind() const noexcept { return DebugAlloc<U>{}; }
 
     AllocationResult<TestObject> allocate(size_t s) { return Allocator<TestObject>{}.allocate(s); }
-    void deallocate(Pointer ptr, size_t s) { Allocator<TestObject>{}.deallocate(ptr, s); }
+    void deallocate(Pointer ptr, size_t size) { Allocator<TestObject>{}.deallocate(ptr, size); }
 };
 
 struct TEST_API FooDel {
@@ -129,3 +130,4 @@ struct TEST_API FooDel {
 } // export
 
 // clang-format on
+// NOLINTEND

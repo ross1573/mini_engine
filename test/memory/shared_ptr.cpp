@@ -6,7 +6,7 @@ using mini::allocateShared;
 using mini::makeShared;
 using mini::SharedPtr;
 
-constexpr bool ConstexprSharedPtr()
+constexpr bool constexprSharedPtr()
 {
     SharedPtr<ConstexprObject> p(new ConstexprObject("string"));
     SharedPtr<ConstexprObject> p2(p);
@@ -26,7 +26,7 @@ constexpr bool ConstexprSharedPtr()
 int main()
 {
 #if !MSVC // fuck you ms, this piece of crap cannot handle constexpr properly
-    static_assert(ConstexprSharedPtr());
+    static_assert(constexprSharedPtr());
 #endif
 
     SharedPtr<TestObject> p;
