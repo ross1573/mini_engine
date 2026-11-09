@@ -385,6 +385,20 @@ inline constexpr auto operator<=>(SharedPtr<T> const s, nullptr_t) noexcept
     return s.get() <=> nullptr;
 }
 
+template <NonReferenceT T>
+inline constexpr SharedPtr<T> transfer(T* other) noexcept
+    requires DerivedFromT<T, IUnknown>
+{
+    return SharedPtr<T>(SharedPtr<T>{}, other);
+}
+
+template <NonReferenceT T, NonReferenceT U>
+inline constexpr SharedPtr<T> transfer(U* other) noexcept
+    requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>
+{
+    return SharedPtr<T>(SharedPtr<T>{}, static_cast<T*>(other));
+}
+
 template <NonReferenceT T, NonReferenceT U>
 inline constexpr SharedPtr<T> staticCast(SharedPtr<U> const& other) noexcept
     requires DerivedFromT<T, IUnknown> && DerivedFromT<U, IUnknown>

@@ -3,6 +3,8 @@ export module mini.d3d12:descriptor;
 import mini.core;
 import mini.windows;
 
+D3D12_EXPORT(ID3D12DescriptorHeap);
+
 export namespace mini::d3d12 {
 
 struct Descriptor {

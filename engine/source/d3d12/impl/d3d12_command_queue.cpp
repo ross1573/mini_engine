@@ -1,83 +1,64 @@
 module mini.d3d12;
 
+import :command_buffer;
 import :command_queue;
 
 namespace mini::d3d12 {
 
-CommandQueue::CommandQueue(ID3D12Device* device, CommandType queueType)
+CommandQueue::CommandQueue(PtrView<Device> device, CommandType commandType)
     : m_commandQueue(nullptr)
-    , m_fence(nullptr)
-    , m_queueType(queueType)
-    , m_queueDesc{}
-    , m_fenceHandle(nullptr)
-    , m_fenceValue(0)
-    , m_lastCompeletedFence(0)
+    , m_event(device)
 {
     ASSERT(device, "cannot initialize command queue with null device");
 
-    D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_NONE;
-    switch (m_queueType) {
-        case CommandType::direct:  type = D3D12_COMMAND_LIST_TYPE_DIRECT; break;
-        case CommandType::copy:    type = D3D12_COMMAND_LIST_TYPE_COPY; break;
-        case CommandType::compute: type = D3D12_COMMAND_LIST_TYPE_COMPUTE; break;
-        default: VERIFY(false, "unknown command queue type")           ;
-    }
+    D3D12_COMMAND_QUEUE_DESC desc{
+        .Type = d3d12CommandType(commandType),
+        .Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,
+        .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE,
+        .NodeMask = 0,
+    };
 
-    m_queueDesc.Type = type;
-    m_queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-
-    VERIFY(device->CreateCommandQueue(&m_queueDesc, COM_ARG(ID3D12CommandQueue, &m_commandQueue)));
-    VERIFY(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, COM_ARG(ID3D12Fence, &m_fence)));
-
-    m_fenceValue = 0;
-    m_lastCompeletedFence = 0;
-    m_fenceHandle = CreateEventW(nullptr, FALSE, FALSE, L"CommandQueue");
-    VERIFY(m_fenceHandle);
+    VERIFY(device->d3d12Device()->CreateCommandQueue(&desc, COM_ARG(&m_commandQueue)));
 }
 
-CommandQueue::~CommandQueue()
+void CommandQueue::commit(PtrView<CommandBuffer const> commandBuffer)
 {
-    m_fence.reset();
+    ASSERT(commandBuffer);
 
-    if (m_fenceHandle) {
-        CloseHandle(m_fenceHandle);
-        m_fenceHandle = nullptr;
-    }
+    ID3D12CommandList* buffer[] = {commandBuffer->d3d12CommandList()};
+    m_commandQueue->ExecuteCommandLists(1, buffer);
+    m_commandQueue->Signal(d3d12Fence(), ++m_eventValue);
 }
 
-void CommandQueue::wait(CommandQueue* commandQueue)
+void CommandQueue::commit(ArrayView<CommandBuffer const*> commandBuffers)
 {
-    m_commandQueue->Wait(commandQueue->m_fence, commandQueue->m_fenceValue);
-}
-
-void CommandQueue::WaitForFence(uint64 fenceValue)
-{
-    if (m_lastCompeletedFence > fenceValue) {
+    if (commandBuffers.empty()) [[unlikely]] {
         return;
     }
 
-    m_lastCompeletedFence = m_fence->GetCompletedValue();
-    if (m_lastCompeletedFence < fenceValue) {
-        m_fence->SetEventOnCompletion(fenceValue, m_fenceHandle);
-        WaitForSingleObject(m_fenceHandle, INFINITE);
+    m_commitBuffer.reserve(commandBuffers.size());
+    for (auto const& cmdBuf : commandBuffers) {
+        ASSERT(cmdBuf);
+        m_commitBuffer.pushBack(cmdBuf->d3d12CommandList());
     }
+
+    UINT commitSize = static_cast<UINT>(m_commitBuffer.size());
+    m_commandQueue->ExecuteCommandLists(commitSize, m_commitBuffer.data());
+    m_commandQueue->Signal(d3d12Fence(), ++m_eventValue);
 }
 
-void CommandQueue::waitIdle()
+void CommandQueue::wait(PtrView<CommandQueue const> commandQueue)
 {
-    m_fenceValue++;
-    m_commandQueue->Signal(m_fence, m_fenceValue);
+    ASSERT(commandQueue);
 
-    WaitForFence(m_fenceValue);
+    m_commandQueue->Wait(commandQueue->d3d12Fence(), commandQueue->m_eventValue);
 }
 
-uint64 CommandQueue::ExecuteCommandList(ID3D12CommandList* commandList)
+void CommandQueue::signal(PtrView<Event const> event, uint64 value)
 {
-    m_fenceValue++;
-    m_commandQueue->ExecuteCommandLists(1, &commandList);
-    m_commandQueue->Signal(m_fence, m_fenceValue);
+    ASSERT(event);
 
-    return m_fenceValue;
+    m_commandQueue->Signal(event->d3d12Fence(), value);
 }
 
 } // namespace mini::d3d12

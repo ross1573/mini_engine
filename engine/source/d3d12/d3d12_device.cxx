@@ -14,10 +14,15 @@ D3D12_EXPORT(ID3D12InfoQueue);
 export namespace mini::d3d12 {
 
 class Device final : public graphics::Device {
+public:
+    typedef IDXGIFactory4 DXGIFactory;
+    typedef IDXGIAdapter DXGIAdapter;
+    typedef ID3D12Device4 D3D12Device;
+
 private:
-    SharedPtr<IDXGIFactory4> m_factory;
-    SharedPtr<IDXGIAdapter> m_adapter;
-    SharedPtr<ID3D12Device> m_device;
+    SharedPtr<DXGIFactory> m_factory;
+    SharedPtr<DXGIAdapter> m_adapter;
+    SharedPtr<D3D12Device> m_device;
 
     DescriptorAllocator m_RTVAllocator;
     DescriptorAllocator m_DSVAllocator;
@@ -26,25 +31,25 @@ private:
 public:
     Device();
 
-    virtual bool valid() const noexcept { return m_device.valid(); }
+    void createSwapChainBuffer(SwapChainBuffer&);
+    [[nodiscard]] graphics::SwapChain* createSwapChain() final;
+    [[nodiscard]] graphics::Renderer* createRenderer() final;
 
-    void CreateSwapChainBuffer(SwapChainBuffer&);
-    graphics::SwapChain* createSwapChain() final;
-    graphics::Renderer* createRenderer() final;
+    [[nodiscard]] bool valid() const noexcept final { return m_device.valid(); }
+    [[nodiscard]] graphics::Api api() const final { return graphics::Api::d3d12; }
 
-    graphics::Api api() const final { return graphics::Api::d3d12; }
-    IDXGIFactory4* GetDXGIFactory() const { return m_factory; }
-    IDXGIAdapter* GetDXGIAdapter() const { return m_adapter; }
-    ID3D12Device* GetD3D12Device() const { return m_device; }
+    [[nodiscard]] DXGIFactory* dxgiFactory() const { return m_factory.get(); }
+    [[nodiscard]] DXGIAdapter* dxgiAdapter() const { return m_adapter.get(); }
+    [[nodiscard]] D3D12Device* d3d12Device() const { return m_device.get(); }
 
 private:
-    void CreateDevice(D3D_FEATURE_LEVEL,
-                      SharedPtr<IDXGIFactory4> const& factory,
-                      SharedPtr<IDXGIAdapter>& adapter,
-                      SharedPtr<ID3D12Device>& device);
+    static void createDevice(D3D_FEATURE_LEVEL,
+                             SharedPtr<DXGIFactory> const& factory,
+                             SharedPtr<DXGIAdapter>& adapter,
+                             SharedPtr<D3D12Device>& device);
 
-    void EnableDebugLayer();
-    void SetDebugLayerInfo(SharedPtr<ID3D12Device>&);
+    static void enableDebugLayer();
+    static void setDebugLayerInfo(SharedPtr<D3D12Device>&);
 };
 
 } // namespace mini::d3d12

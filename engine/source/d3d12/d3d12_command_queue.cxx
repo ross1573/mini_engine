@@ -3,42 +3,43 @@ export module mini.d3d12:command_queue;
 import mini.core;
 import mini.graphics;
 import mini.windows;
+import :event;
+import :common;
+
+D3D12_EXPORT(ID3D12CommandQueue);
+D3D12_EXPORT(ID3D12CommandList);
 
 namespace mini::d3d12 {
 
-export enum class CommandType : int8 {
-    none = -1,
+class CommandBuffer;
 
-    direct,
-    compute,
-    copy,
-};
+} // namespace mini::d3d12
+
+namespace mini::d3d12 {
 
 export class CommandQueue {
 private:
     SharedPtr<ID3D12CommandQueue> m_commandQueue;
-    SharedPtr<ID3D12Fence> m_fence;
 
-    CommandType m_queueType;
-    D3D12_COMMAND_QUEUE_DESC m_queueDesc;
+    Event m_event;
+    uint64 m_eventValue;
 
-    HANDLE m_fenceHandle;
-    uint64 m_fenceValue;
-    uint64 m_lastCompeletedFence;
+    Array<ID3D12CommandList*> m_commitBuffer;
 
 public:
-    CommandQueue(ID3D12Device*, CommandType);
-    ~CommandQueue();
+    CommandQueue(PtrView<Device> device, CommandType commandType);
 
-    void wait(CommandQueue*);
-    void WaitForFence(uint64);
-    void waitIdle();
+    void commit(PtrView<CommandBuffer const> commandBuffer);
+    void commit(ArrayView<CommandBuffer const*> commandBuffers);
 
-    uint64 ExecuteCommandList(ID3D12CommandList*);
+    void wait(PtrView<CommandQueue const> commandQueue);
+    void signal(PtrView<Event const> event, uint64 value);
 
-    ID3D12CommandQueue* GetD3D12CommandQueue() const { return m_commandQueue; }
-    HANDLE GetFenceHandle() const { return m_fenceHandle; }
-    uint64 GetCurrentFence() const { return m_fenceValue; }
+    [[nodiscard]] bool valid() const noexcept { return m_commandQueue.valid(); }
+    [[nodiscard]] uint64 eventValue() const noexcept { return m_eventValue; }
+
+    [[nodiscard]] ID3D12CommandQueue* d3d12CommandQueue() const noexcept { return m_commandQueue.get(); }
+    [[nodiscard]] ID3D12Fence* d3d12Fence() const noexcept { return m_event.d3d12Fence(); }
 };
 
 } // namespace mini::d3d12

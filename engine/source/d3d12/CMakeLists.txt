@@ -11,6 +11,10 @@ PUBLIC
     FILES
         d3d12.cxx
         d3d12_assert.cxx
+        d3d12_common.cxx
+        d3d12_event.cxx
+        d3d12_resource.cxx
+        d3d12_command_buffer.cxx
         d3d12_command_queue.cxx
         d3d12_descriptor.cxx
         d3d12_device.cxx
@@ -23,6 +27,9 @@ PUBLIC
 
 PRIVATE
     impl/d3d12.cpp
+    impl/d3d12_event.cpp
+    impl/d3d12_resource.cpp
+    impl/d3d12_command_buffer.cpp
     impl/d3d12_command_queue.cpp
     impl/d3d12_descriptor.cpp
     impl/d3d12_device.cpp

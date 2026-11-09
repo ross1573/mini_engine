@@ -5,6 +5,8 @@ import mini.graphics;
 import mini.windows;
 import :descriptor;
 
+D3D12_EXPORT(IDXGISwapChain);
+
 namespace mini::d3d12 {
 
 export struct SwapChainBuffer {
@@ -16,11 +18,14 @@ export struct SwapChainBuffer {
 };
 
 export class SwapChain final : public graphics::SwapChain {
-private:
-    static constexpr uint8 MaxBuffer = SwapChain::maxFrameBuffer;
+public:
+    typedef IDXGISwapChain3 DXGISwapChain;
 
-    SharedPtr<IDXGISwapChain3> m_swapChain;
-    FixedArray<SwapChainBuffer, MaxBuffer> m_buffers;
+private:
+    static constexpr uint8 maxBuffer = SwapChain::maxFrameBuffer;
+
+    SharedPtr<DXGISwapChain> m_swapChain;
+    FixedArray<SwapChainBuffer, maxBuffer> m_buffers;
 
     DXGI_SWAP_CHAIN_DESC1 m_swapChainDesc;
     DXGI_SAMPLE_DESC m_sampleDesc;
@@ -28,7 +33,7 @@ private:
     D3D12_RENDER_TARGET_VIEW_DESC m_rTVDesc;
 
     uint8 m_index;
-    uint8 m_vSync;
+    uint8 m_vsync;
     uint32 m_width;
     uint32 m_height;
 
@@ -44,10 +49,10 @@ public:
     void setFullScreen(bool) final;
 
     SwapChainBuffer* GetCurrentBuffer() noexcept { return &m_buffers[m_index]; }
-    Vector2Int frameBufferSize() const final { return Vector2Int(m_width, m_height); }
-    uint8 bufferCount() const final { return (uint8)m_buffers.size(); }
-    uint8 vsync() const final { return m_vSync; }
-    bool fullScreen() const final { return !m_fullscreenDesc.Windowed; }
+    [[nodiscard]] Vector2Int frameBufferSize() const final { return Vector2Int(m_width, m_height); }
+    [[nodiscard]] uint8 bufferCount() const final { return static_cast<uint8>(m_buffers.size()); }
+    [[nodiscard]] uint8 vsync() const final { return m_vsync; }
+    [[nodiscard]] bool fullScreen() const final { return !m_fullscreenDesc.Windowed; }
 
 private:
     void ReleaseBuffers();

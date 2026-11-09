@@ -4,8 +4,10 @@ import mini.core;
 import mini.platform;
 import mini.windows;
 
+import :common;
 import :log;
 import :device;
+import :resource;
 import :descriptor;
 import :swap_chain;
 import :command_queue;
@@ -28,19 +30,19 @@ SwapChain::SwapChain()
     , m_fullscreenDesc{}
     , m_rTVDesc{}
     , m_index(0)
-    , m_vSync(0)
+    , m_vsync(0)
     , m_width(0)
     , m_height(0)
 {
     uint8 bufferCount = options::bufferCount;
     bool fullscreen = options::fullscreen;
-    m_vSync = options::vsyncRate;
+    m_vsync = options::vsyncRate;
 
     SharedPtr<IDXGISwapChain1> swapChain;
     auto window = interface->window();
-    auto factory = interface->device()->GetDXGIFactory();
+    auto factory = interface->device()->dxgiFactory();
     auto renderer = interface->renderer();
-    auto commandQueue = renderer->GetCommandQueue()->GetD3D12CommandQueue();
+    auto commandQueue = renderer->commandQueue()->d3d12CommandQueue();
 
     RectInt size = window->size();
     m_width = static_cast<uint32>(size.width);
@@ -64,7 +66,7 @@ SwapChain::SwapChain()
     m_swapChainDesc.Scaling = DXGI_SCALING_NONE;
     m_swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     m_swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-    m_swapChainDesc.Flags = m_vSync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    m_swapChainDesc.Flags = m_vsync == 0 ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     ENSURE(factory->CreateSwapChainForHwnd(commandQueue,
                                            window->GetHWND(),
@@ -84,7 +86,7 @@ SwapChain::SwapChain()
 
 void SwapChain::present()
 {
-    m_swapChain->Present(m_vSync, (m_vSync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
+    m_swapChain->Present(m_vsync, (m_vsync == 0) ? DXGI_PRESENT_ALLOW_TEARING : UINT(0));
     m_index = (uint8)m_swapChain->GetCurrentBackBufferIndex();
 }
 
@@ -118,7 +120,7 @@ void SwapChain::resizeBufferCount(uint8 count)
 
 void SwapChain::setVSync(uint8 vSync)
 {
-    m_vSync = vSync;
+    m_vsync = vSync;
 }
 
 void SwapChain::setFullScreen(bool fullscreen)
@@ -146,7 +148,7 @@ void SwapChain::CreateBuffers(uint8 count)
     ENSURE(m_width * m_height > 0, "invalid width and height") return;
 
     Device* device = interface->device();
-    uint32 swapChainFlags = (m_vSync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    uint32 swapChainFlags = (m_vsync == 0) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
     DXGI_FORMAT formatFlag = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     m_swapChain->SetFullscreenState(!m_fullscreenDesc.Windowed, nullptr);
@@ -156,8 +158,8 @@ void SwapChain::CreateBuffers(uint8 count)
     for (uint32 i = 0; i < count; ++i) {
         SwapChainBuffer buffer(&m_rTVDesc);
 
-        m_swapChain->GetBuffer(i, COM_ARG(ID3D12Resource, &buffer.resource));
-        device->CreateSwapChainBuffer(buffer);
+        m_swapChain->GetBuffer(i, COM_ARG(&buffer.resource));
+        device->createSwapChainBuffer(buffer);
         m_buffers.pushBack(moveCast(buffer));
     }
 

@@ -5,7 +5,7 @@ import mini.core;
 namespace mini::debug {
 
 export template <typename... Args>
-AssertFormatResult formatAssert(char const* _, ID3DBlob* error, AssertFormatContext ctx, Args&&... args)
+AssertFormatResult formatAssert(char const* /*unused*/, ID3DBlob* error, AssertFormatContext ctx, Args&&... args)
 {
     char const* buffer = reinterpret_cast<char*>(error->GetBufferPointer());
     formatAssert("d3derror", buffer, ctx, forwardCast<Args>(args)...);

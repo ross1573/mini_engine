@@ -1,33 +1,17 @@
 module mini.d3d12;
 
-import mini.core;
-import mini.windows;
 import :device;
 import :renderer;
 import :swap_chain;
-import :command_queue;
 
 namespace mini::d3d12 {
 
-Renderer::Renderer(ID3D12Device* device)
+Renderer::Renderer(PtrView<Device> device)
     : m_device(device)
-    , m_commandQueue(nullptr)
-    , m_currentBuffer()
-    , m_commandAllocator(nullptr)
-    , m_commandList(nullptr)
+    , m_frameValue(0)
 {
-    D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-
     m_commandQueue = makeUnique<CommandQueue>(device, CommandType::direct);
-
-    VERIFY(device->CreateCommandAllocator(type, COM_ARG(ID3D12CommandAllocator, &m_commandAllocator)));
-    VERIFY(device->CreateCommandList(0,
-                                     type,
-                                     m_commandAllocator,
-                                     nullptr,
-                                     COM_ARG(ID3D12GraphicsCommandList4, &m_commandList)));
-
-    m_commandList->Close();
+    m_commandBufferPool = makeUnique<CommandBufferPool>(device, m_commandQueue, size_t{1}, options::bufferCount);
 }
 
 Renderer::~Renderer()
@@ -41,16 +25,15 @@ void Renderer::prepare()
 
 void Renderer::render()
 {
-    m_commandQueue->WaitForFence(m_commandQueue->GetCurrentFence());
-    m_currentBuffer = interface->swapChain()->GetCurrentBuffer();
+    m_commandBufferPool->wait(m_frameValue);
 
-    VERIFY(m_commandAllocator->Reset(), "failed to reset command allocator");
-    VERIFY(m_commandList->Reset(m_commandAllocator, nullptr), "failed to reset command list");
+    SwapChainBuffer* currentBuffer = interface->swapChain()->GetCurrentBuffer();
+    UniquePtr<CommandBuffer> commandBuffer = m_commandBufferPool->allocate();
 
     // begin
     {
         D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-        transition.pResource = m_currentBuffer->resource;
+        transition.pResource = currentBuffer->resource;
         transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -60,16 +43,16 @@ void Renderer::render()
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition = transition;
 
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = m_currentBuffer->descriptor.offset;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuOffset = currentBuffer->descriptor.offset;
 
-        m_commandList->ResourceBarrier(1, &barrier);
-        m_commandList->ClearRenderTargetView(cpuOffset, Color::clear().data, 0, nullptr);
+        commandBuffer->d3d12CommandList()->ResourceBarrier(1, &barrier);
+        commandBuffer->d3d12CommandList()->ClearRenderTargetView(cpuOffset, Color::clear().data, 0, nullptr);
     }
 
     // end
     {
         D3D12_RESOURCE_TRANSITION_BARRIER transition{};
-        transition.pResource = m_currentBuffer->resource;
+        transition.pResource = currentBuffer->resource;
         transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -79,34 +62,18 @@ void Renderer::render()
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         barrier.Transition = transition;
 
-        m_commandList->ResourceBarrier(1, &barrier);
+        commandBuffer->d3d12CommandList()->ResourceBarrier(1, &barrier);
     }
 
-    m_commandList->Close();
-    m_commandQueue->ExecuteCommandList(m_commandList);
-}
-
-void Renderer::SetViewport(Rect const& rect, float32 minZ, float32 maxZ)
-{
-    D3D12_VIEWPORT d3dViewport{};
-    d3dViewport.TopLeftX = rect.x;
-    d3dViewport.TopLeftY = rect.y;
-    d3dViewport.Width = rect.width;
-    d3dViewport.Height = rect.height;
-    d3dViewport.MinDepth = minZ;
-    d3dViewport.MaxDepth = maxZ;
-
-    m_commandList->RSSetViewports(1, &d3dViewport);
-}
-
-void Renderer::SetScissorRect(RectInt const& rect)
-{
-    m_commandList->RSSetScissorRects(1, reinterpret_cast<D3D12_RECT const*>(&rect));
+    m_frameValue = m_commandBufferPool->commit(moveCast(commandBuffer));
 }
 
 void Renderer::waitIdle()
 {
-    m_commandQueue->waitIdle();
+    // TODO
+    SharedEvent sharedEvent(m_device);
+    m_commandQueue->signal(addressof(sharedEvent), 1);
+    sharedEvent.wait(1);
 }
 
 } // namespace mini::d3d12

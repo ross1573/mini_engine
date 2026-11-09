@@ -3,34 +3,36 @@ export module mini.d3d12:renderer;
 import mini.core;
 import mini.graphics;
 import mini.windows;
+import :event;
+import :command_buffer;
 import :command_queue;
-import :swap_chain;
+
+namespace mini::d3d12 {
+
+class SwapChainBuffer;
+
+} // namespace mini::d3d12
 
 export namespace mini::d3d12 {
 
 class Renderer final : public graphics::Renderer {
 private:
-    SharedPtr<ID3D12Device> m_device;
-    UniquePtr<CommandQueue> m_commandQueue;
-    SwapChainBuffer* m_currentBuffer;
+    Device* m_device;
 
-    SharedPtr<ID3D12CommandAllocator> m_commandAllocator;
-    SharedPtr<ID3D12GraphicsCommandList4> m_commandList;
+    UniquePtr<CommandQueue> m_commandQueue;
+    UniquePtr<CommandBufferPool> m_commandBufferPool;
+
+    uint64 m_frameValue;
 
 public:
-    Renderer(ID3D12Device*);
+    Renderer(PtrView<Device> device);
     ~Renderer();
 
     void prepare() final;
     void render() final;
     void waitIdle() final;
 
-    // TODO: move to render pass
-    void SetViewport(Rect const&, float32, float32);
-    void SetScissorRect(RectInt const&);
-
-    CommandQueue* GetCommandQueue() const { return m_commandQueue.get(); }
-    ID3D12GraphicsCommandList4* GetCommandList() const { return m_commandList; }
+    [[nodiscard]] CommandQueue* commandQueue() const { return m_commandQueue.get(); }
 };
 
 } // namespace mini::d3d12
