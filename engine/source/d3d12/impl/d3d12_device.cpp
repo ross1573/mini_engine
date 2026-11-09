@@ -21,7 +21,10 @@ Device::Device()
     SharedPtr<DXGIAdapter> adapter;
     SharedPtr<D3D12Device> device;
 
-    VERIFY(CreateDXGIFactory2(debugFlag, COM_ARG(&factory)));
+    if (FAILED(CreateDXGIFactory2(debugFlag, COM_ARG(&factory)))) {
+        VERIFY(CreateDXGIFactory2(0, COM_ARG(&factory)));
+        debugFlag = 0;
+    }
 
     if (debugFlag != 0u) {
         enableDebugLayer();
