@@ -55,7 +55,7 @@ concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
 
 template <typename AllocT, typename U>
 concept AllocRebindDeclaredT = requires(AllocT alloc) {
-    { alloc.template Rebind<U>() } -> REBIND_RESULT_T;
+    { alloc.template rebind<U>() } -> REBIND_RESULT_T;
 };
 
 export template <typename T>
@@ -111,7 +111,7 @@ export template <typename U, typename T>
 constexpr decltype(auto) rebind(T const& alloc)
     requires AllocRebindDeclaredT<T, U>
 {
-    return alloc.template Rebind<U>();
+    return alloc.template rebind<U>();
 }
 
 export template <typename U, typename T>
