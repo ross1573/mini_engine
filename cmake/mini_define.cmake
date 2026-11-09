@@ -58,6 +58,7 @@ module_global_definitions(
 
 module_global_definitions(
     ARCH_ARM64=$<IF:${ARM64},true,false>
+    ARCH_X86=$<IF:${X86_64},true,false>
     ARCH_X86_64=$<IF:${X86_64},true,false>
 )
 
