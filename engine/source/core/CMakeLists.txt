@@ -62,7 +62,7 @@ target_sources(mini.core
 PUBLIC
     FILE_SET bit TYPE CXX_MODULES
     FILES
-        $<${MSVC}:bit/bit_win.cxx>
+        $<${MSVC}:bit/bit_platform_msvc.cxx>
         bit/bit_base.cxx
         bit/bit_operation.cxx
 

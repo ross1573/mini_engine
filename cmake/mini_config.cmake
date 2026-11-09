@@ -6,6 +6,10 @@ set(CLANG 0)
 set(MACOS 0)
 set(WINDOWS 0)
 
+if (NOT MINGW)
+    set(MINGW 0)
+endif()
+
 set(ARM64 0)
 set(X86_64 0)
 
