@@ -45,13 +45,6 @@
 #undef NOUSER
 #undef NOMSG
 
-// TODO: better way to determine mingw environment
-#ifndef _MSC_VER
-#  define MINGW_ABI true
-#else
-#  define MINGW_ABI false
-#endif
-
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <windows.h>
@@ -62,20 +55,17 @@
 
 #undef interface
 
-#define COM_ARG(type, arg) IID_##type, reinterpret_cast<void**>(arg)
+#define COM_ARG(arg) __uuidof(**(arg)), reinterpret_cast<void**>(arg)
 
-#if MINGW_ABI
-template <>
-constexpr const GUID& __mingw_uuidof<ID3D12Debug5>()
-{
-    return IID_ID3D12Debug5;
-}
-
-template <>
-constexpr const GUID& __mingw_uuidof<ID3D12InfoQueue>()
-{
-    return IID_ID3D12InfoQueue;
-}
-#endif
+#define D3D12_EXPORT(type)   export using ::type;
+#define D3D12_EXPORT_1(type) D3D12_EXPORT(type) D3D12_EXPORT(type##1)
+#define D3D12_EXPORT_2(type) D3D12_EXPORT_1(type) D3D12_EXPORT(type##2)
+#define D3D12_EXPORT_3(type) D3D12_EXPORT_2(type) D3D12_EXPORT(type##3)
+#define D3D12_EXPORT_4(type) D3D12_EXPORT_3(type) D3D12_EXPORT(type##4)
+#define D3D12_EXPORT_5(type) D3D12_EXPORT_4(type) D3D12_EXPORT(type##5)
+#define D3D12_EXPORT_6(type) D3D12_EXPORT_5(type) D3D12_EXPORT(type##6)
+#define D3D12_EXPORT_7(type) D3D12_EXPORT_6(type) D3D12_EXPORT(type##7)
+#define D3D12_EXPORT_8(type) D3D12_EXPORT_7(type) D3D12_EXPORT(type##8)
+#define D3D12_EXPORT_9(type) D3D12_EXPORT_8(type) D3D12_EXPORT(type##9)
 
 #endif // D3D12_INCLUDE_H

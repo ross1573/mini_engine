@@ -53,6 +53,7 @@ module_global_definitions(
 
 module_global_definitions(
     PLATFORM_WINDOWS=$<IF:${WINDOWS},true,false>
+    PLATFORM_MINGW=$<IF:${MINGW},true,false>
     PLATFORM_MACOS=$<IF:${MACOS},true,false>
 )
 

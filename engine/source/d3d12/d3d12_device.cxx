@@ -5,6 +5,12 @@ import mini.windows;
 import :swap_chain;
 import :descriptor;
 
+D3D12_EXPORT(IDXGIAdapter);
+D3D12_EXPORT_4(IDXGIFactory);
+D3D12_EXPORT_4(ID3D12Device);
+D3D12_EXPORT_5(ID3D12Debug);
+D3D12_EXPORT(ID3D12InfoQueue);
+
 export namespace mini::d3d12 {
 
 class Device final : public graphics::Device {

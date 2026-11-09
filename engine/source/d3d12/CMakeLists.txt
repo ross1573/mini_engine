@@ -17,8 +17,11 @@ PUBLIC
         d3d12_renderer.cxx
         d3d12_swap_chain.cxx
 
+PUBLIC
+    include/d3d12_include.h
+    include/d3d12_uuid.h
+
 PRIVATE
-    d3d12_include.h
     impl/d3d12.cpp
     impl/d3d12_command_queue.cpp
     impl/d3d12_descriptor.cpp
@@ -42,8 +45,9 @@ PRIVATE
 )
 
 target_precompile_headers(mini.d3d12
-PRIVATE
-    d3d12_include.h
+PUBLIC
+    include/d3d12_include.h
+    include/d3d12_uuid.h
 )
 
 add_nuget_package(D3D12
