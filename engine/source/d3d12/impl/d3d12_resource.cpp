@@ -2,6 +2,7 @@ module mini.d3d12;
 
 import :device;
 import :resource;
+import :texture;
 
 namespace mini::d3d12 {
 
@@ -27,6 +28,11 @@ size_t Resource::capacity() const noexcept
     allocInfo = device->GetResourceAllocationInfo(0, 1, &desc);
 #endif
     return static_cast<size_t>(allocInfo.SizeInBytes);
+}
+
+Texture::Texture([[maybe_unused]] graphics::TextureDescriptor const& descriptor)
+{
+    // TODO: CreateCommittedResource
 }
 
 } // namespace mini::d3d12

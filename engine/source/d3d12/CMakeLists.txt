@@ -14,6 +14,7 @@ PUBLIC
         d3d12_common.cxx
         d3d12_event.cxx
         d3d12_resource.cxx
+        d3d12_texture.cxx
         d3d12_command_buffer.cxx
         d3d12_command_queue.cxx
         d3d12_descriptor.cxx

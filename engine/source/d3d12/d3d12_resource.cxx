@@ -6,6 +6,7 @@ import mini.graphics;
 import :common;
 
 D3D12_EXPORT(ID3D12Resource);
+D3D12_EXPORT(D3D12_RESOURCE_DESC);
 
 namespace mini::d3d12 {
 
@@ -14,8 +15,8 @@ protected:
     SharedPtr<ID3D12Resource> m_resource;
 
 public:
-    Resource() noexcept = default;
-    Resource(PtrView<ID3D12Resource> resource) noexcept;
+    constexpr Resource() noexcept = default;
+    explicit constexpr Resource(PtrView<ID3D12Resource> resource) noexcept;
 
     void setName(StringView name) { setDebugName(m_resource.get(), name); }
 
@@ -26,7 +27,7 @@ public:
     [[nodiscard]] ID3D12Resource* d3d12Resource() const noexcept { return m_resource.get(); }
 };
 
-Resource::Resource(PtrView<ID3D12Resource> resource) noexcept
+constexpr Resource::Resource(PtrView<ID3D12Resource> resource) noexcept
     : m_resource(transfer(resource.get()))
 {
 }
