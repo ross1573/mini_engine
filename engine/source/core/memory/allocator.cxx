@@ -2,15 +2,6 @@ module;
 
 #include "memory.h"
 
-// TODO: clang complains about recursion, while others dont
-#if CLANG
-template <typename T>
-concept AlwaysTrueT = true;
-#  define REBIND_RESULT_T AlwaysTrueT
-#else
-#  define REBIND_RESULT_T UnboundAllocatorT
-#endif
-
 export module mini.core:allocator;
 
 import :type;
@@ -25,12 +16,6 @@ struct AllocationResult;
 
 export template <typename T>
 struct Allocator;
-
-template <typename AllocT>
-struct IsDefaultAlloc : FalseT { };
-
-template <typename T>
-struct IsDefaultAlloc<Allocator<T>> : TrueT { };
 
 export template <typename T>
 concept UnboundAllocatorT = CopyableT<T> && requires(T alloc, size_t size, T::Pointer loc) {
@@ -53,11 +38,6 @@ concept NoThrowAllocatorT =
 template <typename AllocT, typename T>
 concept AllocatorDecayT = AllocatorT<DecayT<AllocT>, T>;
 
-template <typename AllocT, typename U>
-concept AllocRebindDeclaredT = requires(AllocT alloc) {
-    { alloc.template rebind<U>() } -> REBIND_RESULT_T;
-};
-
 export template <typename T>
 struct AllocationResult {
     T* pointer;
@@ -70,60 +50,64 @@ struct Allocator {
     typedef T* Pointer;
     typedef T const* ConstPointer;
 
-    [[nodiscard]] constexpr AllocationResult<T> allocate(size_t size) const noexcept
-    {
-        if consteval {
-            Pointer ptr = CONSTEXPR_ALLOC(T, size);
-            return {.pointer = ptr, .capacity = size};
-        }
+    [[nodiscard]] constexpr AllocationResult<T> allocate(size_t size) const noexcept;
+    constexpr void deallocate(Pointer loc, size_t size) const noexcept;
+};
 
-        size_t bytes = size * sizeof(T);
-        try {
-            Pointer ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(bytes));
-            return {.pointer = ptr, .capacity = size};
-        } catch (...) {
-            ASSERT(false, "allocate of {}({}*{}) failed. possible out-of-memory", bytes, size, sizeof(T));
-        }
-
-        return {.pointer = nullptr, .capacity = size};
+template <typename T>
+constexpr AllocationResult<T> Allocator<T>::allocate(size_t size) const noexcept
+{
+    if consteval {
+        Pointer ptr = CONSTEXPR_ALLOC(T, size);
+        return {.pointer = ptr, .capacity = size};
     }
 
-    constexpr void deallocate(Pointer loc, size_t size) const noexcept
-    {
-        if consteval {
-            if (loc == nullptr) {
-                return;
-            }
+    size_t bytes = size * sizeof(T);
+    try {
+        Pointer ptr = static_cast<T*>(BUILTIN_OPERATOR_NEW(bytes));
+        return {.pointer = ptr, .capacity = size};
+    } catch (...) {
+        ASSERT(false, "allocate of {}({}*{}) failed. possible out-of-memory", bytes, size, sizeof(T));
+    }
 
-            CONSTEXPR_DEALLOC(T, loc, size);
+    return {.pointer = nullptr, .capacity = size};
+}
+
+template <typename T>
+constexpr void Allocator<T>::deallocate(Pointer loc, size_t size) const noexcept
+{
+    if consteval {
+        if (loc == nullptr) {
             return;
         }
 
-        try {
-            BUILTIN_OPERATOR_DELETE(static_cast<void*>(loc));
-        } catch (...) {
-            ASSERT(false, "deallocate failed");
-        }
+        CONSTEXPR_DEALLOC(T, loc, size);
+        return;
     }
-};
 
-export template <typename U, typename T>
-constexpr decltype(auto) rebind(T const& alloc)
-    requires AllocRebindDeclaredT<T, U>
-{
-    return alloc.template rebind<U>();
+    try {
+        BUILTIN_OPERATOR_DELETE(static_cast<void*>(loc));
+    } catch (...) {
+        ASSERT(false, "deallocate failed");
+    }
 }
 
 export template <typename U, typename T>
-constexpr T&& rebind(T&& alloc)
+constexpr T&& rebind(RemoveRefT<T> const& alloc)
     requires AllocatorT<T, U>
 {
     return forwardCast<T>(alloc);
 }
 
 export template <typename U, typename T>
-constexpr mini::Allocator<U> rebind(T const& /*unused*/)
-    requires IsDefaultAlloc<T>::value
+constexpr T&& rebind(RemoveRefT<T>&& alloc)
+    requires AllocatorT<T, U>
+{
+    return forwardCast<T>(alloc);
+}
+
+export template <typename U, typename T>
+constexpr mini::Allocator<U> rebind(mini::Allocator<T> const& /*unused*/)
 {
     return mini::Allocator<U>{};
 }
@@ -165,12 +149,11 @@ export constexpr bool operator==(UnboundAllocator const& /*unused*/, UnboundAllo
 }
 
 template <typename AllocT, typename U>
-concept AllocRebindOverloadedT = requires(AllocT alloc) {
+concept AllocRebindDeclaredT = requires(AllocT alloc) {
     { rebind<U>(alloc) } -> AllocatorDecayT<U>;
 };
 
 export template <typename AllocT, typename U>
-concept RebindableWithT =
-    UnboundAllocatorT<AllocT> && (AllocRebindDeclaredT<AllocT, U> || AllocRebindOverloadedT<AllocT, U>);
+concept RebindableWithT = UnboundAllocatorT<AllocT> && AllocRebindDeclaredT<AllocT, U>;
 
 } // namespace mini

@@ -116,12 +116,15 @@ struct TEST_API TestAlloc {
     BasicString<char> str = "TestAlloc";
     DebugObject debugObject;
 
-    template <typename U>
-    constexpr DebugAlloc<U> rebind() const noexcept { return DebugAlloc<U>{}; }
-
     AllocationResult<TestObject> allocate(size_t s) { return Allocator<TestObject>{}.allocate(s); }
     void deallocate(Pointer ptr, size_t size) { Allocator<TestObject>{}.deallocate(ptr, size); }
 };
+
+template <typename U>
+inline DebugAlloc<U> rebind(TestAlloc const&)
+{
+    return DebugAlloc<U>{};
+}
 
 struct TEST_API FooDel {
     void operator()(TestObject* ptr) { delete ptr; }

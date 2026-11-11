@@ -23,7 +23,7 @@ mini::int32 main()
     static_assert(mini::AllocatorT<mini::Allocator<mini::int32>, mini::int32>);
     static_assert(mini::RebindableWithT<mini::Allocator<TestObject>, TestObject>);
     static_assert(mini::SameAsT<TestAlloc&&, decltype(r)>);
-    static_assert(mini::SameAsT<TestAlloc&&, decltype(r3)>);
+    static_assert(mini::SameAsT<DebugAlloc<TestObject>&&, decltype(r3)>);
     static_assert(mini::SameAsT<mini::Allocator<ConstexprObject>&&, decltype(r2)>);
 
     static_assert(mini::Allocator<TestObject>{} == mini::Allocator<mini::int32>{});
