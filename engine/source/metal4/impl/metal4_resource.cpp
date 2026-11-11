@@ -27,7 +27,7 @@ Buffer::Buffer(PtrView<Device> device, graphics::BufferDescriptor const& descrip
     m_resource = transfer(resource);
 }
 
-SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::Texture2DDescriptor const& descriptor,
+SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescriptor const& descriptor,
                                                        graphics::TextureStorage storage)
 {
     SharedPtr<MTL::TextureDescriptor> desc = transfer(MTL::TextureDescriptor::alloc());
@@ -36,22 +36,54 @@ SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::Texture2DDescri
     }
 
     desc->init();
-    desc->setWidth(descriptor.width);
-    desc->setHeight(descriptor.height);
-    desc->setMipmapLevelCount(descriptor.mipmap);
-    desc->setSampleCount(1);
+    desc->setTextureType(mtlTextureType(descriptor.type));
     desc->setPixelFormat(mtlPixelFormat(descriptor.pixelFormat));
-    desc->setTextureType(MTL::TextureType2D);
-    desc->setUsage(mtlTextureUsage(descriptor.usage));
+    desc->setMipmapLevelCount(descriptor.mipmapLevel);
+    desc->setSampleCount(1);
     desc->setResourceOptions(mtlTextureResourceOptions(storage));
+    desc->setUsage(mtlTextureUsage(descriptor.usage));
+
+    switch (descriptor.type) {
+        case graphics::TextureType::texture1d:
+            desc->setWidth(descriptor.width);
+            desc->setHeight(1);
+            desc->setArrayLength(1);
+            ASSERT(descriptor.height == 1, "invalid height on texture1d. height: {}", descriptor.height);
+            ASSERT(descriptor.depth == 1, "invalid depth on texture1d. depth: {}", descriptor.depth);
+            break;
+
+        case graphics::TextureType::texture1dArray:
+            desc->setWidth(descriptor.width);
+            desc->setHeight(1);
+            desc->setArrayLength(descriptor.depth);
+            ASSERT(descriptor.depth == 1, "invalid depth on texture1d. depth: {}", descriptor.depth);
+            break;
+
+        case graphics::TextureType::texture2d:
+            desc->setWidth(descriptor.width);
+            desc->setHeight(descriptor.height);
+            desc->setArrayLength(1);
+            ASSERT(descriptor.depth == 1, "invalid depth on texture2d. depth: {}", descriptor.depth);
+            break;
+
+        case graphics::TextureType::textureCube:
+            desc->setWidth(descriptor.width);
+            desc->setHeight(descriptor.height);
+            desc->setArrayLength(1);
+            ASSERT(descriptor.depth == 1, "invalid depth on textureCube. depth: {}", descriptor.depth);
+            break;
+
+        case graphics::TextureType::texture2dArray:
+        case graphics::TextureType::textureCubeArray:
+            desc->setWidth(descriptor.width);
+            desc->setHeight(descriptor.height);
+            desc->setArrayLength(descriptor.depth);
+            break;
+
+        case graphics::TextureType::texture3d: desc->setArrayLength(1); break;
+    }
+
     return desc;
-}
-
-Texture::Texture(PtrView<MTL::Texture> texture) noexcept
-{
-    ASSERT(texture);
-
-    m_resource = SharedPtr<MTL::Texture>(texture.get());
 }
 
 Texture2D::Texture2D(PtrView<Device> device,

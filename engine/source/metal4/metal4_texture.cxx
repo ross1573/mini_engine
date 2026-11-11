@@ -34,17 +34,37 @@ class Device;
 
 namespace mini::metal4 {
 
-export METAL4_API constexpr MTL::TextureUsage mtlTextureUsage(graphics::TextureUsage usage) noexcept
+export METAL4_API constexpr MTL::TextureType mtlTextureType(graphics::TextureType type) noexcept
 {
-    switch (usage) {
-        case graphics::TextureUsage::undefined:    return MTL::TextureUsageUnknown;
-        case graphics::TextureUsage::shaderRead:   return MTL::TextureUsageShaderRead;
-        case graphics::TextureUsage::shaderWrite:  return MTL::TextureUsageShaderWrite;
-        case graphics::TextureUsage::renderTarget: return MTL::TextureUsageRenderTarget;
+    switch (type) {
+        case graphics::TextureType::texture1d:        return MTL::TextureType1D;
+        case graphics::TextureType::texture1dArray:   return MTL::TextureType1DArray;
+        case graphics::TextureType::texture2d:        return MTL::TextureType2D;
+        case graphics::TextureType::texture2dArray:   return MTL::TextureType2DArray;
+        case graphics::TextureType::texture3d:        return MTL::TextureType3D;
+        case graphics::TextureType::textureCube:      return MTL::TextureTypeCube;
+        case graphics::TextureType::textureCubeArray: return MTL::TextureTypeCubeArray;
     }
 
-    ASSERT(usage == graphics::TextureUsage::undefined, "invalid texture usage {}.", static_cast<byte>(usage));
-    return MTL::TextureUsageUnknown;
+    ASSERT(type == graphics::TextureType::texture2d, "invalid texture type {}.", static_cast<byte>(type));
+    return MTL::TextureType2D;
+}
+
+export METAL4_API constexpr MTL::TextureUsage mtlTextureUsage(graphics::TextureUsage usage) noexcept
+{
+    MTL::TextureUsage result = MTL::TextureUsageUnknown;
+
+    if ((static_cast<byte>(usage) & static_cast<byte>(graphics::TextureUsage::shaderRead)) != 0) {
+        result |= MTL::TextureUsageShaderRead;
+    }
+    if ((static_cast<byte>(usage) & static_cast<byte>(graphics::TextureUsage::shaderWrite)) != 0) {
+        result |= MTL::TextureUsageShaderWrite;
+    }
+    if ((static_cast<byte>(usage) & static_cast<byte>(graphics::TextureUsage::renderTarget)) != 0) {
+        result |= MTL::TextureUsageRenderTarget;
+    }
+
+    return result;
 }
 
 export METAL4_API constexpr MTL::TextureSwizzle mtlTextureSwizzle(graphics::TextureSwizzle::Channel channel) noexcept
@@ -119,21 +139,24 @@ export METAL4_API constexpr MTL::ResourceOptions mtlTextureResourceOptions(graph
     return options;
 }
 
-export METAL4_API SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(
-    graphics::Texture2DDescriptor const& descriptor,
-    graphics::TextureStorage storage);
+export METAL4_API SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescriptor const& descriptor,
+                                                                         graphics::TextureStorage storage);
 
 export class METAL4_API Texture
     : public graphics::Texture
     , public Resource {
 public:
-    explicit Texture(PtrView<MTL::Texture> texture) noexcept;
-    Texture() noexcept = default;
-    ~Texture() noexcept override = default;
+    constexpr Texture() noexcept = default;
+    explicit constexpr Texture(PtrView<MTL::Texture> texture) noexcept;
 
     [[nodiscard]] uint64 gpuAddress() const override;
     [[nodiscard]] MTL::Texture* mtlTexture() const noexcept;
 };
+
+Texture::Texture(PtrView<MTL::Texture> texture) noexcept
+    : Resource(StaticCast<MTL::Resource>(texture))
+{
+}
 
 uint64 Texture::gpuAddress() const
 {
@@ -144,14 +167,5 @@ MTL::Texture* Texture::mtlTexture() const noexcept
 {
     return static_cast<MTL::Texture*>(m_resource.get());
 }
-
-export class METAL4_API Texture2D : public Texture {
-public:
-    Texture2D(PtrView<Device> device,
-              graphics::Texture2DDescriptor const& descriptor,
-              graphics::TextureStorage storage);
-
-    ~Texture2D() noexcept override = default;
-};
 
 } // namespace mini::metal4

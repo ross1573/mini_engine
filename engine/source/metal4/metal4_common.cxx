@@ -34,7 +34,6 @@ export METAL4_API constexpr MTL::PixelFormat mtlPixelFormat(graphics::PixelForma
         case graphics::PixelFormat::unspecialized:  return MTL::PixelFormatUnspecialized;
         case graphics::PixelFormat::A8unorm:        return MTL::PixelFormatA8Unorm;
         case graphics::PixelFormat::R8unorm:        return MTL::PixelFormatR8Unorm;
-        case graphics::PixelFormat::R8unormSRGB:    return MTL::PixelFormatR8Unorm_sRGB;
         case graphics::PixelFormat::R8norm:         return MTL::PixelFormatR8Snorm;
         case graphics::PixelFormat::R8uint:         return MTL::PixelFormatR8Uint;
         case graphics::PixelFormat::R8int:          return MTL::PixelFormatR8Sint;
@@ -44,7 +43,6 @@ export METAL4_API constexpr MTL::PixelFormat mtlPixelFormat(graphics::PixelForma
         case graphics::PixelFormat::R16int:         return MTL::PixelFormatR16Sint;
         case graphics::PixelFormat::R16float:       return MTL::PixelFormatR16Float;
         case graphics::PixelFormat::RG8unorm:       return MTL::PixelFormatRG8Unorm;
-        case graphics::PixelFormat::RG8unormSRGB:   return MTL::PixelFormatRG8Unorm_sRGB;
         case graphics::PixelFormat::RG8norm:        return MTL::PixelFormatRG8Snorm;
         case graphics::PixelFormat::RG8uint:        return MTL::PixelFormatRG8Uint;
         case graphics::PixelFormat::RG8int:         return MTL::PixelFormatRG8Sint;
