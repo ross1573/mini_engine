@@ -86,9 +86,9 @@ SharedPtr<MTL::TextureDescriptor> mtlTextureDescriptor(graphics::TextureDescript
     return desc;
 }
 
-Texture2D::Texture2D(PtrView<Device> device,
-                     graphics::Texture2DDescriptor const& descriptor,
-                     graphics::TextureStorage storage)
+Texture::Texture(PtrView<Device> device,
+                 graphics::TextureDescriptor const& descriptor,
+                 graphics::TextureStorage storage)
 {
     ASSERT(device);
 

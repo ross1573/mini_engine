@@ -43,7 +43,7 @@ public:
     void reset(CA::MetalDrawable* drawable) { m_drawable.reset(drawable); }
 
     [[nodiscard]] bool valid() const noexcept { return m_drawable.valid(); }
-    [[nodiscard]] UniquePtr<Texture> frameTexture() const { return makeUnique<Texture>(mtlTexture()); }
+    [[nodiscard]] UniquePtr<Texture> frameTexture() const { return makeUnique<Texture>(mtlTexture()->retain()); }
 
     [[nodiscard]] MTL::Drawable* mtlDrawable() const noexcept { return m_drawable.get(); }
     [[nodiscard]] MTL::Texture* mtlTexture() const noexcept { return m_drawable->texture(); }

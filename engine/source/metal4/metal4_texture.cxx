@@ -148,13 +148,14 @@ export class METAL4_API Texture
 public:
     constexpr Texture() noexcept = default;
     explicit constexpr Texture(PtrView<MTL::Texture> texture) noexcept;
+    Texture(PtrView<Device> device, graphics::TextureDescriptor const& descriptor, graphics::TextureStorage storage);
 
     [[nodiscard]] uint64 gpuAddress() const override;
     [[nodiscard]] MTL::Texture* mtlTexture() const noexcept;
 };
 
-Texture::Texture(PtrView<MTL::Texture> texture) noexcept
-    : Resource(StaticCast<MTL::Resource>(texture))
+constexpr Texture::Texture(PtrView<MTL::Texture> texture) noexcept
+    : metal4::Resource(staticCast<MTL::Resource>(texture))
 {
 }
 

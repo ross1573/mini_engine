@@ -41,8 +41,8 @@ protected:
     SharedPtr<MTL::Resource> m_resource;
 
 public:
-    Resource() noexcept = default;
-    Resource(PtrView<MTL::Resource> resource) noexcept;
+    constexpr Resource() noexcept = default;
+    constexpr Resource(PtrView<MTL::Resource> resource) noexcept;
 
     void setName(StringView name) { m_resource->setLabel(toNSString(name).get()); }
 
@@ -50,10 +50,10 @@ public:
     [[nodiscard]] size_t capacity() const { return static_cast<size_t>(m_resource->allocatedSize()); }
     [[nodiscard]] String name() const { return toString(m_resource->label()); }
 
-    [[nodiscard]] MTL::Resource* mtlResource() const noexcept { return m_resource.get(); }
+    [[nodiscard]] constexpr MTL::Resource* mtlResource() const noexcept { return m_resource.get(); }
 };
 
-Resource::Resource(PtrView<MTL::Resource> resource) noexcept
+constexpr Resource::Resource(PtrView<MTL::Resource> resource) noexcept
     : m_resource(transfer(resource.get()))
 {
 }
