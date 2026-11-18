@@ -57,6 +57,7 @@ public:
     Value exchange(Value value, MemoryOrder order) volatile noexcept;
 
     bool compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept;
+    bool compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) volatile noexcept;
     bool compareExchangeStrong(Value& expected, Value desired, MemoryOrder success, MemoryOrder failure) noexcept;
     bool compareExchangeStrong(Value& expected,
                                Value desired,
@@ -223,6 +224,17 @@ inline bool Atomic<T>::compareExchangeStrong(Value& expected,
 
 template <TrivialT T>
 inline bool Atomic<T>::compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) noexcept
+{
+    return __atomic_compare_exchange(addressof(m_value.value),
+                                     addressof(expected),
+                                     addressof(desired),
+                                     false,
+                                     static_cast<int>(order),
+                                     failureOrder(order));
+}
+
+template <TrivialT T>
+inline bool Atomic<T>::compareExchangeStrong(Value& expected, Value desired, MemoryOrder order) volatile noexcept
 {
     return __atomic_compare_exchange(addressof(m_value.value),
                                      addressof(expected),
@@ -535,13 +547,15 @@ inline Atomic<T>::operator Value() const volatile noexcept
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) noexcept
 {
-    return store(val, MemoryOrder::sequential);
+    store(val, MemoryOrder::sequential);
+    return val;
 }
 
 template <TrivialT T>
 inline Atomic<T>::Value Atomic<T>::operator=(Value val) volatile noexcept
 {
-    return store(val, MemoryOrder::sequential);
+    store(val, MemoryOrder::sequential);
+    return val;
 }
 
 template <TrivialT T>
