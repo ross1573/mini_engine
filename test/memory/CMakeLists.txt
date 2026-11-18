@@ -1,3 +1,7 @@
 no_arg_test(allocator)
+no_arg_test(deleter)
+no_arg_test(memory_operation)
+no_arg_test(ptr_view)
 no_arg_test(shared_ptr)
+no_arg_test(unique_ptr)
 no_arg_test(weak_ptr)

@@ -31,6 +31,17 @@
       }
 #endif
 
+#define TEST_FUNCTION(func)               TEST_ENSURE((func() == 0))
+#define TEST_FUNCTION_TEMPLATE(func, ...) TEST_ENSURE((func<__VA_ARGS__>() == 0))
+
+#define TEST_CONSTEXPR(func)    \
+    static_assert(func() == 0); \
+    TEST_FUNCTION(func)
+
+#define TEST_CONSTEXPR_TEMPLATE(func, ...)   \
+    static_assert(func<__VA_ARGS__>() == 0); \
+    TEST_FUNCTION_TEMPLATE(func, __VA_ARGS__)
+
 #define TEST_ENSURE_NOTHROW(expr, ...)                              \
     try {                                                           \
         expr;                                                       \

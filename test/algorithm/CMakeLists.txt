@@ -1,0 +1,5 @@
+no_arg_test(algorithm)
+no_arg_test(algorithm_forward)
+no_arg_test(algorithm_bidirectional)
+no_arg_test(algorithm_memory)
+no_arg_test(algorithm_memory_trivial)

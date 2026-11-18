@@ -1,2 +1,7 @@
 no_arg_test(math)
 no_arg_test(ratio)
+no_arg_test(vector2)
+no_arg_test(vector3)
+no_arg_test(vector4)
+no_arg_test(rect)
+no_arg_test(color)

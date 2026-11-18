@@ -1,0 +1,6 @@
+no_arg_test(iterator)
+no_arg_test(ptr_iterator)
+no_arg_test(array_iterator)
+no_arg_test(circular_iterator)
+no_arg_test(circular_iterator_subscript)
+no_arg_test(move_iterator)

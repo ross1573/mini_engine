@@ -39,10 +39,12 @@ PUBLIC
 
 target_link_libraries(mini.test PUBLIC mini.core)
 
+add_subdirectory(algorithm)
 add_subdirectory(bit)
-add_subdirectory(memory)
-add_subdirectory(math)
-add_subdirectory(string)
-add_subdirectory(container)
 add_subdirectory(chrono)
 add_subdirectory(concurrency)
+add_subdirectory(container)
+add_subdirectory(iterator)
+add_subdirectory(math)
+add_subdirectory(memory)
+add_subdirectory(string)

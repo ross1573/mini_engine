@@ -30,9 +30,9 @@ CSTR(char16_t, constexpr, u);
 CSTR(char32_t, constexpr, U);
 
 #ifdef DEBUG_TEST_STRING
-#  define TEST_STRING(func, type) TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
+#  define TEST_STRING(func, type) TEST_FUNCTION_TEMPLATE(func, type, CStr_inline<type>)
 #else
 #  define TEST_STRING(func, type)                             \
       static_assert(func<type, CStr_constexpr<type>>() == 0); \
-      TEST_ENSURE((func<type, CStr_inline<type>>() == 0));
+      TEST_FUNCTION_TEMPLATE(func, type, CStr_inline<type>)
 #endif

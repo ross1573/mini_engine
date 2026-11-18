@@ -3,12 +3,14 @@
 #include "test_macro.h"
 
 #if PLATFORM_MACOS
-#  include <unistd.h>
-#  define SLEEP(x)                 \
-      struct timespec ts;          \
-      ts.tv_sec = 0;               \
-      ts.tv_nsec = x * 1000 * 100; \
-      nanosleep(&ts, nullptr)
+#  include <time.h>
+#  define SLEEP(x)                                         \
+      {                                                    \
+          struct timespec ts;                              \
+          ts.tv_sec = 0;                                   \
+          ts.tv_nsec = static_cast<long>(x) * 1000 * 1000; \
+          nanosleep(&ts, nullptr);                         \
+      }
 #elif PLATFORM_WINDOWS
 #  define WIN32_LEAN_AND_MEAN
 #  define VC_EXTRA_LEAN
@@ -18,45 +20,45 @@
 
 import mini.test;
 
-template <mini::size_t MilliSecT>
-void MiniClock()
-{
-    mini::Clock::TimePoint start = mini::Clock::now();
+using mini::Clock;
+using mini::Milliseconds;
 
-    if constexpr (MilliSecT != 0) {
-        SLEEP(MilliSecT);
+int testMonotonic()
+{
+    Clock::TimePoint first = Clock::now();
+    TEST_ENSURE(first > Clock::TimePoint());
+
+    Clock::TimePoint previous = first;
+    for (mini::int32 i = 0; i < 10000; ++i) {
+        Clock::TimePoint current = Clock::now();
+        TEST_ENSURE(current >= previous);
+        previous = current;
     }
 
-    mini::Clock::TimePoint end = mini::Clock::now();
-    mini::Clock::Duration diff = end - start;
-
-    mini::test::logInfo("[{}ms] Elapsed: {}ns", MilliSecT, diff.count());
-    static_assert(mini::SameAsT<decltype(diff), mini::Nanoseconds>);
+    return 0;
 }
 
-template <mini::size_t MilliSecT>
-void StdClock()
+int testRate()
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    auto outerStart = std::chrono::steady_clock::now();
+    Clock::TimePoint start = Clock::now();
+    SLEEP(20);
+    Clock::TimePoint end = Clock::now();
+    auto outerEnd = std::chrono::steady_clock::now();
 
-    if constexpr (MilliSecT != 0) {
-        SLEEP(MilliSecT);
-    }
+    Clock::Duration inner = end - start;
+    mini::int64 outer = std::chrono::duration_cast<std::chrono::nanoseconds>(outerEnd - outerStart).count();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto diff = end - start;
+    TEST_ENSURE(inner >= Milliseconds(5));
+    TEST_ENSURE(inner.count() <= outer + 2000000);
 
-    mini::test::logInfo("[{}ms] Standard Elapsed: {}ns", MilliSecT, diff.count());
-    static_assert(mini::SameAsT<decltype(diff), std::chrono::nanoseconds>);
+    return 0;
 }
 
 int main()
 {
-    MiniClock<0>();
-    StdClock<0>();
-
-    MiniClock<1>();
-    StdClock<1>();
+    TEST_FUNCTION(testMonotonic);
+    TEST_FUNCTION(testRate);
 
     return 0;
 }
